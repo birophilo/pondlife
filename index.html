@@ -33,6 +33,7 @@ body {
 <div class="container">
   <canvas></canvas>
   <div class="info-container">
+    <div class="day-container">Day <span id="day-number"></span></div>
     <div id="info"></div>
   </div>
   <div class="speed-slide-container">
@@ -43,14 +44,7 @@ body {
 </div>
 
 <script>
-  var slider = document.getElementById('sim-speed-slider')
-  var sliderValue = document.getElementById('sim-speed-value')
 
-  sliderValue.innerHTML = slider.value / 100
-
-  slider.oninput = function() {
-    sliderValue.innerHTML = this.value / 100
-  }
 </script>
 
 </body>

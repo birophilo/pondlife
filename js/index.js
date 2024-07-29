@@ -19,6 +19,9 @@ let selectedCustomer = null
 
 let globalSpeed = 100
 
+const dayLength = 1000 // frames
+let dayNumber = 1
+
 const customerData = [{x: 0, y: 0}, {x: 900, y: 400}]
 const customers = []
 
@@ -71,6 +74,8 @@ function animate() {
 
   const animationId = requestAnimationFrame(animate)
 
+  console.log(animationId)
+
   // increment()
 
   lemonadeStalls.forEach(stall => {
@@ -80,7 +85,7 @@ function animate() {
   let hover = null
 
   customers.forEach(customer => {
-    customer.update(globalSpeed)
+    customer.update({globalSpeed: globalSpeed, frameId: animationId})
     const isInArea = pointIsInArea(mouse, customer.collisionArea)
     if (isInArea) {
       hover = true
@@ -97,9 +102,20 @@ function animate() {
     cancelAnimationFrame(animationId)
   }
 
+  if (animationId % dayLength === 0) {
+    endDay()
+  }
+
   document.querySelector('#info').innerHTML = `Customer ${selectedCustomer}. Money: ${10}.`
 
+  document.querySelector('#day-number').innerHTML = dayNumber
+
 }
+
+function endDay() {
+  dayNumber++
+}
+
 
 canvas.addEventListener('mousemove', (event) => {
   mouse.x = event.clientX

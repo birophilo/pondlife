@@ -19,6 +19,9 @@ class Customer {
     this.nominalSpeed = 0.02
     this.homePosition = {x: this.position.x, y: this.position.y}
     this.speed = this.nominalSpeed * globalSpeed
+
+    this.restTimeBetweenTrips = 500 // frames
+    this.actionEndedFrame = null
   }
 
   travel() {
@@ -50,9 +53,9 @@ class Customer {
     c.fillRect(this.position.x, this.position.y, this.width, this.height)
   }
 
-  update(globalSpeed) {
+  update(data = {globalSpeed, frameId}) {
 
-    this.speed = this.nominalSpeed * globalSpeed
+    this.speed = this.nominalSpeed * data.globalSpeed
 
     this.draw()
     this.travel()
@@ -67,7 +70,15 @@ class Customer {
     if (reachedDestination) {
       this.destination.x = this.homePosition.x
       this.destination.y = this.homePosition.y
+
+      this.actionEndedFrame = this.actionEndedFrame ? this.actionEndedFrame : data.frameId
       // this.money -= 20
+
+      if (data.frameId > this.actionEndedFrame + this.restTimeBetweenTrips) {
+        this.destination = {x: 400, y: 200, width: 130, height: 100}
+        this.actionEndedFrame = null
+      }
     }
+
   }
 }
