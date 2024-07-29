@@ -19,6 +19,11 @@ body {
   border: 1px solid black;
   width: 100%;
 }
+
+.speed-slide-container {
+  display: flex;
+  flex-direction: column;
+}
 </style>
 
 </head>
@@ -30,8 +35,23 @@ body {
   <div class="info-container">
     <div id="info"></div>
   </div>
+  <div class="speed-slide-container">
+    <p>Speed: <span id="sim-speed-value">1.0</span></p>
+    <input type="range" min="0" max="200" value="100" id="sim-speed-slider">
+  </div>
 
 </div>
+
+<script>
+  var slider = document.getElementById('sim-speed-slider')
+  var sliderValue = document.getElementById('sim-speed-value')
+
+  sliderValue.innerHTML = slider.value / 100
+
+  slider.oninput = function() {
+    sliderValue.innerHTML = this.value / 100
+  }
+</script>
 
 </body>
 

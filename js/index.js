@@ -17,6 +17,7 @@ image.src = 'img/gameMap.bmp'
 
 let selectedCustomer = null
 
+let globalSpeed = 100
 
 const customerData = [{x: 0, y: 0}, {x: 900, y: 400}]
 const customers = []
@@ -30,7 +31,8 @@ const supplyVans = []
 for (let i = 0; i < customerData.length; i++) {
   customers.push( new Customer({
     position: {x: customerData[i].x, y: customerData[i].y},
-    num: i + 1
+    num: i + 1,
+    globalSpeed: globalSpeed
   }))
 }
 
@@ -42,7 +44,7 @@ lemonadeStallData.forEach(stall => {
 
 supplyVanData.forEach(van => {
   supplyVans.push(
-    new SupplyVan({position: van})
+    new SupplyVan({position: van, globalSpeed: globalSpeed})
   )
 })
 
@@ -78,7 +80,7 @@ function animate() {
   let hover = null
 
   customers.forEach(customer => {
-    customer.update()
+    customer.update(globalSpeed)
     const isInArea = pointIsInArea(mouse, customer.collisionArea)
     if (isInArea) {
       hover = true
@@ -88,7 +90,7 @@ function animate() {
   canvas.style.cursor = hover ? 'pointer' : 'auto'
 
   supplyVans.forEach(van => {
-    van.update()
+    van.update(globalSpeed)
   })
 
   if (false === true) {
@@ -118,5 +120,18 @@ canvas.addEventListener('click', (event) => {
 
 })
 
+document.getElementById('')
+
 
 animate()
+
+var slider = document.getElementById('sim-speed-slider')
+var sliderValue = document.getElementById('sim-speed-value')
+
+sliderValue.innerHTML = slider.value / 100
+
+slider.oninput = function() {
+
+  globalSpeed = this.value
+  sliderValue.innerHTML = this.value / 100
+}

@@ -1,9 +1,11 @@
 class SupplyVan {
-  constructor({ position = { x: 0, y: 0 } }) {
+  constructor({ position = { x: 0, y: 0 }, globalSpeed }) {
     this.position = position
-    this.speed = 1
+    this.nominalSpeed = 0.01
     this.destination = {x: 400, y: 200}
     this.homePosition = {x: this.position.x, y: this.position.y}
+
+    this.speed = this.nominalSpeed * globalSpeed
   }
 
   travel() {
@@ -23,7 +25,10 @@ class SupplyVan {
     c.fillRect(this.position.x, this.position.y, 50, 50)
   }
 
-  update() {
+  update(globalSpeed) {
+
+    this.speed = this.nominalSpeed * globalSpeed
+
     this.draw()
     this.travel()
 

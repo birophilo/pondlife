@@ -1,5 +1,5 @@
 class Customer {
-  constructor({ position = { x: 0, y: 0 }, num = 0 }) {
+  constructor({ position = { x: 0, y: 0 }, num = 0, globalSpeed }) {
     this.customerNumber = num
     this.money = 100
     this.position = position
@@ -16,8 +16,9 @@ class Customer {
       y: this.position.y + this.height / 2
     }
     this.destination = {x: 400, y: 200, width: 130, height: 100}
-    this.speed = 2
+    this.nominalSpeed = 0.02
     this.homePosition = {x: this.position.x, y: this.position.y}
+    this.speed = this.nominalSpeed * globalSpeed
   }
 
   travel() {
@@ -49,7 +50,10 @@ class Customer {
     c.fillRect(this.position.x, this.position.y, this.width, this.height)
   }
 
-  update() {
+  update(globalSpeed) {
+
+    this.speed = this.nominalSpeed * globalSpeed
+
     this.draw()
     this.travel()
 
