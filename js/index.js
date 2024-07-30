@@ -23,6 +23,7 @@ const dayLength = 1000 // frames
 let dayNumber = 1
 
 const customerData = [{x: 0, y: 0}, {x: 900, y: 400}]
+// const customerData = [{x: 900, y: 400}]
 const customers = []
 
 const lemonadeStallData = [{x: 400, y: 200}]
@@ -74,9 +75,9 @@ function animate() {
 
   const animationId = requestAnimationFrame(animate)
 
-  console.log(animationId)
-
-  // increment()
+  if (animationId % 100 === 0) {
+      console.log(animationId)
+  }
 
   lemonadeStalls.forEach(stall => {
     stall.draw()
@@ -106,9 +107,13 @@ function animate() {
     endDay()
   }
 
-  document.querySelector('#info').innerHTML = `Customer ${selectedCustomer}. Money: ${10}.`
+  if (selectedCustomer !== null) {
+    document.querySelector('#info').innerHTML = `Customer ${selectedCustomer.customerNumber}. Money: ${selectedCustomer.money}.`
+  }
 
   document.querySelector('#day-number').innerHTML = dayNumber
+
+  timers.forEach(timer => timer.check(animationId))
 
 }
 
@@ -130,14 +135,11 @@ canvas.addEventListener('click', (event) => {
     const isInArea = pointIsInArea(point, customer.collisionArea)
     if (isInArea) {
       console.log('Customer ' + customer.customerNumber)
-      selectedCustomer = customer.customerNumber
+      selectedCustomer = customer
     }
   })
 
 })
-
-document.getElementById('')
-
 
 animate()
 
@@ -147,7 +149,6 @@ var sliderValue = document.getElementById('sim-speed-value')
 sliderValue.innerHTML = slider.value / 100
 
 slider.oninput = function() {
-
   globalSpeed = this.value
   sliderValue.innerHTML = this.value / 100
 }
