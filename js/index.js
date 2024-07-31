@@ -32,13 +32,8 @@ const lemonadeStalls = []
 const supplyVanData = [{x: 300, y: 800}]
 const supplyVans = []
 
-for (let i = 0; i < customerData.length; i++) {
-  customers.push( new Customer({
-    position: {x: customerData[i].x, y: customerData[i].y},
-    num: i + 1,
-    globalSpeed: globalSpeed
-  }))
-}
+const agentMenuIconData = ['customer']
+const agentMenuIcons = []
 
 lemonadeStallData.forEach(stall => {
   lemonadeStalls.push(
@@ -49,6 +44,26 @@ lemonadeStallData.forEach(stall => {
 supplyVanData.forEach(van => {
   supplyVans.push(
     new SupplyVan({position: van, globalSpeed: globalSpeed})
+  )
+})
+
+for (let i = 0; i < customerData.length; i++) {
+  customers.push( new Customer({
+    position: {x: customerData[i].x, y: customerData[i].y},
+    num: i + 1,
+    globalSpeed: globalSpeed
+  }))
+}
+
+const itemMenu = new AgentMenu()
+let agentPreview = null
+let placingAgent = false
+
+agentMenuIconData.forEach(icon => {
+  agentMenuIcons.push(
+    new AgentMenuIcon({
+      position: {x: itemMenu.position.x + itemMenu.border, y: itemMenu.position.y + itemMenu.border}
+    })
   )
 })
 
@@ -68,6 +83,8 @@ function pointIsInArea(point = {x, y}, area = {x, y, width, height}) {
 }
 
 let mouse = {x: 0, y: 0}
+
+/* --- ANIMATE --- */
 
 function animate() {
   c.fillStyle = 'grey'
@@ -92,6 +109,18 @@ function animate() {
       hover = true
     }
   })
+  
+
+  itemMenu.draw()
+
+  agentMenuIcons.forEach(icon => {
+    const isInArea = pointIsInArea(mouse, icon.area)
+    if (isInArea) {
+      hover = true
+    }
+    icon.draw()
+  })
+  if (agentPreview) agentPreview.update(mouse)
 
   canvas.style.cursor = hover ? 'pointer' : 'auto'
 
@@ -102,7 +131,6 @@ function animate() {
   if (false === true) {
     cancelAnimationFrame(animationId)
   }
-
   if (animationId % dayLength === 0) {
     endDay()
   }
@@ -127,15 +155,38 @@ canvas.addEventListener('mousemove', (event) => {
   mouse.y = event.clientY
 })
 
+/* --- CLICK ACTIONS --- */
+
 canvas.addEventListener('click', (event) => {
   console.log(event.x, event.y)
+  const point = {x: event.x, y: event.y}
+
+  if (placingAgent) {
+    placingAgent = false
+    customerNumber = customers.length + 1
+
+    customers.push( new Customer({
+      position: {x: mouse.x - 40 / 2, y: mouse.y - 40 / 2},
+      num: customerNumber,
+      globalSpeed: globalSpeed
+    }))
+
+    agentPreview = null
+  }
 
   customers.forEach(customer => {
-    const point = {x: event.x, y: event.y}
     const isInArea = pointIsInArea(point, customer.collisionArea)
     if (isInArea) {
       console.log('Customer ' + customer.customerNumber)
       selectedCustomer = customer
+    }
+  })
+
+  agentMenuIcons.forEach(icon => {
+    const isInArea = pointIsInArea(point, icon.area)
+    if (isInArea && !agentPreview) {
+      agentPreview = new AgentPreview()
+      placingAgent = true
     }
   })
 

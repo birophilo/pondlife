@@ -5,6 +5,7 @@ class LemonadeStall {
     this.height = 100
     // distance from stall to count as collision (same for x and y here)
     this.accessRange = 20
+    this.money = 0
   }
 
   draw() {
@@ -23,5 +24,8 @@ class LemonadeStall {
       this.width + this.accessRange * 2,
       this.height + this.accessRange * 2
     )
+
+    c.fillStyle = 'black'
+    c.fillText('money: ' + this.money, this.position.x, this.position.y - 5)
   }
 }
