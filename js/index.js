@@ -32,8 +32,8 @@ const lemonadeStalls = []
 const supplyVanData = [{x: 300, y: 800}]
 const supplyVans = []
 
-const agentMenuIconData = ['customer']
-const agentMenuIcons = []
+const agentMenuButtonData = ['customer']
+const agentMenuButtons = []
 
 lemonadeStallData.forEach(stall => {
   lemonadeStalls.push(
@@ -58,14 +58,25 @@ for (let i = 0; i < customerData.length; i++) {
 const itemMenu = new AgentMenu()
 let agentPreview = null
 let placingAgent = false
+let deleteMode = false
 
-agentMenuIconData.forEach(icon => {
-  agentMenuIcons.push(
+agentMenuButtonData.forEach(icon => {
+  agentMenuButtons.push(
     new AgentMenuIcon({
       position: {x: itemMenu.position.x + itemMenu.border, y: itemMenu.position.y + itemMenu.border}
     })
   )
 })
+
+console.log(agentMenuButtons[0].position)
+
+let deleteButton = new DeleteButton({
+  position: {x: itemMenu.position.x + 40 + itemMenu.border * 2, y: itemMenu.position.y + itemMenu.border}
+})
+
+// agentMenuButtons.push(deleteButton)
+
+console.log(deleteButton.position)
 
 
 function pointIsInArea(point = {x, y}, area = {x, y, width, height}) {
@@ -110,17 +121,21 @@ function animate() {
     }
   })
   
-
   itemMenu.draw()
 
-  agentMenuIcons.forEach(icon => {
-    const isInArea = pointIsInArea(mouse, icon.area)
+  agentMenuButtons.forEach(button => {
+    const isInArea = pointIsInArea(mouse, button.area)
     if (isInArea) {
       hover = true
     }
-    icon.draw()
+    button.draw()
   })
   if (agentPreview) agentPreview.update(mouse)
+
+  if (pointIsInArea(mouse, deleteButton.area)) {
+    hover = true
+  }
+  deleteButton.draw(deleteMode)
 
   canvas.style.cursor = hover ? 'pointer' : 'auto'
 
@@ -174,21 +189,30 @@ canvas.addEventListener('click', (event) => {
     agentPreview = null
   }
 
-  customers.forEach(customer => {
+  customers.forEach((customer, i) => {
     const isInArea = pointIsInArea(point, customer.collisionArea)
+    if (isInArea && deleteMode === true) {
+      customers.splice(i, 1)
+      deleteMode = false
+    }
     if (isInArea) {
       console.log('Customer ' + customer.customerNumber)
       selectedCustomer = customer
     }
   })
 
-  agentMenuIcons.forEach(icon => {
+  agentMenuButtons.forEach(icon => {
     const isInArea = pointIsInArea(point, icon.area)
     if (isInArea && !agentPreview) {
       agentPreview = new AgentPreview()
       placingAgent = true
     }
   })
+
+  const isInArea = pointIsInArea(point, deleteButton.area)
+  if (isInArea) {
+    deleteMode = !deleteMode
+  }
 
 })
 

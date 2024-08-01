@@ -17,7 +17,7 @@ class AgentMenu {
   }
 }
 
-class AgentMenuIcon {
+class Button {
   constructor({ position = {x: 0, y: 0} }) {
     this.position = position
     this.height = 40
@@ -34,14 +34,14 @@ class AgentMenuIcon {
     }
   }
 
+}
+
+class AgentMenuIcon extends Button {
+
   draw() {
     c.fillStyle = 'red'
     c.fillRect(this.position.x, this.position.y, this.width, this.height)
   }
-}
-
-class AgentSelectionState {
-  
 }
 
 class AgentPreview {
@@ -60,5 +60,24 @@ class AgentPreview {
     this.position.x = mouse.x - this.width / 2
     this.position.y = mouse.y - this.height / 2
     this.draw()  
+  }
+}
+
+class DeleteButton extends Button {
+
+  draw(selected) {
+    c.fillStyle = selected ? 'rgba(0, 0, 0, 0.4)' : 'rgba(0, 0, 0, 0.1)'
+    c.stroke 
+    c.fillRect(this.position.x, this.position.y, this.width, this.height)
+
+    c.beginPath();
+    c.lineWidth = 2
+    c.moveTo(this.position.x, this.position.y);
+    c.lineTo(this.position.x + this.width, this.position.y + this.height);
+    c.stroke();
+    c.moveTo(this.position.x + this.width, this.position.y);
+    c.lineTo(this.position.x, this.position.y + this.height);
+    c.strokeStyle = "black";
+    c.stroke();
   }
 }
