@@ -70,14 +70,15 @@ class DeleteButton extends Button {
     c.stroke 
     c.fillRect(this.position.x, this.position.y, this.width, this.height)
 
-    c.beginPath();
+    c.beginPath()
     c.lineWidth = 2
-    c.moveTo(this.position.x, this.position.y);
-    c.lineTo(this.position.x + this.width, this.position.y + this.height);
-    c.stroke();
-    c.moveTo(this.position.x + this.width, this.position.y);
-    c.lineTo(this.position.x, this.position.y + this.height);
-    c.strokeStyle = "black";
-    c.stroke();
+    c.moveTo(this.position.x, this.position.y)
+    c.lineTo(this.position.x + this.width, this.position.y + this.height)
+    c.stroke()
+    c.moveTo(this.position.x + this.width, this.position.y)
+    c.lineTo(this.position.x, this.position.y + this.height)
+    c.strokeStyle = "black"
+    c.stroke()
+    c.lineWidth = 0.8
   }
 }

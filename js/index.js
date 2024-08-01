@@ -23,10 +23,9 @@ const dayLength = 1000 // frames
 let dayNumber = 1
 
 const customerData = [{x: 0, y: 0}, {x: 900, y: 400}]
-// const customerData = [{x: 900, y: 400}]
 const customers = []
 
-const lemonadeStallData = [{x: 400, y: 200}]
+const lemonadeStallData = [firstStall]
 const lemonadeStalls = []
 
 const supplyVanData = [{x: 300, y: 800}]
@@ -37,7 +36,7 @@ const agentMenuButtons = []
 
 lemonadeStallData.forEach(stall => {
   lemonadeStalls.push(
-    new LemonadeStall({position: stall})
+    new LemonadeStall(stall)
   )
 })
 
@@ -73,8 +72,6 @@ console.log(agentMenuButtons[0].position)
 let deleteButton = new DeleteButton({
   position: {x: itemMenu.position.x + 40 + itemMenu.border * 2, y: itemMenu.position.y + itemMenu.border}
 })
-
-// agentMenuButtons.push(deleteButton)
 
 console.log(deleteButton.position)
 

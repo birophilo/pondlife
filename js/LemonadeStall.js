@@ -1,10 +1,11 @@
 class LemonadeStall {
-  constructor({ position = { x: 0, y: 0 } }) {
+  constructor({ position = { x: 0, y: 0 }, width, height, id }) {
     this.position = position
-    this.width = 130
-    this.height = 100
+    this.width = width
+    this.height = height
     // distance from stall to count as collision (same for x and y here)
     this.accessRange = 20
+    this.id = id
     this.money = 0
   }
 
@@ -28,4 +29,11 @@ class LemonadeStall {
     c.fillStyle = 'black'
     c.fillText('money: ' + this.money, this.position.x, this.position.y - 5)
   }
+}
+
+const firstStall = {
+  position: {x: 400, y: 200},
+  width: 130,
+  height: 100,
+  id: 'firstStall'
 }

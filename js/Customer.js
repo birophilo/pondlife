@@ -11,27 +11,29 @@ class CustomerState {
       this.goHome()
     } else if (state === 'resting') {
       this.rest(data.frameId)
+    } else if (state === 'buying') {
+      this.buy(data.frameId)
     }
   }
 
   goToStall() {
-    this.customer.destination = {
-      x: 400,
-      y: 200,
-      width: 130,
-      height: 100,
-      name: 'stall'
-  }
     this.name = 'goingToStall'
+    const hasEnoughMoney = this.customer.money >= 20
+    if (hasEnoughMoney) {
+      this.customer.destination = firstStall
+    }
   }
 
   goHome() {
     this.customer.destination = {
-      x: this.customer.homePosition.x,
-      y: this.customer.homePosition.y,
+      position: {
+        x: this.customer.homePosition.x,
+        y: this.customer.homePosition.y
+      },
       width: 80,
       height: 80,
-      name: 'home'
+      name: 'home',
+      id: 1
     }
     this.name = 'goingHome'
   }
@@ -40,9 +42,24 @@ class CustomerState {
     this.name = 'resting'
     this.customer.destination = null
     const self = this
-    // const hello = () => {console.log("HELLOHELLO")}
     let timer1 = new Timer(currentFrame, 500, self, 'goingToStall')
     timers.push(timer1)
+  }
+
+  buy(currentFrame) {
+    this.name = 'buying'
+    const self = this
+    let timer2 = new Timer(currentFrame, 200, self, 'goingHome')
+    timers.push(timer2)
+
+    const hasEnoughMoney = this.customer.money >= 20
+    if (hasEnoughMoney) {
+      this.customer.money -= 20
+      const stall = lemonadeStalls.find(stall => stall.id === this.customer.destination.id)
+      stall.money += 20
+    }
+
+    this.customer.destination = null
   }
 }
 
@@ -80,8 +97,8 @@ class Customer {
 
   travel() {
     if (this.destination) {
-      const xDistance = this.destination.x - this.position.x
-      const yDistance = this.destination.y - this.position.y
+      const xDistance = this.destination.position.x - this.position.x
+      const yDistance = this.destination.position.y - this.position.y
       const angle = Math.atan2(yDistance, xDistance)
 
       const xVelocity = Math.cos(angle) * this.speed
@@ -108,18 +125,27 @@ class Customer {
     c.fillStyle = 'red'
     c.fillRect(this.position.x, this.position.y, this.width, this.height)
 
-    const destination = this.destination ? this.destination.name : 'none'
+    const destination = this.destination ? this.destination.id : 'none'
     c.strokeText('dest: ' + destination, this.position.x, this.position.y - 10)
     c.strokeText(this.state.name, this.position.x, this.position.y - 22)
+    c.strokeText('money: ' + this.money, this.position.x, this.position.y - 34)
   }
 
   atDestination() {
     if (!this.destination) {
       return false
     }
-    const destinationLeftExtent = this.destination.x - 20
-    const destinationRightExtent = this.destination.x + this.destination.width + 20
-    return this.center.x > destinationLeftExtent && this.center.x < destinationRightExtent
+    const destinationLeftExtent = this.destination.position.x - 20
+    const destinationRightExtent = this.destination.position.x + this.destination.width + 20
+    const destinationTopExtent = this.destination.position.y - 20
+    const destinationBottomExtent = this.destination.position.y + this.destination.height + 20
+    const atDestination = (
+      this.center.x > destinationLeftExtent &&
+      this.center.x < destinationRightExtent &&
+      this.center.y > destinationTopExtent &&
+      this.center.y < destinationBottomExtent
+    )
+    return atDestination
   }
 
   update(data = {globalSpeed, frameId}) {
@@ -134,7 +160,7 @@ class Customer {
     }
 
     if (this.reachedDestination && this.state.name === 'goingToStall') {
-      this.state.updateState('goingHome')
+      this.state.updateState('buying', data = data)
       this.reachedDestination = false
     }
 
@@ -142,14 +168,6 @@ class Customer {
       this.state.updateState('resting', data = data)
       this.reachedDestination = false
     }
-
-      // this.actionEndedFrame = this.actionEndedFrame ? this.actionEndedFrame : data.frameId
-
-      // if (data.frameId > this.actionEndedFrame + this.restTimeBetweenTrips) {
-      //   console.log("GOING TO STALL NOW")
-      //   this.state.updateState('goingToStall')
-      //   this.actionEndedFrame = null
-      // }
 
   }
 
