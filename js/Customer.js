@@ -57,6 +57,7 @@ class CustomerState {
       this.customer.money -= 20
       const stall = lemonadeStalls.find(stall => stall.id === this.customer.destination.id)
       stall.money += 20
+      stall.lemons -= 2
     }
 
     this.customer.destination = null

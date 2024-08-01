@@ -7,6 +7,7 @@ class LemonadeStall {
     this.accessRange = 20
     this.id = id
     this.money = 0
+    this.lemons = 10
   }
 
   draw() {
@@ -27,7 +28,11 @@ class LemonadeStall {
     )
 
     c.fillStyle = 'black'
-    c.fillText('money: ' + this.money, this.position.x, this.position.y - 5)
+    c.fillText(
+      `money: ${this.money}, lemons: ${this.lemons}`,
+      this.position.x,
+      this.position.y - 5
+    )
   }
 }
 

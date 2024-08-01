@@ -137,7 +137,7 @@ function animate() {
   canvas.style.cursor = hover ? 'pointer' : 'auto'
 
   supplyVans.forEach(van => {
-    van.update(globalSpeed)
+    van.update({globalSpeed: globalSpeed, frameId: animationId})
   })
 
   if (false === true) {

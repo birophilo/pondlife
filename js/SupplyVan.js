@@ -1,41 +1,167 @@
+class SupplyVanState {
+  constructor(van) {
+    this.name = 'idle'
+    this.van = van
+  }
+
+  updateState(state, data) {
+    if (state === 'goingToStall') {
+      this.goToStall()
+    }  else if (state === 'goingHome') {
+      this.goHome()
+    } else if (state === 'resting') {
+      this.rest(data.frameId)
+    } else if (state === 'selling') {
+      this.sell(data.frameId)
+    }
+  }
+
+  goToStall() {
+    this.name = 'goingToStall'
+    this.van.destination = firstStall
+  }
+
+  goHome() {
+    this.van.destination = {
+      position: {
+        x: this.van.homePosition.x,
+        y: this.van.homePosition.y
+      },
+      width: 80,
+      height: 80,
+      name: 'home',
+      id: 1
+    }
+    this.name = 'goingHome'
+  }
+
+  rest(currentFrame) {
+    this.name = 'resting'
+    this.van.destination = null
+    const self = this
+    let timer1 = new Timer(currentFrame, 500, self, 'goingToStall')
+    timers.push(timer1)
+  }
+
+  sell(currentFrame) {
+    this.name = 'selling'
+    const self = this
+    let timer2 = new Timer(currentFrame, 200, self, 'goingHome')
+    timers.push(timer2)
+
+    const stall = lemonadeStalls.find(stall => stall.id === this.van.destination.id)
+    const stallHasEnoughMoney = stall.money >= 20
+    if (stallHasEnoughMoney) {
+      this.van.money += 20
+      stall.lemons += 10
+      stall.money -= 40
+    }
+
+    this.van.destination = null
+  }
+}
+
 class SupplyVan {
   constructor({ position = { x: 0, y: 0 }, globalSpeed }) {
     this.position = position
     this.nominalSpeed = 0.01
-    this.destination = {x: 400, y: 200}
+
+    this.center = {
+      x: this.position.x + this.width / 2,
+      y: this.position.y + this.height / 2
+    }
+
+    this.width = 50
+    this.height = 50
+
+    this.collisionArea = {
+      x: this.position.x,
+      y: this.position.y,
+      width: this.width,
+      height: this.height
+    }
+    
     this.homePosition = {x: this.position.x, y: this.position.y}
+    this.destination = null
 
     this.speed = this.nominalSpeed * globalSpeed
+
+    this.reachedDestination = false
+
+    this.state = new SupplyVanState(this)
+    this.state.updateState('goingToStall')
   }
 
   travel() {
-    const xDistance = this.destination.x - this.position.x
-    const yDistance = this.destination.y - this.position.y
-    const angle = Math.atan2(yDistance, xDistance)
+    if (this.destination) {
+      const xDistance = this.destination.position.x - this.position.x
+      const yDistance = this.destination.position.y - this.position.y
+      const angle = Math.atan2(yDistance, xDistance)
 
-    const xVelocity = Math.cos(angle) * this.speed
-    const yVelocity = Math.sin(angle) * this.speed
+      const xVelocity = Math.cos(angle) * this.speed
+      const yVelocity = Math.sin(angle) * this.speed
 
-    this.position.x += xVelocity
-    this.position.y += yVelocity
+      this.position.x += xVelocity
+      this.position.y += yVelocity
+    }
+
+    this.center = {
+      x: this.position.x + this.width / 2,
+      y: this.position.y + this.height / 2
+    }
+
+    this.collisionArea = {
+      x: this.position.x,
+      y: this.position.y,
+      width: this.width,
+      height: this.height
+    }
   }
 
   draw() {
     c.fillStyle = 'yellow'
-    c.fillRect(this.position.x, this.position.y, 50, 50)
+    c.fillRect(this.position.x, this.position.y, this.width, this.height)
   }
 
-  update(globalSpeed) {
+  atDestination() {
+    if (!this.destination) {
+      return false
+    }
+    const destinationLeftExtent = this.destination.position.x - 20
+    const destinationRightExtent = this.destination.position.x + this.destination.width + 20
+    const destinationTopExtent = this.destination.position.y - 20
+    const destinationBottomExtent = this.destination.position.y + this.destination.height + 20
+    const atDestination = (
+      this.center.x > destinationLeftExtent &&
+      this.center.x < destinationRightExtent &&
+      this.center.y > destinationTopExtent &&
+      this.center.y < destinationBottomExtent
+    )
+    return atDestination
+  }
 
-    this.speed = this.nominalSpeed * globalSpeed
+  update(data = {globalSpeed, frameId}) {
+
+    this.speed = this.nominalSpeed * data.globalSpeed
 
     this.draw()
     this.travel()
 
-    if (Math.abs(this.destination.x - this.position.x) < 5 && Math.abs(this.destination.y - this.position.y) < 5) {
-      this.destination.x = this.homePosition.x
-      this.destination.y = this.homePosition.y
+    if (this.atDestination()) {
+      this.reachedDestination = true
     }
+
+    if (this.reachedDestination && this.state.name === 'goingToStall') {
+      this.state.updateState('selling', data = data)
+      this.reachedDestination = false
+    }
+
+    if (this.reachedDestination && this.state.name === 'goingHome') {
+      this.state.updateState('resting', data = data)
+      this.reachedDestination = false
+    }
+
   }
+
 
 }
