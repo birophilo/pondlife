@@ -65,12 +65,26 @@ class CustomerState {
 }
 
 class Customer {
+
+  static agentName() {
+    return 'customer'
+  }
+
+  static baseWidth() {
+    return 40
+  }
+
+  static baseHeight() {
+    return 40
+  }
+
   constructor({ position = { x: 0, y: 0 }, num = 0, globalSpeed }) {
-    this.customerNumber = num
-    this.money = 100
-    this.position = position
+    this.name = 'customer'
+    this.num = num
     this.width = 40
     this.height = 40
+    this.money = 100
+    this.position = position
     this.collisionArea = {
       x: this.position.x,
       y: this.position.y,
@@ -92,8 +106,7 @@ class Customer {
     this.reachedDestination = false
 
     this.state = new CustomerState(this)
-    this.state.updateState('goingToStall')
-    
+    this.state.updateState('goingToStall') 
   }
 
   travel() {

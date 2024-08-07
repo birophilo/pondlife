@@ -1,8 +1,23 @@
 class LemonadeStall {
-  constructor({ position = { x: 0, y: 0 }, width, height, id }) {
+
+  static agentName() {
+    return 'lemonadeStall'
+  }
+
+  static baseWidth() {
+    return 130
+  }
+
+  static baseHeight() {
+    return 100
+  }
+
+  constructor({ position = { x: 0, y: 0 }, num = 0, id }) {
+    this.name = 'lemonadeStall'
+    this.num = num
     this.position = position
-    this.width = width
-    this.height = height
+    this.width = 130
+    this.height = 100
     // distance from stall to count as collision (same for x and y here)
     this.accessRange = 20
     this.id = id

@@ -1,9 +1,20 @@
+const menuWidth = 200
+const menuHeight = 50
+const menuBorder = 5
+
+const menuButtonWidth = 40
+const menuButtonHeight = 40
+
+const menuPosX = 20
+const menuPosY = 520
+
+
 class AgentMenu {
   constructor() {
-    this.position = {x: 20, y: 520}
-    this.height = 50
-    this.width = 200
-    this.border = 5
+    this.position = {x: menuPosX, y: menuPosY}
+    this.width = menuWidth
+    this.height = menuHeight
+    this.border = menuBorder
   }
 
   draw() {
@@ -17,11 +28,19 @@ class AgentMenu {
   }
 }
 
-class Button {
-  constructor({ position = {x: 0, y: 0} }) {
-    this.position = position
-    this.height = 40
-    this.width = 40
+class agentMenuButton {
+  constructor({ menu, i = 0, name }) {
+    this.name = name
+    this.width = menuButtonWidth
+    this.height = menuButtonHeight
+    this.menu = menu
+    this.position = {
+      x: this.menu.position.x + this.menu.border + (this.width + this.menu.border) * i,
+      y: this.menu.position.y + this.menu.border
+      // x: (this.menu.position.x + this.border) * i,
+      // y: this.menu.position.y + this.border
+    }
+
     this.center = {
       x: this.position.x + this.width / 2,
       y: this.position.y + this.height / 2
@@ -36,23 +55,30 @@ class Button {
 
 }
 
-class AgentMenuIcon extends Button {
+class AgentMenuIcon extends agentMenuButton {
+
+  constructor({menu, i = 1, name, rgb}) {
+    super({menu, i, name})
+    this.rgb = rgb
+  }
 
   draw() {
-    c.fillStyle = 'red'
+    c.fillStyle = `rgb(${this.rgb[0]}, ${this.rgb[1]}, ${this.rgb[2]})`
     c.fillRect(this.position.x, this.position.y, this.width, this.height)
   }
 }
 
 class AgentPreview {
-  constructor() {
-    this.position = {x: 20, y: 50}
-    this.height = 40
-    this.width = 40
+  constructor({ agent, rgb }) {
+    this.agent = agent
+    this.position = {x: 0, y: 0}
+    this.width = agent.baseWidth()
+    this.height = agent.baseHeight()
+    this.rgb = rgb
   }
 
   draw() {
-    c.fillStyle = 'rgba(255, 0, 0, 0.4)'
+    c.fillStyle = `rgba(${this.rgb[0]}, ${this.rgb[1]}, ${this.rgb[2]}, 0.4)`
     c.fillRect(this.position.x, this.position.y, this.width, this.height)
   }
 
@@ -63,7 +89,7 @@ class AgentPreview {
   }
 }
 
-class DeleteButton extends Button {
+class DeleteButton extends agentMenuButton {
 
   draw(selected) {
     c.fillStyle = selected ? 'rgba(0, 0, 0, 0.4)' : 'rgba(0, 0, 0, 0.1)'

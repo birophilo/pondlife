@@ -13,6 +13,11 @@ image.onload = () => {
   animate()
 }
 
+const AGENTS = {
+  customer: Customer,
+  lemonadeStall: LemonadeStall
+}
+
 image.src = 'img/gameMap.bmp'
 
 let selectedCustomer = null
@@ -31,7 +36,7 @@ const lemonadeStalls = []
 const supplyVanData = [{x: 300, y: 800}]
 const supplyVans = []
 
-const agentMenuButtonData = ['customer']
+const agentMenuButtonData = [{name: 'customer', rgb: [255, 0, 0]}, {name: 'lemonadeStall', rgb: [0, 0, 255]}]
 const agentMenuButtons = []
 
 lemonadeStallData.forEach(stall => {
@@ -55,25 +60,24 @@ for (let i = 0; i < customerData.length; i++) {
 }
 
 const itemMenu = new AgentMenu()
+
 let agentPreview = null
 let placingAgent = false
 let deleteMode = false
 
-agentMenuButtonData.forEach(icon => {
+agentMenuButtonData.forEach((icon, i) => {
   agentMenuButtons.push(
     new AgentMenuIcon({
-      position: {x: itemMenu.position.x + itemMenu.border, y: itemMenu.position.y + itemMenu.border}
+      menu: itemMenu,
+      i: i,
+      name: icon.name,
+      rgb: icon.rgb
     })
   )
 })
 
-console.log(agentMenuButtons[0].position)
 
-let deleteButton = new DeleteButton({
-  position: {x: itemMenu.position.x + 40 + itemMenu.border * 2, y: itemMenu.position.y + itemMenu.border}
-})
-
-console.log(deleteButton.position)
+let deleteButton = new DeleteButton({ menu: itemMenu, i: agentMenuButtons.length })
 
 
 function pointIsInArea(point = {x, y}, area = {x, y, width, height}) {
@@ -173,39 +177,63 @@ canvas.addEventListener('click', (event) => {
   console.log(event.x, event.y)
   const point = {x: event.x, y: event.y}
 
+  // PLACE NEW AGENT ON
   if (placingAgent) {
     placingAgent = false
-    customerNumber = customers.length + 1
 
-    customers.push( new Customer({
-      position: {x: mouse.x - 40 / 2, y: mouse.y - 40 / 2},
-      num: customerNumber,
-      globalSpeed: globalSpeed
-    }))
+    const agentClassName = agentPreview.agent.agentName()
+
+    if (agentClassName === 'customer') {
+      const num = customers.length + 1
+      customers.push( new Customer({
+        position: {x: mouse.x - 40 / 2, y: mouse.y - 40 / 2},
+        num: num,
+        globalSpeed: globalSpeed
+      }))
+    } else if (agentClassName === 'lemonadeStall') {
+      const num = lemonadeStalls.length + 1
+      lemonadeStalls.push( new LemonadeStall({
+        position: {x: mouse.x - 40 / 2, y: mouse.y - 40 / 2},
+        num: num,
+        globalSpeed: globalSpeed
+      }))
+
+    }
 
     agentPreview = null
   }
 
   customers.forEach((customer, i) => {
     const isInArea = pointIsInArea(point, customer.collisionArea)
-    if (isInArea && deleteMode === true) {
-      customers.splice(i, 1)
-      deleteMode = false
-    }
+  
+    // SELECT AGENT
     if (isInArea) {
       console.log('Customer ' + customer.customerNumber)
       selectedCustomer = customer
     }
+
+    // DELETE AGENT (in delete mode)
+    if (isInArea && deleteMode === true) {
+      customers.splice(i, 1)
+      deleteMode = false
+    }
+
   })
 
+  // SELECT AGENT BUTTON TO CREATE CURSOR PREVIEW (to place new agent on board)
   agentMenuButtons.forEach(icon => {
     const isInArea = pointIsInArea(point, icon.area)
+
     if (isInArea && !agentPreview) {
-      agentPreview = new AgentPreview()
+      agentPreview = new AgentPreview({
+        agent: AGENTS[icon.name],
+        rgb: icon.rgb
+      })
       placingAgent = true
     }
   })
 
+  // TOGGLE DELETE MODE
   const isInArea = pointIsInArea(point, deleteButton.area)
   if (isInArea) {
     deleteMode = !deleteMode
