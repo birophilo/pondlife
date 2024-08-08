@@ -19,11 +19,11 @@ class CustomerState {
 
   goToStall(data) {
     this.name = 'goingToStall'
-    console.log('going to stall func')
-    console.log(data)
     const hasEnoughMoney = this.customer.money >= 20
     if (hasEnoughMoney) {
-      this.customer.destination = data.stall
+      const closestStall = this.customer.getClosestAgent(data.stalls)
+      data.stall = closestStall
+      this.customer.destination = closestStall
     }
   }
 
@@ -111,7 +111,7 @@ class Customer {
     this.reachedDestination = false
 
     this.state = new CustomerState(this)
-    this.state.updateState('goingToStall', {stall: firstStall})
+    // this.state.updateState('goingToStall', {stall: firstStall})
   }
 
   travel() {
@@ -174,6 +174,10 @@ class Customer {
     this.draw()
     this.travel()
 
+    if (this.state.name == 'idle') {
+      this.state.updateState('goingToStall', data)
+    }
+
     if (this.atDestination()) {
       this.reachedDestination = true
     }
@@ -192,5 +196,22 @@ class Customer {
 
   endDay() {
     this.money = 100
+  }
+
+  getDistanceToAgent(agent) {
+    const xDiff = agent.center.x - this.center.x
+    const yDiff = agent.center.y - this.center.y
+    return Math.hypot(xDiff, yDiff)
+  }
+
+  getClosestAgent(agents) {
+    let closestDistance = this.getDistanceToAgent(agents[0])
+    let closestAgent = agents[0]
+    for (let i = 1; i < agents.length; i++) {
+      if (this.getDistanceToAgent(agents[i]) < closestDistance) {
+        closestAgent = agents[i]
+      }
+    }
+    return closestAgent
   }
 }

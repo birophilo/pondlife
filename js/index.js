@@ -115,7 +115,7 @@ function animate() {
   let hover = null
 
   customers.forEach(customer => {
-    customer.update({globalSpeed: globalSpeed, frameId: animationId, stall: firstStall})
+    customer.update({globalSpeed: globalSpeed, frameId: animationId, stalls: lemonadeStalls, stall: firstStall})
     const isInArea = pointIsInArea(mouse, customer.collisionArea)
     if (isInArea) {
       hover = true
