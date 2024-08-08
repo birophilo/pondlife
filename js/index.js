@@ -20,7 +20,7 @@ const AGENTS = {
 
 image.src = 'img/gameMap.bmp'
 
-let selectedCustomer = null
+let selectedAgent = null
 
 let globalSpeed = 100
 
@@ -115,8 +115,15 @@ function animate() {
   let hover = null
 
   customers.forEach(customer => {
-    customer.update({globalSpeed: globalSpeed, frameId: animationId})
+    customer.update({globalSpeed: globalSpeed, frameId: animationId, stall: firstStall})
     const isInArea = pointIsInArea(mouse, customer.collisionArea)
+    if (isInArea) {
+      hover = true
+    }
+  })
+
+  lemonadeStalls.forEach(stall => {
+    const isInArea = pointIsInArea(mouse, stall.collisionArea)
     if (isInArea) {
       hover = true
     }
@@ -151,8 +158,8 @@ function animate() {
     endDay()
   }
 
-  if (selectedCustomer !== null) {
-    document.querySelector('#info').innerHTML = `Customer ${selectedCustomer.customerNumber}. Money: ${selectedCustomer.money}.`
+  if (selectedAgent !== null) {
+    document.querySelector('#info').innerHTML = `${selectedAgent.name} ${selectedAgent.num}. Money: ${selectedAgent.money}.`
   }
 
   document.querySelector('#day-number').innerHTML = dayNumber
@@ -205,19 +212,32 @@ canvas.addEventListener('click', (event) => {
 
   customers.forEach((customer, i) => {
     const isInArea = pointIsInArea(point, customer.collisionArea)
-  
+
     // SELECT AGENT
     if (isInArea) {
-      console.log('Customer ' + customer.customerNumber)
-      selectedCustomer = customer
+      console.log('Customer ' + customer.num)
+      selectedAgent = customer
     }
-
     // DELETE AGENT (in delete mode)
     if (isInArea && deleteMode === true) {
       customers.splice(i, 1)
       deleteMode = false
     }
+  })
 
+  lemonadeStalls.forEach((stall, i) => {
+    const isInArea = pointIsInArea(point, stall.collisionArea)
+  
+    // SELECT AGENT
+    if (isInArea) {
+      console.log('Lemonade stall ' + stall.num)
+      selectedAgent = stall
+    }
+    // DELETE AGENT (in delete mode)
+    if (isInArea && deleteMode === true) {
+      lemonadeStalls.splice(i, 1)
+      deleteMode = false
+    }
   })
 
   // SELECT AGENT BUTTON TO CREATE CURSOR PREVIEW (to place new agent on board)

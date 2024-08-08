@@ -23,6 +23,16 @@ class LemonadeStall {
     this.id = id
     this.money = 0
     this.lemons = 10
+    this.collisionArea = {
+      x: this.position.x,
+      y: this.position.y,
+      width: this.width,
+      height: this.height
+    }
+    this.center = {
+      x: this.position.x + this.width / 2,
+      y: this.position.y + this.height / 2
+    }
   }
 
   draw() {
@@ -49,11 +59,4 @@ class LemonadeStall {
       this.position.y - 5
     )
   }
-}
-
-const firstStall = {
-  position: {x: 400, y: 200},
-  width: 130,
-  height: 100,
-  id: 'firstStall'
 }

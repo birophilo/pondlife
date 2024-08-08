@@ -6,25 +6,28 @@ class CustomerState {
 
   updateState(state, data) {
     if (state === 'goingToStall') {
-      this.goToStall()
+      console.log('going to stall')
+      this.goToStall(data)
     }  else if (state === 'goingHome') {
-      this.goHome()
+      this.goHome(data)
     } else if (state === 'resting') {
-      this.rest(data.frameId)
+      this.rest(data)
     } else if (state === 'buying') {
-      this.buy(data.frameId)
+      this.buy(data)
     }
   }
 
-  goToStall() {
+  goToStall(data) {
     this.name = 'goingToStall'
+    console.log('going to stall func')
+    console.log(data)
     const hasEnoughMoney = this.customer.money >= 20
     if (hasEnoughMoney) {
-      this.customer.destination = firstStall
+      this.customer.destination = data.stall
     }
   }
 
-  goHome() {
+  goHome(data) {
     this.customer.destination = {
       position: {
         x: this.customer.homePosition.x,
@@ -38,18 +41,20 @@ class CustomerState {
     this.name = 'goingHome'
   }
 
-  rest(currentFrame) {
+  rest(data) {
     this.name = 'resting'
     this.customer.destination = null
     const self = this
-    let timer1 = new Timer(currentFrame, 500, self, 'goingToStall')
+    let timer1 = new Timer(data.frameId, 500, self, 'goingToStall', data)
     timers.push(timer1)
+    console.log('resting')
+    console.log(data)
   }
 
-  buy(currentFrame) {
+  buy(data) {
     this.name = 'buying'
     const self = this
-    let timer2 = new Timer(currentFrame, 200, self, 'goingHome')
+    let timer2 = new Timer(data.frameId, 200, self, 'goingHome', data)
     timers.push(timer2)
 
     const hasEnoughMoney = this.customer.money >= 20
@@ -106,7 +111,7 @@ class Customer {
     this.reachedDestination = false
 
     this.state = new CustomerState(this)
-    this.state.updateState('goingToStall') 
+    this.state.updateState('goingToStall', {stall: firstStall})
   }
 
   travel() {
@@ -162,7 +167,7 @@ class Customer {
     return atDestination
   }
 
-  update(data = {globalSpeed, frameId}) {
+  update(data) {
 
     this.speed = this.nominalSpeed * data.globalSpeed
 
@@ -179,7 +184,7 @@ class Customer {
     }
 
     if (this.reachedDestination && this.state.name === 'goingHome') {
-      this.state.updateState('resting', data = data)
+      this.state.updateState('resting', data)
       this.reachedDestination = false
     }
 

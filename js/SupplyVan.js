@@ -10,9 +10,9 @@ class SupplyVanState {
     }  else if (state === 'goingHome') {
       this.goHome()
     } else if (state === 'resting') {
-      this.rest(data.frameId)
+      this.rest(data)
     } else if (state === 'selling') {
-      this.sell(data.frameId)
+      this.sell(data)
     }
   }
 
@@ -35,18 +35,18 @@ class SupplyVanState {
     this.name = 'goingHome'
   }
 
-  rest(currentFrame) {
+  rest(data) {
     this.name = 'resting'
     this.van.destination = null
     const self = this
-    let timer1 = new Timer(currentFrame, 500, self, 'goingToStall')
+    let timer1 = new Timer(data.frameId, 500, self, 'goingToStall', data)
     timers.push(timer1)
   }
 
-  sell(currentFrame) {
+  sell(data) {
     this.name = 'selling'
     const self = this
-    let timer2 = new Timer(currentFrame, 200, self, 'goingHome')
+    let timer2 = new Timer(data.frameId, 200, self, 'goingHome', data)
     timers.push(timer2)
 
     const stall = lemonadeStalls.find(stall => stall.id === this.van.destination.id)

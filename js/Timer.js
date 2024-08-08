@@ -1,10 +1,11 @@
 class Timer {
-  constructor(currentFrame, timerDuration, stateObject, nextState) {
+  constructor(currentFrame, timerDuration, stateObject, nextState, data) {
     this.startFrame = currentFrame
     this.duration = timerDuration
     this.stateObject = stateObject
     this.nextState = nextState
     this.active = true
+    this.data = data
   }
 
   check(currentFrame) {
@@ -12,7 +13,8 @@ class Timer {
     if (timerExpired && this.active) {
       console.log("TIMER FINISHED")
       this.active = false
-      this.stateObject.updateState(this.nextState)
+      console.log(this.data)
+      this.stateObject.updateState(this.nextState, this.data)
     }
   }
 }
