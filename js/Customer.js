@@ -47,8 +47,6 @@ class CustomerState {
     const self = this
     let timer1 = new Timer(data.frameId, 500, self, 'goingToStall', data)
     timers.push(timer1)
-    console.log('resting')
-    console.log(data)
   }
 
   buy(data) {
@@ -111,7 +109,6 @@ class Customer {
     this.reachedDestination = false
 
     this.state = new CustomerState(this)
-    // this.state.updateState('goingToStall', {stall: firstStall})
   }
 
   travel() {
@@ -168,6 +165,8 @@ class Customer {
   }
 
   update(data) {
+    console.log('updating data')
+    console.log(data)
 
     this.speed = this.nominalSpeed * data.globalSpeed
 

@@ -46,6 +46,7 @@ lemonadeStallData.forEach(stall => {
 })
 
 supplyVanData.forEach(van => {
+  console.log('got this far')
   supplyVans.push(
     new SupplyVan({position: van, globalSpeed: globalSpeed})
   )
@@ -115,7 +116,12 @@ function animate() {
   let hover = null
 
   customers.forEach(customer => {
-    customer.update({globalSpeed: globalSpeed, frameId: animationId, stalls: lemonadeStalls, stall: firstStall})
+    customer.update({
+      globalSpeed: globalSpeed,
+      frameId: animationId,
+      stalls: lemonadeStalls,
+      stall: firstStall
+    })
     const isInArea = pointIsInArea(mouse, customer.collisionArea)
     if (isInArea) {
       hover = true
@@ -148,7 +154,13 @@ function animate() {
   canvas.style.cursor = hover ? 'pointer' : 'auto'
 
   supplyVans.forEach(van => {
-    van.update({globalSpeed: globalSpeed, frameId: animationId})
+    console.log(lemonadeStalls)
+    van.update({
+      globalSpeed: globalSpeed,
+      frameId: animationId,
+      stalls: lemonadeStalls,
+      stall: firstStall
+    })
   })
 
   if (false === true) {

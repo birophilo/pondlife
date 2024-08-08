@@ -5,10 +5,12 @@ class SupplyVanState {
   }
 
   updateState(state, data) {
+    console.log('state')
+    console.log(data)
     if (state === 'goingToStall') {
-      this.goToStall()
+      this.goToStall(data)
     }  else if (state === 'goingHome') {
-      this.goHome()
+      this.goHome(data)
     } else if (state === 'resting') {
       this.rest(data)
     } else if (state === 'selling') {
@@ -16,12 +18,14 @@ class SupplyVanState {
     }
   }
 
-  goToStall() {
+  goToStall(data) {
     this.name = 'goingToStall'
-    this.van.destination = firstStall
+    const closestStall = this.van.getClosestAgent(data.stalls)
+    data.stall = closestStall
+    this.van.destination = closestStall
   }
 
-  goHome() {
+  goHome(data) {
     this.van.destination = {
       position: {
         x: this.van.homePosition.x,
@@ -62,9 +66,10 @@ class SupplyVanState {
 }
 
 class SupplyVan {
-  constructor({ position = { x: 0, y: 0 }, globalSpeed }) {
+  constructor({ position = { x: 0, y: 0 }, num = 0, globalSpeed }) {
     this.position = position
     this.nominalSpeed = 0.01
+    this.num = num
 
     this.center = {
       x: this.position.x + this.width / 2,
@@ -89,7 +94,6 @@ class SupplyVan {
     this.reachedDestination = false
 
     this.state = new SupplyVanState(this)
-    this.state.updateState('goingToStall')
   }
 
   travel() {
@@ -140,12 +144,16 @@ class SupplyVan {
     return atDestination
   }
 
-  update(data = {globalSpeed, frameId}) {
+  update(data) {
 
     this.speed = this.nominalSpeed * data.globalSpeed
 
     this.draw()
     this.travel()
+
+    if (this.state.name == 'idle') {
+      this.state.updateState('goingToStall', data)
+    }
 
     if (this.atDestination()) {
       this.reachedDestination = true
@@ -160,7 +168,23 @@ class SupplyVan {
       this.state.updateState('resting', data = data)
       this.reachedDestination = false
     }
+  }
 
+  getDistanceToAgent(agent) {
+    const xDiff = agent.center.x - this.center.x
+    const yDiff = agent.center.y - this.center.y
+    return Math.hypot(xDiff, yDiff)
+  }
+
+  getClosestAgent(agents) {
+    let closestDistance = this.getDistanceToAgent(agents[0])
+    let closestAgent = agents[0]
+    for (let i = 1; i < agents.length; i++) {
+      if (this.getDistanceToAgent(agents[i]) < closestDistance) {
+        closestAgent = agents[i]
+      }
+    }
+    return closestAgent
   }
 
 
