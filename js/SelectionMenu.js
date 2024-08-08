@@ -37,8 +37,6 @@ class agentMenuButton {
     this.position = {
       x: this.menu.position.x + this.menu.border + (this.width + this.menu.border) * i,
       y: this.menu.position.y + this.menu.border
-      // x: (this.menu.position.x + this.border) * i,
-      // y: this.menu.position.y + this.border
     }
 
     this.center = {

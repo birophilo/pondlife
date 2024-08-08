@@ -6,7 +6,6 @@ class CustomerState {
 
   updateState(state, data) {
     if (state === 'goingToStall') {
-      console.log('going to stall')
       this.goToStall(data)
     }  else if (state === 'goingHome') {
       this.goHome(data)
@@ -165,8 +164,6 @@ class Customer {
   }
 
   update(data) {
-    console.log('updating data')
-    console.log(data)
 
     this.speed = this.nominalSpeed * data.globalSpeed
 

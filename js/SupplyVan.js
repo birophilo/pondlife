@@ -5,8 +5,6 @@ class SupplyVanState {
   }
 
   updateState(state, data) {
-    console.log('state')
-    console.log(data)
     if (state === 'goingToStall') {
       this.goToStall(data)
     }  else if (state === 'goingHome') {
@@ -66,6 +64,19 @@ class SupplyVanState {
 }
 
 class SupplyVan {
+
+  static agentName() {
+    return 'supplyVan'
+  }
+
+  static baseWidth() {
+    return 50
+  }
+
+  static baseHeight() {
+    return 50
+  }
+
   constructor({ position = { x: 0, y: 0 }, num = 0, globalSpeed }) {
     this.position = position
     this.nominalSpeed = 0.01
