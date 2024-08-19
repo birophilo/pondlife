@@ -66,7 +66,7 @@ class CustomerState {
   }
 }
 
-class Customer {
+class Customer extends Sprite {
 
   static agentName() {
     return 'customer'
@@ -81,6 +81,11 @@ class Customer {
   }
 
   constructor({ position = { x: 0, y: 0 }, num = 0, globalSpeed }) {
+    super({ 
+      position,
+      imageSrc: '../img/sprites/GirlSample_Walk_Down.png',
+      frames: {max: 9, columns: 4, rows: 3} 
+    })
     this.name = 'customer'
     this.num = num
     this.width = 40
@@ -140,6 +145,8 @@ class Customer {
     c.fillStyle = 'red'
     c.fillRect(this.position.x, this.position.y, this.width, this.height)
 
+    super.draw()
+
     const destination = this.destination ? this.destination.id : 'none'
     c.strokeText('dest: ' + destination, this.position.x, this.position.y - 10)
     c.strokeText(this.state.name, this.position.x, this.position.y - 22)
@@ -164,6 +171,8 @@ class Customer {
   }
 
   update(data) {
+
+    super.update()
 
     this.speed = this.nominalSpeed * data.globalSpeed
 
