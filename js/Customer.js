@@ -1,3 +1,7 @@
+// refactor these maybe
+const AGENT_WIDTH = 256
+const AGENT_HEIGHT = 256
+
 class CustomerState {
   constructor(customer) {
     this.name = 'idle'
@@ -66,7 +70,7 @@ class CustomerState {
   }
 }
 
-class Customer {
+class Customer extends Sprite {
 
   static agentName() {
     return 'customer'
@@ -81,10 +85,15 @@ class Customer {
   }
 
   constructor({ position = { x: 0, y: 0 }, num = 0, globalSpeed }) {
+    super({ 
+      position,
+      imageSrc: '../img/sprites/GirlSample_Walk_Down.png',
+      frames: {max: 4} 
+    })
     this.name = 'customer'
     this.num = num
-    this.width = 40
-    this.height = 40
+    this.width = AGENT_WIDTH
+    this.height = AGENT_HEIGHT
     this.money = 100
     this.position = position
     this.collisionArea = {
@@ -137,8 +146,10 @@ class Customer {
   }
 
   draw() {
-    c.fillStyle = 'red'
-    c.fillRect(this.position.x, this.position.y, this.width, this.height)
+    super.draw()
+
+    // c.fillStyle = 'red'
+    // c.fillRect(this.position.x, this.position.y, this.width, this.height)
 
     const destination = this.destination ? this.destination.id : 'none'
     c.strokeText('dest: ' + destination, this.position.x, this.position.y - 10)
@@ -168,6 +179,8 @@ class Customer {
     this.speed = this.nominalSpeed * data.globalSpeed
 
     this.draw()
+    super.update()
+
     this.travel()
 
     if (this.state.name == 'idle') {
