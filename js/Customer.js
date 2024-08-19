@@ -24,6 +24,7 @@ class CustomerState {
       data.stall = closestStall
       this.customer.destination = closestStall
     }
+    this.customer.frames.max = 9
   }
 
   goHome(data) {
@@ -38,6 +39,7 @@ class CustomerState {
       id: 1
     }
     this.name = 'goingHome'
+    this.customer.frames.max = 9
   }
 
   rest(data) {
@@ -46,6 +48,8 @@ class CustomerState {
     const self = this
     let timer1 = new Timer(data.frameId, 500, self, 'goingToStall', data)
     timers.push(timer1)
+    this.customer.image.src = '../img/sprites/GirlSample_Walk_Down.png'
+    this.customer.frames.max = 1
   }
 
   buy(data) {
@@ -53,6 +57,8 @@ class CustomerState {
     const self = this
     let timer2 = new Timer(data.frameId, 200, self, 'goingHome', data)
     timers.push(timer2)
+    this.customer.image.src = '../img/sprites/GirlSample_Walk_Down.png'
+    this.customer.frames.max = 1
 
     const hasEnoughMoney = this.customer.money >= 20
     if (hasEnoughMoney) {
@@ -126,6 +132,12 @@ class Customer extends Sprite {
 
       this.position.x += xVelocity
       this.position.y += yVelocity
+      console.log(xVelocity)
+      if (xVelocity > 0) {
+        this.image.src = '../img/sprites/GirlSample_Walk_Right.png'
+      } else if (xVelocity < 0) {
+        this.image.src = '../img/sprites/GirlSample_Walk_Left.png'
+      }
     }
 
     this.center = {

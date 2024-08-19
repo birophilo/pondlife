@@ -14,7 +14,7 @@ class Sprite {
       rows: frames.rows,
       current: 0,
       elapsed: 0,
-      hold: 5
+      hold: 8
     }
     this.offset = offset
   }
@@ -33,8 +33,8 @@ class Sprite {
     c.drawImage(
       // need 9 arguments to display a crop!
       this.image,
-      crop.position.x + 105,
-      crop.position.y + 48,
+      crop.position.x + 96,
+      crop.position.y + 46,
       crop.width,
       crop.height,
       this.position.x + this.offset.x,
