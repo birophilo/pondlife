@@ -1,3 +1,39 @@
+const CUSTOMER_SPRITE_DIRECTION = {
+  up: '../img/sprites/GirlSample_Walk_Up.png',
+  upRight: '../img/sprites/GirlSample_Walk_UpRight.png',
+  right: '../img/sprites/GirlSample_Walk_Right.png',
+  downRight: '../img/sprites/GirlSample_Walk_DownRight.png',
+  down: '../img/sprites/GirlSample_Walk_Down.png',
+  downLeft: '../img/sprites/GirlSample_Walk_DownLeft.png',
+  left: '../img/sprites/GirlSample_Walk_Left.png',
+  upLeft: '../img/sprites/GirlSample_Walk_UpLeft.png'
+}
+
+function get8WayDirection(xVelocity, yVelocity) {
+  const diagonalThreshold = 0.2
+  const xVelocityIsNotDiagonal = Math.abs(xVelocity) < diagonalThreshold
+  const yVelocityIsNotDiagonal = Math.abs(yVelocity) < diagonalThreshold
+
+  if (xVelocity > 0 && yVelocityIsNotDiagonal) {
+    return 'right'
+  } else if (xVelocity < 0 && yVelocityIsNotDiagonal) {
+    return 'left'
+  } else if (xVelocityIsNotDiagonal && yVelocity > 0) {
+    return 'down'
+  } else if (xVelocityIsNotDiagonal && yVelocity < 0) {
+    return 'up'
+  } else if (xVelocity >= diagonalThreshold && yVelocity > diagonalThreshold) {
+    return 'downRight'
+  } else if (xVelocity >= diagonalThreshold && yVelocity < -diagonalThreshold) {
+    return 'upRight'
+  } else if (xVelocity <= -diagonalThreshold && yVelocity < -diagonalThreshold) {
+    return 'upLeft'
+  } else if (xVelocity <= -diagonalThreshold && yVelocity > -diagonalThreshold) {
+    return 'downLeft'
+  }
+}
+
+
 class CustomerState {
   constructor(customer) {
     this.name = 'idle'
@@ -23,8 +59,8 @@ class CustomerState {
       const closestStall = this.customer.getClosestAgent(data.stalls)
       data.stall = closestStall
       this.customer.destination = closestStall
+      this.customer.frames.max = 9
     }
-    this.customer.frames.max = 9
   }
 
   goHome(data) {
@@ -132,12 +168,9 @@ class Customer extends Sprite {
 
       this.position.x += xVelocity
       this.position.y += yVelocity
-      console.log(xVelocity)
-      if (xVelocity > 0) {
-        this.image.src = '../img/sprites/GirlSample_Walk_Right.png'
-      } else if (xVelocity < 0) {
-        this.image.src = '../img/sprites/GirlSample_Walk_Left.png'
-      }
+      console.log(xVelocity, yVelocity)
+      const direction = get8WayDirection(xVelocity, yVelocity)
+      this.image.src = CUSTOMER_SPRITE_DIRECTION[direction]
     }
 
     this.center = {
