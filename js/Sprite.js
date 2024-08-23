@@ -3,7 +3,8 @@ class Sprite {
     position = { x: 0, y: 0 },
     imageSrc,
     frames = {max, columns, rows},
-    offset = {x: 0, y: 0}
+    offset = {x: 0, y: 0},
+    scale = 1
   }) {
     this.position = position
     this.image = new Image()
@@ -14,9 +15,10 @@ class Sprite {
       rows: frames.rows,
       current: 0,
       elapsed: 0,
-      hold: 8
+      hold: 5
     }
     this.offset = offset
+    this.scale = scale
   }
 
   draw() {
@@ -33,14 +35,18 @@ class Sprite {
     c.drawImage(
       // need 9 arguments to display a crop!
       this.image,
-      crop.position.x + 96,
-      crop.position.y + 46,
-      crop.width,
-      crop.height,
-      this.position.x + this.offset.x,
-      this.position.y + this.offset.y,
-      crop.width,
-      crop.height
+      crop.position.x + this.offset.x,
+      crop.position.y + this.offset.y,
+      // crop.position.x, // x on canvas
+      // crop.position.y,  // y on canvas
+      crop.width, // image width
+      crop.height, // image height
+      // this.position.x + this.offset.x,
+      // this.position.y + this.offset.y,
+      this.position.x,
+      this.position.y,
+      crop.width * this.scale,  // image crop width
+      crop.height * this.scale  // image crop height
     )
   }
 

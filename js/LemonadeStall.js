@@ -12,12 +12,19 @@ class LemonadeStall {
     return 100
   }
 
-  constructor({ position = { x: 0, y: 0 }, num = 0, id }) {
+  constructor({
+    position = { x: 0, y: 0 },
+    imageSrc = '../img/stall-1.png',
+    num = 0,
+    id
+  }) {
     this.name = 'lemonadeStall'
+    this.image = new Image()
+    this.image.src = imageSrc
     this.num = num
     this.position = position
     this.width = 130
-    this.height = 100
+    this.height = 104
     // distance from stall to count as collision (same for x and y here)
     this.accessRange = 20
     this.id = id
@@ -36,15 +43,16 @@ class LemonadeStall {
   }
 
   draw() {
-    c.fillStyle = 'blue'
-    c.fillRect(
-      this.position.x,
-      this.position.y,
-      this.width,
-      this.height
-    )
+    this.image.src = '../img/stall-1.png'
+    // c.fillStyle = 'blue'
+    // c.fillRect(
+    //   this.position.x,
+    //   this.position.y,
+    //   this.width,
+    //   this.height
+    // )
 
-    c.fillStyle = 'rgba(40, 70, 80, 0.3)'
+    c.fillStyle = 'rgba(40, 70, 180, 0.1)'
     c.fillRect(
       this.position.x - this.accessRange,
       this.position.y - this.accessRange,
@@ -57,6 +65,14 @@ class LemonadeStall {
       `money: ${this.money}, lemons: ${this.lemons}`,
       this.position.x,
       this.position.y - 5
+    )
+
+    c.drawImage(
+      this.image,
+      this.position.x,
+      this.position.y,
+      this.width,
+      this.height
     )
   }
 }

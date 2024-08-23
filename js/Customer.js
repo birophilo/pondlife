@@ -122,15 +122,23 @@ class Customer extends Sprite {
     return 40
   }
 
-  constructor({ position = { x: 0, y: 0 }, num = 0, globalSpeed }) {
+  constructor({
+    position = { x: 0, y: 0 },
+    num = 0,
+    globalSpeed,
+    offset,
+    scale
+  }) {
     super({ 
       position,
       imageSrc: '../img/sprites/GirlSample_Walk_Down.png',
-      frames: {max: 9, columns: 4, rows: 3} 
+      frames: {max: 9, columns: 4, rows: 3} ,
+      offset,
+      scale
     })
     this.name = 'customer'
     this.num = num
-    this.width = 40
+    this.width = 30
     this.height = 40
     this.money = 100
     this.position = position
@@ -168,7 +176,7 @@ class Customer extends Sprite {
 
       this.position.x += xVelocity
       this.position.y += yVelocity
-      console.log(xVelocity, yVelocity)
+
       const direction = get8WayDirection(xVelocity, yVelocity)
       this.image.src = CUSTOMER_SPRITE_DIRECTION[direction]
     }
@@ -187,8 +195,8 @@ class Customer extends Sprite {
   }
 
   draw() {
-    c.fillStyle = 'red'
-    c.fillRect(this.position.x, this.position.y, this.width, this.height)
+    // c.fillStyle = 'red'
+    // c.fillRect(this.position.x, this.position.y, this.width, this.height)
 
     super.draw()
 

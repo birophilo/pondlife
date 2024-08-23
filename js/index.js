@@ -1,10 +1,12 @@
 const canvas = document.querySelector('canvas')
 const c = canvas.getContext('2d')
 
+const backgroundColor = 'rgb(200, 200, 200)'
+
 canvas.width = 1000
 canvas.height = 600
 
-c.fillStyle = 'grey'
+c.fillStyle = backgroundColor
 c.fillRect(0, 0, canvas.width, canvas.height)
 
 const image = new Image()
@@ -34,7 +36,7 @@ const customers = []
 const lemonadeStallData = [firstStall]
 const lemonadeStalls = []
 
-const supplyVanData = [{x: 300, y: 800}]
+const supplyVanData = [{x: 800, y: 800}]
 const supplyVans = []
 
 const agentMenuButtonData = [
@@ -52,7 +54,12 @@ lemonadeStallData.forEach(stall => {
 
 supplyVanData.forEach(van => {
   supplyVans.push(
-    new SupplyVan({position: van, globalSpeed: globalSpeed})
+    new SupplyVan({
+      position: van,
+      globalSpeed: globalSpeed,
+      offset: {x: 2, y: 0},
+      scale: 2.5
+    })
   )
 })
 
@@ -60,7 +67,9 @@ for (let i = 0; i < customerData.length; i++) {
   customers.push( new Customer({
     position: {x: customerData[i].x, y: customerData[i].y},
     num: i + 1,
-    globalSpeed: globalSpeed
+    globalSpeed: globalSpeed,
+    offset: {x: 98, y: 46},
+    scale: 0.7
   }))
 }
 
@@ -104,7 +113,7 @@ let mouse = {x: 0, y: 0}
 /* --- ANIMATE --- */
 
 function animate() {
-  c.fillStyle = 'grey'
+  c.fillStyle = backgroundColor
   c.fillRect(0, 0, canvas.width, canvas.height)
 
   const animationId = requestAnimationFrame(animate)
@@ -216,7 +225,9 @@ canvas.addEventListener('click', (event) => {
       customers.push( new Customer({
         position: {x: mouse.x - 40 / 2, y: mouse.y - 40 / 2},
         num: num,
-        globalSpeed: globalSpeed
+        globalSpeed: globalSpeed,
+        offset: {x: 96, y: 46},
+        scale: 0.7
       }))
     } else if (agentClassName === 'lemonadeStall') {
       const num = lemonadeStalls.length + 1
@@ -230,7 +241,9 @@ canvas.addEventListener('click', (event) => {
       supplyVans.push( new SupplyVan({
         position: {x: mouse.x - 40 / 2, y: mouse.y - 40 / 2},
         num: num,
-        globalSpeed: globalSpeed
+        globalSpeed: globalSpeed,
+        offset: {x: 2, y: 0},
+        scale: 2.5
       }))
     }
 

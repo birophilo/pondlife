@@ -1,3 +1,38 @@
+const VAN_SPRITE_DIRECTION = {
+  up: '../img/sprites/SupplyVan_Up.png',
+  upRight: '../img/sprites/SupplyVan_UpRight.png',
+  right: '../img/sprites/SupplyVan_Right.png',
+  downRight: '../img/sprites/SupplyVan_DownRight.png',
+  down: '../img/sprites/SupplyVan_Down.png',
+  downLeft: '../img/sprites/SupplyVan_DownLeft.png',
+  left: '../img/sprites/SupplyVan_Left.png',
+  upLeft: '../img/sprites/SupplyVan_UpLeft.png',
+}
+
+function get8WayDirection(xVelocity, yVelocity) {
+  const diagonalThreshold = 0.2
+  const xVelocityIsNotDiagonal = Math.abs(xVelocity) < diagonalThreshold
+  const yVelocityIsNotDiagonal = Math.abs(yVelocity) < diagonalThreshold
+
+  if (xVelocity > 0 && yVelocityIsNotDiagonal) {
+    return 'right'
+  } else if (xVelocity < 0 && yVelocityIsNotDiagonal) {
+    return 'left'
+  } else if (xVelocityIsNotDiagonal && yVelocity > 0) {
+    return 'down'
+  } else if (xVelocityIsNotDiagonal && yVelocity < 0) {
+    return 'up'
+  } else if (xVelocity >= diagonalThreshold && yVelocity > diagonalThreshold) {
+    return 'downRight'
+  } else if (xVelocity >= diagonalThreshold && yVelocity < -diagonalThreshold) {
+    return 'upRight'
+  } else if (xVelocity <= -diagonalThreshold && yVelocity < -diagonalThreshold) {
+    return 'upLeft'
+  } else if (xVelocity <= -diagonalThreshold && yVelocity > -diagonalThreshold) {
+    return 'downLeft'
+  }
+}
+
 class SupplyVanState {
   constructor(van) {
     this.name = 'idle'
@@ -63,7 +98,7 @@ class SupplyVanState {
   }
 }
 
-class SupplyVan {
+class SupplyVan extends Sprite {
 
   static agentName() {
     return 'supplyVan'
@@ -77,7 +112,20 @@ class SupplyVan {
     return 50
   }
 
-  constructor({ position = { x: 0, y: 0 }, num = 0, globalSpeed }) {
+  constructor({
+    position = { x: 0, y: 0 },
+    num = 0,
+    globalSpeed,
+    offset,
+    scale
+  }) {
+    super({
+      position,
+      imageSrc: '../img/sprites/supply_van.png',
+      frames: {max: 1, columns: 1, rows: 1} ,
+      offset,
+      scale
+    })
     this.position = position
     this.nominalSpeed = 0.01
     this.num = num
@@ -87,8 +135,8 @@ class SupplyVan {
       y: this.position.y + this.height / 2
     }
 
-    this.width = 50
-    this.height = 50
+    this.width = 70
+    this.height = 70
 
     this.collisionArea = {
       x: this.position.x,
@@ -118,6 +166,9 @@ class SupplyVan {
 
       this.position.x += xVelocity
       this.position.y += yVelocity
+
+      const direction = get8WayDirection(xVelocity, yVelocity)
+      this.image.src = VAN_SPRITE_DIRECTION[direction]
     }
 
     this.center = {
@@ -134,8 +185,11 @@ class SupplyVan {
   }
 
   draw() {
-    c.fillStyle = 'yellow'
-    c.fillRect(this.position.x, this.position.y, this.width, this.height)
+
+    // c.fillStyle = 'yellow'
+    // c.fillRect(this.position.x, this.position.y, this.width, this.height)
+
+    super.draw()
   }
 
   atDestination() {
@@ -156,6 +210,8 @@ class SupplyVan {
   }
 
   update(data) {
+
+    super.update()
 
     this.speed = this.nominalSpeed * data.globalSpeed
 
