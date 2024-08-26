@@ -18,11 +18,18 @@ body {
 .info-container {
   border: 1px solid black;
   width: 100%;
+  padding: 5px;
 }
 
 .speed-slide-container {
   display: flex;
   flex-direction: column;
+  border-bottom: 1px solid #ccc;
+  padding: 5px;
+}
+
+.day-container {
+  padding: 5px;
 }
 </style>
 
@@ -31,14 +38,23 @@ body {
 <body>
 
 <div class="container">
+
   <canvas></canvas>
+
   <div class="info-container">
-    <div class="day-container">Day <span id="day-number"></span></div>
+    <div class="speed-slide-container">
+      <p>Speed: <span id="sim-speed-value">1.0</span></p>
+      <input type="range" min="0" max="200" value="100" id="sim-speed-slider">
+    </div>
+
+    <div class="day-container">
+      Day <span id="day-number"></span>
+    </div>
     <div id="info"></div>
-  </div>
-  <div class="speed-slide-container">
-    <p>Speed: <span id="sim-speed-value">1.0</span></p>
-    <input type="range" min="0" max="200" value="100" id="sim-speed-slider">
+    <div class="agent-options">
+      <button onclick="createAgent()">create agent</button>
+    </div>
+
   </div>
 
 </div>

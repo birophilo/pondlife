@@ -75,4 +75,8 @@ class LemonadeStall {
       this.height
     )
   }
+
+  update() {
+    return
+  }
 }

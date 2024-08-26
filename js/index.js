@@ -118,10 +118,6 @@ function animate() {
 
   const animationId = requestAnimationFrame(animate)
 
-  if (animationId % 100 === 0) {
-      console.log(animationId)
-  }
-
   lemonadeStalls.forEach(stall => {
     stall.draw()
   })
@@ -149,19 +145,16 @@ function animate() {
   })
 
   supplyVans.forEach(van => {
-    const isInArea = pointIsInArea(mouse, van.collisionArea)
-    if (isInArea) {
-      hover = true
-    }
-  })
-
-  supplyVans.forEach(van => {
     van.update({
       globalSpeed: globalSpeed,
       frameId: animationId,
       stalls: lemonadeStalls,
       stall: firstStall
     })
+    const isInArea = pointIsInArea(mouse, van.collisionArea)
+    if (isInArea) {
+      hover = true
+    }
   })
   
   itemMenu.draw()
@@ -173,36 +166,39 @@ function animate() {
     }
     button.draw()
   })
+
   if (agentPreview) agentPreview.update(mouse)
 
   if (pointIsInArea(mouse, deleteButton.area)) {
     hover = true
   }
+
   deleteButton.draw(deleteMode)
 
   canvas.style.cursor = hover ? 'pointer' : 'auto'
 
-  if (false === true) {
-    cancelAnimationFrame(animationId)
-  }
   if (animationId % dayLength === 0) {
     endDay()
   }
 
-  if (selectedAgent !== null) {
-    document.querySelector('#info').innerHTML = `${selectedAgent.name} ${selectedAgent.num}. Money: ${selectedAgent.money}.`
-  }
-
-  document.querySelector('#day-number').innerHTML = dayNumber
+  updateHtml()
 
   timers.forEach(timer => timer.check(animationId))
 
 }
 
+function updateHtml() {
+  if (selectedAgent !== null) {
+    const info = `${selectedAgent.name} ${selectedAgent.num}. Money: ${selectedAgent.money}.`
+    document.querySelector('#info').innerHTML = info
+  }
+
+  document.querySelector('#day-number').innerHTML = dayNumber
+}
+
 function endDay() {
   dayNumber++
 }
-
 
 canvas.addEventListener('mousemove', (event) => {
   mouse.x = event.clientX
@@ -210,6 +206,56 @@ canvas.addEventListener('mousemove', (event) => {
 })
 
 /* --- CLICK ACTIONS --- */
+
+let AGENT_INIT_CONFIGS = {
+  customer: {
+    agentClass: Customer,
+    agentArray: customers,
+    offset: {x: 96, y: 46},
+    scale: 0.7,
+  },
+  lemonadeStall: {
+    agentClass: LemonadeStall,
+    agentArray: lemonadeStalls,
+    offset: {x: 0, y: 0},
+    scale: 1
+  },
+  supplyVan: {
+    agentClass: SupplyVan,
+    agentArray: supplyVans,
+    offset: {x: 2, y: 0},
+    scale: 2.5
+  }
+}
+
+function addAgent(agentClassName, agentClass, agentArray) {
+  const num = agentArray.length + 1
+  agentArray.push( new agentClass({
+    position: {x: mouse.x - 20, y: mouse.y - 20},
+    num: num,
+    globalSpeed: globalSpeed,
+    offset: AGENT_INIT_CONFIGS[agentClassName].offset,
+    scale: AGENT_INIT_CONFIGS[agentClassName].scale
+  }))
+}
+
+function selectOrDeleteAgent(agentClassName, point) {
+  let agentArray = AGENT_INIT_CONFIGS[agentClassName].agentArray
+  agentArray.forEach((agent, i) => {
+    const isInArea = pointIsInArea(point, agent.collisionArea)
+
+    // SELECT AGENT
+    if (isInArea) {
+      selectedAgent = agent
+    }
+    // DELETE AGENT (in delete mode)
+    if (isInArea && deleteMode === true) {
+      agentArray.splice(i, 1)
+      deleteMode = false
+    }
+  })
+}
+
 
 canvas.addEventListener('click', (event) => {
   const point = {x: event.x, y: event.y}
@@ -220,76 +266,19 @@ canvas.addEventListener('click', (event) => {
 
     const agentClassName = agentPreview.agent.agentName()
 
-    if (agentClassName === 'customer') {
-      const num = customers.length + 1
-      customers.push( new Customer({
-        position: {x: mouse.x - 40 / 2, y: mouse.y - 40 / 2},
-        num: num,
-        globalSpeed: globalSpeed,
-        offset: {x: 96, y: 46},
-        scale: 0.7
-      }))
-    } else if (agentClassName === 'lemonadeStall') {
-      const num = lemonadeStalls.length + 1
-      lemonadeStalls.push( new LemonadeStall({
-        position: {x: mouse.x - 40 / 2, y: mouse.y - 40 / 2},
-        num: num,
-        globalSpeed: globalSpeed
-      }))
-    } else if (agentClassName === 'supplyVan') {
-      const num = supplyVans.length + 1
-      supplyVans.push( new SupplyVan({
-        position: {x: mouse.x - 40 / 2, y: mouse.y - 40 / 2},
-        num: num,
-        globalSpeed: globalSpeed,
-        offset: {x: 2, y: 0},
-        scale: 2.5
-      }))
-    }
+    addAgent(
+      agentClassName,
+      AGENT_INIT_CONFIGS[agentClassName].agentClass,
+      AGENT_INIT_CONFIGS[agentClassName].agentArray
+    )
 
     agentPreview = null
   }
 
-  customers.forEach((customer, i) => {
-    const isInArea = pointIsInArea(point, customer.collisionArea)
+  const agentNameList = Object.keys(AGENT_INIT_CONFIGS)
 
-    // SELECT AGENT
-    if (isInArea) {
-      selectedAgent = customer
-    }
-    // DELETE AGENT (in delete mode)
-    if (isInArea && deleteMode === true) {
-      customers.splice(i, 1)
-      deleteMode = false
-    }
-  })
-
-  lemonadeStalls.forEach((stall, i) => {
-    const isInArea = pointIsInArea(point, stall.collisionArea)
-  
-    // SELECT AGENT
-    if (isInArea) {
-      selectedAgent = stall
-    }
-    // DELETE AGENT (in delete mode)
-    if (isInArea && deleteMode === true) {
-      lemonadeStalls.splice(i, 1)
-      deleteMode = false
-    }
-  })
-
-  supplyVans.forEach((van, i) => {
-    const isInArea = pointIsInArea(point, van.collisionArea)
-  
-    // SELECT AGENT
-    if (isInArea) {
-      selectedAgent = van
-    }
-    // DELETE AGENT (in delete mode)
-    if (isInArea && deleteMode === true) {
-      supplyVans.splice(i, 1)
-      deleteMode = false
-    }
+  agentNameList.forEach(agentName => {
+    selectOrDeleteAgent(agentName, point)
   })
 
   // SELECT AGENT BUTTON TO CREATE CURSOR PREVIEW (to place new agent on board)
@@ -323,4 +312,8 @@ sliderValue.innerHTML = slider.value / 100
 slider.oninput = function() {
   globalSpeed = this.value
   sliderValue.innerHTML = this.value / 100
+}
+
+function createAgent() {
+  console.log('creating agent')
 }
