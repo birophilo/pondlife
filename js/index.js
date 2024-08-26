@@ -21,29 +21,51 @@ const AGENTS = {
   supplyVan: SupplyVan
 }
 
-image.src = 'img/gameMap.bmp'
-
-let selectedAgent = null
-
 let globalSpeed = 100
-
 const dayLength = 1000 // frames
 let dayNumber = 1
+let selectedAgent = null
+let agentPreview = null
+let placingAgent = false
+let deleteMode = false
+
+let mouse = {x: 0, y: 0}
 
 const customerData = [{x: 0, y: 0}, {x: 900, y: 400}]
-const customers = []
-
-const lemonadeStallData = [firstStall]
-const lemonadeStalls = []
-
 const supplyVanData = [{x: 800, y: 800}]
+const lemonadeStallData = [firstStall]
+
+const customers = []
+const lemonadeStalls = []
 const supplyVans = []
+
+let AGENT_INIT_CONFIGS = {
+  customer: {
+    agentClass: Customer,
+    agentArray: customers,
+    offset: {x: 96, y: 46},
+    scale: 0.7,
+  },
+  lemonadeStall: {
+    agentClass: LemonadeStall,
+    agentArray: lemonadeStalls,
+    offset: {x: 0, y: 0},
+    scale: 1
+  },
+  supplyVan: {
+    agentClass: SupplyVan,
+    agentArray: supplyVans,
+    offset: {x: 2, y: 0},
+    scale: 2.5
+  }
+}
 
 const agentMenuButtonData = [
   {name: 'customer', rgb: [255, 0, 0]},
   {name: 'lemonadeStall', rgb: [0, 0, 255]},
   {name: 'supplyVan', rgb: [255, 255, 0]}
 ]
+
 const agentMenuButtons = []
 
 lemonadeStallData.forEach(stall => {
@@ -75,9 +97,6 @@ for (let i = 0; i < customerData.length; i++) {
 
 const itemMenu = new AgentMenu()
 
-let agentPreview = null
-let placingAgent = false
-let deleteMode = false
 
 agentMenuButtonData.forEach((icon, i) => {
   agentMenuButtons.push(
@@ -108,7 +127,46 @@ function pointIsInArea(point = {x, y}, area = {x, y, width, height}) {
   }
 }
 
-let mouse = {x: 0, y: 0}
+function updateHtml() {
+  if (selectedAgent !== null) {
+    const info = `${selectedAgent.name} ${selectedAgent.num}. Money: ${selectedAgent.money}.`
+    document.querySelector('#info').innerHTML = info
+  }
+
+  document.querySelector('#day-number').innerHTML = dayNumber
+}
+
+function endDay() {
+  dayNumber++
+}
+
+function addAgent(agentClassName, agentClass, agentArray) {
+  const num = agentArray.length + 1
+  agentArray.push( new agentClass({
+    position: {x: mouse.x - 20, y: mouse.y - 20},
+    num: num,
+    globalSpeed: globalSpeed,
+    offset: AGENT_INIT_CONFIGS[agentClassName].offset,
+    scale: AGENT_INIT_CONFIGS[agentClassName].scale
+  }))
+}
+
+function selectOrDeleteAgent(agentClassName, point) {
+  let agentArray = AGENT_INIT_CONFIGS[agentClassName].agentArray
+  agentArray.forEach((agent, i) => {
+    const isInArea = pointIsInArea(point, agent.collisionArea)
+
+    // SELECT AGENT
+    if (isInArea) {
+      selectedAgent = agent
+    }
+    // DELETE AGENT (in delete mode)
+    if (isInArea && deleteMode === true) {
+      agentArray.splice(i, 1)
+      deleteMode = false
+    }
+  })
+}
 
 /* --- ANIMATE --- */
 
@@ -187,75 +245,12 @@ function animate() {
 
 }
 
-function updateHtml() {
-  if (selectedAgent !== null) {
-    const info = `${selectedAgent.name} ${selectedAgent.num}. Money: ${selectedAgent.money}.`
-    document.querySelector('#info').innerHTML = info
-  }
-
-  document.querySelector('#day-number').innerHTML = dayNumber
-}
-
-function endDay() {
-  dayNumber++
-}
-
 canvas.addEventListener('mousemove', (event) => {
   mouse.x = event.clientX
   mouse.y = event.clientY
 })
 
 /* --- CLICK ACTIONS --- */
-
-let AGENT_INIT_CONFIGS = {
-  customer: {
-    agentClass: Customer,
-    agentArray: customers,
-    offset: {x: 96, y: 46},
-    scale: 0.7,
-  },
-  lemonadeStall: {
-    agentClass: LemonadeStall,
-    agentArray: lemonadeStalls,
-    offset: {x: 0, y: 0},
-    scale: 1
-  },
-  supplyVan: {
-    agentClass: SupplyVan,
-    agentArray: supplyVans,
-    offset: {x: 2, y: 0},
-    scale: 2.5
-  }
-}
-
-function addAgent(agentClassName, agentClass, agentArray) {
-  const num = agentArray.length + 1
-  agentArray.push( new agentClass({
-    position: {x: mouse.x - 20, y: mouse.y - 20},
-    num: num,
-    globalSpeed: globalSpeed,
-    offset: AGENT_INIT_CONFIGS[agentClassName].offset,
-    scale: AGENT_INIT_CONFIGS[agentClassName].scale
-  }))
-}
-
-function selectOrDeleteAgent(agentClassName, point) {
-  let agentArray = AGENT_INIT_CONFIGS[agentClassName].agentArray
-  agentArray.forEach((agent, i) => {
-    const isInArea = pointIsInArea(point, agent.collisionArea)
-
-    // SELECT AGENT
-    if (isInArea) {
-      selectedAgent = agent
-    }
-    // DELETE AGENT (in delete mode)
-    if (isInArea && deleteMode === true) {
-      agentArray.splice(i, 1)
-      deleteMode = false
-    }
-  })
-}
-
 
 canvas.addEventListener('click', (event) => {
   const point = {x: event.x, y: event.y}
@@ -303,6 +298,8 @@ canvas.addEventListener('click', (event) => {
 })
 
 animate()
+
+/* --- UPDATE HTML ELEMENTS --- */
 
 var slider = document.getElementById('sim-speed-slider')
 var sliderValue = document.getElementById('sim-speed-value')
