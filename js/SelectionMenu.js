@@ -26,6 +26,11 @@ class AgentMenu {
       this.height
     )
   }
+
+  update(numButtons) {
+    this.draw()
+    this.width = (numButtons * (menuButtonWidth + menuBorder)) + menuBorder
+  }
 }
 
 class agentMenuButton {
@@ -34,6 +39,24 @@ class agentMenuButton {
     this.width = menuButtonWidth
     this.height = menuButtonHeight
     this.menu = menu
+    this.position = {
+      x: this.menu.position.x + this.menu.border + (this.width + this.menu.border) * i,
+      y: this.menu.position.y + this.menu.border
+    }
+
+    this.center = {
+      x: this.position.x + this.width / 2,
+      y: this.position.y + this.height / 2
+    }
+    this.area = {
+      x: this.position.x,
+      y: this.position.y,
+      width: this.width,
+      height: this.height
+    }
+  }
+
+  update(i) {
     this.position = {
       x: this.menu.position.x + this.menu.border + (this.width + this.menu.border) * i,
       y: this.menu.position.y + this.menu.border
@@ -64,28 +87,13 @@ class AgentMenuIcon extends agentMenuButton {
     c.fillStyle = `rgb(${this.rgb[0]}, ${this.rgb[1]}, ${this.rgb[2]})`
     c.fillRect(this.position.x, this.position.y, this.width, this.height)
   }
-}
 
-class AgentPreview {
-  constructor({ agent, rgb }) {
-    this.agent = agent
-    this.position = {x: 0, y: 0}
-    this.width = agent.baseWidth()
-    this.height = agent.baseHeight()
-    this.rgb = rgb
-  }
-
-  draw() {
-    c.fillStyle = `rgba(${this.rgb[0]}, ${this.rgb[1]}, ${this.rgb[2]}, 0.4)`
-    c.fillRect(this.position.x, this.position.y, this.width, this.height)
-  }
-
-  update(mouse) {
-    this.position.x = mouse.x - this.width / 2
-    this.position.y = mouse.y - this.height / 2
-    this.draw()  
+  update(i) {
+    this.draw()
+    super.update(i)
   }
 }
+
 
 class DeleteButton extends agentMenuButton {
 
@@ -104,5 +112,32 @@ class DeleteButton extends agentMenuButton {
     c.strokeStyle = "black"
     c.stroke()
     c.lineWidth = 0.8
+  }
+
+  update(i, selected) {
+    this.draw(selected)
+    super.update(i)
+  }
+}
+
+
+class AgentPreview {
+  constructor({ agent, rgb }) {
+    this.agent = agent
+    this.position = {x: 0, y: 0}
+    this.width = agent.baseWidth()
+    this.height = agent.baseHeight()
+    this.rgb = rgb
+  }
+
+  draw() {
+    c.fillStyle = `rgba(${this.rgb[0]}, ${this.rgb[1]}, ${this.rgb[2]}, 0.4)`
+    c.fillRect(this.position.x, this.position.y, this.width, this.height)
+  }
+
+  update(mouse) {
+    this.position.x = mouse.x - this.width / 2
+    this.position.y = mouse.y - this.height / 2
+    this.draw()
   }
 }
