@@ -208,8 +208,6 @@ function animate() {
   
   itemMenu.update(agentMenuButtons.length + 1)
 
-  console.log(agentMenuButtons)
-
   agentMenuButtons.forEach((button, i) => {
     button.update(i)
     const isInArea = pointIsInArea(mouse, button.area)
@@ -234,7 +232,12 @@ function animate() {
 
   updateHtml()
 
-  timers.forEach(timer => timer.check(animationId))
+  timers.forEach((timer, i) => {
+    timer.check(animationId)
+    if (timer.active === false) {
+      timers.splice(i, 1)
+    }
+  })
 
 }
 
@@ -252,17 +255,18 @@ canvas.addEventListener('click', (event) => {
 
   // PLACE NEW AGENT ON
   if (placingAgent) {
-    placingAgent = false
-
-    const agentClassName = agentPreview.agent.agentName()
-
-    addAgent(
-      agentClassName,
-      AGENT_CONFIGS[agentClassName].agentClass,
-      AGENT_CONFIGS[agentClassName].agentArray
-    )
-
-    agentPreview = null
+    const isInMenuArea = pointIsInArea(point, itemMenu.area)
+    if (isInMenuArea === false) {
+      const agentClassName = agentPreview.agent.agentName()
+      addAgent(
+        agentClassName,
+        AGENT_CONFIGS[agentClassName].agentClass,
+        AGENT_CONFIGS[agentClassName].agentArray
+      )
+      placingAgent = false
+      agentPreview = null
+    }
+    console.log(agentPreview)
   }
 
   const agentNameList = Object.keys(AGENT_CONFIGS)
@@ -272,17 +276,25 @@ canvas.addEventListener('click', (event) => {
   })
 
   // SELECT AGENT BUTTON TO CREATE CURSOR PREVIEW (to place new agent on board)
-  agentMenuButtons.forEach(icon => {
-    const isInArea = pointIsInArea(point, icon.area)
+  for (let i = 0; i < agentMenuButtons.length; i++) {
+
+    const isInArea = pointIsInArea(point, agentMenuButtons[i].area)
 
     if (isInArea && !agentPreview) {
       agentPreview = new AgentPreview({
-        agent: AGENTS[icon.name],
-        rgb: icon.rgb
+        agent: AGENTS[agentMenuButtons[i].name],
+        rgb: agentMenuButtons[i].rgb
       })
+
       placingAgent = true
+      break
+
+    } else if (isInArea && agentPreview) {
+      // if have active agent preview (tracking cursor), clicking on the agent menu again cancels the selection
+      placingAgent = false
+      agentPreview = null
     }
-  })
+  }
 
   // TOGGLE DELETE MODE
   const isInArea = pointIsInArea(point, deleteButton.area)
@@ -291,6 +303,15 @@ canvas.addEventListener('click', (event) => {
   }
 
 })
+
+document.addEventListener('keydown', (e) => {
+  if (e.code === 'Escape' && placingAgent === true) {
+    placingAgent = false
+    agentPreview = null
+  }
+  console.log(e.code)
+})
+
 
 /* --- UPDATE HTML --- */
 
@@ -312,7 +333,7 @@ function createAgent() {
     menu: itemMenu,
     i: agentMenuButtons.length + 1,
     name: newAgent.value,
-    rgb: [30, 60, 130]
+    rgb: [130, 160, 230]
   })
   agentMenuButtons.push(newIcon)
 }

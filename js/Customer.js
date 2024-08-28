@@ -122,6 +122,14 @@ class Customer extends Sprite {
     return 40
   }
 
+  static imageSrc() {
+    return '../img/sprites/GirlSample_Walk_Up.png'
+  }
+
+  static scale() {
+    return 0.7
+  }
+
   constructor({
     position = { x: 0, y: 0 },
     num = 0,
@@ -153,7 +161,7 @@ class Customer extends Sprite {
       y: this.position.y + this.height / 2
     }
     this.destination = null
-    this.nominalSpeed = 0.01
+    this.nominalSpeed = 0.02
     this.homePosition = {x: this.position.x, y: this.position.y}
     this.speed = this.nominalSpeed * globalSpeed
 
@@ -195,8 +203,6 @@ class Customer extends Sprite {
   }
 
   draw() {
-    // c.fillStyle = 'red'
-    // c.fillRect(this.position.x, this.position.y, this.width, this.height)
 
     super.draw()
 

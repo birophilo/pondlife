@@ -112,6 +112,14 @@ class SupplyVan extends Sprite {
     return 50
   }
 
+  static imageSrc() {
+    return '../img/sprites/SupplyVan_Right.png'
+  }
+
+  static scale() {
+    return 2.5
+  }
+
   constructor({
     position = { x: 0, y: 0 },
     num = 0,
@@ -121,13 +129,13 @@ class SupplyVan extends Sprite {
   }) {
     super({
       position,
-      imageSrc: '../img/sprites/supply_van.png',
+      imageSrc: '',
       frames: {max: 1, columns: 1, rows: 1} ,
       offset,
       scale
     })
     this.position = position
-    this.nominalSpeed = 0.01
+    this.nominalSpeed = 0.02
     this.num = num
 
     this.center = {

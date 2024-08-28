@@ -15,11 +15,25 @@ class AgentMenu {
     this.width = menuWidth
     this.height = menuHeight
     this.border = menuBorder
+    this.area = {
+      x: this.position.x,
+      y: this.position.y,
+      width: this.width,
+      height: this.height
+    }
   }
 
   draw() {
     c.fillStyle = 'white'
     c.fillRect(
+      this.position.x,
+      this.position.y,
+      this.width,
+      this.height
+    )
+    c.lineWidth = 0.2
+    c.strokeStyle = 'grey'
+    c.strokeRect(
       this.position.x,
       this.position.y,
       this.width,
@@ -56,6 +70,17 @@ class agentMenuButton {
     }
   }
 
+  draw() {
+    c.lineWidth = 0.2
+    c.strokeStyle = 'grey'
+    c.strokeRect(
+      this.position.x,
+      this.position.y,
+      this.width,
+      this.height
+    )
+  }
+
   update(i) {
     this.position = {
       x: this.menu.position.x + this.menu.border + (this.width + this.menu.border) * i,
@@ -84,6 +109,7 @@ class AgentMenuIcon extends agentMenuButton {
   }
 
   draw() {
+    super.draw()
     c.fillStyle = `rgb(${this.rgb[0]}, ${this.rgb[1]}, ${this.rgb[2]})`
     c.fillRect(this.position.x, this.position.y, this.width, this.height)
   }
@@ -98,18 +124,19 @@ class AgentMenuIcon extends agentMenuButton {
 class DeleteButton extends agentMenuButton {
 
   draw(selected) {
+    super.draw()
     c.fillStyle = selected ? 'rgba(0, 0, 0, 0.4)' : 'rgba(0, 0, 0, 0.1)'
     c.stroke 
     c.fillRect(this.position.x, this.position.y, this.width, this.height)
 
     c.beginPath()
     c.lineWidth = 2
-    c.moveTo(this.position.x, this.position.y)
-    c.lineTo(this.position.x + this.width, this.position.y + this.height)
+    c.moveTo(this.position.x + 5, this.position.y + 5)
+    c.lineTo(this.position.x + this.width - 5, this.position.y + this.height - 5)
     c.stroke()
-    c.moveTo(this.position.x + this.width, this.position.y)
-    c.lineTo(this.position.x, this.position.y + this.height)
-    c.strokeStyle = "black"
+    c.moveTo(this.position.x + this.width - 5, this.position.y + 5)
+    c.lineTo(this.position.x + 5, this.position.y + this.height - 5)
+    c.strokeStyle = "rgb(80, 80, 80)"
     c.stroke()
     c.lineWidth = 0.8
   }
@@ -127,12 +154,20 @@ class AgentPreview {
     this.position = {x: 0, y: 0}
     this.width = agent.baseWidth()
     this.height = agent.baseHeight()
+    this.scale = agent.scale()
     this.rgb = rgb
+    this.thumbnail = new Image()
+    this.thumbnail.src = this.agent.imageSrc()
   }
 
   draw() {
-    c.fillStyle = `rgba(${this.rgb[0]}, ${this.rgb[1]}, ${this.rgb[2]}, 0.4)`
-    c.fillRect(this.position.x, this.position.y, this.width, this.height)
+    c.drawImage(
+      this.thumbnail,
+      this.position.x,
+      this.position.y,
+      this.width,
+      this.height
+    )
   }
 
   update(mouse) {

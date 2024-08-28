@@ -12,6 +12,14 @@ class LemonadeStall {
     return 100
   }
 
+  static imageSrc() {
+    return '../img/stall-1.png'
+  }
+
+  static scale() {
+    return 1
+  }
+
   constructor({
     position = { x: 0, y: 0 },
     imageSrc = '../img/stall-1.png',
@@ -44,13 +52,6 @@ class LemonadeStall {
 
   draw() {
     this.image.src = '../img/stall-1.png'
-    // c.fillStyle = 'blue'
-    // c.fillRect(
-    //   this.position.x,
-    //   this.position.y,
-    //   this.width,
-    //   this.height
-    // )
 
     c.fillStyle = 'rgba(40, 70, 180, 0.1)'
     c.fillRect(

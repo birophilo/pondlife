@@ -15,7 +15,7 @@ class Sprite {
       rows: frames.rows,
       current: 0,
       elapsed: 0,
-      hold: 5
+      hold: 3
     }
     this.offset = offset
     this.scale = scale
