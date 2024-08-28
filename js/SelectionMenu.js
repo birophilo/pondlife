@@ -103,15 +103,24 @@ class agentMenuButton {
 
 class AgentMenuIcon extends agentMenuButton {
 
-  constructor({menu, i = 1, name, rgb}) {
+  constructor({menu, i = 1, name, agent, rgb}) {
     super({menu, i, name})
+    this.agent = agent
     this.rgb = rgb
+    this.thumbnail = new Image()
+    this.thumbnail.src = this.agent.imageSrc()
   }
 
   draw() {
     super.draw()
-    c.fillStyle = `rgb(${this.rgb[0]}, ${this.rgb[1]}, ${this.rgb[2]})`
-    c.fillRect(this.position.x, this.position.y, this.width, this.height)
+
+    c.drawImage(
+      this.thumbnail,
+      this.position.x,
+      this.position.y,
+      this.width,
+      this.height
+    )
   }
 
   update(i) {

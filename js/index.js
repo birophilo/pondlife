@@ -44,18 +44,24 @@ let AGENT_CONFIGS = {
   customer: {
     agentClass: Customer,
     agentArray: customers,
+    width: 40,
+    height: 40,
     offset: {x: 96, y: 46},
     scale: 0.7,
   },
   lemonadeStall: {
     agentClass: LemonadeStall,
     agentArray: lemonadeStalls,
+    width: 130,
+    height: 100,
     offset: {x: 0, y: 0},
     scale: 1
   },
   supplyVan: {
     agentClass: SupplyVan,
     agentArray: supplyVans,
+    width: 50,
+    height: 50,
     offset: {x: 2, y: 0},
     scale: 2.5
   }
@@ -64,7 +70,10 @@ let AGENT_CONFIGS = {
 function addAgent(agentClassName, agentClass, agentArray) {
   const num = agentArray.length + 1
   agentArray.push( new agentClass({
-    position: {x: mouse.x - 20, y: mouse.y - 20},
+    position: {
+      x: mouse.x - AGENT_CONFIGS[agentClassName].width / 2,
+      y: mouse.y - AGENT_CONFIGS[agentClassName].height / 2
+    },
     num: num,
     globalSpeed: globalSpeed,
     offset: AGENT_CONFIGS[agentClassName].offset,
@@ -151,6 +160,7 @@ agentMenuButtonData.forEach((icon, i) => {
       menu: itemMenu,
       i: i,
       name: icon.name,
+      agent: AGENT_CONFIGS[icon.name].agentClass,
       rgb: icon.rgb
     })
   )
@@ -333,6 +343,7 @@ function createAgent() {
     menu: itemMenu,
     i: agentMenuButtons.length + 1,
     name: newAgent.value,
+    agent: AGENT_CONFIGS[newAgent.value].agentClass,
     rgb: [130, 160, 230]
   })
   agentMenuButtons.push(newIcon)
