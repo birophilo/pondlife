@@ -24,15 +24,19 @@ class LemonadeStall {
     position = { x: 0, y: 0 },
     imageSrc = '../img/stall-1.png',
     num = 0,
-    id
+    id,
+    config
   }) {
     this.name = 'lemonadeStall'
     this.image = new Image()
     this.image.src = imageSrc
     this.num = num
     this.position = position
-    this.width = 130
-    this.height = 104
+    // this.width = 130
+    // this.height = 104
+    console.log(config)
+    this.width = config.width
+    this.height = config.height
     // distance from stall to count as collision (same for x and y here)
     this.accessRange = 20
     this.id = id

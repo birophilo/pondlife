@@ -48,7 +48,7 @@ class AgentMenu {
 }
 
 class agentMenuButton {
-  constructor({ menu, i = 0, name }) {
+  constructor({ menu, i = 0, name, config }) {
     this.name = name
     this.width = menuButtonWidth
     this.height = menuButtonHeight
@@ -68,6 +68,7 @@ class agentMenuButton {
       width: this.width,
       height: this.height
     }
+    this.agentConfig = config  // need this or not?
   }
 
   draw() {
@@ -103,12 +104,12 @@ class agentMenuButton {
 
 class AgentMenuIcon extends agentMenuButton {
 
-  constructor({menu, i = 1, name, agent, rgb}) {
-    super({menu, i, name})
+  constructor({menu, i = 1, name, agent, config}) {
+    super({menu, i, name, config})
     this.agent = agent
-    this.rgb = rgb
     this.thumbnail = new Image()
     this.thumbnail.src = this.agent.imageSrc()
+    this.config = config
   }
 
   draw() {
@@ -158,11 +159,11 @@ class DeleteButton extends agentMenuButton {
 
 
 class AgentPreview {
-  constructor({ agent, rgb }) {
+  constructor({ agent, rgb, config }) {
     this.agent = agent
     this.position = {x: 0, y: 0}
-    this.width = agent.baseWidth()
-    this.height = agent.baseHeight()
+    this.width = config.width,
+    this.height = config.height,
     this.scale = agent.scale()
     this.rgb = rgb
     this.thumbnail = new Image()

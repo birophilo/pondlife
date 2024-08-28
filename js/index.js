@@ -44,26 +44,32 @@ let AGENT_CONFIGS = {
   customer: {
     agentClass: Customer,
     agentArray: customers,
-    width: 40,
-    height: 40,
-    offset: {x: 96, y: 46},
-    scale: 0.7,
+    config: {
+      width: 40,
+      height: 40,
+      offset: {x: 96, y: 46},
+      scale: 0.7,
+    }
   },
   lemonadeStall: {
     agentClass: LemonadeStall,
     agentArray: lemonadeStalls,
-    width: 130,
-    height: 100,
-    offset: {x: 0, y: 0},
-    scale: 1
+    config: {
+      width: 130,
+      height: 100,
+      offset: {x: 0, y: 0},
+      scale: 1
+    }
   },
   supplyVan: {
     agentClass: SupplyVan,
     agentArray: supplyVans,
-    width: 50,
-    height: 50,
-    offset: {x: 2, y: 0},
-    scale: 2.5
+    config: {
+      width: 50,
+      height: 50,
+      offset: {x: 2, y: 0},
+      scale: 2.5
+    }
   }
 }
 
@@ -71,13 +77,14 @@ function addAgent(agentClassName, agentClass, agentArray) {
   const num = agentArray.length + 1
   agentArray.push( new agentClass({
     position: {
-      x: mouse.x - AGENT_CONFIGS[agentClassName].width / 2,
-      y: mouse.y - AGENT_CONFIGS[agentClassName].height / 2
+      x: mouse.x - AGENT_CONFIGS[agentClassName].config.width / 2,
+      y: mouse.y - AGENT_CONFIGS[agentClassName].config.height / 2
     },
     num: num,
     globalSpeed: globalSpeed,
-    offset: AGENT_CONFIGS[agentClassName].offset,
-    scale: AGENT_CONFIGS[agentClassName].scale
+    offset: AGENT_CONFIGS[agentClassName].config.offset,
+    scale: AGENT_CONFIGS[agentClassName].config.scale,
+    config: AGENT_CONFIGS[agentClassName].config
   }))
 }
 
@@ -126,6 +133,7 @@ function pointIsInArea(point = {x, y}, area = {x, y, width, height}) {
 
 
 lemonadeStallData.forEach(stall => {
+  console.log(stall)
   lemonadeStalls.push(
     new LemonadeStall(stall)
   )
@@ -136,8 +144,8 @@ supplyVanData.forEach(van => {
     new SupplyVan({
       position: van,
       globalSpeed: globalSpeed,
-      offset: AGENT_CONFIGS.supplyVan.offset,
-      scale: AGENT_CONFIGS.supplyVan.scale
+      offset: AGENT_CONFIGS.supplyVan.config.offset,
+      scale: AGENT_CONFIGS.supplyVan.config.scale
     })
   )
 })
@@ -147,8 +155,8 @@ customerData.forEach((cust, i) => {
     position: {x: cust.x, y: cust.y},
     num: i + 1,
     globalSpeed: globalSpeed,
-    offset: AGENT_CONFIGS.customer.offset,
-    scale: AGENT_CONFIGS.customer.scale
+    offset: AGENT_CONFIGS.customer.config.offset,
+    scale: AGENT_CONFIGS.customer.config.scale
   }))
 })
 
@@ -161,7 +169,7 @@ agentMenuButtonData.forEach((icon, i) => {
       i: i,
       name: icon.name,
       agent: AGENT_CONFIGS[icon.name].agentClass,
-      rgb: icon.rgb
+      config: AGENT_CONFIGS[icon.name].config
     })
   )
 })
@@ -293,7 +301,8 @@ canvas.addEventListener('click', (event) => {
     if (isInArea && !agentPreview) {
       agentPreview = new AgentPreview({
         agent: AGENTS[agentMenuButtons[i].name],
-        rgb: agentMenuButtons[i].rgb
+        rgb: agentMenuButtons[i].rgb,
+        config: AGENT_CONFIGS[agentMenuButtons[i].name].config
       })
 
       placingAgent = true
@@ -319,7 +328,6 @@ document.addEventListener('keydown', (e) => {
     placingAgent = false
     agentPreview = null
   }
-  console.log(e.code)
 })
 
 
@@ -337,14 +345,21 @@ slider.oninput = function() {
 
 function createAgent() {
   console.log('creating agent')
-  const newAgent = document.getElementById('create-agent-form')
-  console.log(newAgent.value)
+  const newAgentName = document.getElementById('form-create-agent-name')
+  const newAgentWidth = document.getElementById('form-create-agent-width')
+  const newAgentHeight = document.getElementById('form-create-agent-height')
+  console.log(newAgentName.value)
+  agentData = AGENT_CONFIGS[newAgentName.value]
+  let config = agentData.config
+  config.width = Number(newAgentWidth.value)
+  config.height = Number(newAgentHeight.value)
+
   let newIcon = new AgentMenuIcon({
     menu: itemMenu,
     i: agentMenuButtons.length + 1,
-    name: newAgent.value,
-    agent: AGENT_CONFIGS[newAgent.value].agentClass,
-    rgb: [130, 160, 230]
+    name: newAgentName.value,
+    agent: agentData.agentClass,
+    config: config
   })
   agentMenuButtons.push(newIcon)
 }
