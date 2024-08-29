@@ -1,0 +1,3 @@
+GlobalSettings = {
+  globalSpeed: 100
+}

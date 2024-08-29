@@ -1,3 +1,10 @@
+class LemonadeStallState {
+  constructor(stall) {
+    this.name = 'idle'
+    this.stall = stall
+  }
+}
+
 class LemonadeStall {
 
   static agentName() {
@@ -52,6 +59,8 @@ class LemonadeStall {
       x: this.position.x + this.width / 2,
       y: this.position.y + this.height / 2
     }
+
+    this.state = new LemonadeStallState(this)
   }
 
   draw() {

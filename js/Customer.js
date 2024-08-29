@@ -133,7 +133,7 @@ class Customer extends Sprite {
   constructor({
     position = { x: 0, y: 0 },
     num = 0,
-    globalSpeed,
+    globals,
     offset,
     scale
   }) {
@@ -163,7 +163,7 @@ class Customer extends Sprite {
     this.destination = null
     this.nominalSpeed = 0.02
     this.homePosition = {x: this.position.x, y: this.position.y}
-    this.speed = this.nominalSpeed * globalSpeed
+    this.speed = this.nominalSpeed * globals.globalSpeed
 
     this.restTimeBetweenTrips = 500 // frames
     this.actionEndedFrame = null
@@ -171,6 +171,9 @@ class Customer extends Sprite {
     this.reachedDestination = false
 
     this.state = new CustomerState(this)
+
+    // stateful configurable properties/parameters/variables
+    this.stateData = {}
   }
 
   travel() {
@@ -233,7 +236,7 @@ class Customer extends Sprite {
 
     super.update()
 
-    this.speed = this.nominalSpeed * data.globalSpeed
+    this.speed = this.nominalSpeed * data.globals.globalSpeed
 
     this.draw()
     this.travel()

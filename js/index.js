@@ -15,7 +15,7 @@ const AGENTS = {
   supplyVan: SupplyVan
 }
 
-let globalSpeed = 100
+let globalSpeed = GlobalSettings.globalSpeed
 let dayNumber = 1
 const dayLength = 1000 // frames
 
@@ -81,7 +81,7 @@ function addAgent(agentClassName, agentClass, agentArray) {
       y: mouse.y - AGENT_CONFIGS[agentClassName].config.height / 2
     },
     num: num,
-    globalSpeed: globalSpeed,
+    globals: GlobalSettings,
     offset: AGENT_CONFIGS[agentClassName].config.offset,
     scale: AGENT_CONFIGS[agentClassName].config.scale,
     config: AGENT_CONFIGS[agentClassName].config
@@ -105,10 +105,18 @@ function selectOrDeleteAgent(agentClassName, point) {
   })
 }
 
+function myMsg(msg) {
+  console.log(`hellooo ${msg}`)
+}
+
 function updateHtml() {
   if (selectedAgent !== null) {
-    const info = `${selectedAgent.name} ${selectedAgent.num}. Money: ${selectedAgent.money}.`
+    const info = `${selectedAgent.name} ${selectedAgent.num}.<br/>` +
+    `Money: ${selectedAgent.money}.<br/` +
+    `${selectedAgent.state.name}`
     document.querySelector('#info').innerHTML = info
+
+    document.querySelector('#change-state-button').onclick = () => myMsg(selectedAgent.num)
   }
   document.querySelector('#day-number').innerHTML = dayNumber
 }
@@ -143,7 +151,7 @@ supplyVanData.forEach(van => {
   supplyVans.push(
     new SupplyVan({
       position: van,
-      globalSpeed: globalSpeed,
+      globals: GlobalSettings,
       offset: AGENT_CONFIGS.supplyVan.config.offset,
       scale: AGENT_CONFIGS.supplyVan.config.scale
     })
@@ -154,7 +162,7 @@ customerData.forEach((cust, i) => {
   customers.push( new Customer({
     position: {x: cust.x, y: cust.y},
     num: i + 1,
-    globalSpeed: globalSpeed,
+    globals: GlobalSettings,
     offset: AGENT_CONFIGS.customer.config.offset,
     scale: AGENT_CONFIGS.customer.config.scale
   }))
@@ -193,7 +201,7 @@ function animate() {
 
   customers.forEach(customer => {
     customer.update({
-      globalSpeed: globalSpeed,
+      globals: GlobalSettings,
       frameId: animationId,
       stalls: lemonadeStalls,
       stall: firstStall
@@ -213,7 +221,7 @@ function animate() {
 
   supplyVans.forEach(van => {
     van.update({
-      globalSpeed: globalSpeed,
+      globals: GlobalSettings,
       frameId: animationId,
       stalls: lemonadeStalls,
       stall: firstStall
@@ -339,7 +347,7 @@ var sliderValue = document.getElementById('sim-speed-value')
 sliderValue.innerHTML = slider.value / 100
 
 slider.oninput = function() {
-  globalSpeed = this.value
+  GlobalSettings.globalSpeed = this.value
   sliderValue.innerHTML = this.value / 100
 }
 

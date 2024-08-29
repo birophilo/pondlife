@@ -123,7 +123,7 @@ class SupplyVan extends Sprite {
   constructor({
     position = { x: 0, y: 0 },
     num = 0,
-    globalSpeed,
+    globals,
     offset,
     scale
   }) {
@@ -156,7 +156,7 @@ class SupplyVan extends Sprite {
     this.homePosition = {x: this.position.x, y: this.position.y}
     this.destination = null
 
-    this.speed = this.nominalSpeed * globalSpeed
+    this.speed = this.nominalSpeed * globals.globalSpeed
 
     this.reachedDestination = false
 
@@ -221,7 +221,7 @@ class SupplyVan extends Sprite {
 
     super.update()
 
-    this.speed = this.nominalSpeed * data.globalSpeed
+    this.speed = this.nominalSpeed * data.globals.globalSpeed
 
     this.draw()
     this.travel()
