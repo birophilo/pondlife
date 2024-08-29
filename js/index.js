@@ -19,9 +19,11 @@ let globalSpeed = GlobalSettings.globalSpeed
 let dayNumber = 1
 const dayLength = 1000 // frames
 
-const customerData = [{x: 0, y: 0}, {x: 900, y: 400}]
+// const customerData = [{x: 0, y: 0}, {x: 900, y: 400}]
+const customerData = [{x: 900, y: 400}]
 const lemonadeStallData = [firstStall]
-const supplyVanData = [{x: 800, y: 800}]
+// const supplyVanData = [{x: 800, y: 800}]
+const supplyVanData = []
 const agentMenuButtonData = [
   {name: 'customer', rgb: [255, 0, 0]},
   {name: 'lemonadeStall', rgb: [0, 0, 255]},
@@ -105,18 +107,18 @@ function selectOrDeleteAgent(agentClassName, point) {
   })
 }
 
-function myMsg(msg) {
-  console.log(`hellooo ${msg}`)
+function changeStateFromButton(agent) {
+  agent.state.updateState('resting', {})
 }
 
 function updateHtml() {
   if (selectedAgent !== null) {
     const info = `${selectedAgent.name} ${selectedAgent.num}.<br/>` +
-    `Money: ${selectedAgent.money}.<br/` +
+    `Money: ${selectedAgent.money}.<br/>` +
     `${selectedAgent.state.name}`
     document.querySelector('#info').innerHTML = info
 
-    document.querySelector('#change-state-button').onclick = () => myMsg(selectedAgent.num)
+    document.querySelector('#change-state-button').onclick = () => changeStateFromButton(selectedAgent)
   }
   document.querySelector('#day-number').innerHTML = dayNumber
 }

@@ -39,26 +39,29 @@ class SupplyVanState {
     this.van = van
   }
 
-  updateState(state, data) {
+  updateState(state, newData) {
+
+    this.van.stateData = {...this.van.stateData, ...newData}
+  
     if (state === 'goingToStall') {
-      this.goToStall(data)
+      this.goToStall()
     }  else if (state === 'goingHome') {
-      this.goHome(data)
+      this.goHome()
     } else if (state === 'resting') {
-      this.rest(data)
+      this.rest()
     } else if (state === 'selling') {
-      this.sell(data)
+      this.sell()
     }
   }
 
-  goToStall(data) {
+  goToStall() {
     this.name = 'goingToStall'
-    const closestStall = this.van.getClosestAgent(data.stalls)
-    data.stall = closestStall
+    const closestStall = this.van.getClosestAgent(this.van.stateData.stalls)
+    this.van.stateData.stall = closestStall
     this.van.destination = closestStall
   }
 
-  goHome(data) {
+  goHome() {
     this.van.destination = {
       position: {
         x: this.van.homePosition.x,
@@ -72,18 +75,30 @@ class SupplyVanState {
     this.name = 'goingHome'
   }
 
-  rest(data) {
+  rest() {
     this.name = 'resting'
     this.van.destination = null
     const self = this
-    let timer1 = new Timer(data.frameId, 500, self, 'goingToStall', data)
+    let timer1 = new Timer(
+      this.van.stateData.frameId,
+      500,
+      self,
+      'goingToStall',
+      this.van.stateData
+    )
     timers.push(timer1)
   }
 
-  sell(data) {
+  sell() {
     this.name = 'selling'
     const self = this
-    let timer2 = new Timer(data.frameId, 200, self, 'goingHome', data)
+    let timer2 = new Timer(
+      this.van.stateData.frameId,
+      200,
+      self,
+      'goingHome',
+      this.van.stateData
+    )
     timers.push(timer2)
 
     const stall = lemonadeStalls.find(stall => stall.id === this.van.destination.id)
@@ -161,6 +176,9 @@ class SupplyVan extends Sprite {
     this.reachedDestination = false
 
     this.state = new SupplyVanState(this)
+
+    // stateful configurable properties/parameters/variables
+    this.stateData = {}
   }
 
   travel() {

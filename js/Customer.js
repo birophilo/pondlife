@@ -40,30 +40,35 @@ class CustomerState {
     this.customer = customer
   }
 
-  updateState(state, data) {
+  updateState(state, newData) {
+
+    this.customer.stateData = {...this.customer.stateData, ...newData}
+
     if (state === 'goingToStall') {
-      this.goToStall(data)
+      console.log('GOING TO STALL......')
+      this.goToStall()
     }  else if (state === 'goingHome') {
-      this.goHome(data)
+      this.goHome()
     } else if (state === 'resting') {
-      this.rest(data)
+      console.log('RESTING.......')
+      this.rest()
     } else if (state === 'buying') {
-      this.buy(data)
+      this.buy()
     }
   }
 
-  goToStall(data) {
+  goToStall() {
     this.name = 'goingToStall'
     const hasEnoughMoney = this.customer.money >= 20
     if (hasEnoughMoney) {
-      const closestStall = this.customer.getClosestAgent(data.stalls)
-      data.stall = closestStall
+      const closestStall = this.customer.getClosestAgent(this.customer.stateData.stalls)
+      this.customer.stateData.stall = closestStall
       this.customer.destination = closestStall
       this.customer.frames.max = 9
     }
   }
 
-  goHome(data) {
+  goHome() {
     this.customer.destination = {
       position: {
         x: this.customer.homePosition.x,
@@ -78,20 +83,33 @@ class CustomerState {
     this.customer.frames.max = 9
   }
 
-  rest(data) {
+  rest() {
     this.name = 'resting'
+    console.log('RESTING......')
     this.customer.destination = null
     const self = this
-    let timer1 = new Timer(data.frameId, 500, self, 'goingToStall', data)
+    let timer1 = new Timer(
+      this.customer.stateData.frameId,
+      400,
+      self,
+      'goingToStall',
+      this.customer.stateData
+    )
     timers.push(timer1)
     this.customer.image.src = '../img/sprites/GirlSample_Walk_Down.png'
     this.customer.frames.max = 1
   }
 
-  buy(data) {
+  buy() {
     this.name = 'buying'
     const self = this
-    let timer2 = new Timer(data.frameId, 200, self, 'goingHome', data)
+    let timer2 = new Timer(
+      this.customer.stateData.frameId,
+      200,
+      self,
+      'goingHome',
+      this.customer.stateData
+    )
     timers.push(timer2)
     this.customer.image.src = '../img/sprites/GirlSample_Walk_Down.png'
     this.customer.frames.max = 1
@@ -165,7 +183,7 @@ class Customer extends Sprite {
     this.homePosition = {x: this.position.x, y: this.position.y}
     this.speed = this.nominalSpeed * globals.globalSpeed
 
-    this.restTimeBetweenTrips = 500 // frames
+    this.restTimeBetweenTrips = 400 // frames
     this.actionEndedFrame = null
 
     this.reachedDestination = false
@@ -236,25 +254,31 @@ class Customer extends Sprite {
 
     super.update()
 
+    console.log(this.state.name)
+
     this.speed = this.nominalSpeed * data.globals.globalSpeed
 
     this.draw()
     this.travel()
 
     if (this.state.name == 'idle') {
+      console.log('111')
       this.state.updateState('goingToStall', data)
     }
 
     if (this.atDestination()) {
+      console.log('222')
       this.reachedDestination = true
     }
 
     if (this.reachedDestination && this.state.name === 'goingToStall') {
+      console.log('333')
       this.state.updateState('buying', data = data)
       this.reachedDestination = false
     }
 
     if (this.reachedDestination && this.state.name === 'goingHome') {
+      console.log('444')
       this.state.updateState('resting', data)
       this.reachedDestination = false
     }
