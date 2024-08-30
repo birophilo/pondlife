@@ -80,11 +80,10 @@ class SupplyVanState {
     this.van.destination = null
     const self = this
     let timer1 = new Timer(
-      this.van.stateData.frameId,
+      GlobalSettings.animationFrameId,
       500,
       self,
       'goingToStall',
-      this.van.stateData
     )
     timers.push(timer1)
   }
@@ -93,11 +92,10 @@ class SupplyVanState {
     this.name = 'selling'
     const self = this
     let timer2 = new Timer(
-      this.van.stateData.frameId,
+      GlobalSettings.animationFrameId,
       200,
       self,
       'goingHome',
-      this.van.stateData
     )
     timers.push(timer2)
 

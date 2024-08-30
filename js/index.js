@@ -197,6 +197,8 @@ function animate() {
 
   const animationId = requestAnimationFrame(animate)
 
+  GlobalSettings.animationFrameId = animationId
+
   lemonadeStalls.forEach(stall => stall.draw())
 
   let hover = null

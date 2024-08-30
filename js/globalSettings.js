@@ -1,3 +1,4 @@
 GlobalSettings = {
-  globalSpeed: 100
+  globalSpeed: 100,
+  animationFrameId: 1
 }

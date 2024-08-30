@@ -45,12 +45,10 @@ class CustomerState {
     this.customer.stateData = {...this.customer.stateData, ...newData}
 
     if (state === 'goingToStall') {
-      console.log('GOING TO STALL......')
       this.goToStall()
     }  else if (state === 'goingHome') {
       this.goHome()
     } else if (state === 'resting') {
-      console.log('RESTING.......')
       this.rest()
     } else if (state === 'buying') {
       this.buy()
@@ -89,11 +87,10 @@ class CustomerState {
     this.customer.destination = null
     const self = this
     let timer1 = new Timer(
-      this.customer.stateData.frameId,
-      400,
+      GlobalSettings.animationFrameId,
+      200,
       self,
       'goingToStall',
-      this.customer.stateData
     )
     timers.push(timer1)
     this.customer.image.src = '../img/sprites/GirlSample_Walk_Down.png'
@@ -104,11 +101,10 @@ class CustomerState {
     this.name = 'buying'
     const self = this
     let timer2 = new Timer(
-      this.customer.stateData.frameId,
-      200,
+      GlobalSettings.animationFrameId,
+      100,
       self,
       'goingHome',
-      this.customer.stateData
     )
     timers.push(timer2)
     this.customer.image.src = '../img/sprites/GirlSample_Walk_Down.png'
@@ -262,23 +258,19 @@ class Customer extends Sprite {
     this.travel()
 
     if (this.state.name == 'idle') {
-      console.log('111')
       this.state.updateState('goingToStall', data)
     }
 
     if (this.atDestination()) {
-      console.log('222')
       this.reachedDestination = true
     }
 
     if (this.reachedDestination && this.state.name === 'goingToStall') {
-      console.log('333')
       this.state.updateState('buying', data = data)
       this.reachedDestination = false
     }
 
     if (this.reachedDestination && this.state.name === 'goingHome') {
-      console.log('444')
       this.state.updateState('resting', data)
       this.reachedDestination = false
     }
