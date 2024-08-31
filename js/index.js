@@ -21,7 +21,7 @@ const dayLength = 1000 // frames
 
 // const customerData = [{x: 0, y: 0}, {x: 900, y: 400}]
 const customerData = [{x: 900, y: 400}]
-const lemonadeStallData = [firstStall]
+const lemonadeStallData = [firstStall, secondStall]
 // const supplyVanData = [{x: 800, y: 800}]
 const supplyVanData = []
 const agentMenuButtonData = [
@@ -107,8 +107,8 @@ function selectOrDeleteAgent(agentClassName, point) {
   })
 }
 
-function changeStateFromButton(agent) {
-  agent.state.updateState('resting', {})
+function changeAgentStateFromButton(agent, state, args={}) {
+  agent.state.updateState(state, args)
 }
 
 function updateHtml() {
@@ -118,7 +118,27 @@ function updateHtml() {
     `${selectedAgent.state.name}`
     document.querySelector('#info').innerHTML = info
 
-    document.querySelector('#change-state-button').onclick = () => changeStateFromButton(selectedAgent)
+    document.querySelector('#button-change-state-rest').onclick = () =>
+      changeAgentStateFromButton(selectedAgent, 'resting')
+    document.querySelector('#button-change-state-go-to-stall').onclick = () =>
+      changeAgentStateFromButton(selectedAgent, 'goingToStall')
+    document.querySelector('#button-change-state-go-home').onclick = () =>
+      changeAgentStateFromButton(selectedAgent, 'goingHome')
+    document.querySelector('#button-go-to-stall-1').onclick = () => {
+      changeAgentStateFromButton(
+        selectedAgent,
+        'goingToAgent',
+        args={newDestination: lemonadeStalls[0]}
+      )
+    }
+    document.querySelector('#button-go-to-stall-2').onclick = () => {
+      changeAgentStateFromButton(
+        selectedAgent,
+        'goingToAgent',
+        args={newDestination: lemonadeStalls[1]}
+      )
+    }
+
   }
   document.querySelector('#day-number').innerHTML = dayNumber
 }
@@ -143,7 +163,6 @@ function pointIsInArea(point = {x, y}, area = {x, y, width, height}) {
 
 
 lemonadeStallData.forEach(stall => {
-  console.log(stall)
   lemonadeStalls.push(
     new LemonadeStall(stall)
   )

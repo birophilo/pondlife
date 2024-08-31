@@ -117,14 +117,6 @@ class SupplyVan extends Sprite {
     return 'supplyVan'
   }
 
-  static baseWidth() {
-    return 50
-  }
-
-  static baseHeight() {
-    return 50
-  }
-
   static imageSrc() {
     return '../img/sprites/SupplyVan_Right.png'
   }

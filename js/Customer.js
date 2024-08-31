@@ -44,6 +44,13 @@ class CustomerState {
 
     this.customer.stateData = {...this.customer.stateData, ...newData}
 
+    timers.forEach((timer, i) => {
+      if (timer.stateObject.customer === this.customer) {
+        console.log('cancelling timer')
+        timers.splice(i, 1)
+      }
+    })
+
     if (state === 'goingToStall') {
       this.goToStall()
     }  else if (state === 'goingHome') {
@@ -52,6 +59,9 @@ class CustomerState {
       this.rest()
     } else if (state === 'buying') {
       this.buy()
+    } else if (state === 'goingToAgent') {
+      const newDestination = this.customer.stateData.newDestination
+      this.goToAgent(newDestination)
     }
   }
 
@@ -64,6 +74,11 @@ class CustomerState {
       this.customer.destination = closestStall
       this.customer.frames.max = 9
     }
+  }
+
+  goToAgent(newDestination) {
+    this.name = 'goingToAgent'
+    this.customer.destination = newDestination
   }
 
   goHome() {
@@ -83,7 +98,6 @@ class CustomerState {
 
   rest() {
     this.name = 'resting'
-    console.log('RESTING......')
     this.customer.destination = null
     const self = this
     let timer1 = new Timer(
@@ -126,14 +140,6 @@ class Customer extends Sprite {
 
   static agentName() {
     return 'customer'
-  }
-
-  static baseWidth() {
-    return 40
-  }
-
-  static baseHeight() {
-    return 40
   }
 
   static imageSrc() {
@@ -188,6 +194,9 @@ class Customer extends Sprite {
 
     // stateful configurable properties/parameters/variables
     this.stateData = {}
+
+    this.actionList = []
+    this.initializing = true
   }
 
   travel() {
@@ -250,14 +259,13 @@ class Customer extends Sprite {
 
     super.update()
 
-    console.log(this.state.name)
-
     this.speed = this.nominalSpeed * data.globals.globalSpeed
 
     this.draw()
     this.travel()
 
-    if (this.state.name == 'idle') {
+    if (this.initializing === true) {
+      this.initializing = false
       this.state.updateState('goingToStall', data)
     }
 
@@ -271,6 +279,11 @@ class Customer extends Sprite {
     }
 
     if (this.reachedDestination && this.state.name === 'goingHome') {
+      this.state.updateState('resting', data)
+      this.reachedDestination = false
+    }
+
+    if (this.reachedDestination && this.state.name === 'goingToAgent') {
       this.state.updateState('resting', data)
       this.reachedDestination = false
     }

@@ -6,3 +6,12 @@ const firstStall = {
   },
   id: 'firstStall'
 }
+
+const secondStall = {
+  position: {x: 700, y: 100},
+  config: {
+    width: 130,
+    height: 104
+  },
+  id: 'secondStall'
+}

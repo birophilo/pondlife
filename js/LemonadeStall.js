@@ -11,14 +11,6 @@ class LemonadeStall {
     return 'lemonadeStall'
   }
 
-  static baseWidth() {
-    return 130
-  }
-
-  static baseHeight() {
-    return 100
-  }
-
   static imageSrc() {
     return '../img/stall-1.png'
   }
@@ -41,7 +33,6 @@ class LemonadeStall {
     this.position = position
     // this.width = 130
     // this.height = 104
-    console.log(config)
     this.width = config.width
     this.height = config.height
     // distance from stall to count as collision (same for x and y here)
