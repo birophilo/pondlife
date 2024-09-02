@@ -27,43 +27,18 @@ class ActionGoingToStall {
   }
 }
 
-class ActionGoingHome {
-  constructor(customer) {
-    this.begun = false
-    this.isComplete = false
-    this.customer = customer
-  }
-
-  start() {
-    this.customer.destination = {
-    position: {
-      x: this.customer.homePosition.x,
-      y: this.customer.homePosition.y
-    },
-    width: 80,
-    height: 80,
-    name: 'home',
-    id: 1
-  }
-  this.customer.frames.max = 9
-  }
-
-  check(stateData) {
-    if (this.customer.atDestination()) {
-      this.isComplete = true
-    }
-  }
-}
-
 class ActionGoToDestination {
   constructor(customer, destination) {
     this.begun = false
     this.isComplete = false
     this.customer = customer
     this.destination = destination
+    this.currentActionName = 'goToDestination'
+    this.currentStateName = 'goingToDestination'
   }
 
   start() {
+    this.customer.currentStateName = this.currentStateName
     this.customer.destination = this.destination
     this.customer.frames.max = 9
 
@@ -85,9 +60,12 @@ class ActionGoToAgent {
     this.isComplete = false
     this.customer = customer
     this.agent = agent
+    this.currentActionName = 'goToAgent'
+    this.currentStateName = 'goingToAgent'
   }
 
   start() {
+    this.customer.currentStateName = this.currentStateName
     this.customer.destination = this.agent
     this.customer.frames.max = 9
   }
@@ -106,9 +84,12 @@ class ActionBuy {
     this.isComplete = false
     this.customer = customer
     this.duration = 100
+    this.currentActionName = 'buy'
+    this.currentStateName = 'buying'
   }
 
   start() {
+    this.customer.currentStateName = this.currentStateName
     this.startFrame = GlobalSettings.animationFrameId
     this.customer.image.src = '../img/sprites/GirlSample_Walk_Down.png'
     this.customer.frames.max = 1
@@ -132,4 +113,46 @@ class ActionBuy {
     }
   }
 
+}
+
+
+class ActionRest {
+  constructor(customer) {
+    this.begun = false
+    this.isComplete = false
+    this.customer = customer
+    this.duration = 100
+    this.actionName = 'rest'
+    this.stateName = 'resting'
+  }
+
+  start() {
+    this.customer.currentStateName = this.currentStateName
+    this.customer.destination = null
+    this.customer.image.src = '../img/sprites/GirlSample_Walk_Down.png'
+    this.customer.frames.max = 1
+    this.startFrame = GlobalSettings.animationFrameId
+  }
+
+  check(stateData) {
+    const currentFrame = stateData.globals.animationFrameId
+    const timerExpired = currentFrame - (this.startFrame + this.duration) >= 0
+    if (timerExpired) {
+      this.isComplete = true
+    }
+  }
+}
+
+
+class ActionDefaults {
+  constructor(customer) {
+    this.customer = customer
+  }
+
+  idle() {
+    this.customer.currentStateName = 'idle'
+    this.customer.destination = null
+    this.customer.image.src = '../img/sprites/GirlSample_Walk_Down.png'
+    this.customer.frames.max = 1
+  }
 }

@@ -39,92 +39,6 @@ function get8WayDirection(xVelocity, yVelocity) {
 }
 
 
-class CustomerState {
-  constructor(customer) {
-    this.name = 'idle'
-    this.customer = customer
-  }
-
-  updateState(state, newData) {
-
-    this.customer.stateData = {...this.customer.stateData, ...newData}
-
-    timers.forEach((timer, i) => {
-      if (timer.stateObject.customer === this.customer) {
-        console.log('cancelling timer')
-        timers.splice(i, 1)
-      }
-    })
-
-    this.name = state
-
-    if (state === 'goingToStall') {
-      this.goToStall()
-    }  else if (state === 'goingHome') {
-      this.goHome()
-    } else if (state === 'resting') {
-      this.rest()
-    } else if (state === 'buying') {
-      this.buy()
-    } else if (state === 'goingToAgent') {
-      const newDestination = this.customer.stateData.newDestination
-      this.goToAgent(newDestination)
-    }
-  }
-
-  goToStall() {
-    const goToStallAction = new ActionGoingToStall(this.customer)
-    goToStallAction.do()
-  }
-
-  goToAgent(newDestination) {
-    const action = new ActionGoToAgent(this.customer, newDestination)
-    action.do()
-  }
-
-  goHome() {
-    const goHomeAction = new ActionGoToDestination(this.customer, this.customer.home)
-    goHomeAction.do()
-  }
-
-  rest() {
-    this.customer.destination = null
-    const self = this
-    let timer1 = new Timer(
-      GlobalSettings.animationFrameId,
-      200,
-      self,
-      'goingToStall',
-    )
-    timers.push(timer1)
-    this.customer.image.src = '../img/sprites/GirlSample_Walk_Down.png'
-    this.customer.frames.max = 1
-  }
-
-  buy() {
-    const self = this
-    let timer2 = new Timer(
-      GlobalSettings.animationFrameId,
-      100,
-      self,
-      'goingHome',
-    )
-    timers.push(timer2)
-    this.customer.image.src = '../img/sprites/GirlSample_Walk_Down.png'
-    this.customer.frames.max = 1
-
-    const hasEnoughMoney = this.customer.money >= 20
-    if (hasEnoughMoney) {
-      this.customer.money -= 20
-      const stall = lemonadeStalls.find(stall => stall.id === this.customer.destination.id)
-      stall.money += 20
-      stall.lemons -= 2
-    }
-
-    this.customer.destination = null
-  }
-}
-
 class Customer extends Sprite {
 
   static agentName() {
@@ -191,17 +105,21 @@ class Customer extends Sprite {
 
     this.reachedDestination = false
 
-    this.state = new CustomerState(this)
-
     // stateful configurable properties/parameters/variables
     this.stateData = {}
+
+    this.defaultActions = new ActionDefaults(this)
 
     this.actionList = [
       new ActionGoToAgent(this, lemonadeStalls[0]),
       new ActionBuy(this),
-      new ActionGoToDestination(this, this.home)
+      new ActionGoToDestination(this, this.home),
+      new ActionRest(this)
     ]
-    this.initializing = true
+
+    this.currentActionName = ''
+    this.currentStateName = ''
+
   }
 
   travel() {
@@ -239,7 +157,7 @@ class Customer extends Sprite {
 
     const destination = this.destination ? this.destination.id : 'none'
     c.strokeText('dest: ' + destination, this.position.x, this.position.y - 10)
-    c.strokeText(this.state.name, this.position.x, this.position.y - 22)
+    c.strokeText(this.currentStateName, this.position.x, this.position.y - 22)
     c.strokeText('money: ' + this.money, this.position.x, this.position.y - 34)
   }
 
@@ -273,14 +191,18 @@ class Customer extends Sprite {
 
     console.log(this.actionList)
 
+    // remove any freshly completed Actions from the action list
     if (this.actionList.length && this.actionList[0].isComplete) {
       this.actionList.splice(0, 1)
     }
 
+    // go into 'idle' mode if no more actions
     if (this.actionList.length === 0) {
+      this.defaultActions.idle()
       return
     }
 
+    // if unstarted Action in action list, start it; if already doing action, check if complete
     if (this.actionList[0].isComplete === false) {
       if (this.actionList[0].begun === false) {
         this.actionList[0].begun = true
@@ -289,7 +211,6 @@ class Customer extends Sprite {
         this.actionList[0].check(this.stateData)
       }
     }
-
   }
 
   endDay() {
