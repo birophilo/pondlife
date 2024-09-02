@@ -34,6 +34,11 @@ function get8WayDirection(xVelocity, yVelocity) {
 }
 
 
+{
+  goingToStall: ActionGoingToStall
+}
+
+
 class CustomerState {
   constructor(customer) {
     this.name = 'idle'
@@ -51,6 +56,8 @@ class CustomerState {
       }
     })
 
+    this.name = state
+
     if (state === 'goingToStall') {
       this.goToStall()
     }  else if (state === 'goingHome') {
@@ -66,38 +73,21 @@ class CustomerState {
   }
 
   goToStall() {
-    this.name = 'goingToStall'
-    const hasEnoughMoney = this.customer.money >= 20
-    if (hasEnoughMoney) {
-      const closestStall = this.customer.getClosestAgent(this.customer.stateData.stalls)
-      this.customer.stateData.stall = closestStall
-      this.customer.destination = closestStall
-      this.customer.frames.max = 9
-    }
+    const goToStallAction = new ActionGoingToStall(this.customer)
+    goToStallAction.do()
   }
 
   goToAgent(newDestination) {
-    this.name = 'goingToAgent'
-    this.customer.destination = newDestination
+    const action = new ActionGoToAgent(this.customer, newDestination)
+    action.do()
   }
 
   goHome() {
-    this.customer.destination = {
-      position: {
-        x: this.customer.homePosition.x,
-        y: this.customer.homePosition.y
-      },
-      width: 80,
-      height: 80,
-      name: 'home',
-      id: 1
-    }
-    this.name = 'goingHome'
-    this.customer.frames.max = 9
+    const goHomeAction = new ActionGoToDestination(this.customer, this.customer.home)
+    goHomeAction.do()
   }
 
   rest() {
-    this.name = 'resting'
     this.customer.destination = null
     const self = this
     let timer1 = new Timer(
@@ -112,7 +102,6 @@ class CustomerState {
   }
 
   buy() {
-    this.name = 'buying'
     const self = this
     let timer2 = new Timer(
       GlobalSettings.animationFrameId,
@@ -183,6 +172,18 @@ class Customer extends Sprite {
     this.destination = null
     this.nominalSpeed = 0.02
     this.homePosition = {x: this.position.x, y: this.position.y}
+
+    this.home = {
+      position: {
+        x: this.homePosition.x,
+        y: this.homePosition.y
+      },
+      width: 80,
+      height: 80,
+      name: 'home',
+      id: 1
+    }
+
     this.speed = this.nominalSpeed * globals.globalSpeed
 
     this.restTimeBetweenTrips = 400 // frames
@@ -195,7 +196,11 @@ class Customer extends Sprite {
     // stateful configurable properties/parameters/variables
     this.stateData = {}
 
-    this.actionList = []
+    this.actionList = [
+      new ActionGoToAgent(this, lemonadeStalls[0]),
+      new ActionBuy(this),
+      new ActionGoToDestination(this, this.home)
+    ]
     this.initializing = true
   }
 
@@ -255,37 +260,34 @@ class Customer extends Sprite {
     return atDestination
   }
 
-  update(data) {
+  update(newData) {
 
     super.update()
 
-    this.speed = this.nominalSpeed * data.globals.globalSpeed
+    this.stateData = {...this.stateData, ...newData}
+
+    this.speed = this.nominalSpeed * this.stateData.globals.globalSpeed
 
     this.draw()
     this.travel()
 
-    if (this.initializing === true) {
-      this.initializing = false
-      this.state.updateState('goingToStall', data)
+    console.log(this.actionList)
+
+    if (this.actionList.length && this.actionList[0].isComplete) {
+      this.actionList.splice(0, 1)
     }
 
-    if (this.atDestination()) {
-      this.reachedDestination = true
+    if (this.actionList.length === 0) {
+      return
     }
 
-    if (this.reachedDestination && this.state.name === 'goingToStall') {
-      this.state.updateState('buying', data = data)
-      this.reachedDestination = false
-    }
-
-    if (this.reachedDestination && this.state.name === 'goingHome') {
-      this.state.updateState('resting', data)
-      this.reachedDestination = false
-    }
-
-    if (this.reachedDestination && this.state.name === 'goingToAgent') {
-      this.state.updateState('resting', data)
-      this.reachedDestination = false
+    if (this.actionList[0].isComplete === false) {
+      if (this.actionList[0].begun === false) {
+        this.actionList[0].begun = true
+        this.actionList[0].start()
+      } else {
+        this.actionList[0].check(this.stateData)
+      }
     }
 
   }
