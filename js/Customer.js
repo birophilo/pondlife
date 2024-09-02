@@ -111,10 +111,10 @@ class Customer extends Sprite {
     this.defaultActions = new ActionDefaults(this)
 
     this.actionList = [
-      new ActionGoToAgent(this, lemonadeStalls[0]),
-      new ActionBuy(this),
-      new ActionGoToDestination(this, this.home),
-      new ActionRest(this)
+      new ActionGoToAgent(this, {agent: lemonadeStalls[0]}),
+      new ActionBuy(this, {}),
+      new ActionGoToDestination(this, {destination: this.home}),
+      new ActionRest(this, {})
     ]
 
     this.currentActionName = ''
@@ -188,8 +188,6 @@ class Customer extends Sprite {
 
     this.draw()
     this.travel()
-
-    console.log(this.actionList)
 
     // remove any freshly completed Actions from the action list
     if (this.actionList.length && this.actionList[0].isComplete) {

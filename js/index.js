@@ -107,35 +107,37 @@ function selectOrDeleteAgent(agentClassName, point) {
   })
 }
 
-function changeAgentStateFromButton(agent, state, args={}) {
-  agent.state.updateState(state, args)
+function changeAgentStateFromButton(agent, actionClass, args={}) {
+  agent.actionList.push(new actionClass(agent, args))
 }
 
 function updateHtml() {
   if (selectedAgent !== null) {
     const info = `${selectedAgent.name} ${selectedAgent.num}.<br/>` +
     `Money: ${selectedAgent.money}.<br/>` +
-    `${selectedAgent.state.name}`
+    `${selectedAgent.currentStateName}`
     document.querySelector('#info').innerHTML = info
 
     document.querySelector('#button-change-state-rest').onclick = () =>
-      changeAgentStateFromButton(selectedAgent, 'resting')
+      changeAgentStateFromButton(selectedAgent, ActionRest, {})
     document.querySelector('#button-change-state-go-to-stall').onclick = () =>
-      changeAgentStateFromButton(selectedAgent, 'goingToStall')
+      changeAgentStateFromButton(selectedAgent, ActionGoToAgent, {agent: lemonadeStalls[0]})
     document.querySelector('#button-change-state-go-home').onclick = () =>
-      changeAgentStateFromButton(selectedAgent, 'goingHome')
+      changeAgentStateFromButton(selectedAgent, ActionGoToDestination, {destination: selectedAgent.home})
+
     document.querySelector('#button-go-to-stall-1').onclick = () => {
+      console.log('button pressed')
       changeAgentStateFromButton(
         selectedAgent,
-        'goingToAgent',
-        args={newDestination: lemonadeStalls[0]}
+        ActionGoToAgent,
+        args={agent: lemonadeStalls[0]}
       )
     }
     document.querySelector('#button-go-to-stall-2').onclick = () => {
       changeAgentStateFromButton(
         selectedAgent,
-        'goingToAgent',
-        args={newDestination: lemonadeStalls[1]}
+        ActionGoToAgent,
+        args={agent: lemonadeStalls[1]}
       )
     }
 

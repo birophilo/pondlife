@@ -12,7 +12,7 @@ class Action {
 
 
 class ActionGoingToStall {
-  constructor(customer) {
+  constructor(customer, args) {
     this.begun = false
     this.isComplete = false
     this.customer = customer
@@ -28,11 +28,11 @@ class ActionGoingToStall {
 }
 
 class ActionGoToDestination {
-  constructor(customer, destination) {
+  constructor(customer, args) {
     this.begun = false
     this.isComplete = false
     this.customer = customer
-    this.destination = destination
+    this.destination = args.destination
     this.currentActionName = 'goToDestination'
     this.currentStateName = 'goingToDestination'
   }
@@ -55,11 +55,11 @@ class ActionGoToDestination {
 }
 
 class ActionGoToAgent {
-  constructor(customer, agent) {
+  constructor(customer, args) {
     this.begun = false
     this.isComplete = false
     this.customer = customer
-    this.agent = agent
+    this.agent = args.agent
     this.currentActionName = 'goToAgent'
     this.currentStateName = 'goingToAgent'
   }
@@ -79,7 +79,7 @@ class ActionGoToAgent {
 }
 
 class ActionBuy {
-  constructor(customer) {
+  constructor(customer, args) {
     this.begun = false
     this.isComplete = false
     this.customer = customer
@@ -117,7 +117,7 @@ class ActionBuy {
 
 
 class ActionRest {
-  constructor(customer) {
+  constructor(customer, args) {
     this.begun = false
     this.isComplete = false
     this.customer = customer
