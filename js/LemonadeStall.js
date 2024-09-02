@@ -26,7 +26,7 @@ class LemonadeStall {
     id,
     config
   }) {
-    this.name = 'lemonadeStall'
+    this.name = `lemonadeStall ${id}`
     this.image = new Image()
     this.image.src = imageSrc
     this.num = num

@@ -18,7 +18,7 @@ class ActionGoingToStall {
     this.customer = customer
   }
   start() {
-    const hasEnoughMoney = this.customer.money >= 20
+    const hasEnoughMoney = this.customer.stateData.money >= 20
     if (hasEnoughMoney) {
       const closestStall = this.customer.getClosestAgent(this.customer.stateData.stalls)
       this.customer.destination = closestStall
@@ -33,12 +33,12 @@ class ActionGoToDestination {
     this.isComplete = false
     this.customer = customer
     this.destination = args.destination
-    this.currentActionName = 'goToDestination'
-    this.currentStateName = 'goingToDestination'
+    this.actionName = 'goToDestination'
+    this.stateName = `goingToDestination: ${this.destination.name}`
   }
 
   start() {
-    this.customer.currentStateName = this.currentStateName
+    this.customer.currentStateName = `${this.stateName}`
     this.customer.destination = this.destination
     this.customer.frames.max = 9
 
@@ -60,12 +60,12 @@ class ActionGoToAgent {
     this.isComplete = false
     this.customer = customer
     this.agent = args.agent
-    this.currentActionName = 'goToAgent'
-    this.currentStateName = 'goingToAgent'
+    this.actionName = 'goToAgent'
+    this.stateName = `goingToAgent: ${this.agent.name}`
   }
 
   start() {
-    this.customer.currentStateName = this.currentStateName
+    this.customer.currentStateName = this.stateName
     this.customer.destination = this.agent
     this.customer.frames.max = 9
   }
@@ -78,25 +78,58 @@ class ActionGoToAgent {
     
 }
 
+class ActionGoToAgentIfHaveEnoughMoney {
+  constructor(customer, args) {
+    this.begun = false
+    this.isComplete = false
+    this.customer = customer
+    this.agent = args.agent
+    this.actionName = 'goToAgentIfMoney'
+    this.stateName = `goingToAgentIfMoney: ${this.agent.name}`
+  }
+
+  start() {
+
+    const condition = new Condition(this.customer, 'money', 'isGreaterThan', 20)
+    const qualifies = condition.evaluate()
+    console.log(qualifies)
+    if (qualifies) {
+      this.customer.currentStateName = this.stateName
+      this.customer.destination = this.agent
+      this.customer.frames.max = 9
+    } else {
+      console.log('does not qualify')
+    }
+
+  }
+
+  check(stateData) {
+    if (this.customer.atDestination()) {
+      this.isComplete = true
+    }
+  }
+
+}
+
 class ActionBuy {
   constructor(customer, args) {
     this.begun = false
     this.isComplete = false
     this.customer = customer
     this.duration = 100
-    this.currentActionName = 'buy'
-    this.currentStateName = 'buying'
+    this.actionName = 'buy'
+    this.stateName = 'buying'
   }
 
   start() {
-    this.customer.currentStateName = this.currentStateName
+    this.customer.currentStateName = this.stateName
     this.startFrame = GlobalSettings.animationFrameId
     this.customer.image.src = '../img/sprites/GirlSample_Walk_Down.png'
     this.customer.frames.max = 1
 
-    const hasEnoughMoney = this.customer.money >= 20
+    const hasEnoughMoney = this.customer.stateData.money >= 20
     if (hasEnoughMoney) {
-      this.customer.money -= 20
+      this.customer.stateData.money -= 20
       const stall = lemonadeStalls.find(stall => stall.id === this.customer.destination.id)
       stall.money += 20
       stall.lemons -= 2
@@ -127,7 +160,7 @@ class ActionRest {
   }
 
   start() {
-    this.customer.currentStateName = this.currentStateName
+    this.customer.currentStateName = this.stateName
     this.customer.destination = null
     this.customer.image.src = '../img/sprites/GirlSample_Walk_Down.png'
     this.customer.frames.max = 1

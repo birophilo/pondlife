@@ -71,7 +71,6 @@ class Customer extends Sprite {
     this.num = num
     this.width = 30
     this.height = 40
-    this.money = 100
     this.position = position
     this.collisionArea = {
       x: this.position.x,
@@ -106,12 +105,14 @@ class Customer extends Sprite {
     this.reachedDestination = false
 
     // stateful configurable properties/parameters/variables
-    this.stateData = {}
+    this.stateData = {
+      money: 30
+    }
 
     this.defaultActions = new ActionDefaults(this)
 
     this.actionList = [
-      new ActionGoToAgent(this, {agent: lemonadeStalls[0]}),
+      new ActionGoToAgentIfHaveEnoughMoney(this, {agent: lemonadeStalls[0]}),
       new ActionBuy(this, {}),
       new ActionGoToDestination(this, {destination: this.home}),
       new ActionRest(this, {})
@@ -158,7 +159,7 @@ class Customer extends Sprite {
     const destination = this.destination ? this.destination.id : 'none'
     c.strokeText('dest: ' + destination, this.position.x, this.position.y - 10)
     c.strokeText(this.currentStateName, this.position.x, this.position.y - 22)
-    c.strokeText('money: ' + this.money, this.position.x, this.position.y - 34)
+    c.strokeText('money: ' + this.stateData.money, this.position.x, this.position.y - 34)
   }
 
   atDestination() {
@@ -212,7 +213,7 @@ class Customer extends Sprite {
   }
 
   endDay() {
-    this.money = 100
+    this.stateData.money = 100
   }
 
   getDistanceToAgent(agent) {

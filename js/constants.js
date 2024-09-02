@@ -4,7 +4,7 @@ const firstStall = {
     width: 130,
     height: 104
   },
-  id: 'firstStall'
+  id: 1
 }
 
 const secondStall = {
@@ -13,5 +13,5 @@ const secondStall = {
     width: 130,
     height: 104
   },
-  id: 'secondStall'
+  id: 2
 }

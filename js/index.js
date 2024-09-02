@@ -141,8 +141,13 @@ function updateHtml() {
       )
     }
 
+    const actionListNames = selectedAgent.actionList.map(action => action.stateName)
+
+    document.querySelector('#action-list').innerHTML = actionListNames.join('<br/>')
+
   }
   document.querySelector('#day-number').innerHTML = dayNumber
+
 }
 
 function endDay() {
