@@ -112,10 +112,10 @@ class Customer extends Sprite {
     this.defaultActions = new ActionDefaults(this)
 
     this.actionList = [
-      new ActionGoToAgentIfHaveEnoughMoney(this, {agent: lemonadeStalls[0]}),
-      new ActionBuy(this, {}),
-      new ActionGoToDestination(this, {destination: this.home}),
-      new ActionRest(this, {})
+      // new ActionGoToAgentIfHaveEnoughMoney(this, {agent: lemonadeStalls[0]}),
+      // new ActionBuy(this, {}),
+      // new ActionGoToDestination(this, {destination: this.home}),
+      // new ActionRest(this, {})
     ]
 
     this.currentActionName = ''
@@ -184,6 +184,11 @@ class Customer extends Sprite {
     super.update()
 
     this.stateData = {...this.stateData, ...newData}
+
+    if (this.stateData.globals.animationFrameId % 20 === 0) {
+      console.log(this.actionList)
+    }
+
 
     this.speed = this.nominalSpeed * this.stateData.globals.globalSpeed
 

@@ -29,15 +29,17 @@ class ActionGoingToStall {
 
 class ActionGoToDestination {
   constructor(customer, args) {
+    this.customer = customer
+    this.args = args
     this.begun = false
     this.isComplete = false
-    this.customer = customer
     this.destination = args.destination
     this.actionName = 'goToDestination'
     this.stateName = `goingToDestination: ${this.destination.name}`
   }
 
   start() {
+    console.log('STARTING ACTION DEST')
     this.customer.currentStateName = `${this.stateName}`
     this.customer.destination = this.destination
     this.customer.frames.max = 9
@@ -52,13 +54,18 @@ class ActionGoToDestination {
       this.isComplete = true
     }
   }
+
+  clone() {
+    return new this.constructor(this.customer, this.args)
+  }
 }
 
 class ActionGoToAgent {
   constructor(customer, args) {
+    this.customer = customer
+    this.args = args
     this.begun = false
     this.isComplete = false
-    this.customer = customer
     this.agent = args.agent
     this.actionName = 'goToAgent'
     this.stateName = `goingToAgent: ${this.agent.name}`
@@ -74,6 +81,10 @@ class ActionGoToAgent {
     if (this.customer.atDestination()) {
       this.isComplete = true
     }
+  }
+
+  clone() {
+    return new this.constructor(this.customer, this.args)
   }
     
 }

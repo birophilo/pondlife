@@ -15,6 +15,14 @@ const AGENTS = {
   supplyVan: SupplyVan
 }
 
+let ACTIONS = [
+  ActionGoToAgent,
+  ActionGoToDestination,
+  ActionRest
+]
+
+let createdActions = []
+
 let globalSpeed = GlobalSettings.globalSpeed
 let dayNumber = 1
 const dayLength = 1000 // frames
@@ -114,7 +122,7 @@ function changeAgentStateFromButton(agent, actionClass, args={}) {
 function updateHtml() {
   if (selectedAgent !== null) {
     const info = `${selectedAgent.name} ${selectedAgent.num}.<br/>` +
-    `Money: ${selectedAgent.money}.<br/>` +
+    `Money: ${selectedAgent.stateData.money}.<br/>` +
     `${selectedAgent.currentStateName}`
     document.querySelector('#info').innerHTML = info
 
@@ -143,12 +151,33 @@ function updateHtml() {
 
     const actionListNames = selectedAgent.actionList.map(action => action.stateName)
 
-    document.querySelector('#action-list').innerHTML = actionListNames.join('<br/>')
+    document.querySelector('#action-queue-list').innerHTML = actionListNames.join('<br/>')
+
+    let actionButtonList = document.getElementById('action-button-list')
+
+    if (actionButtonList.children.length !== createdActions.length) {
+
+      actionButtonList.innerHTML = ''
+
+      for (i = 0; i < createdActions.length; i++) {
+
+        const button = document.createElement('button')
+        button.innerText = createdActions[i].stateName
+        const j = Number(i)  // closure
+  
+        button.addEventListener('click', () => {
+          selectedAgent.actionList.push(createdActions[j].clone())
+        })
+
+        actionButtonList.appendChild(button)
+      }
+    }
 
   }
   document.querySelector('#day-number').innerHTML = dayNumber
 
 }
+
 
 function endDay() {
   dayNumber++
@@ -386,7 +415,6 @@ function createAgent() {
   const newAgentName = document.getElementById('form-create-agent-name')
   const newAgentWidth = document.getElementById('form-create-agent-width')
   const newAgentHeight = document.getElementById('form-create-agent-height')
-  console.log(newAgentName.value)
   agentData = AGENT_CONFIGS[newAgentName.value]
   let config = agentData.config
   config.width = Number(newAgentWidth.value)
@@ -400,4 +428,42 @@ function createAgent() {
     config: config
   })
   agentMenuButtons.push(newIcon)
+}
+
+function createGoToDestinationAction() {
+  console.log('creating action')
+  const newActionName = document.getElementById('form-create-action-name')
+  const newActionType = document.getElementById('form-create-action-type')
+  const newActionDestination = document.getElementById('form-create-action-destination')
+
+  let newAction = new ActionGoToDestination(
+    selectedAgent,
+    {
+      args: lemonadeStalls[0],
+      destination: selectedAgent.home
+    }
+  )
+
+  createdActions.push(newAction)
+
+  updateHtml()
+}
+
+function createGoToAgentAction() {
+  console.log('creating action2')
+  const newActionName = document.getElementById('form-create-action2-name')
+  const newActionType = document.getElementById('form-create-action2-type')
+  const newActionDestination = document.getElementById('form-create-action2-agent')
+
+  let newAction = new ActionGoToAgent(
+    selectedAgent,
+    {
+      args: lemonadeStalls[0],
+      agent: lemonadeStalls[0],
+    }
+  )
+
+  createdActions.push(newAction)
+
+    updateHtml()
 }

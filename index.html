@@ -7,6 +7,7 @@
 body {
   margin: 0;
   padding: 0;
+  font-family: Arial, Helvetica, sans-serif;
 }
 
 .container {
@@ -30,6 +31,10 @@ body {
 
 .day-container {
   padding: 5px;
+}
+
+#action-button-list {
+  border: 1px solid black;
 }
 </style>
 
@@ -62,9 +67,25 @@ body {
       <p></p>
       <button id="button-go-to-stall-1">go to stall 1</button>
       <button id="button-go-to-stall-2">go to stall 2</button>
+      <p></p>
+      <input type="text" id="form-create-action-name" placeholder="action name" />
+      <input type="text" id="form-create-action-type" value="goToDestination" />
+      <input type="text" id="form-create-action-destination" placeholder="destination" />
+      <br/>
+      <button onclick="createGoToDestinationAction()">create 'go to destination' action</button>
+      <p></p>
+      <div id="action-button-list"></div>
+      <input type="text" id="form-create-action2-name" placeholder="action name" />
+      <input type="text" id="form-create-action2-type" value="goToAgent" />
+      <input type="text" id="form-create-action2-agent" placeholder="agent" />
+      <br/>
+      <button onclick="createGoToAgentAction()">create 'go to agent' action</button>
+      <p></p>
+      <div id="action-button-list"></div>
+      <p></p>
     </div>
     <div>Actions</div>
-    <div id="action-list"></div>
+    <div id="action-queue-list"></div>
 
   </div>
 
