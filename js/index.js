@@ -162,7 +162,7 @@ function updateHtml() {
       for (i = 0; i < createdActions.length; i++) {
 
         const button = document.createElement('button')
-        button.innerText = createdActions[i].stateName
+        button.innerText = createdActions[i].actionName
         const j = Number(i)  // closure
   
         button.addEventListener('click', () => {
@@ -439,7 +439,8 @@ function createGoToDestinationAction() {
   let newAction = new ActionGoToDestination(
     selectedAgent,
     {
-      args: lemonadeStalls[0],
+      actionName: newActionName,
+      type: 'goToDestination',
       destination: selectedAgent.home
     }
   )
@@ -451,15 +452,19 @@ function createGoToDestinationAction() {
 
 function createGoToAgentAction() {
   console.log('creating action2')
-  const newActionName = document.getElementById('form-create-action2-name')
-  const newActionType = document.getElementById('form-create-action2-type')
-  const newActionDestination = document.getElementById('form-create-action2-agent')
+  const newActionName = document.getElementById('form-create-action2-name').value
+  const newActionType = document.getElementById('form-create-action2-type').value
+  const newActionAgentType = document.getElementById('form-create-action2-agent').value
+
+  const agentChoiceValue = document.agentRadioSelect.agentChoice.value
 
   let newAction = new ActionGoToAgent(
     selectedAgent,
     {
-      args: lemonadeStalls[0],
-      agent: lemonadeStalls[0],
+      actionName: newActionName,
+      type: newActionType,  // 'goToAgent'
+      agentType: newActionAgentType,
+      agentChoice: agentChoiceValue
     }
   )
 

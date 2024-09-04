@@ -31,11 +31,11 @@ class ActionGoToDestination {
   constructor(customer, args) {
     this.customer = customer
     this.args = args
+    this.destination = args.destination
+    this.actionName = args.actionName
+    this.stateName = `goingTo: ${this.destination.name}`
     this.begun = false
     this.isComplete = false
-    this.destination = args.destination
-    this.actionName = 'goToDestination'
-    this.stateName = `goingToDestination: ${this.destination.name}`
   }
 
   start() {
@@ -64,16 +64,22 @@ class ActionGoToAgent {
   constructor(customer, args) {
     this.customer = customer
     this.args = args
+    this.agentType = args.agentType
+
+    if (args.agentChoice === 'nearest') {
+      const agentArray = AGENT_CONFIGS[this.agentType].agentArray
+      this.agent = this.customer.getClosestAgent(agentArray)
+    }
+
+    this.actionName = args.actionName
+    this.stateName = `goingTo: ${this.agent.name}`
     this.begun = false
     this.isComplete = false
-    this.agent = args.agent
-    this.actionName = 'goToAgent'
-    this.stateName = `goingToAgent: ${this.agent.name}`
   }
 
   start() {
-    this.customer.currentStateName = this.stateName
     this.customer.destination = this.agent
+    this.customer.currentStateName = this.stateName
     this.customer.frames.max = 9
   }
 

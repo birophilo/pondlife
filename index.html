@@ -77,7 +77,14 @@ body {
       <div id="action-button-list"></div>
       <input type="text" id="form-create-action2-name" placeholder="action name" />
       <input type="text" id="form-create-action2-type" value="goToAgent" />
-      <input type="text" id="form-create-action2-agent" placeholder="agent" />
+      <input type="text" id="form-create-action2-agent" placeholder="agent type" />
+      <form name="agentRadioSelect">
+        <input type="radio" name="agentChoice" value="nearest" checked="true" />
+        <label for="nearest">nearest</label>
+        <input type="radio" name="agentChoice" value="specific" />
+        <label for="nearest">specific</label>
+      </form>
+
       <br/>
       <button onclick="createGoToAgentAction()">create 'go to agent' action</button>
       <p></p>

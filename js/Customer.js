@@ -186,7 +186,7 @@ class Customer extends Sprite {
     this.stateData = {...this.stateData, ...newData}
 
     if (this.stateData.globals.animationFrameId % 20 === 0) {
-      console.log(this.actionList)
+      console.log(this.actionList.map(action => action.actionName))
     }
 
 
