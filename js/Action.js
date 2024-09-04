@@ -61,7 +61,7 @@ class ActionGoToDestination {
 }
 
 class ActionGoToAgent {
-  constructor(customer, args) {
+  constructor(customer, args, conditions = []) {
     this.customer = customer
     this.args = args
     this.agentType = args.agentType
@@ -75,9 +75,21 @@ class ActionGoToAgent {
     this.stateName = `goingTo: ${this.agent.name}`
     this.begun = false
     this.isComplete = false
+
+    this.conditions = conditions ? conditions : []
+
   }
 
   start() {
+
+    for (i = 0; i < this.conditions.length; i++) {
+      const qualifies = this.conditions[i].evaluate()
+      if (qualifies === false) {
+        console.log('did not meet condition')
+        return
+      }
+    }
+
     this.customer.destination = this.agent
     this.customer.currentStateName = this.stateName
     this.customer.frames.max = 9
@@ -90,7 +102,7 @@ class ActionGoToAgent {
   }
 
   clone() {
-    return new this.constructor(this.customer, this.args)
+    return new this.constructor(this.customer, this.args, this.conditions)
   }
     
 }

@@ -8,6 +8,8 @@ class Condition {
 
   evaluate() {
     const agentValue = this.agent.stateData[this.property]
+    console.log('evaluating')
+    console.log(agentValue, this.value)
     console.log(agentValue)
     const evalFunc = COMPARISONS[this.condition]
     return evalFunc(agentValue, this.value)

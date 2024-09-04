@@ -22,6 +22,7 @@ let ACTIONS = [
 ]
 
 let createdActions = []
+let createdConditions = []
 
 let globalSpeed = GlobalSettings.globalSpeed
 let dayNumber = 1
@@ -470,5 +471,27 @@ function createGoToAgentAction() {
 
   createdActions.push(newAction)
 
-    updateHtml()
+  updateHtml()
+}
+
+function createCondition() {
+  console.log('creating condition')
+  const newConditionProperty = document.getElementById('form-create-condition-property').value
+  const newConditionComparison = document.getElementById('form-create-condition-comparison').value
+  const newConditionThreshold = document.getElementById('form-create-condition-threshold').value
+
+  let newCondition = new Condition(
+    selectedAgent,
+    newConditionProperty,
+    newConditionComparison,
+    Number(newConditionThreshold)
+  )
+
+  createdConditions.push(newCondition)
+
+  // hard coding temporarily
+  createdActions[0].conditions.push(newCondition)
+  console.log(createdConditions)
+
+  updateHtml()
 }

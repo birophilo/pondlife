@@ -84,10 +84,15 @@ body {
         <input type="radio" name="agentChoice" value="specific" />
         <label for="nearest">specific</label>
       </form>
-
       <br/>
       <button onclick="createGoToAgentAction()">create 'go to agent' action</button>
       <p></p>
+      <p>Create condition:</p>
+      <input type="text" id="form-create-condition-property" placeholder="property or parameter" />
+      <input type="text" id="form-create-condition-comparison" placeholder="comparison" value="isGreaterThan" />
+      <input type="text" id="form-create-condition-threshold" placeholder="value threshold" />
+      <button onclick="createCondition()">create condition</button>
+
       <div id="action-button-list"></div>
       <p></p>
     </div>
