@@ -13,7 +13,7 @@ class Action {
 
 class ActionGoingToStall {
   constructor(customer, args) {
-    this.begun = false
+    this.inProgress = false
     this.isComplete = false
     this.customer = customer
   }
@@ -34,12 +34,22 @@ class ActionGoToDestination {
     this.destination = args.destination
     this.actionName = args.actionName
     this.stateName = `goingTo: ${this.destination.name}`
-    this.begun = false
+    this.inProgress = false
     this.isComplete = false
   }
 
+  meetsConditions() {
+    for (i = 0; i < this.conditions.length; i++) {
+      const qualifies = this.conditions[i].evaluate()
+      if (qualifies === false) {
+        console.log('did not meet condition')
+        return
+      }
+    }
+    return true
+  }
+
   start() {
-    console.log('STARTING ACTION DEST')
     this.customer.currentStateName = `${this.stateName}`
     this.customer.destination = this.destination
     this.customer.frames.max = 9
@@ -73,15 +83,14 @@ class ActionGoToAgent {
 
     this.actionName = args.actionName
     this.stateName = `goingTo: ${this.agent.name}`
-    this.begun = false
+    this.inProgress = false
     this.isComplete = false
 
     this.conditions = conditions ? conditions : []
 
   }
 
-  start() {
-
+  meetsConditions() {
     for (i = 0; i < this.conditions.length; i++) {
       const qualifies = this.conditions[i].evaluate()
       if (qualifies === false) {
@@ -89,6 +98,10 @@ class ActionGoToAgent {
         return
       }
     }
+    return true
+  }
+
+  start() {
 
     this.customer.destination = this.agent
     this.customer.currentStateName = this.stateName
@@ -109,7 +122,7 @@ class ActionGoToAgent {
 
 class ActionGoToAgentIfHaveEnoughMoney {
   constructor(customer, args) {
-    this.begun = false
+    this.inProgress = false
     this.isComplete = false
     this.customer = customer
     this.agent = args.agent
@@ -142,7 +155,7 @@ class ActionGoToAgentIfHaveEnoughMoney {
 
 class ActionBuy {
   constructor(customer, args) {
-    this.begun = false
+    this.inProgress = false
     this.isComplete = false
     this.customer = customer
     this.duration = 100
@@ -180,7 +193,7 @@ class ActionBuy {
 
 class ActionRest {
   constructor(customer, args) {
-    this.begun = false
+    this.inProgress = false
     this.isComplete = false
     this.customer = customer
     this.duration = 100

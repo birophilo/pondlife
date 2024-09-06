@@ -33,9 +33,6 @@ body {
   padding: 5px;
 }
 
-#action-button-list {
-  border: 1px solid black;
-}
 </style>
 
 </head>
@@ -65,6 +62,10 @@ body {
       <input type="text" id="form-create-agent-height" placeholder="height" />
       <button onclick="createAgent()">create agent</button>
       <p></p>
+      <input type="text" id="form-add-agent-property" placeholder="property" />
+      <input type="text" id="form-add-agent-property-value" placeholder="value" />
+      <button onclick="addAgentProperty()">add agent property</button>
+      <p></p>
       <button id="button-go-to-stall-1">go to stall 1</button>
       <button id="button-go-to-stall-2">go to stall 2</button>
       <p></p>
@@ -74,7 +75,6 @@ body {
       <br/>
       <button onclick="createGoToDestinationAction()">create 'go to destination' action</button>
       <p></p>
-      <div id="action-button-list"></div>
       <input type="text" id="form-create-action2-name" placeholder="action name" />
       <input type="text" id="form-create-action2-type" value="goToAgent" />
       <input type="text" id="form-create-action2-agent" placeholder="agent type" />
@@ -93,7 +93,12 @@ body {
       <input type="text" id="form-create-condition-threshold" placeholder="value threshold" />
       <button onclick="createCondition()">create condition</button>
 
+      <div style="font-weight: bold">Actions</div>
       <div id="action-button-list"></div>
+      <p></p>
+
+      <div style="font-weight: bold">Conditions</div>
+      <div id="created-condition-list"></div>
       <p></p>
     </div>
     <div>Actions</div>

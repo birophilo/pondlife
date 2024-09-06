@@ -4,15 +4,14 @@ class Condition {
     this.property = property
     this.condition = condition
     this.value = value
+    this.name = `${this.property} ${this.condition} ${this.value}`
   }
 
   evaluate() {
     const agentValue = this.agent.stateData[this.property]
-    console.log('evaluating')
-    console.log(agentValue, this.value)
-    console.log(agentValue)
     const evalFunc = COMPARISONS[this.condition]
-    return evalFunc(agentValue, this.value)
+    const result = evalFunc(agentValue, this.value)
+    return result
   }
 }
 

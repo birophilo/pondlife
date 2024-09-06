@@ -105,9 +105,7 @@ class Customer extends Sprite {
     this.reachedDestination = false
 
     // stateful configurable properties/parameters/variables
-    this.stateData = {
-      money: 30
-    }
+    this.stateData = {}  // e.g. money: 100
 
     this.defaultActions = new ActionDefaults(this)
 
@@ -208,13 +206,21 @@ class Customer extends Sprite {
 
     // if unstarted Action in action list, start it; if already doing action, check if complete
     if (this.actionList[0].isComplete === false) {
-      if (this.actionList[0].begun === false) {
-        this.actionList[0].begun = true
-        this.actionList[0].start()
-      } else {
-        this.actionList[0].check(this.stateData)
+      if (this.actionList[0].inProgress === false) {
+        const meetsConditions = this.actionList[0].meetsConditions()
+        console.log('meets conditions', meetsConditions)
+        if (meetsConditions) {
+          this.actionList[0].inProgress = true
+          this.actionList[0].start()
+        }
       }
     }
+
+    if (this.actionList[0].inProgress === true) {
+      console.log('checking')
+      this.actionList[0].check(this.stateData)
+    }
+
   }
 
   endDay() {
@@ -236,5 +242,9 @@ class Customer extends Sprite {
       }
     }
     return closestAgent
+  }
+
+  addProperty(property, value) {
+    this.stateData[property] = value
   }
 }

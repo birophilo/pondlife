@@ -135,7 +135,6 @@ function updateHtml() {
       changeAgentStateFromButton(selectedAgent, ActionGoToDestination, {destination: selectedAgent.home})
 
     document.querySelector('#button-go-to-stall-1').onclick = () => {
-      console.log('button pressed')
       changeAgentStateFromButton(
         selectedAgent,
         ActionGoToAgent,
@@ -151,9 +150,7 @@ function updateHtml() {
     }
 
     const actionListNames = selectedAgent.actionList.map(action => action.stateName)
-
     document.querySelector('#action-queue-list').innerHTML = actionListNames.join('<br/>')
-
     let actionButtonList = document.getElementById('action-button-list')
 
     if (actionButtonList.children.length !== createdActions.length) {
@@ -161,20 +158,31 @@ function updateHtml() {
       actionButtonList.innerHTML = ''
 
       for (i = 0; i < createdActions.length; i++) {
-
         const button = document.createElement('button')
         button.innerText = createdActions[i].actionName
         const j = Number(i)  // closure
-  
         button.addEventListener('click', () => {
           selectedAgent.actionList.push(createdActions[j].clone())
         })
-
         actionButtonList.appendChild(button)
       }
     }
 
+    let createdConditionList = document.getElementById('created-condition-list')
+
+    if (createdConditionList.children.length !== createdConditions.length) {
+
+      createdConditionList.innerHTML = ''
+
+      for (i = 0; i < createdConditions.length; i++) {
+        const div = document.createElement('div')
+        div.innerText = createdConditions[i].name
+        createdConditionList.appendChild(div)
+      }
+    }
+
   }
+
   document.querySelector('#day-number').innerHTML = dayNumber
 
 }
@@ -494,4 +502,13 @@ function createCondition() {
   console.log(createdConditions)
 
   updateHtml()
+}
+
+function addAgentProperty() {
+  console.log('adding agent property')
+  const newAgentProperty = document.getElementById('form-add-agent-property').value
+  const newAgentPropertyValue = document.getElementById('form-add-agent-property-value').value
+
+  selectedAgent.addProperty(newAgentProperty, newAgentPropertyValue)
+
 }
