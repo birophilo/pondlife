@@ -1,0 +1,208 @@
+<html>
+
+<head>
+
+<script src="https://cdn.jsdelivr.net/npm/vue@2.7.16"></script>
+
+<style>
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+canvas {
+  width: 1000px;
+  height: 400px;
+}
+
+#container {
+  display: flex;
+  width: 100%;
+  justify-content: left;
+}
+
+.info-container {
+  border: 1px solid black;
+  width: 100%;
+  padding: 5px;
+  height: 1000px;
+}
+
+.speed-slide-container {
+  display: flex;
+  flex-direction: column;
+  padding: 5px;
+}
+
+.day-container {
+  padding: 5px;
+}
+
+.old-old-menu-subheading {
+  font-weight: bold;
+  margin: 16px 0 16px 0;
+}
+
+.old-old-menu-section {
+  padding-bottom: 20px;
+  border-bottom: 1px solid #ccc;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div id="container">
+
+  <canvas></canvas>
+
+  <div class="info-container">
+
+    <div class="menu-section" id="properties-section">
+      <h3 class="menu-section-heading">Properties</h3>
+      <!-- PROPERTY LIST -->
+      <div class="item-list">
+        <div v-for="item in propertiesSection.items">
+          <div v-if="item.editing === true">
+            <input type="text" placeholder="name" :value="item.name" disabled />
+            <input v-model="item.value" type="text" placeholder="value" :value="item.value" />
+            | <button @click="item.editing = false">done</button>
+          </div>
+          <div v-else>
+            <input type="text" placeholder="name" :value="item.name" disabled />: 
+            <input type="text" placeholder="value" :value="item.value" disabled /> -
+            <button @click="item.editing = true">edit</button> |
+            <button @click="deleteProperty(item.name)">delete</button>
+          </div>
+        </div>
+
+        <!-- ADD PROPERTY -->
+        <div v-if="propertiesSection.adding.status === false" class="add-container">
+          <button @click="propertiesSection.adding.status = true">new property +</button>
+        </div>
+        <div v-else>
+          <input v-model="propertiesSection.adding.newPropertyName" type="text" placeholder="name" />
+          <input v-model="propertiesSection.adding.newPropertyValue" type="text" placeholder="value" />
+          <button @click="createProperty">add</button> |
+          <button @click="cancelAddProperty">cancel</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="menu-section" id="actions-section">
+      <h3 class="menu-section-heading">Actions</h3>
+      <!-- ACTION LIST -->
+      <div class="item-list">
+        <div v-for="item in actionsSection.items">
+          <div v-if="item.editing === true">
+            <input type="text" placeholder="name" :value="item.name" disabled />
+            <input v-model="item.type" type="text" placeholder="type" :value="item.type" />
+            <input v-model="item.target" type="text" placeholder="target" :value="item.target" />
+            | <button @click="item.editing = false">done</button>
+          </div>
+          <div v-else>
+            <input type="text" placeholder="name" :value="item.name" disabled />: 
+            <input type="text" placeholder="type" :value="item.type" disabled />
+            <input type="text" placeholder="target" :value="item.target" disabled /> -
+            <button @click="item.editing = true">edit</button> |
+            <button @click="deleteAction(item.name)">delete</button>
+          </div>
+        </div>
+
+        <div v-if="actionsSection.adding.status === false" class="add-container">
+          <button @click="actionsSection.adding.status = true">new action +</button>
+        </div>
+        <div v-else>
+          <input v-model="actionsSection.adding.newActionName" type="text" placeholder="name" />
+          <input v-model="actionsSection.adding.newActionType" type="text" placeholder="type" />
+          <input v-model="actionsSection.adding.newActionTarget" type="text" placeholder="target" />
+          <button @click="createAction">add</button> |
+          <button @click="cancelAddAction">cancel</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+
+var vue = new Vue({
+  el: '#container',
+  data: {
+    propertiesSection: {
+      items: [{name: 'money', value: 200, editing: false}],
+      adding: {
+        status: false,
+        newPropertyName: '',
+        newPropertyValue: ''
+      }
+    },
+    actionsSection: {
+      items: [{name: 'go to shop', type: 'goTo', target: 'lemonadeStall 1', editing: false}],
+      adding: {
+        status: false,
+        newActionName: '',
+        newActionType: '',
+        newActionTarget: ''
+      }
+    },
+    conditionsSection: {
+      items: [],
+      adding: {
+        status: false
+      }
+    }
+  },
+
+  methods: {
+    createProperty: function () {
+      const propName = this.propertiesSection.adding.newPropertyName
+      const propValue = this.propertiesSection.adding.newPropertyValue
+      this.propertiesSection.items.push({name: propName, value: propValue, editing: false})
+      this.propertiesSection.adding.newPropertyName = ''
+      this.propertiesSection.adding.newPropertyValue = ''
+      this.propertiesSection.adding.status = false
+    },
+    deleteProperty: function (itemName) {
+      this.propertiesSection.items = this.propertiesSection.items.filter(item => item.name !== itemName)
+    },
+    cancelAddProperty: function () {
+      this.actionsSection.adding.status = false
+      this.actionsSection.adding.newPropertyName = ''
+      this.actionsSection.adding.newPropertyValue = ''
+    },
+    createAction: function () {
+      const actionName = this.actionsSection.adding.newActionName
+      const actionType = this.actionsSection.adding.newActionType
+      const actionTarget = this.actionsSection.adding.newActionTarget
+      this.actionsSection.items.push({name: actionName, type: actionType, target: actionTarget, editing: false})
+      this.actionsSection.adding.newActionName = ''
+      this.actionsSection.adding.newActionType = ''
+      this.actionsSection.adding.newActionTarget = ''
+      this.actionsSection.adding.status = false
+    },
+    deleteAction: function (itemName) {
+      this.actionsSection.items = this.actionsSection.items.filter(item => item.name !== itemName)
+    },
+    cancelAddAction: function () {
+      this.actionsSection.adding.status = false
+      this.actionsSection.adding.newActionName = ''
+      this.actionsSection.adding.newActionType = ''
+      this.actionsSection.adding.newActionTarget = ''
+    }
+  }
+})
+
+
+</script>
+
+</body>
+
+</html>
+
