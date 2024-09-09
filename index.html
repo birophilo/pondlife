@@ -10,6 +10,11 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
+canvas {
+  width: 1000px;
+  height: 600px;
+}
+
 .container {
   display: flex;
   width: 100%;
@@ -20,17 +25,27 @@ body {
   border: 1px solid black;
   width: 100%;
   padding: 5px;
+  height: 1000px;
 }
 
 .speed-slide-container {
   display: flex;
   flex-direction: column;
-  border-bottom: 1px solid #ccc;
   padding: 5px;
 }
 
 .day-container {
   padding: 5px;
+}
+
+.menu-subheading {
+  font-weight: bold;
+  margin: 16px 0 16px 0;
+}
+
+.menu-section {
+  padding-bottom: 20px;
+  border-bottom: 1px solid #ccc;
 }
 
 </style>
@@ -44,30 +59,50 @@ body {
   <canvas></canvas>
 
   <div class="info-container">
-    <div class="speed-slide-container">
-      <p>Speed: <span id="sim-speed-value">1.0</span></p>
-      <input type="range" min="0" max="200" value="100" id="sim-speed-slider">
+    <div class="menu-section">
+
+      <div class="day-container">
+        Day: <span id="day-number"></span>
+      </div>
+
+      <div class="speed-slide-container">
+        <div><span>Speed: </span><span id="sim-speed-value">1.0</span></div>
+        <input type="range" min="0" max="200" value="100" id="sim-speed-slider">
+      </div>
     </div>
 
-    <div class="day-container">
-      Day <span id="day-number"></span>
-    </div>
     <div id="info"></div>
-    <button id="button-change-state-go-to-stall">go to stall</button>
-    <button id="button-change-state-go-home">go home</button>
-    <button id="button-change-state-rest">rest</button>
-    <div class="agent-options">
+
+    <div class="menu-section">
+
+      <div class="menu-subheading">Agents</div>
+
+      <div class="menu-subheading">Create agent</div>
+
       <input type="text" id="form-create-agent-name" placeholder="name" />
       <input type="text" id="form-create-agent-width" placeholder="width" />
       <input type="text" id="form-create-agent-height" placeholder="height" />
       <button onclick="createAgent()">create agent</button>
-      <p></p>
+
+      <div class="menu-subheading">Create/set agent property</div>
       <input type="text" id="form-add-agent-property" placeholder="property" />
       <input type="text" id="form-add-agent-property-value" placeholder="value" />
       <button onclick="addAgentProperty()">add agent property</button>
-      <p></p>
+
+    </div>
+
+    <div class="menu-section">
+
+      <div class="menu-subheading">Actions</div>
+
+      <div class="menu-subheading">Create action</div>
+
       <button id="button-go-to-stall-1">go to stall 1</button>
       <button id="button-go-to-stall-2">go to stall 2</button>
+      <button id="button-change-state-go-home">go home</button>
+      <button id="button-change-state-rest">rest</button>
+
+
       <p></p>
       <input type="text" id="form-create-action-name" placeholder="action name" />
       <input type="text" id="form-create-action-type" value="goToDestination" />
@@ -84,25 +119,32 @@ body {
         <input type="radio" name="agentChoice" value="specific" />
         <label for="nearest">specific</label>
       </form>
-      <br/>
       <button onclick="createGoToAgentAction()">create 'go to agent' action</button>
-      <p></p>
-      <p>Create condition:</p>
+
+
+      <div class="menu-subheading">Created actions</div>
+      <div id="action-button-list"></div>
+
+      <div class="menu-subheading">Action queue</div>
+      <div id="action-queue-list"></div>
+
+    </div>
+    <div class="menu-section">
+
+      <div class="menu-subheading">Conditions</div>
+
+      <div class="menu-subheading">Create condition</div>
+
       <input type="text" id="form-create-condition-property" placeholder="property or parameter" />
       <input type="text" id="form-create-condition-comparison" placeholder="comparison" value="isGreaterThan" />
       <input type="text" id="form-create-condition-threshold" placeholder="value threshold" />
       <button onclick="createCondition()">create condition</button>
 
-      <div style="font-weight: bold">Actions</div>
-      <div id="action-button-list"></div>
-      <p></p>
-
-      <div style="font-weight: bold">Conditions</div>
+      <div class="menu-subheading">Created conditions</div>
       <div id="created-condition-list"></div>
       <p></p>
+
     </div>
-    <div>Actions</div>
-    <div id="action-queue-list"></div>
 
   </div>
 

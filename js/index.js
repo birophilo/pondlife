@@ -129,8 +129,6 @@ function updateHtml() {
 
     document.querySelector('#button-change-state-rest').onclick = () =>
       changeAgentStateFromButton(selectedAgent, ActionRest, {})
-    document.querySelector('#button-change-state-go-to-stall').onclick = () =>
-      changeAgentStateFromButton(selectedAgent, ActionGoToAgent, {agent: lemonadeStalls[0]})
     document.querySelector('#button-change-state-go-home').onclick = () =>
       changeAgentStateFromButton(selectedAgent, ActionGoToDestination, {destination: selectedAgent.home})
 

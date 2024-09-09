@@ -28,7 +28,7 @@ class ActionGoingToStall {
 }
 
 class ActionGoToDestination {
-  constructor(customer, args) {
+  constructor(customer, args, conditions = []) {
     this.customer = customer
     this.args = args
     this.destination = args.destination
@@ -36,6 +36,8 @@ class ActionGoToDestination {
     this.stateName = `goingTo: ${this.destination.name}`
     this.inProgress = false
     this.isComplete = false
+
+    this.conditions = conditions ? conditions : []
   }
 
   meetsConditions() {
