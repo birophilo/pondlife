@@ -104,6 +104,11 @@ class ActionGoToDestination {
     this.customer.frames.max = 9
   }
 
+  defaultCompletionCheckPasses() {
+    // default complete condition for class/action type
+    return this.customer.atDestination()
+  }
+
   check(stateData) {
     console.log('action transition checks')
     console.log(this.transitionChecks)
@@ -115,6 +120,10 @@ class ActionGoToDestination {
         this.customer.actionList.push(this.transitionChecks[i].nextAction)
       }
       console.log(result)
+    }
+
+    if (this.defaultCompletionCheckPasses()) {
+      this.isComplete = true
     }
 
   }
@@ -171,6 +180,11 @@ class ActionGoToAgent {
     this.customer.frames.max = 9
   }
 
+  defaultCompletionCheckPasses() {
+    // default complete condition for class/action type
+    return this.customer.atDestination()
+  }
+
   check(stateData) {
     console.log('action transition checks')
     console.log(this.transitionChecks)
@@ -182,6 +196,10 @@ class ActionGoToAgent {
         this.customer.actionList.push(this.transitionChecks[i].nextAction)
       }
       console.log(result)
+    }
+
+    if (this.defaultCompletionCheckPasses()) {
+      this.isComplete = true
     }
 
   }
