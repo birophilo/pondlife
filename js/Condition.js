@@ -38,6 +38,7 @@ class PresetCondition {
     this.agent = agent
     this.condition = condition
     this.conditionValue = conditionValue
+    this.name = `${this.classMethod} ${this.condition} ${this.conditionValue}`
   }
   evaluate() {
     const agentValue = this.agent[this.classMethod]()

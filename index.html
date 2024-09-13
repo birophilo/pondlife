@@ -25,7 +25,7 @@ canvas {
   border: 1px solid black;
   width: 100%;
   padding: 5px;
-  height: 1000px;
+  height: 1200px;
 }
 
 .speed-slide-container {
@@ -141,7 +141,26 @@ canvas {
       <button onclick="createCondition()">create condition</button>
 
       <div class="menu-subheading">Created conditions</div>
+
+      <div class="menu-subheading">Create condition</div>
+
+      <input type="text" id="form-create-preset-condition-method" placeholder="preset condition name" />
+      <input type="text" id="form-create-preset-condition-comparison" placeholder="comparison" value="isIdentical" />
+      <input type="text" id="form-create-preset-condition-value" placeholder="value" />
+      <button onclick="createPresetCondition()">create preset condition</button>
+
+      <div class="menu-subheading">Created conditions</div>
+
       <div id="created-condition-list"></div>
+
+      <p></p>
+
+      <div class="menu-subheading">Transition Checks</div>
+      <!-- <select id="form-transition-agent" placeholder="agent" />
+      <select id="form-transition-condition" placeholder="condition" />
+      <select id="form-transition-next-action" placeholder="next action" /> -->
+      <button onclick="createTransitionCheck()">assign action transition</button>
+
       <p></p>
 
     </div>

@@ -23,6 +23,7 @@ let ACTIONS = [
 
 let createdActions = []
 let createdConditions = []
+let createdPresetConditions = []
 
 let globalSpeed = GlobalSettings.globalSpeed
 let dayNumber = 1
@@ -502,6 +503,28 @@ function createCondition() {
   updateHtml()
 }
 
+function createPresetCondition() {
+  console.log('creating preset condition')
+  const newConditionMethod = document.getElementById('form-create-preset-condition-method').value
+  const newConditionComparison = document.getElementById('form-create-preset-condition-comparison').value
+  const newConditionThreshold = document.getElementById('form-create-preset-condition-value').value
+
+  let newCondition = new PresetCondition(
+    selectedAgent,
+    newConditionMethod,
+    newConditionComparison,
+    true  // hard-coded for now
+  )
+
+  createdPresetConditions.push(newCondition)
+
+  // hard coding temporarily
+  // createdActions[0].conditions.push(newCondition)
+  // console.log(createdConditions)
+
+  updateHtml()
+}
+
 function addAgentProperty() {
   console.log('adding agent property')
   const newAgentProperty = document.getElementById('form-add-agent-property').value
@@ -509,4 +532,10 @@ function addAgentProperty() {
 
   selectedAgent.addProperty(newAgentProperty, newAgentPropertyValue)
 
+}
+
+function createTransitionCheck() {
+  // hard-coding temporarily
+  const action = createdActions[0]
+  action.transitionChecks.push({condition: createdConditions[0], nextAction: createdActions[1]})
 }

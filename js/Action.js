@@ -138,9 +138,6 @@ class ActionGoToAgent {
 
     this.transitionChecks = []
 
-    const atDestinationCondition = new PresetCondition(this.customer, 'atDestination', 'isIdentical', true)
-
-
   }
 
   meetsConditions() {
@@ -162,12 +159,15 @@ class ActionGoToAgent {
   }
 
   check(stateData) {
-    const condition = new PresetCondition(this.customer, 'atDestination', 'isIdentical', true)
-    const result = condition.evaluate()
-    if (result === true) {
-      this.isComplete = true
+    for (i = 0; i < this.transitionChecks.length; i++) {
+      const result = this.transitionChecks[i].condition.evaluate()
+      if (result === true) {
+        this.isComplete = true
+        this.customer.actionList.push(this.transitionChecks[i].nextAction)
+      }
+      console.log(result)
     }
-    console.log(result)
+
   }
 
   clone() {
