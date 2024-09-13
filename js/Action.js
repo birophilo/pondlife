@@ -71,7 +71,7 @@ class ActionGoingToStall {
 // }
 
 class ActionGoToDestination {
-  constructor(customer, args, conditions = []) {
+  constructor(customer, args, conditions = [], transitionChecks = []) {
     this.customer = customer
     this.args = args
     this.destination = args.destination
@@ -81,6 +81,7 @@ class ActionGoToDestination {
     this.isComplete = false
 
     this.conditions = conditions ? conditions : []
+    this.transitionChecks = transitionChecks ? transitionChecks : []
 
     this.actionList = []
   }
@@ -112,12 +113,17 @@ class ActionGoToDestination {
   }
 
   clone() {
-    return new this.constructor(this.customer, this.args)
+    return new this.constructor(
+      this.customer,
+      this.args,
+      this.conditions,
+      this.transitionChecks
+    )
   }
 }
 
 class ActionGoToAgent {
-  constructor(customer, args, conditions = []) {
+  constructor(customer, args, conditions = [], transitionChecks = []) {
     this.customer = customer
     this.args = args
     this.agentType = args.agentType
@@ -133,10 +139,9 @@ class ActionGoToAgent {
     this.isComplete = false
 
     this.conditions = conditions ? conditions : []
+    this.transitionChecks = transitionChecks ? transitionChecks : []
 
     this.actionList = []
-
-    this.transitionChecks = []
 
   }
 
@@ -159,8 +164,11 @@ class ActionGoToAgent {
   }
 
   check(stateData) {
+    console.log('action transition checks')
+    console.log(this.transitionChecks)
     for (i = 0; i < this.transitionChecks.length; i++) {
       const result = this.transitionChecks[i].condition.evaluate()
+      console.log('result of check is', result)
       if (result === true) {
         this.isComplete = true
         this.customer.actionList.push(this.transitionChecks[i].nextAction)
@@ -171,7 +179,12 @@ class ActionGoToAgent {
   }
 
   clone() {
-    return new this.constructor(this.customer, this.args, this.conditions)
+    return new this.constructor(
+      this.customer,
+      this.args,
+      this.conditions,
+      this.transitionChecks
+    )
   }
     
 }

@@ -537,5 +537,5 @@ function addAgentProperty() {
 function createTransitionCheck() {
   // hard-coding temporarily
   const action = createdActions[0]
-  action.transitionChecks.push({condition: createdConditions[0], nextAction: createdActions[1]})
+  action.transitionChecks.push({condition: createdPresetConditions[0], nextAction: createdActions[1]})
 }
