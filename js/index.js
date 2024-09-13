@@ -122,6 +122,7 @@ function changeAgentStateFromButton(agent, actionClass, args={}) {
 }
 
 function updateHtml() {
+
   if (selectedAgent !== null) {
     const info = `${selectedAgent.name} ${selectedAgent.num}.<br/>` +
     `Money: ${selectedAgent.stateData.money}.<br/>` +
@@ -179,6 +180,49 @@ function updateHtml() {
         createdConditionList.appendChild(div)
       }
     }
+
+    let transitionCheckActionMenu = document.getElementById('form-transition-action')
+
+    if (transitionCheckActionMenu.children.length !== createdActions.length) {
+
+      transitionCheckActionMenu.innerHTML = ''
+
+      for (i = 0; i < createdActions.length; i++) {
+        const option = document.createElement('option')
+        option.innerText = createdActions[i].actionName
+        option.value = createdActions[i].id
+        transitionCheckActionMenu.appendChild(option)
+      }
+    }
+
+    let transitionCheckConditionMenu = document.getElementById('form-transition-condition')
+
+    if (transitionCheckConditionMenu.children.length !== createdPresetConditions.length) {
+
+      transitionCheckConditionMenu.innerHTML = ''
+
+      for (i = 0; i < createdPresetConditions.length; i++) {
+        const option = document.createElement('option')
+        option.innerText = createdPresetConditions[i].name
+        option.value = createdPresetConditions[i].id
+        transitionCheckConditionMenu.appendChild(option)
+      }
+    }
+
+    let transitionCheckNextActionMenu = document.getElementById('form-transition-next-action')
+
+    if (transitionCheckNextActionMenu.children.length !== createdActions.length) {
+
+      transitionCheckNextActionMenu.innerHTML = ''
+
+      for (i = 0; i < createdActions.length; i++) {
+        const option = document.createElement('option')
+        option.innerText = createdActions[i].actionName
+        option.value = createdActions[i].id
+        transitionCheckNextActionMenu.appendChild(option)
+      }
+    }
+
 
   }
 
@@ -440,15 +484,16 @@ function createAgent() {
 
 function createGoToDestinationAction() {
   console.log('creating action')
-  const newActionName = document.getElementById('form-create-action-name')
-  const newActionType = document.getElementById('form-create-action-type')
-  const newActionDestination = document.getElementById('form-create-action-destination')
+  const newActionName = document.getElementById('form-create-action-name').value
+  const newActionType = document.getElementById('form-create-action-type').value
+  const newActionDestination = document.getElementById('form-create-action-destination').value
 
   let newAction = new ActionGoToDestination(
     selectedAgent,
     {
+      id: createdActions.length + 1,
       actionName: newActionName,
-      type: 'goToDestination',
+      type: newActionType,
       destination: selectedAgent.home
     }
   )
@@ -469,6 +514,7 @@ function createGoToAgentAction() {
   let newAction = new ActionGoToAgent(
     selectedAgent,
     {
+      id: createdActions.length + 1,
       actionName: newActionName,
       type: newActionType,  // 'goToAgent'
       agentType: newActionAgentType,
@@ -491,7 +537,8 @@ function createCondition() {
     selectedAgent,
     newConditionProperty,
     newConditionComparison,
-    Number(newConditionThreshold)
+    Number(newConditionThreshold),
+    createdConditions.length + 1  // id
   )
 
   createdConditions.push(newCondition)
@@ -513,14 +560,11 @@ function createPresetCondition() {
     selectedAgent,
     newConditionMethod,
     newConditionComparison,
-    true  // hard-coded for now
+    true,  // hard-coded for now,
+    createdConditions.length + 1  // id
   )
 
   createdPresetConditions.push(newCondition)
-
-  // hard coding temporarily
-  // createdActions[0].conditions.push(newCondition)
-  // console.log(createdConditions)
 
   updateHtml()
 }
@@ -535,7 +579,21 @@ function addAgentProperty() {
 }
 
 function createTransitionCheck() {
-  // hard-coding temporarily
-  const action = createdActions[0]
-  action.transitionChecks.push({condition: createdPresetConditions[0], nextAction: createdActions[1]})
+
+  const transitionCheckActionId = document.getElementById('form-transition-action').value
+  const transitionCheckConditionId = document.getElementById('form-transition-condition').value
+  const transitionCheckNextActionId = document.getElementById('form-transition-next-action').value
+
+  console.log(transitionCheckActionId, transitionCheckConditionId, transitionCheckNextActionId)
+
+  const action = createdActions.filter(action => action.id === Number(transitionCheckActionId))[0]
+  const condition = createdPresetConditions.filter(cond => cond.id === Number(transitionCheckConditionId))[0]
+  const nextAction = createdActions.filter(action => action.id === Number(transitionCheckNextActionId))[0]
+
+  console.log(action, condition, nextAction)
+
+  action.transitionChecks.push({
+    condition: condition,
+    nextAction: nextAction
+  })
 }

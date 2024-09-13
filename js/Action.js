@@ -72,6 +72,7 @@ class ActionGoingToStall {
 
 class ActionGoToDestination {
   constructor(customer, args, conditions = [], transitionChecks = []) {
+    this.id = args.id  // incrementing PK
     this.customer = customer
     this.args = args
     this.destination = args.destination
@@ -104,12 +105,18 @@ class ActionGoToDestination {
   }
 
   check(stateData) {
-    const condition = new PresetCondition(this.customer, 'atDestination', 'isIdentical', true)
-    const result = condition.evaluate()
-    if (result === true) {
-      this.isComplete = true
+    console.log('action transition checks')
+    console.log(this.transitionChecks)
+    for (i = 0; i < this.transitionChecks.length; i++) {
+      const result = this.transitionChecks[i].condition.evaluate()
+      console.log('result of check is', result)
+      if (result === true) {
+        this.isComplete = true
+        this.customer.actionList.push(this.transitionChecks[i].nextAction)
+      }
+      console.log(result)
     }
-    console.log(result)
+
   }
 
   clone() {
@@ -124,6 +131,7 @@ class ActionGoToDestination {
 
 class ActionGoToAgent {
   constructor(customer, args, conditions = [], transitionChecks = []) {
+    this.id = args.id  // incrementing PK
     this.customer = customer
     this.args = args
     this.agentType = args.agentType
