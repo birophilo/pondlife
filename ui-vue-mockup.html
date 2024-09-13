@@ -100,7 +100,10 @@ canvas {
         <div v-for="item in actionsSection.items">
           <div v-if="item.editing === true">
             <input type="text" placeholder="name" :value="item.name" disabled />
-            <input v-model="item.type" type="text" placeholder="type" :value="item.type" />
+            <select v-model="item.type">
+              <option value="goTo">go to</option>
+              <option value="exchange">exchange</option>
+            </select>
             <input v-model="item.target" type="text" placeholder="target" :value="item.target" />
             | <button @click="item.editing = false">done</button>
           </div>
@@ -118,7 +121,10 @@ canvas {
         </div>
         <div v-else>
           <input v-model="actionsSection.adding.newActionName" type="text" placeholder="name" />
-          <input v-model="actionsSection.adding.newActionType" type="text" placeholder="type" />
+          <select v-model="actionsSection.adding.newActionType">
+            <option value="goTo">go to</option>
+            <option value="exchange">exchange</option>
+          </select>
           <input v-model="actionsSection.adding.newActionTarget" type="text" placeholder="target" />
           <button @click="createAction">add</button> |
           <button @click="cancelAddAction">cancel</button>
@@ -148,7 +154,7 @@ var vue = new Vue({
       adding: {
         status: false,
         newActionName: '',
-        newActionType: '',
+        newActionType: 'goTo',
         newActionTarget: ''
       }
     },

@@ -27,6 +27,49 @@ class ActionGoingToStall {
   }
 }
 
+
+// class ActionEmpty {
+//   constructor(customer, args, conditions = []) {
+//     this.customer = customer
+//     this.args = args
+//     this.actionName = 'do nothing'
+//     this.stateName = 'doing nothing'
+//     this.inProgress = false
+//     this.isComplete = false
+
+//     this.conditions = conditions ? conditions : []
+
+//     this.actionList = []
+//   }
+
+//     meetsConditions() {
+//     for (i = 0; i < this.conditions.length; i++) {
+//       const qualifies = this.conditions[i].evaluate()
+//       if (qualifies === false) {
+//         console.log('did not meet condition')
+//         return
+//       }
+//     }
+//     return true
+//   }
+
+//   start() {
+//     this.customer.currentStateName = `${this.stateName}`
+//     this.customer.frames.max = 1
+
+//   }
+
+//   check(stateData) {
+//     return
+//   }
+
+//   afterComplete
+
+//   clone() {
+//     return new this.constructor(this.customer, this.args)
+//   }
+// }
+
 class ActionGoToDestination {
   constructor(customer, args, conditions = []) {
     this.customer = customer
@@ -38,6 +81,8 @@ class ActionGoToDestination {
     this.isComplete = false
 
     this.conditions = conditions ? conditions : []
+
+    this.actionList = []
   }
 
   meetsConditions() {
@@ -55,16 +100,15 @@ class ActionGoToDestination {
     this.customer.currentStateName = `${this.stateName}`
     this.customer.destination = this.destination
     this.customer.frames.max = 9
-
-    if (this.customer.atDestination()) {
-      this.isComplete = true
-    }
   }
 
   check(stateData) {
-    if (this.customer.atDestination()) {
+    const condition = new PresetCondition(this.customer, 'atDestination', 'isIdentical', true)
+    const result = condition.evaluate()
+    if (result === true) {
       this.isComplete = true
     }
+    console.log(result)
   }
 
   clone() {
@@ -90,6 +134,13 @@ class ActionGoToAgent {
 
     this.conditions = conditions ? conditions : []
 
+    this.actionList = []
+
+    this.transitionChecks = []
+
+    const atDestinationCondition = new PresetCondition(this.customer, 'atDestination', 'isIdentical', true)
+
+
   }
 
   meetsConditions() {
@@ -111,9 +162,12 @@ class ActionGoToAgent {
   }
 
   check(stateData) {
-    if (this.customer.atDestination()) {
+    const condition = new PresetCondition(this.customer, 'atDestination', 'isIdentical', true)
+    const result = condition.evaluate()
+    if (result === true) {
       this.isComplete = true
     }
+    console.log(result)
   }
 
   clone() {
