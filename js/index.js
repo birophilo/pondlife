@@ -16,8 +16,7 @@ const AGENTS = {
 }
 
 let ACTIONS = [
-  ActionGoToAgent,
-  ActionGoToDestination,
+  ActionGoTo,
   ActionRest
 ]
 
@@ -132,19 +131,19 @@ function updateHtml() {
     document.querySelector('#button-change-state-rest').onclick = () =>
       changeAgentStateFromButton(selectedAgent, ActionRest, {})
     document.querySelector('#button-change-state-go-home').onclick = () =>
-      changeAgentStateFromButton(selectedAgent, ActionGoToDestination, {destination: selectedAgent.home})
+      changeAgentStateFromButton(selectedAgent, ActionGoTo, {destination: selectedAgent.home})
 
     document.querySelector('#button-go-to-stall-1').onclick = () => {
       changeAgentStateFromButton(
         selectedAgent,
-        ActionGoToAgent,
+        ActionGoTo,
         args={agent: lemonadeStalls[0]}
       )
     }
     document.querySelector('#button-go-to-stall-2').onclick = () => {
       changeAgentStateFromButton(
         selectedAgent,
-        ActionGoToAgent,
+        ActionGoTo,
         args={agent: lemonadeStalls[1]}
       )
     }
@@ -482,45 +481,31 @@ function createAgent() {
   agentMenuButtons.push(newIcon)
 }
 
-function createGoToDestinationAction() {
-  console.log('creating action')
+
+function createGoToAction() {
+  console.log('creating action2')
   const newActionName = document.getElementById('form-create-action-name').value
   const newActionType = document.getElementById('form-create-action-type').value
   const newActionDestination = document.getElementById('form-create-action-destination').value
 
-  let newAction = new ActionGoToDestination(
-    selectedAgent,
-    {
-      id: createdActions.length + 1,
-      actionName: newActionName,
-      type: newActionType,
-      destination: selectedAgent.home
-    }
-  )
-
-  createdActions.push(newAction)
-
-  updateHtml()
-}
-
-function createGoToAgentAction() {
-  console.log('creating action2')
-  const newActionName = document.getElementById('form-create-action2-name').value
-  const newActionType = document.getElementById('form-create-action2-type').value
-  const newActionAgentType = document.getElementById('form-create-action2-agent').value
-
   const agentChoiceValue = document.agentRadioSelect.agentChoice.value
 
-  let newAction = new ActionGoToAgent(
-    selectedAgent,
-    {
-      id: createdActions.length + 1,
-      actionName: newActionName,
-      type: newActionType,  // 'goToAgent'
-      agentType: newActionAgentType,
-      agentChoice: agentChoiceValue
-    }
-  )
+  let args = {
+    id: createdActions.length + 1,
+    actionName: newActionName,
+    type: newActionType,  // 'goTo'
+    agentType: newActionDestination,
+    agentChoice: agentChoiceValue
+  }
+
+  if (newActionDestination === 'home') {
+    args.destination = selectedAgent.home
+  } else {
+    args.agentType = newActionDestination
+    args.agentChoice = agentChoiceValue
+  }
+
+  let newAction = new ActionGoTo(selectedAgent, args)
 
   createdActions.push(newAction)
 

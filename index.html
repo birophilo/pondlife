@@ -105,21 +105,16 @@ canvas {
 
       <p></p>
       <input type="text" id="form-create-action-name" placeholder="action name" />
-      <input type="text" id="form-create-action-type" value="goToDestination" />
+      <input type="text" id="form-create-action-type" value="goTo" />
       <input type="text" id="form-create-action-destination" placeholder="destination" />
       <br/>
-      <button onclick="createGoToDestinationAction()">create 'go to destination' action</button>
-      <p></p>
-      <input type="text" id="form-create-action2-name" placeholder="action name" />
-      <input type="text" id="form-create-action2-type" value="goToAgent" />
-      <input type="text" id="form-create-action2-agent" placeholder="agent type" />
       <form name="agentRadioSelect">
         <input type="radio" name="agentChoice" value="nearest" checked="true" />
         <label for="nearest">nearest</label>
         <input type="radio" name="agentChoice" value="specific" />
         <label for="nearest">specific</label>
       </form>
-      <button onclick="createGoToAgentAction()">create 'go to agent' action</button>
+      <button onclick="createGoToAction()">create 'go to' action</button>
 
 
       <div class="menu-subheading">Created actions</div>

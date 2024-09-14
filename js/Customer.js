@@ -109,12 +109,7 @@ class Customer extends Sprite {
 
     this.defaultActions = new ActionDefaults(this)
 
-    this.actionList = [
-      // new ActionGoToAgentIfHaveEnoughMoney(this, {agent: lemonadeStalls[0]}),
-      // new ActionBuy(this, {}),
-      // new ActionGoToDestination(this, {destination: this.home}),
-      // new ActionRest(this, {})
-    ]
+    this.actionList = []
 
     this.currentActionName = ''
     this.currentStateName = ''

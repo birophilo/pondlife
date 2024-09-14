@@ -28,54 +28,23 @@ class ActionGoingToStall {
 }
 
 
-// class ActionEmpty {
-//   constructor(customer, args, conditions = []) {
-//     this.customer = customer
-//     this.args = args
-//     this.actionName = 'do nothing'
-//     this.stateName = 'doing nothing'
-//     this.inProgress = false
-//     this.isComplete = false
-
-//     this.conditions = conditions ? conditions : []
-
-//     this.actionList = []
-//   }
-
-//     meetsConditions() {
-//     for (i = 0; i < this.conditions.length; i++) {
-//       const qualifies = this.conditions[i].evaluate()
-//       if (qualifies === false) {
-//         console.log('did not meet condition')
-//         return
-//       }
-//     }
-//     return true
-//   }
-
-//   start() {
-//     this.customer.currentStateName = `${this.stateName}`
-//     this.customer.frames.max = 1
-
-//   }
-
-//   check(stateData) {
-//     return
-//   }
-
-//   afterComplete
-
-//   clone() {
-//     return new this.constructor(this.customer, this.args)
-//   }
-// }
-
-class ActionGoToDestination {
+class ActionGoTo {
   constructor(customer, args, conditions = [], transitionChecks = []) {
     this.id = args.id  // incrementing PK
     this.customer = customer
     this.args = args
-    this.destination = args.destination
+
+    if (args.agentType === 'lemonadeStall') {
+      this.agentType = args.agentType
+
+      if (args.agentChoice === 'nearest') {
+        const agentArray = AGENT_CONFIGS[this.agentType].agentArray
+        this.destination = this.customer.getClosestAgent(agentArray)
+      }
+    } else {
+      this.destination = args.destination
+    }
+
     this.actionName = args.actionName
     this.stateName = `goingTo: ${this.destination.name}`
     this.inProgress = false
@@ -85,6 +54,7 @@ class ActionGoToDestination {
     this.transitionChecks = transitionChecks ? transitionChecks : []
 
     this.actionList = []
+
   }
 
   meetsConditions() {
@@ -99,83 +69,8 @@ class ActionGoToDestination {
   }
 
   start() {
-    this.customer.currentStateName = `${this.stateName}`
+
     this.customer.destination = this.destination
-    this.customer.frames.max = 9
-  }
-
-  defaultCompletionCheckPasses() {
-    // default complete condition for class/action type
-    return this.customer.atDestination()
-  }
-
-  check(stateData) {
-    console.log('action transition checks')
-    console.log(this.transitionChecks)
-    for (i = 0; i < this.transitionChecks.length; i++) {
-      const result = this.transitionChecks[i].condition.evaluate()
-      console.log('result of check is', result)
-      if (result === true) {
-        this.isComplete = true
-        this.customer.actionList.push(this.transitionChecks[i].nextAction)
-      }
-      console.log(result)
-    }
-
-    if (this.defaultCompletionCheckPasses()) {
-      this.isComplete = true
-    }
-
-  }
-
-  clone() {
-    return new this.constructor(
-      this.customer,
-      this.args,
-      this.conditions,
-      this.transitionChecks
-    )
-  }
-}
-
-class ActionGoToAgent {
-  constructor(customer, args, conditions = [], transitionChecks = []) {
-    this.id = args.id  // incrementing PK
-    this.customer = customer
-    this.args = args
-    this.agentType = args.agentType
-
-    if (args.agentChoice === 'nearest') {
-      const agentArray = AGENT_CONFIGS[this.agentType].agentArray
-      this.agent = this.customer.getClosestAgent(agentArray)
-    }
-
-    this.actionName = args.actionName
-    this.stateName = `goingTo: ${this.agent.name}`
-    this.inProgress = false
-    this.isComplete = false
-
-    this.conditions = conditions ? conditions : []
-    this.transitionChecks = transitionChecks ? transitionChecks : []
-
-    this.actionList = []
-
-  }
-
-  meetsConditions() {
-    for (i = 0; i < this.conditions.length; i++) {
-      const qualifies = this.conditions[i].evaluate()
-      if (qualifies === false) {
-        console.log('did not meet condition')
-        return
-      }
-    }
-    return true
-  }
-
-  start() {
-
-    this.customer.destination = this.agent
     this.customer.currentStateName = this.stateName
     this.customer.frames.max = 9
   }
