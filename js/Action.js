@@ -29,7 +29,7 @@ class ActionGoingToStall {
 
 
 class ActionGoTo {
-  constructor(customer, args, conditions = [], transitionChecks = []) {
+  constructor(customer = null, args, conditions = [], transitionChecks = []) {
     this.id = args.id  // incrementing PK
     this.customer = customer
     this.args = args
@@ -99,10 +99,10 @@ class ActionGoTo {
 
   }
 
-  clone() {
+  clone(customer, args) {
     return new this.constructor(
-      this.customer,
-      this.args,
+      customer,
+      this.args = {...this.args, ...args},
       this.conditions,
       this.transitionChecks
     )

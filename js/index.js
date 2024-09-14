@@ -161,7 +161,7 @@ function updateHtml() {
         button.innerText = createdActions[i].actionName
         const j = Number(i)  // closure
         button.addEventListener('click', () => {
-          selectedAgent.actionList.push(createdActions[j].clone())
+          selectedAgent.actionList.push(createdActions[j].clone(selectedAgent, {destination: selectedAgent.home}))
         })
         actionButtonList.appendChild(button)
       }
