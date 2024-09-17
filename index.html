@@ -95,15 +95,13 @@ canvas {
 
       <div class="menu-subheading">Actions</div>
 
-      <div class="menu-subheading">Create action</div>
-
       <button id="button-go-to-stall-1">go to stall 1</button>
       <button id="button-go-to-stall-2">go to stall 2</button>
       <button id="button-change-state-go-home">go home</button>
       <button id="button-change-state-rest">rest</button>
-
-
       <p></p>
+
+      <div class="menu-subheading">Create 'go to' action</div>
       <input type="text" id="form-create-action-name" placeholder="action name" />
       <input type="text" id="form-create-action-type" value="goTo" />
       <input type="text" id="form-create-action-destination" placeholder="destination" />
@@ -115,6 +113,23 @@ canvas {
         <label for="nearest">specific</label>
       </form>
       <button onclick="createGoToAction()">create 'go to' action</button>
+
+      <div class="menu-subheading">Create 'property exchange' action</div>
+
+      <input type="text" id="action-change-property-action-name" placeholder="action name" />
+      <input type="text" id="action-change-property-agent-type" placeholder="agent type" />
+      <select id="action-change-property-name">
+        <option value="">-- select property --</option>
+        <option value="money">money</option>
+      </select>
+      <select id="action-change-property-change" value="change">
+        <option value="">-- select change --</option>
+        <option value="increase">increase</option>
+        <option value="decrease">decrease</option>
+      </select>
+      <input type="text" id="action-change-property-value" placeholder="property value" />
+      <br />
+      <button onclick="createPropertyChangeAction()">create 'property change' action</button>
 
 
       <div class="menu-subheading">Created actions</div>

@@ -53,7 +53,7 @@ class ActionGoTo {
     this.conditions = conditions ? conditions : []
     this.transitionChecks = transitionChecks ? transitionChecks : []
 
-    this.actionList = []
+    this.propertyChanges = []
 
   }
 
@@ -104,11 +104,120 @@ class ActionGoTo {
       customer,
       this.args = {...this.args, ...args},
       this.conditions,
-      this.transitionChecks
+      this.transitionChecks,
+      this.propertyChanges
+    )
+  }
+
+}
+
+
+class PropertyChange {
+  constructor(agent, propertyName, changeType, propertyValue) {
+    this.agent = agent
+    this.propertyName = propertyName
+    this.changeType = changeType
+    this.propertyValue = changeType === 'increase' ? propertyValue : -propertyValue
+  }
+}
+
+
+class ActionPropertyChanges {
+  constructor(customer = null, args, conditions = [], transitionChecks = [], propertyChanges = []) {
+    this.id = args.id  // incrementing PK
+    this.customer = customer
+    this.args = args
+
+    if (args.agentType === 'lemonadeStall') {
+      this.agentType = args.agentType
+
+      if (args.agentChoice === 'nearest') {
+        const agentArray = AGENT_CONFIGS[this.agentType].agentArray
+        this.destination = this.customer.getClosestAgent(agentArray)
+      }
+    } else {
+      this.destination = args.destination
+    }
+
+    this.actionName = args.actionName
+    this.stateName = args.actionName
+    this.inProgress = false
+    this.isComplete = false
+
+    this.changesApplied = false  // temporary duplicate 'complete' flag - find different approach
+
+    this.conditions = conditions ? conditions : []
+    this.transitionChecks = transitionChecks ? transitionChecks : []
+    this.propertyChanges = propertyChanges ? propertyChanges : []
+
+  }
+
+  meetsConditions() {
+    for (i = 0; i < this.conditions.length; i++) {
+      const qualifies = this.conditions[i].evaluate()
+      if (qualifies === false) {
+        console.log('did not meet condition')
+        return
+      }
+    }
+    return true
+  }
+
+  start() {
+    console.log('property changes')
+    console.log(this.propertyChanges)
+    this.propertyChanges.forEach(change => {
+      // temporary hard-coding
+      if (this.args.agentType === 'lemonadeStall') {
+        var agentToChange = this.destination
+      } else {
+        var agentToChange = this.customer
+      }
+      console.log(agentToChange)
+      console.log(change.propertyName)
+      console.log(change.propertyValue)
+      agentToChange.stateData[change.propertyName] += change.propertyValue
+      console.log(this.customer.stateData.money)
+    })
+    this.changesApplied = true
+  }
+
+  defaultCompletionCheckPasses() {
+    // default complete condition for class/action type
+    return this.changesApplied === true
+  }
+
+  check(stateData) {
+    console.log('action transition checks')
+    console.log(this.transitionChecks)
+    for (i = 0; i < this.transitionChecks.length; i++) {
+      const result = this.transitionChecks[i].condition.evaluate()
+      console.log('result of check is', result)
+      if (result === true) {
+        this.isComplete = true
+        this.customer.actionList.push(this.transitionChecks[i].nextAction)
+      }
+      console.log(result)
+    }
+
+    if (this.defaultCompletionCheckPasses()) {
+      this.isComplete = true
+    }
+
+  }
+
+  clone(customer, args) {
+    return new this.constructor(
+      customer,
+      this.args = {...this.args, ...args},
+      this.conditions,
+      this.transitionChecks,
+      this.propertyChanges
     )
   }
     
 }
+
 
 class ActionGoToAgentIfHaveEnoughMoney {
   constructor(customer, args) {

@@ -557,7 +557,7 @@ function createPresetCondition() {
 function addAgentProperty() {
   console.log('adding agent property')
   const newAgentProperty = document.getElementById('form-add-agent-property').value
-  const newAgentPropertyValue = document.getElementById('form-add-agent-property-value').value
+  const newAgentPropertyValue = Number(document.getElementById('form-add-agent-property-value').value)
 
   selectedAgent.addProperty(newAgentProperty, newAgentPropertyValue)
 
@@ -581,4 +581,33 @@ function createTransitionCheck() {
     condition: condition,
     nextAction: nextAction
   })
+}
+
+function createPropertyChangeAction() {
+  const actionName = document.getElementById('action-change-property-action-name').value
+  const agentType = document.getElementById('action-change-property-agent-type').value
+  const propertyName = document.getElementById('action-change-property-name').value
+  const propertyChangeType = document.getElementById('action-change-property-change').value
+  const propertyChangeValue = Number(document.getElementById('action-change-property-value').value)
+
+  const change1 = new PropertyChange(
+    selectedAgent,
+    propertyName,
+    propertyChangeType,
+    propertyChangeValue
+  )
+
+  const propertyChangesAction = new ActionPropertyChanges(
+    null,
+    {
+      id: createdActions.length + 1,
+      actionName: actionName,
+      propertyChanges: [change1]
+    },
+    [],
+    [],
+    [change1]
+  )
+
+  createdActions.push(propertyChangesAction)
 }

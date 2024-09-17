@@ -172,6 +172,13 @@ class Customer extends Sprite {
     return atDestination
   }
 
+  actionChangesApplied() {
+    if (this.actionList.length) {
+      return this.actionList[0].changesApplied
+    }
+    return false
+  }
+
   update(newData) {
 
     super.update()
