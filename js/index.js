@@ -15,11 +15,6 @@ const AGENTS = {
   supplyVan: SupplyVan
 }
 
-let ACTIONS = [
-  ActionGoTo,
-  ActionRest
-]
-
 let createdActions = []
 let createdConditions = []
 let createdPresetConditions = []

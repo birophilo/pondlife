@@ -34,11 +34,6 @@ function get8WayDirection(xVelocity, yVelocity) {
 }
 
 
-{
-  goingToStall: ActionGoingToStall
-}
-
-
 class Customer extends Sprite {
 
   static agentName() {
