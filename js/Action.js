@@ -34,19 +34,22 @@ class ActionGoTo {
     this.customer = customer
     this.args = args
 
-    if (args.agentType === 'lemonadeStall') {
-      this.agentType = args.agentType
+    if (this.customer !== null) {
+      if (args.agentType === 'lemonadeStall') {
+        this.agentType = args.agentType
 
-      if (args.agentChoice === 'nearest') {
-        const agentArray = AGENT_CONFIGS[this.agentType].agentArray
-        this.destination = this.customer.getClosestAgent(agentArray)
+        if (args.agentChoice === 'nearest') {
+          const agentArray = AGENT_CONFIGS[this.agentType].agentArray
+          this.destination = this.customer.getClosestAgent(agentArray)
+          this.stateName = `goingTo: ${this.destination.name}`
+        }
+      } else {
+        this.destination = args.destination
+        this.stateName = `goingTo: ${this.destination.name}`
       }
-    } else {
-      this.destination = args.destination
     }
 
     this.actionName = args.actionName
-    this.stateName = `goingTo: ${this.destination.name}`
     this.inProgress = false
     this.isComplete = false
 
@@ -81,16 +84,16 @@ class ActionGoTo {
   }
 
   check(stateData) {
-    console.log('action transition checks')
-    console.log(this.transitionChecks)
+    console.log(this.actionName)
     for (i = 0; i < this.transitionChecks.length; i++) {
       const result = this.transitionChecks[i].condition.evaluate()
-      console.log('result of check is', result)
       if (result === true) {
         this.isComplete = true
-        this.customer.actionList.push(this.transitionChecks[i].nextAction)
+        this.customer.actionList.push(this.transitionChecks[i].nextAction.clone(
+          this.customer,
+          {destination: this.customer.home, cloned: true}
+        ))
       }
-      console.log(result)
     }
 
     if (this.defaultCompletionCheckPasses()) {
@@ -128,15 +131,19 @@ class ActionPropertyChanges {
     this.customer = customer
     this.args = args
 
-    if (args.agentType === 'lemonadeStall') {
-      this.agentType = args.agentType
+    if (this.customer !== null) {
+      if (args.agentType === 'lemonadeStall') {
+        this.agentType = args.agentType
 
-      if (args.agentChoice === 'nearest') {
-        const agentArray = AGENT_CONFIGS[this.agentType].agentArray
-        this.destination = this.customer.getClosestAgent(agentArray)
+        if (args.agentChoice === 'nearest') {
+          const agentArray = AGENT_CONFIGS[this.agentType].agentArray
+          this.destination = this.customer.getClosestAgent(agentArray)
+          this.stateName = `goingTo: ${this.destination.name}`
+        }
+      } else {
+        this.destination = args.destination
+        this.stateName = `goingTo: ${this.destination.name}`
       }
-    } else {
-      this.destination = args.destination
     }
 
     this.actionName = args.actionName
@@ -149,6 +156,13 @@ class ActionPropertyChanges {
     this.conditions = conditions ? conditions : []
     this.transitionChecks = transitionChecks ? transitionChecks : []
     this.propertyChanges = propertyChanges ? propertyChanges : []
+
+    if (this.customer !== null) {
+      this.propertyChanges.forEach(change => {
+        // this is currently hard-coded just to apply to self agent, not e.g. target agent
+        change.agent = this.customer
+      })
+    }
 
   }
 
@@ -164,8 +178,6 @@ class ActionPropertyChanges {
   }
 
   start() {
-    console.log('property changes')
-    console.log(this.propertyChanges)
     this.propertyChanges.forEach(change => {
       // temporary hard-coding
       if (this.args.agentType === 'lemonadeStall') {
@@ -173,11 +185,7 @@ class ActionPropertyChanges {
       } else {
         var agentToChange = this.customer
       }
-      console.log(agentToChange)
-      console.log(change.propertyName)
-      console.log(change.propertyValue)
       agentToChange.stateData[change.propertyName] += change.propertyValue
-      console.log(this.customer.stateData.money)
     })
     this.changesApplied = true
   }
@@ -188,16 +196,18 @@ class ActionPropertyChanges {
   }
 
   check(stateData) {
-    console.log('action transition checks')
-    console.log(this.transitionChecks)
+    console.log(this.actionName)
     for (i = 0; i < this.transitionChecks.length; i++) {
       const result = this.transitionChecks[i].condition.evaluate()
-      console.log('result of check is', result)
       if (result === true) {
         this.isComplete = true
-        this.customer.actionList.push(this.transitionChecks[i].nextAction)
+        this.customer.actionList.push(
+          this.transitionChecks[i].nextAction.clone(
+            this.customer,
+            {destination: this.customer.home, cloned: true}
+          )
+        )
       }
-      console.log(result)
     }
 
     if (this.defaultCompletionCheckPasses()) {
@@ -233,7 +243,6 @@ class ActionGoToAgentIfHaveEnoughMoney {
 
     const condition = new Condition(this.customer, 'money', 'isGreaterThan', 20)
     const qualifies = condition.evaluate()
-    console.log(qualifies)
     if (qualifies) {
       this.customer.currentStateName = this.stateName
       this.customer.destination = this.agent

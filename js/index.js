@@ -128,26 +128,6 @@ function updateHtml() {
     `${selectedAgent.currentStateName}`
     document.querySelector('#info').innerHTML = info
 
-    document.querySelector('#button-change-state-rest').onclick = () =>
-      changeAgentStateFromButton(selectedAgent, ActionRest, {})
-    document.querySelector('#button-change-state-go-home').onclick = () =>
-      changeAgentStateFromButton(selectedAgent, ActionGoTo, {destination: selectedAgent.home})
-
-    document.querySelector('#button-go-to-stall-1').onclick = () => {
-      changeAgentStateFromButton(
-        selectedAgent,
-        ActionGoTo,
-        args={agent: lemonadeStalls[0]}
-      )
-    }
-    document.querySelector('#button-go-to-stall-2').onclick = () => {
-      changeAgentStateFromButton(
-        selectedAgent,
-        ActionGoTo,
-        args={agent: lemonadeStalls[1]}
-      )
-    }
-
     const actionListNames = selectedAgent.actionList.map(action => action.stateName)
     document.querySelector('#action-queue-list').innerHTML = actionListNames.join('<br/>')
     let actionButtonList = document.getElementById('action-button-list')
@@ -161,7 +141,10 @@ function updateHtml() {
         button.innerText = createdActions[i].actionName
         const j = Number(i)  // closure
         button.addEventListener('click', () => {
-          selectedAgent.actionList.push(createdActions[j].clone(selectedAgent, {destination: selectedAgent.home}))
+          selectedAgent.actionList.push(createdActions[j].clone(
+            selectedAgent,
+            {destination: selectedAgent.home, cloned: true}
+          ))
         })
         actionButtonList.appendChild(button)
       }
@@ -402,7 +385,6 @@ canvas.addEventListener('click', (event) => {
       placingAgent = false
       agentPreview = null
     }
-    console.log(agentPreview)
   }
 
   const agentNameList = Object.keys(AGENT_CONFIGS)
@@ -505,7 +487,7 @@ function createGoToAction() {
     args.agentChoice = agentChoiceValue
   }
 
-  let newAction = new ActionGoTo(selectedAgent, args)
+  let newAction = new ActionGoTo(null, args)
 
   createdActions.push(newAction)
 
@@ -530,7 +512,6 @@ function createCondition() {
 
   // hard coding temporarily
   createdActions[0].conditions.push(newCondition)
-  console.log(createdConditions)
 
   updateHtml()
 }
@@ -591,7 +572,7 @@ function createPropertyChangeAction() {
   const propertyChangeValue = Number(document.getElementById('action-change-property-value').value)
 
   const change1 = new PropertyChange(
-    selectedAgent,
+    null,
     propertyName,
     propertyChangeType,
     propertyChangeValue
