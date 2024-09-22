@@ -2,7 +2,7 @@
 
 <head>
 
-<script src="https://cdn.jsdelivr.net/npm/vue@2.7.16"></script>
+<script src="js/lib/vue@2.7.16.js"></script>
 
 <style>
 
@@ -50,6 +50,18 @@ canvas {
   border-bottom: 1px solid #ccc;
 }
 
+.menu-action-name {
+  font-size: 24px;
+}
+
+.created-action-item-header {
+  display: flex;
+}
+
+.created-action-item {
+  margin-bottom: 20px;
+}
+
 </style>
 
 </head>
@@ -95,24 +107,53 @@ canvas {
 
     <div class="menu-section" id="actions-section">
       <h3 class="menu-section-heading">Actions</h3>
+
       <!-- ACTION LIST -->
       <div class="item-list">
-        <div v-for="item in actionsSection.items">
-          <div v-if="item.editing === true">
-            <input type="text" placeholder="name" :value="item.name" disabled />
-            <select v-model="item.type">
-              <option value="goTo">go to</option>
-              <option value="exchange">exchange</option>
-            </select>
-            <input v-model="item.target" type="text" placeholder="target" :value="item.target" />
-            | <button @click="item.editing = false">done</button>
+        <div v-for="item in actionsSection.items" class="created-action-item">
+
+          <div class="created-action-item-header">
+            <div class="menu-action-name">{{ item.name }}</div>
+            <div v-if="item.editing">
+              <button @click="item.editing = false">save</button>
+              <button @click="item.editing = false">cancel</button>
+            </div>
+            <div v-else>
+              <button @click="item.editing = true">edit</button>
+              <button @click="deleteAction(item.name)">delete</button>
+            </div>
           </div>
-          <div v-else>
-            <input type="text" placeholder="name" :value="item.name" disabled />: 
-            <input type="text" placeholder="type" :value="item.type" disabled />
-            <input type="text" placeholder="target" :value="item.target" disabled /> -
-            <button @click="item.editing = true">edit</button> |
-            <button @click="deleteAction(item.name)">delete</button>
+          <div>action type: {{ item.type }}</div>
+
+          <!-- GOTO ACTION EDIT FORM -->
+          <div v-if="item.type === 'goTo'">
+            <div v-if="item.editing === true">
+              <select v-model="item.type">
+                <option value="goTo">go to</option>
+                <option value="change">change</option>
+              </select>
+              <input v-model="item.target" type="text" placeholder="target" :value="item.target" />
+            </div>
+            <div v-else>
+              <input type="text" placeholder="target" :value="item.target" disabled />
+            </div>
+          </div>
+
+          <!-- PROPERTY CHANGE ACTION EDIT FORM -->
+          <div v-if="item.type === 'change'">
+            <div v-if="item.editing === true">
+              <select v-model="item.property">
+                <option value="money">money</option>
+              </select>
+              <select v-model="item.change">
+                <option value="increase">increase</option>
+                <option value="decrease">decrease</option>
+              </select>
+              <input v-model="item.value" type="text" placeholder="value" :value="item.value" />
+            </div>
+            <div v-else>
+              <input type="text" placeholder="value" :value="item.value" disabled />
+            </div>
           </div>
         </div>
 
@@ -120,12 +161,38 @@ canvas {
           <button @click="actionsSection.adding.status = true">new action +</button>
         </div>
         <div v-else>
-          <input v-model="actionsSection.adding.newActionName" type="text" placeholder="name" />
-          <select v-model="actionsSection.adding.newActionType">
+          <input v-model="actionsSection.adding.name" type="text" placeholder="name" />
+          <br />
+          <select v-model="actionsSection.adding.type">
             <option value="goTo">go to</option>
-            <option value="exchange">exchange</option>
+            <option value="change">change</option>
           </select>
-          <input v-model="actionsSection.adding.newActionTarget" type="text" placeholder="target" />
+          <br />
+
+          <!-- FORM FIELDS SPECIFIC TO ACTION TYPE -->
+          <div v-if="actionsSection.adding.type === 'goTo'">
+            <input v-model="actionsSection.adding.forms.goTo.target" type="text" placeholder="target" />
+          </div>
+          <div v-else-if="actionsSection.adding.type === 'change'">
+            <select
+              v-model="actionsSection.adding.forms.change.property"
+              id="action-change-property-name"
+            >
+              <option value="">-- select property --</option>
+              <option value="money">money</option>
+            </select>
+            <select v-model="actionsSection.adding.forms.change.change" value="change">
+              <option value="">-- select change --</option>
+              <option value="increase">increase</option>
+              <option value="decrease">decrease</option>
+            </select>
+            <input
+              type="text"
+              v-model="actionsSection.adding.forms.change.value"
+              id="action-change-property-value"
+              placeholder="property value"
+            />
+          </div>
           <button @click="createAction">add</button> |
           <button @click="cancelAddAction">cancel</button>
         </div>
@@ -153,9 +220,19 @@ var vue = new Vue({
       items: [{name: 'go to shop', type: 'goTo', target: 'lemonadeStall 1', editing: false}],
       adding: {
         status: false,
-        newActionName: '',
-        newActionType: 'goTo',
-        newActionTarget: ''
+        type: 'goTo',
+        name: '',
+        forms: {
+          goTo: {
+            target: ''
+          },
+          change: {
+            property: '',
+            change: '',
+            value: ''
+          }
+        }
+
       }
     },
     conditionsSection: {
@@ -179,19 +256,35 @@ var vue = new Vue({
       this.propertiesSection.items = this.propertiesSection.items.filter(item => item.name !== itemName)
     },
     cancelAddProperty: function () {
-      this.actionsSection.adding.status = false
-      this.actionsSection.adding.newPropertyName = ''
-      this.actionsSection.adding.newPropertyValue = ''
+      this.propertiesSection.adding.status = false
+      this.propertiesSection.adding.newPropertyName = ''
+      this.propertiesSection.adding.newPropertyValue = ''
     },
     createAction: function () {
-      const actionName = this.actionsSection.adding.newActionName
-      const actionType = this.actionsSection.adding.newActionType
-      const actionTarget = this.actionsSection.adding.newActionTarget
-      this.actionsSection.items.push({name: actionName, type: actionType, target: actionTarget, editing: false})
-      this.actionsSection.adding.newActionName = ''
-      this.actionsSection.adding.newActionType = ''
-      this.actionsSection.adding.newActionTarget = ''
+      const actionType = this.actionsSection.adding.type
+      const data = this.actionsSection.adding.forms[actionType]
+      console.log('data')
+      console.log(data)
+      const actionName = this.actionsSection.adding.name
+      const formData = {...data, name: actionName, type: actionType, editing: false}
+
+      console.log(formData)
+
+      this.actionsSection.items.push(formData)
+
+      // reset common form data/settings
+      this.actionsSection.adding.name = ''
+      this.actionsSection.adding.type = ''
       this.actionsSection.adding.status = false
+
+      // reset specific settings (hard-coded keys for now)
+      if (actionType === 'goTo') {
+        this.actionsSection.adding.forms.goTo.target = ''
+      } else if (actionType === 'change') {
+        this.actionsSection.adding.forms.change.property = ''
+        this.actionsSection.adding.forms.change.change = ''
+        this.actionsSection.adding.forms.change.value = ''
+      }
     },
     deleteAction: function (itemName) {
       this.actionsSection.items = this.actionsSection.items.filter(item => item.name !== itemName)
