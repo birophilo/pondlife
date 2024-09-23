@@ -54,13 +54,17 @@ canvas {
   font-size: 24px;
 }
 
-.created-action-item-header {
+.created-item {
+  margin: 20px 0 20px 0;
+  border-bottom: 1px solid black;
+  padding: 20px 0 20px 0;
+}
+
+.created-item-header {
   display: flex;
 }
 
-.created-action-item {
-  margin-bottom: 20px;
-}
+
 
 </style>
 
@@ -105,14 +109,16 @@ canvas {
       </div>
     </div>
 
+    <!-- ACTIONS -->
+
     <div class="menu-section" id="actions-section">
       <h3 class="menu-section-heading">Actions</h3>
 
       <!-- ACTION LIST -->
       <div class="item-list">
-        <div v-for="item in actionsSection.items" class="created-action-item">
+        <div v-for="item in actionsSection.items" class="created-item">
 
-          <div class="created-action-item-header">
+          <div class="created-item-header">
             <div class="menu-action-name">{{ item.name }}</div>
             <div v-if="item.editing">
               <button @click="item.editing = false">save</button>
@@ -136,6 +142,8 @@ canvas {
             </div>
             <div v-else>
               <input type="text" placeholder="target" :value="item.target" disabled />
+
+              <br /><button>+ Add condition</button>
             </div>
           </div>
 
@@ -152,10 +160,16 @@ canvas {
               <input v-model="item.value" type="text" placeholder="value" :value="item.value" />
             </div>
             <div v-else>
+              <input type="text" placeholder="property" :value="item.property" disabled />
+              <input type="text" placeholder="change" :value="item.change" disabled />
               <input type="text" placeholder="value" :value="item.value" disabled />
+
+              <button>+ Add condition</button>
             </div>
           </div>
         </div>
+
+        <!-- ACTIONS CREATE -->
 
         <div v-if="actionsSection.adding.status === false" class="add-container">
           <button @click="actionsSection.adding.status = true">new action +</button>
@@ -199,11 +213,141 @@ canvas {
       </div>
     </div>
 
+    <!-- CONDITIONS -->
+
+    <div class="menu-section" id="actions-section">
+      <h3 class="menu-section-heading">Conditions</h3>
+
+      <!-- CONDITION LIST -->
+      <div class="item-list">
+        <div v-for="(item, index) in conditionsSection.items" class="created-item">
+
+          <div class="created-item-header">
+            <div class="menu-action-name">{{ item.type === 'property' ? item.property : item.preset }}</div>&nbsp;
+            <div class="menu-action-name">{{ item.comparison }}</div>&nbsp;
+            <div class="menu-action-name">{{ item.value }}</div>
+            <div v-if="item.editing">
+              <button @click="item.editing = false">save</button>
+              <button @click="item.editing = false">cancel</button>
+            </div>
+            <div v-else>
+              <button @click="item.editing = true">edit</button>
+              <button @click="deleteCondition(index)">delete</button>
+            </div>
+          </div>
+
+          <!-- CONDITION FORM -->
+          <div v-if="item.editing === true">
+            <select v-model="item.type">
+              <option value="property">property</option>
+              <option value="preset">preset</option>
+            </select>
+          </div>
+          
+            <div v-if="item.editing === true">
+              <div v-if="item.type === 'property'">
+                <select v-model="item.property">
+                  <option value="money">money</option>
+                </select>
+              </div>
+              <div v-else-if="item.type === 'preset'">
+                <select v-model="item.preset">
+                  <option value="atDestination">at destination</option>
+                </select>
+              </div>
+
+              <select v-model="item.comparison">
+                <option value="isGreaterThan">is greater than</option>
+                <option value="isIdentical">is</option>
+              </select>
+              <input v-model="item.value" type="text" placeholder="value" :value="item.value" />
+            </div>
+            <div v-else>
+              <div v-if="item.type === 'property'">
+                <input type="text" placeholder="property" :value="item.property" disabled />
+              </div>
+              <div v-else-if="item.type === 'preset'">
+                <input type="text" placeholder="preset" :value="item.preset" disabled />
+              </div>
+              <input type="text" placeholder="comparison" :value="item.comparison" disabled />
+              <input type="text" placeholder="value" :value="item.value" disabled />
+            </div>
+          </div>
+
+          <!-- CONDITION CREATE -->
+
+          <div v-if="conditionsSection.adding.status === false" class="add-container">
+            <button @click="conditionsSection.adding.status = true">new condition +</button>
+          </div>
+          <div v-else>
+            <input v-model="conditionsSection.adding.name" type="text" placeholder="name" />
+            <br />
+            <select v-model="conditionsSection.adding.type">
+              <option value="property">property</option>
+              <option value="preset">preset</option>
+            </select>
+            <br />
+
+            <div v-if="conditionsSection.adding.type === 'property'">
+              <select
+                v-model="conditionsSection.adding.forms.property.property"
+                id="action-change-property-name"
+              >
+                <option value="">-- select property --</option>
+                <option value="money">money</option>
+              </select>
+              <select v-model="conditionsSection.adding.forms.property.comparison" value="isGreaterThan">
+                <option value="">-- select comparison --</option>
+                <option value="isGreaterThan">is greater than</option>
+                <option value="isLessThan">is less than</option>
+              </select>
+              <input
+                type="text"
+                v-model="conditionsSection.adding.forms.property.value"
+                id="action-change-property-value"
+                placeholder="conditions value"
+              />
+            </div>
+
+            <div v-else-if="conditionsSection.adding.type === 'preset'">
+              <select
+                v-model="conditionsSection.adding.forms.preset.preset"
+                id="action-change-property-name"
+              >
+                <option value="">-- select preset --</option>
+                <option value="atDestination">at destination</option>
+              </select>
+
+              <select v-model="conditionsSection.adding.forms.preset.comparison" value="isIdentical">
+                <option value="">-- select comparison --</option>
+                <option value="isIdentical">is</option>
+              </select>
+              <input
+                type="text"
+                v-model="conditionsSection.adding.forms.preset.value"
+                id="action-change-property-value"
+                placeholder="conditions value"
+              />
+            </div>
+
+            <button @click="createCondition">add</button> |
+            <button @click="cancelAddCondition">cancel</button>
+
+        </div>
+      </div>
+
+    </div>
+
   </div>
 
 </div>
 
 <script>
+
+
+const DEFAULT_ACTION_TYPE = 'goTo'
+const DEFAULT_CONDITION_TYPE = 'property'
+
 
 var vue = new Vue({
   el: '#container',
@@ -236,9 +380,22 @@ var vue = new Vue({
       }
     },
     conditionsSection: {
-      items: [],
+      items: [{type: 'property', property: 'money', comparison: 'isGreaterThan', value: 20, editing: false}],
       adding: {
-        status: false
+        status: false,
+        type: 'property',
+        forms: {
+          property: {
+            property: '',
+            comparison: '',
+            value: ''
+          },
+          preset: {
+            preset: '',
+            comparison: '',
+            value: ''
+          }
+        }
       }
     }
   },
@@ -263,18 +420,16 @@ var vue = new Vue({
     createAction: function () {
       const actionType = this.actionsSection.adding.type
       const data = this.actionsSection.adding.forms[actionType]
-      console.log('data')
-      console.log(data)
       const actionName = this.actionsSection.adding.name
       const formData = {...data, name: actionName, type: actionType, editing: false}
 
-      console.log(formData)
-
       this.actionsSection.items.push(formData)
-
+      this.resetActionForms()
+    },
+    resetActionForms: function () {
       // reset common form data/settings
       this.actionsSection.adding.name = ''
-      this.actionsSection.adding.type = ''
+      this.actionsSection.adding.type = DEFAULT_ACTION_TYPE
       this.actionsSection.adding.status = false
 
       // reset specific settings (hard-coded keys for now)
@@ -290,10 +445,39 @@ var vue = new Vue({
       this.actionsSection.items = this.actionsSection.items.filter(item => item.name !== itemName)
     },
     cancelAddAction: function () {
-      this.actionsSection.adding.status = false
-      this.actionsSection.adding.newActionName = ''
-      this.actionsSection.adding.newActionType = ''
-      this.actionsSection.adding.newActionTarget = ''
+      this.resetActionForms()
+    },
+    deleteCondition: function (index) {
+      this.conditionsSection.items.splice(index, 1)
+    },
+    createCondition: function () {
+      const conditionType = this.conditionsSection.adding.type
+      const data = this.conditionsSection.adding.forms[conditionType]
+      // const conditionName = this.conditionsSection.adding.name
+      const formData = {...data, type: conditionType, editing: false}
+
+      this.conditionsSection.items.push(formData)
+      this.resetActionForms()
+    },
+    resetConditionForms: function () {
+      // reset common form data/settings
+      this.conditionsSection.adding.name = ''
+      this.conditionsSection.adding.type = DEFAULT_CONDITION_TYPE
+      this.conditionsSection.adding.status = false
+
+      // reset specific settings (hard-coded keys for now)
+      if (conditionType === 'property') {
+        this.conditionsSection.adding.forms.property.property = ''
+        this.conditionsSection.adding.forms.property.comparison = ''
+        this.conditionsSection.adding.forms.property.value = ''
+      } else if (conditionType === 'preset') {
+        this.conditionsSection.adding.forms.preset.preset = ''
+        this.conditionsSection.adding.forms.preset.comparison = ''
+        this.conditionsSection.adding.forms.preset.value = ''
+      }
+    },
+    cancelAddCondition: function () {
+      this.resetConditionForms()
     }
   }
 })
