@@ -1,0 +1,1355 @@
+<html>
+
+<head>
+
+<script src="js/lib/vue@2.7.16.js"></script>
+
+<style>
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+canvas {
+  width: 1000px;
+  height: 600px;
+}
+
+#container {
+  display: flex;
+  width: 100%;
+  justify-content: left;
+}
+
+.info-container {
+  border: 1px solid black;
+  width: 100%;
+  padding: 5px;
+  height: 1200px;
+}
+
+.speed-slide-container {
+  display: flex;
+  flex-direction: column;
+  padding: 5px;
+}
+
+.day-container {
+  padding: 5px;
+}
+
+.menu-subheading {
+  font-weight: bold;
+  margin: 16px 0 16px 0;
+}
+
+.menu-section {
+  padding-bottom: 20px;
+  border-bottom: 1px solid #ccc;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div id="container">
+
+  <canvas :style="{backgroundColor: 'blue'}"></canvas>
+
+  <div class="info-container">
+
+    <div class="menu-section" id="properties-section">
+      <h3 class="menu-section-heading">Properties</h3>
+      <!-- PROPERTY LIST -->
+      <div class="item-list">
+        <div v-for="item in propertiesSection.items">
+          <div v-if="item.editing === true">
+            <input type="text" placeholder="name" :value="item.name" disabled />
+            <input v-model="item.value" type="text" placeholder="value" :value="item.value" />
+            | <button @click="item.editing = false">done</button>
+          </div>
+          <div v-else>
+            <input type="text" placeholder="name" :value="item.name" disabled />: 
+            <input type="text" placeholder="value" :value="item.value" disabled /> -
+            <button @click="item.editing = true">edit</button> |
+            <button @click="deleteProperty(item.name)">delete</button>
+          </div>
+        </div>
+
+        <!-- ADD PROPERTY -->
+        <div v-if="propertiesSection.adding.status === false" class="add-container">
+          <button @click="propertiesSection.adding.status = true">new property +</button>
+        </div>
+        <div v-else>
+          <input v-model="propertiesSection.adding.newPropertyName" type="text" placeholder="name" />
+          <input v-model="propertiesSection.adding.newPropertyValue" type="text" placeholder="value" />
+          <button @click="createProperty">add</button> |
+          <button @click="cancelAddProperty">cancel</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ACTIONS -->
+
+    <div class="menu-section" id="actions-section">
+      <h3 class="menu-section-heading">Actions</h3>
+
+      <!-- ACTION LIST -->
+      <div class="item-list">
+        <div v-for="action in actionsSection.items" class="created-item">
+
+          <div class="created-item-header">
+            <div class="menu-action-name">{{ action.name }}</div>
+            <div v-if="action.editing">
+              <button @click="action.editing = false">save</button>
+              <button @click="action.editing = false">cancel</button>
+            </div>
+            <div v-else>
+              <button @click="action.editing = true">edit</button>
+              <button @click="deleteAction(action.name)">delete</button>
+            </div>
+          </div>
+          <div>action type: {{ action.type }}</div>
+
+          <!-- GOTO ACTION EDIT FORM -->
+          <div v-if="action.type === 'goTo'">
+            <div v-if="action.editing === true">
+              <select v-model="action.type">
+                <option value="goTo">go to</option>
+                <option value="change">change</option>
+              </select>
+              <input v-model="action.target" type="text" placeholder="target" :value="action.target" />
+            </div>
+            <div v-else>
+              <input type="text" placeholder="target" :value="action.target" disabled />
+            </div>
+          </div>
+
+          <!-- PROPERTY CHANGE ACTION EDIT FORM -->
+          <div v-if="action.type === 'change'">
+            <div v-if="action.editing === true">
+              <select v-model="action.property">
+                <option value="money">money</option>
+              </select>
+              <select v-model="action.change">
+                <option value="increase">increase</option>
+                <option value="decrease">decrease</option>
+              </select>
+              <input v-model="action.value" type="text" placeholder="value" :value="action.value" />
+            </div>
+            <div v-else>
+              <input type="text" placeholder="property" :value="action.property" disabled />
+              <input type="text" placeholder="change" :value="action.change" disabled />
+              <input type="text" placeholder="value" :value="action.value" disabled />      
+            </div>
+          </div>
+          <br />
+
+          <h4>Action transitions</h4>
+
+          <div v-for="(transition, index) in action.transitions.items">
+            <div v-if="transition.editing === true">
+              <select v-for="condition in conditionsSection.items">
+                <option :value="transition.condition">{{ conditionReadableFormat(condition) }}</option>
+              </select>
+              <select v-for="action in actionsSection.items">
+                <option :value="transition.nextAction">{{ action.name }}</option>
+              </select>
+              <button @click="transition.editing = false">save</button>
+              <button @click="transition.editing = false">cancel</button>
+            </div>
+            <div v-else>
+              IF {{ conditionReadableFormat(transition.condition) }} TRANSITION TO {{ transition.nextAction.name }} 
+              <button @click="transition.editing = true">edit</button>
+              <button @click="deleteTransition(action, index)">delete</button>
+            </div>
+          </div>
+
+          <div v-if="action.transitions.adding === true">
+            <select v-for="(condition, conditionIndex) in conditionsSection.items" v-model="action.transitions.newCondition">
+              <option :value="condition">
+                {{ condition.property }} {{ condition.comparison }} {{ condition.value }}
+              </option>
+            </select>
+            <select v-for="action in actionsSection.items" v-model="action.transitions.newNextAction">
+              <option :value="action">
+                {{ action.name }}
+              </option>
+            </select>
+            <button @click="createTransition(action)">add</button> |
+            <button @click="cancelAddTransition(action)">cancel</button>
+          </div>
+          <div v-else>
+            <button @click="action.transitions.adding = true">+ Add action transition</button>
+          </div>
+          
+        </div>
+
+        <!-- ACTIONS CREATE -->
+
+        <div v-if="actionsSection.adding.status === false" class="add-container">
+          <button @click="actionsSection.adding.status = true">new action +</button>
+        </div>
+        <div v-else>
+          <input v-model="actionsSection.adding.name" type="text" placeholder="name" />
+          <br />
+          <select v-model="actionsSection.adding.type">
+            <option value="goTo">go to</option>
+            <option value="change">change</option>
+          </select>
+          <br />
+
+          <!-- FORM FIELDS SPECIFIC TO ACTION TYPE -->
+          <div v-if="actionsSection.adding.type === 'goTo'">
+            <input v-model="actionsSection.adding.forms.goTo.target" type="text" placeholder="target" />
+          </div>
+          <div v-else-if="actionsSection.adding.type === 'change'">
+            <select
+              v-model="actionsSection.adding.forms.change.property"
+              id="action-change-property-name"
+            >
+              <option value="">-- select property --</option>
+              <option value="money">money</option>
+            </select>
+            <select v-model="actionsSection.adding.forms.change.change" value="change">
+              <option value="">-- select change --</option>
+              <option value="increase">increase</option>
+              <option value="decrease">decrease</option>
+            </select>
+            <input
+              type="text"
+              v-model="actionsSection.adding.forms.change.value"
+              id="action-change-property-value"
+              placeholder="property value"
+            />
+          </div>
+          <button @click="createAction">add</button> |
+          <button @click="cancelAddAction">cancel</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- CONDITIONS -->
+
+    <div class="menu-section" id="actions-section">
+      <h3 class="menu-section-heading">Conditions</h3>
+
+      <!-- CONDITION LIST -->
+      <div class="item-list">
+        <div v-for="(item, index) in conditionsSection.items" class="created-item">
+
+          <div class="created-item-header">
+            <div class="menu-action-name">{{ item.type === 'property' ? item.property : item.preset }}</div>&nbsp;
+            <div class="menu-action-name">{{ item.comparison }}</div>&nbsp;
+            <div class="menu-action-name">{{ item.value }}</div>
+            <div v-if="item.editing">
+              <button @click="item.editing = false">save</button>
+              <button @click="item.editing = false">cancel</button>
+            </div>
+            <div v-else>
+              <button @click="item.editing = true">edit</button>
+              <button @click="deleteCondition(index)">delete</button>
+            </div>
+          </div>
+
+          <!-- CONDITION FORM -->
+          <div v-if="item.editing === true">
+            <select v-model="item.type">
+              <option value="property">property</option>
+              <option value="preset">preset</option>
+            </select>
+          </div>
+          
+            <div v-if="item.editing === true">
+              <div v-if="item.type === 'property'">
+                <select v-model="item.property">
+                  <option value="money">money</option>
+                </select>
+              </div>
+              <div v-else-if="item.type === 'preset'">
+                <select v-model="item.preset">
+                  <option value="atDestination">at destination</option>
+                </select>
+              </div>
+
+              <select v-model="item.comparison">
+                <option value="isGreaterThan">is greater than</option>
+                <option value="isIdentical">is</option>
+              </select>
+              <input v-model="item.value" type="text" placeholder="value" :value="item.value" />
+            </div>
+            <div v-else>
+              <div v-if="item.type === 'property'">
+                <input type="text" placeholder="property" :value="item.property" disabled />
+              </div>
+              <div v-else-if="item.type === 'preset'">
+                <input type="text" placeholder="preset" :value="item.preset" disabled />
+              </div>
+              <input type="text" placeholder="comparison" :value="item.comparison" disabled />
+              <input type="text" placeholder="value" :value="item.value" disabled />
+            </div>
+          </div>
+
+          <!-- CONDITION CREATE -->
+
+          <div v-if="conditionsSection.adding.status === false" class="add-container">
+            <button @click="conditionsSection.adding.status = true">new condition +</button>
+          </div>
+          <div v-else>
+            <input v-model="conditionsSection.adding.name" type="text" placeholder="name" />
+            <br />
+            <select v-model="conditionsSection.adding.type">
+              <option value="property">property</option>
+              <option value="preset">preset</option>
+            </select>
+            <br />
+
+            <div v-if="conditionsSection.adding.type === 'property'">
+              <select
+                v-model="conditionsSection.adding.forms.property.property"
+                id="action-change-property-name"
+              >
+                <option value="">-- select property --</option>
+                <option value="money">money</option>
+              </select>
+              <select v-model="conditionsSection.adding.forms.property.comparison" value="isGreaterThan">
+                <option value="">-- select comparison --</option>
+                <option value="isGreaterThan">is greater than</option>
+                <option value="isLessThan">is less than</option>
+              </select>
+              <input
+                type="text"
+                v-model="conditionsSection.adding.forms.property.value"
+                id="action-change-property-value"
+                placeholder="conditions value"
+              />
+            </div>
+
+            <div v-else-if="conditionsSection.adding.type === 'preset'">
+              <select
+                v-model="conditionsSection.adding.forms.preset.preset"
+                id="action-change-property-name"
+              >
+                <option value="">-- select preset --</option>
+                <option value="atDestination">at destination</option>
+              </select>
+
+              <select v-model="conditionsSection.adding.forms.preset.comparison" value="isIdentical">
+                <option value="">-- select comparison --</option>
+                <option value="isIdentical">is</option>
+              </select>
+              <input
+                type="text"
+                v-model="conditionsSection.adding.forms.preset.value"
+                id="action-change-property-value"
+                placeholder="conditions value"
+              />
+            </div>
+
+            <button @click="createCondition">add</button> |
+            <button @click="cancelAddCondition">cancel</button>
+
+        </div>
+      </div>
+
+    </div>
+
+
+    <div class="menu-section">
+
+      <div class="day-container">
+        Day: <span id="day-number"></span>
+      </div>
+
+      <div class="speed-slide-container">
+        <div><span>Speed: </span><span id="sim-speed-value">1.0</span></div>
+        <input type="range" min="0" max="200" value="100" id="sim-speed-slider">
+      </div>
+    </div>
+
+    <div id="info"></div>
+
+    <div class="menu-section">
+
+      <div class="menu-subheading">Agents</div>
+
+      <div class="menu-subheading">Create agent</div>
+
+      <input type="text" id="form-create-agent-name" placeholder="name" />
+      <input type="text" id="form-create-agent-width" placeholder="width" />
+      <input type="text" id="form-create-agent-height" placeholder="height" />
+      <button onclick="createAgent()">create agent</button>
+
+      <div class="menu-subheading">Create/set agent property</div>
+      <input type="text" id="form-add-agent-property" placeholder="property" />
+      <input type="text" id="form-add-agent-property-value" placeholder="value" />
+      <button onclick="addAgentProperty()">add agent property</button>
+
+    </div>
+
+    <div class="menu-section">
+
+      <div class="menu-subheading">Actions</div>
+
+      <div class="menu-subheading">Create 'go to' action</div>
+      <input type="text" id="form-create-action-name" placeholder="action name" />
+      <input type="text" id="form-create-action-type" value="goTo" />
+      <input type="text" id="form-create-action-destination" placeholder="destination" />
+      <br/>
+      <form name="agentRadioSelect">
+        <input type="radio" name="agentChoice" value="nearest" checked="true" />
+        <label for="nearest">nearest</label>
+        <input type="radio" name="agentChoice" value="specific" />
+        <label for="nearest">specific</label>
+      </form>
+      <button onclick="createGoToAction()">create 'go to' action</button>
+
+      <div class="menu-subheading">Create 'property exchange' action</div>
+
+      <input type="text" id="action-change-property-action-name" placeholder="action name" />
+      <input type="text" id="action-change-property-agent-type" placeholder="agent type" />
+      <select id="action-change-property-name">
+        <option value="">-- select property --</option>
+        <option value="money">money</option>
+      </select>
+      <select id="action-change-property-change" value="change">
+        <option value="">-- select change --</option>
+        <option value="increase">increase</option>
+        <option value="decrease">decrease</option>
+      </select>
+      <input type="text" id="action-change-property-value" placeholder="property value" />
+      <br />
+      <button onclick="createPropertyChangeAction()">create 'property change' action</button>
+
+
+      <div class="menu-subheading">Created actions</div>
+      <div id="action-button-list"></div>
+
+      <div class="menu-subheading">Action queue</div>
+      <div id="action-queue-list"></div>
+
+    </div>
+    <div class="menu-section">
+
+      <div class="menu-subheading">Conditions</div>
+
+      <div class="menu-subheading">Create condition</div>
+
+      <input type="text" id="form-create-condition-property" placeholder="property or parameter" />
+      <input type="text" id="form-create-condition-comparison" placeholder="comparison" value="isGreaterThan" />
+      <input type="text" id="form-create-condition-threshold" placeholder="value threshold" />
+      <button onclick="createCondition()">create condition</button>
+
+      <div class="menu-subheading">Created conditions</div>
+
+      <div class="menu-subheading">Create condition</div>
+
+      <input type="text" id="form-create-preset-condition-method" placeholder="preset condition name" />
+      <input type="text" id="form-create-preset-condition-comparison" placeholder="comparison" value="isIdentical" />
+      <input type="text" id="form-create-preset-condition-value" placeholder="value" />
+      <button onclick="createPresetCondition()">create preset condition</button>
+
+      <div class="menu-subheading">Created conditions</div>
+
+      <div id="created-condition-list"></div>
+
+      <p></p>
+
+      <div class="menu-subheading">Transition Checks</div>
+      <select id="form-transition-action" placeholder="action"></select>
+      <select id="form-transition-condition" placeholder="condition"></select>
+      <select id="form-transition-next-action" placeholder="next action"></select>
+      <br />
+      <button onclick="createTransitionCheck()">assign action transition</button>
+
+      <p></p>
+
+    </div>
+
+  </div>
+
+</div>
+
+</body>
+
+<script src="js/constants.js"></script>
+<script src="js/globalSettings.js"></script>
+<script src="js/Sprite.js"></script>
+<script src="js/Timer.js"></script>
+<script src="js/Condition.js"></script>
+<script src="js/Action.js"></script>
+<script src="js/LemonadeStall.js"></script>
+<script src="js/SupplyVan.js"></script>
+<script src="js/Customer.js"></script>
+<script src="js/SelectionMenu.js"></script>
+
+<script>
+
+const backgroundColor = 'rgb(200, 200, 200)'
+
+let canvas;
+let c;
+
+const AGENTS = {
+  customer: Customer,
+  lemonadeStall: LemonadeStall,
+  supplyVan: SupplyVan
+}
+
+let createdActions = []
+let createdConditions = []
+let createdPresetConditions = []
+
+let globalSpeed = GlobalSettings.globalSpeed
+let dayNumber = 1
+const dayLength = 1000 // frames
+
+// const customerData = [{x: 0, y: 0}, {x: 900, y: 400}]
+const customerData = [{x: 900, y: 400}]
+const lemonadeStallData = [firstStall, secondStall]
+// const supplyVanData = [{x: 800, y: 800}]
+const supplyVanData = []
+const agentMenuButtonData = [
+  {name: 'customer', rgb: [255, 0, 0]},
+  {name: 'lemonadeStall', rgb: [0, 0, 255]},
+  {name: 'supplyVan', rgb: [255, 255, 0]}
+]
+const agentMenuButtons = []
+
+const customers = []
+const lemonadeStalls = []
+const supplyVans = []
+
+let selectedAgent = null
+let agentPreview = null
+let placingAgent = false
+let deleteMode = false
+
+let mouse = {x: 0, y: 0}
+
+let AGENT_CONFIGS = {
+  customer: {
+    agentClass: Customer,
+    agentArray: customers,
+    config: {
+      width: 40,
+      height: 40,
+      offset: {x: 96, y: 46},
+      scale: 0.7,
+    }
+  },
+  lemonadeStall: {
+    agentClass: LemonadeStall,
+    agentArray: lemonadeStalls,
+    config: {
+      width: 130,
+      height: 100,
+      offset: {x: 0, y: 0},
+      scale: 1
+    }
+  },
+  supplyVan: {
+    agentClass: SupplyVan,
+    agentArray: supplyVans,
+    config: {
+      width: 50,
+      height: 50,
+      offset: {x: 2, y: 0},
+      scale: 2.5
+    }
+  }
+}
+
+function addAgent(agentClassName, agentClass, agentArray) {
+  const num = agentArray.length + 1
+  agentArray.push( new agentClass({
+    position: {
+      x: mouse.x - AGENT_CONFIGS[agentClassName].config.width / 2,
+      y: mouse.y - AGENT_CONFIGS[agentClassName].config.height / 2
+    },
+    num: num,
+    globals: GlobalSettings,
+    offset: AGENT_CONFIGS[agentClassName].config.offset,
+    scale: AGENT_CONFIGS[agentClassName].config.scale,
+    config: AGENT_CONFIGS[agentClassName].config
+  }))
+}
+
+function selectOrDeleteAgent(agentClassName, point) {
+  let agentArray = AGENT_CONFIGS[agentClassName].agentArray
+  agentArray.forEach((agent, i) => {
+    const isInArea = pointIsInArea(point, agent.collisionArea)
+
+    // SELECT AGENT
+    if (isInArea) {
+      selectedAgent = agent
+    }
+    // DELETE AGENT (in delete mode)
+    if (isInArea && deleteMode === true) {
+      agentArray.splice(i, 1)
+      deleteMode = false
+    }
+  })
+}
+
+function changeAgentStateFromButton(agent, actionClass, args={}) {
+  agent.actionList.push(new actionClass(agent, args))
+}
+
+function updateHtml() {
+
+  if (selectedAgent !== null) {
+    const info = `${selectedAgent.name} ${selectedAgent.num}.<br/>` +
+    `Money: ${selectedAgent.stateData.money}.<br/>` +
+    `${selectedAgent.currentStateName}`
+    document.querySelector('#info').innerHTML = info
+
+    const actionListNames = selectedAgent.actionList.map(action => action.stateName)
+    document.querySelector('#action-queue-list').innerHTML = actionListNames.join('<br/>')
+    let actionButtonList = document.getElementById('action-button-list')
+
+    if (actionButtonList.children.length !== createdActions.length) {
+
+      actionButtonList.innerHTML = ''
+
+      for (i = 0; i < createdActions.length; i++) {
+        const button = document.createElement('button')
+        button.innerText = createdActions[i].actionName
+        const j = Number(i)  // closure
+        button.addEventListener('click', () => {
+          selectedAgent.actionList.push(createdActions[j].clone(
+            selectedAgent,
+            {destination: selectedAgent.home, cloned: true}
+          ))
+        })
+        actionButtonList.appendChild(button)
+      }
+    }
+
+    let createdConditionList = document.getElementById('created-condition-list')
+
+    if (createdConditionList.children.length !== createdConditions.length) {
+
+      createdConditionList.innerHTML = ''
+
+      for (i = 0; i < createdConditions.length; i++) {
+        const div = document.createElement('div')
+        div.innerText = createdConditions[i].name
+        createdConditionList.appendChild(div)
+      }
+    }
+
+    let transitionCheckActionMenu = document.getElementById('form-transition-action')
+
+    if (transitionCheckActionMenu.children.length !== createdActions.length) {
+
+      transitionCheckActionMenu.innerHTML = ''
+
+      for (i = 0; i < createdActions.length; i++) {
+        const option = document.createElement('option')
+        option.innerText = createdActions[i].actionName
+        option.value = createdActions[i].id
+        transitionCheckActionMenu.appendChild(option)
+      }
+    }
+
+    let transitionCheckConditionMenu = document.getElementById('form-transition-condition')
+
+    if (transitionCheckConditionMenu.children.length !== createdPresetConditions.length) {
+
+      transitionCheckConditionMenu.innerHTML = ''
+
+      for (i = 0; i < createdPresetConditions.length; i++) {
+        const option = document.createElement('option')
+        option.innerText = createdPresetConditions[i].name
+        option.value = createdPresetConditions[i].id
+        transitionCheckConditionMenu.appendChild(option)
+      }
+    }
+
+    let transitionCheckNextActionMenu = document.getElementById('form-transition-next-action')
+
+    if (transitionCheckNextActionMenu.children.length !== createdActions.length) {
+
+      transitionCheckNextActionMenu.innerHTML = ''
+
+      for (i = 0; i < createdActions.length; i++) {
+        const option = document.createElement('option')
+        option.innerText = createdActions[i].actionName
+        option.value = createdActions[i].id
+        transitionCheckNextActionMenu.appendChild(option)
+      }
+    }
+
+  }
+
+  document.querySelector('#day-number').innerHTML = dayNumber
+
+}
+
+
+function endDay() {
+  dayNumber++
+}
+
+function pointIsInArea(point = {x, y}, area = {x, y, width, height}) {
+  if (
+    point.x >= area.x &&
+    point.x <= area.x + area.width &&
+    point.y >= area.y &&
+    point.y <= area.y + area.height
+  ) {
+    document.body.style.cursor = 'pointer'
+    return true
+  } else {
+    return false
+  }
+}
+
+
+lemonadeStallData.forEach(stall => {
+  lemonadeStalls.push(
+    new LemonadeStall(stall)
+  )
+})
+
+supplyVanData.forEach(van => {
+  supplyVans.push(
+    new SupplyVan({
+      position: van,
+      globals: GlobalSettings,
+      offset: AGENT_CONFIGS.supplyVan.config.offset,
+      scale: AGENT_CONFIGS.supplyVan.config.scale
+    })
+  )
+})
+
+customerData.forEach((cust, i) => {
+  customers.push( new Customer({
+    position: {x: cust.x, y: cust.y},
+    num: i + 1,
+    globals: GlobalSettings,
+    offset: AGENT_CONFIGS.customer.config.offset,
+    scale: AGENT_CONFIGS.customer.config.scale
+  }))
+})
+
+const itemMenu = new AgentMenu()
+
+agentMenuButtonData.forEach((icon, i) => {
+  agentMenuButtons.push(
+    new AgentMenuIcon({
+      menu: itemMenu,
+      i: i,
+      name: icon.name,
+      agent: AGENT_CONFIGS[icon.name].agentClass,
+      config: AGENT_CONFIGS[icon.name].config
+    })
+  )
+})
+
+let deleteButton = new DeleteButton({
+  menu: itemMenu,
+  i: agentMenuButtons.length
+})
+
+/* --- ANIMATE --- */
+
+function animate() {
+
+  c.fillStyle = backgroundColor
+  c.fillRect(0, 0, canvas.width, canvas.height)
+
+  const animationId = requestAnimationFrame(animate)
+
+  GlobalSettings.animationFrameId = animationId
+
+  lemonadeStalls.forEach(stall => stall.draw())
+
+  let hover = null
+
+  customers.forEach(customer => {
+    customer.update({
+      globals: GlobalSettings,
+      frameId: animationId,
+      stalls: lemonadeStalls,
+      stall: firstStall
+    })
+    const isInArea = pointIsInArea(mouse, customer.collisionArea)
+    if (isInArea) {
+      hover = true
+    }
+  })
+
+  lemonadeStalls.forEach(stall => {
+    const isInArea = pointIsInArea(mouse, stall.collisionArea)
+    if (isInArea) {
+      hover = true
+    }
+  })
+
+  supplyVans.forEach(van => {
+    van.update({
+      globals: GlobalSettings,
+      frameId: animationId,
+      stalls: lemonadeStalls,
+      stall: firstStall
+    })
+    const isInArea = pointIsInArea(mouse, van.collisionArea)
+    if (isInArea) {
+      hover = true
+    }
+  })
+  
+  itemMenu.update(agentMenuButtons.length + 1)
+
+  agentMenuButtons.forEach((button, i) => {
+    button.update(i)
+    const isInArea = pointIsInArea(mouse, button.area)
+    if (isInArea) {
+      hover = true
+    }
+  })
+
+  if (agentPreview) agentPreview.update(mouse)
+
+  if (pointIsInArea(mouse, deleteButton.area)) {
+    hover = true
+  }
+
+  deleteButton.update(agentMenuButtons.length, deleteMode)
+
+  canvas.style.cursor = hover ? 'pointer' : 'auto'
+
+  if (animationId % dayLength === 0) {
+    endDay()
+  }
+
+  updateHtml()
+
+  timers.forEach((timer, i) => {
+    timer.check(animationId)
+    if (timer.active === false) {
+      timers.splice(i, 1)
+    }
+  })
+
+}
+
+
+/* --- UPDATE HTML --- */
+
+var slider = document.getElementById('sim-speed-slider')
+var sliderValue = document.getElementById('sim-speed-value')
+
+sliderValue.innerHTML = slider.value / 100
+
+slider.oninput = function() {
+  GlobalSettings.globalSpeed = this.value
+  sliderValue.innerHTML = this.value / 100
+}
+
+function createAgent() {
+  console.log('creating agent')
+  const newAgentName = document.getElementById('form-create-agent-name')
+  const newAgentWidth = document.getElementById('form-create-agent-width')
+  const newAgentHeight = document.getElementById('form-create-agent-height')
+  agentData = AGENT_CONFIGS[newAgentName.value]
+  let config = agentData.config
+  config.width = Number(newAgentWidth.value)
+  config.height = Number(newAgentHeight.value)
+
+  let newIcon = new AgentMenuIcon({
+    menu: itemMenu,
+    i: agentMenuButtons.length + 1,
+    name: newAgentName.value,
+    agent: agentData.agentClass,
+    config: config
+  })
+  agentMenuButtons.push(newIcon)
+}
+
+
+function createGoToAction() {
+  console.log('creating action2')
+  const newActionName = document.getElementById('form-create-action-name').value
+  const newActionType = document.getElementById('form-create-action-type').value
+  const newActionDestination = document.getElementById('form-create-action-destination').value
+
+  const agentChoiceValue = document.agentRadioSelect.agentChoice.value
+
+  let args = {
+    id: createdActions.length + 1,
+    actionName: newActionName,
+    type: newActionType,  // 'goTo'
+    agentType: newActionDestination,
+    agentChoice: agentChoiceValue
+  }
+
+  if (newActionDestination === 'home') {
+    args.destination = selectedAgent.home
+  } else {
+    args.agentType = newActionDestination
+    args.agentChoice = agentChoiceValue
+  }
+
+  let newAction = new ActionGoTo(null, args)
+
+  createdActions.push(newAction)
+
+  updateHtml()
+}
+
+function createCondition() {
+  console.log('creating condition')
+  const newConditionProperty = document.getElementById('form-create-condition-property').value
+  const newConditionComparison = document.getElementById('form-create-condition-comparison').value
+  const newConditionThreshold = document.getElementById('form-create-condition-threshold').value
+
+  let newCondition = new Condition(
+    selectedAgent,
+    newConditionProperty,
+    newConditionComparison,
+    Number(newConditionThreshold),
+    createdConditions.length + 1  // id
+  )
+
+  createdConditions.push(newCondition)
+
+  // hard coding temporarily
+  createdActions[0].conditions.push(newCondition)
+
+  updateHtml()
+}
+
+function createPresetCondition() {
+  console.log('creating preset condition')
+  const newConditionMethod = document.getElementById('form-create-preset-condition-method').value
+  const newConditionComparison = document.getElementById('form-create-preset-condition-comparison').value
+  const newConditionThreshold = document.getElementById('form-create-preset-condition-value').value
+
+  let newCondition = new PresetCondition(
+    selectedAgent,
+    newConditionMethod,
+    newConditionComparison,
+    true,  // hard-coded for now,
+    createdConditions.length + 1  // id
+  )
+
+  createdPresetConditions.push(newCondition)
+
+  updateHtml()
+}
+
+function addAgentProperty() {
+  console.log('adding agent property')
+  const newAgentProperty = document.getElementById('form-add-agent-property').value
+  const newAgentPropertyValue = Number(document.getElementById('form-add-agent-property-value').value)
+
+  selectedAgent.addProperty(newAgentProperty, newAgentPropertyValue)
+
+}
+
+function createTransitionCheck() {
+
+  const transitionCheckActionId = document.getElementById('form-transition-action').value
+  const transitionCheckConditionId = document.getElementById('form-transition-condition').value
+  const transitionCheckNextActionId = document.getElementById('form-transition-next-action').value
+
+  console.log(transitionCheckActionId, transitionCheckConditionId, transitionCheckNextActionId)
+
+  const action = createdActions.filter(action => action.id === Number(transitionCheckActionId))[0]
+  const condition = createdPresetConditions.filter(cond => cond.id === Number(transitionCheckConditionId))[0]
+  const nextAction = createdActions.filter(action => action.id === Number(transitionCheckNextActionId))[0]
+
+  console.log(action, condition, nextAction)
+
+  action.transitionChecks.push({
+    condition: condition,
+    nextAction: nextAction
+  })
+}
+
+function createPropertyChangeAction() {
+  const actionName = document.getElementById('action-change-property-action-name').value
+  const agentType = document.getElementById('action-change-property-agent-type').value
+  const propertyName = document.getElementById('action-change-property-name').value
+  const propertyChangeType = document.getElementById('action-change-property-change').value
+  const propertyChangeValue = Number(document.getElementById('action-change-property-value').value)
+
+  const change1 = new PropertyChange(
+    null,
+    propertyName,
+    propertyChangeType,
+    propertyChangeValue
+  )
+
+  const propertyChangesAction = new ActionPropertyChanges(
+    null,
+    {
+      id: createdActions.length + 1,
+      actionName: actionName,
+      propertyChanges: [change1]
+    },
+    [],
+    [],
+    [change1]
+  )
+
+  createdActions.push(propertyChangesAction)
+}
+
+/* ********************************** */
+/* ****** END OF INDEX.JS CODE ****** */
+/* ********************************** */
+
+const DEFAULT_ACTION_TYPE = 'goTo'
+const DEFAULT_CONDITION_TYPE = 'property'
+
+
+var vue = new Vue({
+  el: '#container',
+  data: {
+    propertiesSection: {
+      items: [{name: 'money', value: 200, editing: false}],
+      adding: {
+        status: false,
+        newPropertyName: '',
+        newPropertyValue: ''
+      }
+    },
+    actionsSection: {
+      items: [
+        {
+          name: 'go to shop',
+          type: 'goTo',
+          target: 'lemonadeStall 1',
+          editing: false,
+          transitions: {
+            items: [],
+            adding: false,
+            newCondition: '',
+            newNextAction: ''
+          }
+        }
+      ],
+      adding: {
+        status: false,
+        type: 'goTo',
+        name: '',
+        forms: {
+          goTo: {
+            target: ''
+          },
+          change: {
+            property: '',
+            change: '',
+            value: ''
+          }
+        }
+
+      }
+    },
+    conditionsSection: {
+      items: [
+        {
+          type: 'property',
+          property: 'money',
+          comparison: 'isGreaterThan',
+          value: 20,
+          editing: false
+        }
+      ],
+      adding: {
+        status: false,
+        type: 'property',
+        forms: {
+          property: {
+            property: '',
+            comparison: '',
+            value: ''
+          },
+          preset: {
+            preset: '',
+            comparison: '',
+            value: ''
+          }
+        }
+      }
+    }
+  },
+
+  mounted: function () {
+    canvas = document.querySelector('canvas')
+    c = canvas.getContext('2d')
+
+    // const backgroundColor = 'blue'  // 'rgb(200, 200, 200)'
+
+    canvas.width = 1000
+    canvas.height = 600
+
+    c.fillStyle = backgroundColor
+    c.fillRect(0, 0, canvas.width, canvas.height)
+
+    this.animate()
+
+    /* --- CLICK ACTIONS / EVENT LISTENERS --- */
+
+    canvas.addEventListener('mousemove', (event) => {
+      mouse.x = event.clientX
+      mouse.y = event.clientY
+    })
+
+    canvas.addEventListener('click', (event) => {
+      const point = {x: event.x, y: event.y}
+
+      // PLACE NEW AGENT ON
+      if (placingAgent) {
+        const isInMenuArea = pointIsInArea(point, itemMenu.area)
+        if (isInMenuArea === false) {
+          const agentClassName = agentPreview.agent.agentName()
+          addAgent(
+            agentClassName,
+            AGENT_CONFIGS[agentClassName].agentClass,
+            AGENT_CONFIGS[agentClassName].agentArray
+          )
+          placingAgent = false
+          agentPreview = null
+        }
+      }
+
+      const agentNameList = Object.keys(AGENT_CONFIGS)
+
+      agentNameList.forEach(agentName => {
+        selectOrDeleteAgent(agentName, point)
+      })
+
+      // SELECT AGENT BUTTON TO CREATE CURSOR PREVIEW (to place new agent on board)
+      for (let i = 0; i < agentMenuButtons.length; i++) {
+
+        const isInArea = pointIsInArea(point, agentMenuButtons[i].area)
+
+        if (isInArea && !agentPreview) {
+          agentPreview = new AgentPreview({
+            agent: AGENTS[agentMenuButtons[i].name],
+            rgb: agentMenuButtons[i].rgb,
+            config: AGENT_CONFIGS[agentMenuButtons[i].name].config
+          })
+
+          placingAgent = true
+          break
+
+        } else if (isInArea && agentPreview) {
+          // if have active agent preview (tracking cursor), clicking on the agent menu again cancels the selection
+          placingAgent = false
+          agentPreview = null
+        }
+      }
+
+      // TOGGLE DELETE MODE
+      const isInArea = pointIsInArea(point, deleteButton.area)
+      if (isInArea) {
+        deleteMode = !deleteMode
+      }
+
+    })
+
+    document.addEventListener('keydown', (e) => {
+      if (e.code === 'Escape' && placingAgent === true) {
+        placingAgent = false
+        agentPreview = null
+      }
+    })
+  },
+
+  methods: {
+    createProperty: function () {
+      const propName = this.propertiesSection.adding.newPropertyName
+      const propValue = this.propertiesSection.adding.newPropertyValue
+      this.propertiesSection.items.push({name: propName, value: propValue, editing: false})
+      this.propertiesSection.adding.newPropertyName = ''
+      this.propertiesSection.adding.newPropertyValue = ''
+      this.propertiesSection.adding.status = false
+    },
+    deleteProperty: function (itemName) {
+      this.propertiesSection.items = this.propertiesSection.items.filter(item => item.name !== itemName)
+    },
+    cancelAddProperty: function () {
+      this.propertiesSection.adding.status = false
+      this.propertiesSection.adding.newPropertyName = ''
+      this.propertiesSection.adding.newPropertyValue = ''
+    },
+    createAction: function () {
+      const actionType = this.actionsSection.adding.type
+      const data = this.actionsSection.adding.forms[actionType]
+      const actionName = this.actionsSection.adding.name
+      const formData = {...data, name: actionName, type: actionType, editing: false}
+
+      this.actionsSection.items.push(formData)
+      this.resetActionForms()
+    },
+    resetActionForms: function () {
+      // reset common form data/settings
+      this.actionsSection.adding.name = ''
+      this.actionsSection.adding.type = DEFAULT_ACTION_TYPE
+      this.actionsSection.adding.status = false
+
+      // reset specific settings (hard-coded keys for now)
+      this.actionsSection.adding.forms.goTo.target = ''
+      this.actionsSection.adding.forms.change.property = ''
+      this.actionsSection.adding.forms.change.change = ''
+      this.actionsSection.adding.forms.change.value = ''
+
+    },
+    deleteAction: function (itemName) {
+      this.actionsSection.items = this.actionsSection.items.filter(item => item.name !== itemName)
+    },
+    cancelAddAction: function () {
+      this.resetActionForms()
+    },
+    deleteCondition: function (index) {
+      this.conditionsSection.items.splice(index, 1)
+    },
+    createCondition: function () {
+      const conditionType = this.conditionsSection.adding.type
+      const data = this.conditionsSection.adding.forms[conditionType]
+      // const conditionName = this.conditionsSection.adding.name
+      const formData = {...data, type: conditionType, editing: false}
+
+      this.conditionsSection.items.push(formData)
+      this.resetActionForms()
+    },
+    resetConditionForms: function () {
+      // reset common form data/settings
+      this.conditionsSection.adding.name = ''
+      this.conditionsSection.adding.type = DEFAULT_CONDITION_TYPE
+      this.conditionsSection.adding.status = false
+
+      // reset specific settings (hard-coded keys for now)
+      this.conditionsSection.adding.forms.property.property = ''
+      this.conditionsSection.adding.forms.property.comparison = ''
+      this.conditionsSection.adding.forms.property.value = ''
+      this.conditionsSection.adding.forms.preset.preset = ''
+      this.conditionsSection.adding.forms.preset.comparison = ''
+      this.conditionsSection.adding.forms.preset.value = ''
+    },
+    cancelAddCondition: function () {
+      this.resetConditionForms()
+    },
+    createTransition: function (action) {
+      const transitionCondition = action.transitions.newCondition
+      const transitionNextAction = action.transitions.newNextAction
+      action.transitions.items.push({
+        condition: transitionCondition,
+        nextAction: transitionNextAction,
+        editing: false
+      })
+      action.transitions.newCondition = ''
+      action.transitions.newNextAction = ''
+      action.transitions.adding = false
+    },
+    cancelAddTransition: function (action) {
+      action.transitions.adding = false
+      action.transitions.newCondition = ''
+      action.transitions.newNextAction = ''
+    },
+    deleteTransition: function (action, transitionIndex) {
+      action.transitions.items.splice(transitionIndex, 1)
+    },
+    conditionReadableFormat: function (condition) {
+      const readable = `${ condition.property } ${ condition.comparison } ${ condition.value }`
+      console.log(readable)
+      return readable
+    },
+
+    animate: function () {
+
+      c.fillStyle = backgroundColor
+      c.fillRect(0, 0, canvas.width, canvas.height)
+
+      const animationId = requestAnimationFrame(this.animate)
+
+      GlobalSettings.animationFrameId = animationId
+
+      lemonadeStalls.forEach(stall => stall.draw())
+
+      let hover = null
+
+      customers.forEach(customer => {
+        customer.update({
+          globals: GlobalSettings,
+          frameId: animationId,
+          stalls: lemonadeStalls,
+          stall: firstStall
+        })
+        const isInArea = pointIsInArea(mouse, customer.collisionArea)
+        if (isInArea) {
+          hover = true
+        }
+      })
+
+      lemonadeStalls.forEach(stall => {
+        const isInArea = pointIsInArea(mouse, stall.collisionArea)
+        if (isInArea) {
+          hover = true
+        }
+      })
+
+      supplyVans.forEach(van => {
+        van.update({
+          globals: GlobalSettings,
+          frameId: animationId,
+          stalls: lemonadeStalls,
+          stall: firstStall
+        })
+        const isInArea = pointIsInArea(mouse, van.collisionArea)
+        if (isInArea) {
+          hover = true
+        }
+      })
+      
+      itemMenu.update(agentMenuButtons.length + 1)
+
+      agentMenuButtons.forEach((button, i) => {
+        button.update(i)
+        const isInArea = pointIsInArea(mouse, button.area)
+        if (isInArea) {
+          hover = true
+        }
+      })
+
+      if (agentPreview) agentPreview.update(mouse)
+
+      if (pointIsInArea(mouse, deleteButton.area)) {
+        hover = true
+      }
+
+      deleteButton.update(agentMenuButtons.length, deleteMode)
+
+      canvas.style.cursor = hover ? 'pointer' : 'auto'
+
+      if (animationId % dayLength === 0) {
+        endDay()
+      }
+
+      updateHtml()
+
+      timers.forEach((timer, i) => {
+        timer.check(animationId)
+        if (timer.active === false) {
+          timers.splice(i, 1)
+        }
+      })
+
+    }
+  }
+})
+
+
+</script>
+
+</html>
