@@ -1,8 +1,10 @@
 class Action {
-  constructor(customer = null, args, conditions = [], transitionChecks = []) {
+  constructor(customer = null, args, conditions = [], transitions = []) {
     this.id = args.id  // incrementing PK
     this.customer = customer
     this.args = args
+    // temporary?
+    this.editing = false
 
     if (this.customer !== null) {
       if (args.agentType === 'lemonadeStall') {
@@ -20,11 +22,13 @@ class Action {
     }
 
     this.actionName = args.actionName
+    this.actionType = args.actionType
+
     this.inProgress = false
     this.isComplete = false
 
     this.conditions = conditions ? conditions : []
-    this.transitionChecks = transitionChecks ? transitionChecks : []
+    this.transitions = transitions ? transitions : []
   }
 
   meetsConditions() {
@@ -40,12 +44,12 @@ class Action {
 
   check(stateData) {
     console.log(this.actionName)
-    for (i = 0; i < this.transitionChecks.length; i++) {
-      const result = this.transitionChecks[i].condition.evaluate()
+    for (i = 0; i < this.transitions.length; i++) {
+      const result = this.transitions[i].condition.evaluate()
       if (result === true) {
         this.isComplete = true
         this.customer.actionList.push(
-          this.transitionChecks[i].nextAction.clone(
+          this.transitions[i].nextAction.clone(
             this.customer,
             {destination: this.customer.home, cloned: true}
           )
@@ -63,7 +67,7 @@ class Action {
       customer,
       this.args = {...this.args, ...args},
       this.conditions,
-      this.transitionChecks,
+      this.transitions,
       this.propertyChanges
     )
   }
@@ -72,8 +76,8 @@ class Action {
 
 
 class ActionGoTo extends Action {
-  constructor(customer = null, args, conditions = [], transitionChecks = []) {
-    super(customer, args, conditions, transitionChecks)
+  constructor(customer = null, args, conditions = [], transitions = []) {
+    super(customer, args, conditions, transitions)
   }
 
   start() {
@@ -91,8 +95,8 @@ class ActionGoTo extends Action {
 
 
 class ActionPropertyChanges extends Action {
-  constructor(customer = null, args, conditions = [], transitionChecks = [], propertyChanges = []) {
-    super(customer, args, conditions, transitionChecks)
+  constructor(customer = null, args, conditions = [], transitions = [], propertyChanges = []) {
+    super(customer, args, conditions, transitions)
 
     this.propertyChanges = propertyChanges ? propertyChanges : []
     this.changesApplied = false  // temporary duplicate 'complete' flag - find different approach
@@ -103,7 +107,6 @@ class ActionPropertyChanges extends Action {
         change.agent = this.customer
       })
     }
-
   }
 
   start() {
