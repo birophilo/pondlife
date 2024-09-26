@@ -1,10 +1,12 @@
 class Condition {
-  constructor(agent, property, condition, conditionValue) {
+  constructor(agent, property, comparison, conditionValue) {
     this.agent = agent
     this.property = property
-    this.condition = condition
+    this.comparison = comparison
+    this.conditionType = 'property'
     this.conditionValue = conditionValue
-    this.name = `${this.property} ${this.condition} ${this.conditionValue}`
+    this.conditionName = `${this.property} ${this.comparison} ${this.conditionValue}`
+    this.editing = false
   }
 
   evaluate() {
@@ -33,13 +35,15 @@ COMPARISONS = {
 
 class PresetCondition {
   // not sure how to incorporate checks like agent.atDestination() yet - this is temporary design
-  constructor(agent, classMethod, condition, conditionValue, id) {
+  constructor(agent, classMethod, comparison, conditionValue, id) {
     this.id = id
     this.classMethod = classMethod
     this.agent = agent
-    this.condition = condition
+    this.comparison = comparison
+    this.conditionType = 'preset'
     this.conditionValue = conditionValue
-    this.name = `${this.classMethod} ${this.condition} ${this.conditionValue}`
+    this.conditionName = `${this.classMethod} ${this.comparison} ${this.conditionValue}`
+    this.editing = false
   }
   evaluate() {
     const agentValue = this.agent[this.classMethod]()

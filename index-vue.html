@@ -62,6 +62,15 @@ canvas {
 
   <div class="info-container">
 
+    <div v-if="selectedAgent !== null">
+      {{ selectedAgent.name }} {{ selectedAgent.num }}.
+      <br/>
+      Money: {{ selectedAgent.stateData.money }}.
+      <br/>
+      {{ selectedAgent.currentStateName }}
+    </div>
+    <div></div>
+
     <div class="menu-section" id="properties-section">
       <h3 class="menu-section-heading">Properties</h3>
       <!-- PROPERTY LIST -->
@@ -122,10 +131,10 @@ canvas {
                 <option value="goTo">go to</option>
                 <option value="change">change</option>
               </select>
-              <input v-model="action.target" type="text" placeholder="target" :value="action.target" />
+              <input v-model="action.args.agentType" type="text" placeholder="target" :value="action.args.agentType" />
             </div>
             <div v-else>
-              <input type="text" placeholder="target" :value="action.target" disabled />
+              <input v-model="action.args.agentType" type="text" placeholder="target" :value="action.args.agentType" disabled />
             </div>
           </div>
 
@@ -152,7 +161,6 @@ canvas {
 
             </div>
           </div>
-          <div v-else>{{ action.actionType }}</div>
           <br />
 
           <h4>Action transitions</h4>
@@ -249,9 +257,10 @@ canvas {
         <div v-for="(item, index) in conditionsSection.items" class="created-item">
 
           <div class="created-item-header">
-            <div class="menu-action-name">{{ item.type === 'property' ? item.property : item.preset }}</div>&nbsp;
+            <div class="menu-action-name">{{ item.conditionName }}</div>
+            <div class="menu-action-name">{{ item.conditionType === 'property' ? item.property : item.classMethod }}</div>&nbsp;
             <div class="menu-action-name">{{ item.comparison }}</div>&nbsp;
-            <div class="menu-action-name">{{ item.value }}</div>
+            <div class="menu-action-name">{{ item.conditionValue }}</div>
             <div v-if="item.editing">
               <button @click="item.editing = false">save</button>
               <button @click="item.editing = false">cancel</button>
@@ -264,39 +273,45 @@ canvas {
 
           <!-- CONDITION FORM -->
           <div v-if="item.editing === true">
-            <select v-model="item.type">
+            <select v-model="item.conditionType">
               <option value="property">property</option>
               <option value="preset">preset</option>
             </select>
           </div>
           
             <div v-if="item.editing === true">
-              <div v-if="item.type === 'property'">
+              <div v-if="item.conditionType === 'property'">
                 <select v-model="item.property">
                   <option value="money">money</option>
                 </select>
+
+                <select v-model="item.comparison">
+                  <option value="isGreaterThan">is greater than</option>
+                  <option value="isLessThan">is less than</option>
+                </select>
               </div>
-              <div v-else-if="item.type === 'preset'">
-                <select v-model="item.preset">
+              <div v-else-if="item.conditionType === 'preset'">
+                <select v-model="item.classMethod">
                   <option value="atDestination">at destination</option>
+                </select>
+
+                <select v-model="item.comparison" value="isIdentical">
+                  <option value="isIdentical">is</option>
                 </select>
               </div>
 
-              <select v-model="item.comparison">
-                <option value="isGreaterThan">is greater than</option>
-                <option value="isIdentical">is</option>
-              </select>
-              <input v-model="item.value" type="text" placeholder="value" :value="item.value" />
+
+              <input v-model="item.conditionValue" type="text" placeholder="value" :value="item.conditionValue" />
             </div>
             <div v-else>
-              <div v-if="item.type === 'property'">
+              <div v-if="item.conditionType === 'property'">
                 <input type="text" placeholder="property" :value="item.property" disabled />
               </div>
-              <div v-else-if="item.type === 'preset'">
-                <input type="text" placeholder="preset" :value="item.preset" disabled />
+              <div v-else-if="item.conditionType === 'preset'">
+                <input type="text" placeholder="preset" :value="item.classMethod" disabled />
               </div>
               <input type="text" placeholder="comparison" :value="item.comparison" disabled />
-              <input type="text" placeholder="value" :value="item.value" disabled />
+              <input type="text" placeholder="value" :value="item.conditionValue" disabled />
             </div>
           </div>
 
@@ -396,10 +411,10 @@ canvas {
 
 <script>
 
-const backgroundColor = 'rgb(200, 200, 200)'
-
 let canvas;
 let c;
+
+const backgroundColor = 'rgb(200, 200, 200)'
 
 const AGENTS = {
   customer: Customer,
@@ -425,51 +440,7 @@ const agentMenuButtonData = [
   {name: 'lemonadeStall', rgb: [0, 0, 255]},
   {name: 'supplyVan', rgb: [255, 255, 0]}
 ]
-// const agentMenuButtons = []
 
-// const customers = []
-// const lemonadeStalls = []
-// const supplyVans = []
-
-// let selectedAgent = null
-// let agentPreview = null
-// let placingAgent = false
-// let deleteMode = false
-
-// let mouse = {x: 0, y: 0}
-
-// let AGENT_CONFIGS = {
-//   customer: {
-//     agentClass: Customer,
-//     agentArray: customers,
-//     config: {
-//       width: 40,
-//       height: 40,
-//       offset: {x: 96, y: 46},
-//       scale: 0.7,
-//     }
-//   },
-//   lemonadeStall: {
-//     agentClass: LemonadeStall,
-//     agentArray: lemonadeStalls,
-//     config: {
-//       width: 130,
-//       height: 100,
-//       offset: {x: 0, y: 0},
-//       scale: 1
-//     }
-//   },
-//   supplyVan: {
-//     agentClass: SupplyVan,
-//     agentArray: supplyVans,
-//     config: {
-//       width: 50,
-//       height: 50,
-//       offset: {x: 2, y: 0},
-//       scale: 2.5
-//     }
-//   }
-// }
 
 // function addAgent(agentClassName, agentClass, agentArray) {
 //   const num = agentArray.length + 1
@@ -503,97 +474,6 @@ const agentMenuButtonData = [
 //   })
 // }
 
-// function updateHtml() {
-
-//   if (selectedAgent !== null) {
-//     const info = `${selectedAgent.name} ${selectedAgent.num}.<br/>` +
-//     `Money: ${selectedAgent.stateData.money}.<br/>` +
-//     `${selectedAgent.currentStateName}`
-//     document.querySelector('#info').innerHTML = info
-
-//     const actionListNames = selectedAgent.actionList.map(action => action.stateName)
-//     document.querySelector('#action-queue-list').innerHTML = actionListNames.join('<br/>')
-//     let actionButtonList = document.getElementById('action-button-list')
-
-//     if (actionButtonList.children.length !== createdActions.length) {
-
-//       actionButtonList.innerHTML = ''
-
-//       for (i = 0; i < createdActions.length; i++) {
-//         const button = document.createElement('button')
-//         button.innerText = createdActions[i].actionName
-//         const j = Number(i)  // closure
-//         button.addEventListener('click', () => {
-//           selectedAgent.actionList.push(createdActions[j].clone(
-//             selectedAgent,
-//             {destination: selectedAgent.home, cloned: true}
-//           ))
-//         })
-//         actionButtonList.appendChild(button)
-//       }
-//     }
-
-//     let createdConditionList = document.getElementById('created-condition-list')
-
-//     if (createdConditionList.children.length !== createdConditions.length) {
-
-//       createdConditionList.innerHTML = ''
-
-//       for (i = 0; i < createdConditions.length; i++) {
-//         const div = document.createElement('div')
-//         div.innerText = createdConditions[i].name
-//         createdConditionList.appendChild(div)
-//       }
-//     }
-
-//     let transitionCheckActionMenu = document.getElementById('form-transition-action')
-
-//     if (transitionCheckActionMenu.children.length !== createdActions.length) {
-
-//       transitionCheckActionMenu.innerHTML = ''
-
-//       for (i = 0; i < createdActions.length; i++) {
-//         const option = document.createElement('option')
-//         option.innerText = createdActions[i].actionName
-//         option.value = createdActions[i].id
-//         transitionCheckActionMenu.appendChild(option)
-//       }
-//     }
-
-//     let transitionCheckConditionMenu = document.getElementById('form-transition-condition')
-
-//     if (transitionCheckConditionMenu.children.length !== createdPresetConditions.length) {
-
-//       transitionCheckConditionMenu.innerHTML = ''
-
-//       for (i = 0; i < createdPresetConditions.length; i++) {
-//         const option = document.createElement('option')
-//         option.innerText = createdPresetConditions[i].name
-//         option.value = createdPresetConditions[i].id
-//         transitionCheckConditionMenu.appendChild(option)
-//       }
-//     }
-
-//     let transitionCheckNextActionMenu = document.getElementById('form-transition-next-action')
-
-//     if (transitionCheckNextActionMenu.children.length !== createdActions.length) {
-
-//       transitionCheckNextActionMenu.innerHTML = ''
-
-//       for (i = 0; i < createdActions.length; i++) {
-//         const option = document.createElement('option')
-//         option.innerText = createdActions[i].actionName
-//         option.value = createdActions[i].id
-//         transitionCheckNextActionMenu.appendChild(option)
-//       }
-//     }
-
-//   }
-
-//   document.querySelector('#day-number').innerHTML = dayNumber
-
-// }
-
 
 function changeAgentStateFromButton(agent, actionClass, args={}) {
   agent.actionList.push(new actionClass(agent, args))
@@ -616,136 +496,6 @@ function pointIsInArea(point = {x, y}, area = {x, y, width, height}) {
     return false
   }
 }
-
-
-// lemonadeStallData.forEach(stall => {
-//   lemonadeStalls.push(
-//     new LemonadeStall(stall)
-//   )
-// })
-
-// supplyVanData.forEach(van => {
-//   supplyVans.push(
-//     new SupplyVan({
-//       position: van,
-//       globals: GlobalSettings,
-//       offset: AGENT_CONFIGS.supplyVan.config.offset,
-//       scale: AGENT_CONFIGS.supplyVan.config.scale
-//     })
-//   )
-// })
-
-// customerData.forEach((cust, i) => {
-//   customers.push( new Customer({
-//     position: {x: cust.x, y: cust.y},
-//     num: i + 1,
-//     globals: GlobalSettings,
-//     offset: AGENT_CONFIGS.customer.config.offset,
-//     scale: AGENT_CONFIGS.customer.config.scale
-//   }))
-// })
-
-// const itemMenu = new AgentMenu()
-
-// agentMenuButtonData.forEach((icon, i) => {
-//   agentMenuButtons.push(
-//     new AgentMenuIcon({
-//       menu: itemMenu,
-//       i: i,
-//       name: icon.name,
-//       agent: AGENT_CONFIGS[icon.name].agentClass,
-//       config: AGENT_CONFIGS[icon.name].config
-//     })
-//   )
-// })
-
-// let deleteButton = new DeleteButton({
-//   menu: itemMenu,
-//   i: agentMenuButtons.length
-// })
-
-/* --- ANIMATE --- */
-
-// function animate() {
-
-//   c.fillStyle = backgroundColor
-//   c.fillRect(0, 0, canvas.width, canvas.height)
-
-//   const animationId = requestAnimationFrame(animate)
-
-//   GlobalSettings.animationFrameId = animationId
-
-//   lemonadeStalls.forEach(stall => stall.draw())
-
-//   let hover = null
-
-//   customers.forEach(customer => {
-//     customer.update({
-//       globals: GlobalSettings,
-//       frameId: animationId,
-//       stalls: lemonadeStalls,
-//       stall: firstStall
-//     })
-//     const isInArea = pointIsInArea(mouse, customer.collisionArea)
-//     if (isInArea) {
-//       hover = true
-//     }
-//   })
-
-//   lemonadeStalls.forEach(stall => {
-//     const isInArea = pointIsInArea(mouse, stall.collisionArea)
-//     if (isInArea) {
-//       hover = true
-//     }
-//   })
-
-//   supplyVans.forEach(van => {
-//     van.update({
-//       globals: GlobalSettings,
-//       frameId: animationId,
-//       stalls: lemonadeStalls,
-//       stall: firstStall
-//     })
-//     const isInArea = pointIsInArea(mouse, van.collisionArea)
-//     if (isInArea) {
-//       hover = true
-//     }
-//   })
-  
-//   itemMenu.update(agentMenuButtons.length + 1)
-
-//   agentMenuButtons.forEach((button, i) => {
-//     button.update(i)
-//     const isInArea = pointIsInArea(mouse, button.area)
-//     if (isInArea) {
-//       hover = true
-//     }
-//   })
-
-//   if (agentPreview) agentPreview.update(mouse)
-
-//   if (pointIsInArea(mouse, deleteButton.area)) {
-//     hover = true
-//   }
-
-//   deleteButton.update(agentMenuButtons.length, deleteMode)
-
-//   canvas.style.cursor = hover ? 'pointer' : 'auto'
-
-//   if (animationId % dayLength === 0) {
-//     endDay()
-//   }
-
-//   updateHtml()
-
-//   timers.forEach((timer, i) => {
-//     timer.check(animationId)
-//     if (timer.active === false) {
-//       timers.splice(i, 1)
-//     }
-//   })
-
-// }
 
 
 /* --- UPDATE HTML --- */
@@ -780,117 +530,6 @@ function createAgent() {
   agentMenuButtons.push(newIcon)
 }
 
-
-// function createGoToAction() {
-//   console.log('creating action2')
-//   const newActionName = document.getElementById('form-create-action-name').value
-//   const newActionType = document.getElementById('form-create-action-type').value
-//   const newActionDestination = document.getElementById('form-create-action-destination').value
-
-//   const agentChoiceValue = document.agentRadioSelect.agentChoice.value
-
-//   let args = {
-//     id: createdActions.length + 1,
-//     actionName: newActionName,
-//     type: newActionType,  // 'goTo'
-//     agentType: newActionDestination,
-//     agentChoice: agentChoiceValue
-//   }
-
-//   if (newActionDestination === 'home') {
-//     args.destination = selectedAgent.home
-//   } else {
-//     args.agentType = newActionDestination
-//     args.agentChoice = agentChoiceValue
-//   }
-
-//   let newAction = new ActionGoTo(null, args)
-
-//   createdActions.push(newAction)
-
-//   // updateHtml()
-// }
-
-
-// function createPropertyChangeAction() {
-//   const actionName = document.getElementById('action-change-property-action-name').value
-//   const agentType = document.getElementById('action-change-property-agent-type').value
-//   const propertyName = document.getElementById('action-change-property-name').value
-//   const propertyChangeType = document.getElementById('action-change-property-change').value
-//   const propertyChangeValue = Number(document.getElementById('action-change-property-value').value)
-
-//   const change1 = new PropertyChange(
-//     null,
-//     propertyName,
-//     propertyChangeType,
-//     propertyChangeValue
-//   )
-
-//   const propertyChangesAction = new ActionPropertyChanges(
-//     null,
-//     {
-//       id: createdActions.length + 1,
-//       actionName: actionName,
-//       propertyChanges: [change1]
-//     },
-//     [],
-//     [],
-//     [change1]
-//   )
-
-//   createdActions.push(propertyChangesAction)
-// }
-
-
-// function createCondition() {
-//   console.log('creating condition')
-//   const newConditionProperty = document.getElementById('form-create-condition-property').value
-//   const newConditionComparison = document.getElementById('form-create-condition-comparison').value
-//   const newConditionThreshold = document.getElementById('form-create-condition-threshold').value
-
-//   let newCondition = new Condition(
-//     selectedAgent,
-//     newConditionProperty,
-//     newConditionComparison,
-//     Number(newConditionThreshold),
-//     createdConditions.length + 1  // id
-//   )
-
-//   createdConditions.push(newCondition)
-
-//   // hard coding temporarily
-//   createdActions[0].conditions.push(newCondition)
-
-//   // updateHtml()
-// }
-
-// function createPresetCondition() {
-//   console.log('creating preset condition')
-//   const newConditionMethod = document.getElementById('form-create-preset-condition-method').value
-//   const newConditionComparison = document.getElementById('form-create-preset-condition-comparison').value
-//   const newConditionThreshold = document.getElementById('form-create-preset-condition-value').value
-
-//   let newCondition = new PresetCondition(
-//     selectedAgent,
-//     newConditionMethod,
-//     newConditionComparison,
-//     true,  // hard-coded for now,
-//     createdConditions.length + 1  // id
-//   )
-
-//   createdPresetConditions.push(newCondition)
-
-//   // updateHtml()
-// }
-
-// function addAgentProperty() {
-//   console.log('adding agent property')
-//   const newAgentProperty = document.getElementById('form-add-agent-property').value
-//   const newAgentPropertyValue = Number(document.getElementById('form-add-agent-property-value').value)
-
-//   selectedAgent.addProperty(newAgentProperty, newAgentPropertyValue)
-
-// }
 
 // function createTransitionCheck() {
 
@@ -981,13 +620,13 @@ var vue = new Vue({
     },
     conditionsSection: {
       items: [
-        {
-          type: 'property',
-          property: 'money',
-          comparison: 'isGreaterThan',
-          value: 20,
-          editing: false
-        }
+        // {
+        //   type: 'property',
+        //   property: 'money',
+        //   comparison: 'isGreaterThan',
+        //   value: 20,
+        //   editing: false
+        // }
       ],
       adding: {
         status: false,
@@ -1099,7 +738,6 @@ var vue = new Vue({
           new LemonadeStall(stall)
         )
       })
-
       supplyVanData.forEach(van => {
         this.supplyVans.push(
           new SupplyVan({
@@ -1110,7 +748,6 @@ var vue = new Vue({
           })
         )
       })
-
       customerData.forEach((cust, i) => {
         this.customers.push( new Customer({
           position: {x: cust.x, y: cust.y},
@@ -1120,9 +757,7 @@ var vue = new Vue({
           scale: this.AGENT_CONFIGS.customer.config.scale
         }))
       })
-
       this.itemMenu = new AgentMenu()
-
       agentMenuButtonData.forEach((icon, i) => {
         this.agentMenuButtons.push(
           new AgentMenuIcon({
@@ -1134,7 +769,6 @@ var vue = new Vue({
           })
         )
       })
-
       this.deleteButton = new DeleteButton({
         menu: this.itemMenu,
         i: this.agentMenuButtons.length
@@ -1160,7 +794,6 @@ var vue = new Vue({
       const actionType = this.actionsSection.adding.type
       const data = this.actionsSection.adding.forms[actionType]
       const actionName = this.actionsSection.adding.name
-      // const formData = {...data, name: actionName, type: actionType, editing: false}
 
       if (actionType === 'goTo') {
 
@@ -1172,7 +805,7 @@ var vue = new Vue({
         let args = {
           id: this.actionsSection.items.length + 1,
           actionName: actionName,
-          actionType: actionType,  // 'goTo'
+          actionType: actionType,
           agentType: actionDestination,
           agentChoice: agentChoiceValue,
 
@@ -1241,7 +874,7 @@ var vue = new Vue({
 
     },
     deleteAction: function (itemName) {
-      this.actionsSection.items = this.actionsSection.items.filter(item => item.name !== itemName)
+      this.actionsSection.items = this.actionsSection.items.filter(item => item.actionName !== itemName)
     },
     cancelAddAction: function () {
       this.resetActionForms()
@@ -1252,11 +885,42 @@ var vue = new Vue({
     createCondition: function () {
       const conditionType = this.conditionsSection.adding.type
       const data = this.conditionsSection.adding.forms[conditionType]
-      // const conditionName = this.conditionsSection.adding.name
-      const formData = {...data, type: conditionType, editing: false}
 
-      this.conditionsSection.items.push(formData)
-      this.resetActionForms()
+      if (conditionType === 'property') {
+
+        console.log('creating condition')
+        const conditionProperty = data.property
+        const conditionComparison = data.comparison
+        const conditionValue = data.value
+
+        var newCondition = new Condition(
+          this.selectedAgent,
+          conditionProperty,
+          conditionComparison,
+          Number(conditionValue),
+          this.conditionsSection.items.length + 1  // id
+        )
+      } else {
+
+        console.log('creating preset condition')
+        const conditionPreset = data.preset
+        const conditionComparison = data.comparison
+        const conditionValue = data.value
+
+        var newCondition = new PresetCondition(
+          this.selectedAgent,
+          conditionPreset,
+          conditionComparison,
+          true,  // hard-coded for now,
+          this.conditionsSection.items.length + 1  // id
+        )
+      }
+
+      this.conditionsSection.items.push(newCondition)
+      // hard coding temporarily
+      this.actionsSection.items[0].conditions.push(newCondition)
+      this.resetConditionForms()
+
     },
     resetConditionForms: function () {
       // reset common form data/settings
@@ -1412,102 +1076,6 @@ var vue = new Vue({
         scale: this.AGENT_CONFIGS[agentClassName].config.scale,
         config: this.AGENT_CONFIGS[agentClassName].config
       }))
-    },
-
-    // createGoToAction: function () {
-    //   console.log('creating action2')
-    //   const newActionName = document.getElementById('form-create-action-name').value
-    //   const newActionType = document.getElementById('form-create-action-type').value
-    //   const newActionDestination = document.getElementById('form-create-action-destination').value
-
-    //   // const agentChoiceValue = document.agentRadioSelect.agentChoice.value
-    //   const agentChoiceValue = 'nearest'
-
-    //   let args = {
-    //     id: this.createdActions.length + 1,
-    //     actionName: newActionName,
-    //     type: newActionType,  // 'goTo'
-    //     agentType: newActionDestination,
-    //     agentChoice: agentChoiceValue
-    //   }
-
-    //   if (newActionDestination === 'home') {
-    //     args.destination = this.selectedAgent.home
-    //   } else {
-    //     args.agentType = newActionDestination
-    //     args.agentChoice = agentChoiceValue
-    //   }
-
-    //   let newAction = new ActionGoTo(null, args)
-
-    //   this.createdActions.push(newAction)
-
-    // },
-
-    // createPropertyChangeAction: function () {
-    //   const actionName = document.getElementById('action-change-property-action-name').value
-    //   const agentType = document.getElementById('action-change-property-agent-type').value
-    //   const propertyName = document.getElementById('action-change-property-name').value
-    //   const propertyChangeType = document.getElementById('action-change-property-change').value
-    //   const propertyChangeValue = Number(document.getElementById('action-change-property-value').value)
-
-    //   const change1 = new PropertyChange(
-    //     null,
-    //     propertyName,
-    //     propertyChangeType,
-    //     propertyChangeValue
-    //   )
-
-    //   const propertyChangesAction = new ActionPropertyChanges(
-    //     null,
-    //     {
-    //       id: this.createdActions.length + 1,
-    //       actionName: actionName,
-    //       propertyChanges: [change1]
-    //     },
-    //     [],
-    //     [],
-    //     [change1]
-    //   )
-
-    //   this.createdActions.push(propertyChangesAction)
-    // },
-
-    createCondition: function () {
-      console.log('creating condition')
-      const newConditionProperty = document.getElementById('form-create-condition-property').value
-      const newConditionComparison = document.getElementById('form-create-condition-comparison').value
-      const newConditionThreshold = document.getElementById('form-create-condition-threshold').value
-
-      let newCondition = new Condition(
-        this.selectedAgent,
-        newConditionProperty,
-        newConditionComparison,
-        Number(newConditionThreshold),
-        this.createdConditions.length + 1  // id
-      )
-
-      this.createdConditions.push(newCondition)
-
-      // hard coding temporarily
-      this.createdActions[0].conditions.push(newCondition)
-
-    },
-
-    createPresetCondition: function () {
-      console.log('creating preset condition')
-      const newConditionMethod = document.getElementById('form-create-preset-condition-method').value
-      const newConditionComparison = document.getElementById('form-create-preset-condition-comparison').value
-      const newConditionThreshold = document.getElementById('form-create-preset-condition-value').value
-
-      let newCondition = new PresetCondition(
-        this.selectedAgent,
-        newConditionMethod,
-        newConditionComparison,
-        true,  // hard-coded for now,
-        this.createdConditions.length + 1  // id
-      )
-      this.createdPresetConditions.push(newCondition)
     },
 
     addAgentProperty: function () {
