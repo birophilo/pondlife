@@ -74,20 +74,25 @@ canvas {
     <div class="menu-section" id="properties-section">
       <h3 class="menu-section-heading">Properties</h3>
       <!-- PROPERTY LIST -->
-      <div class="item-list">
-        <div v-for="item in propertiesSection.items">
-          <div v-if="item.editing === true">
-            <input type="text" placeholder="name" :value="item.name" disabled />
-            <input v-model="item.value" type="text" placeholder="value" :value="item.value" />
-            | <button @click="item.editing = false">done</button>
+      <div v-if="selectedAgent !== null" class="item-list">
+        <div v-for="property in Object.keys(selectedAgent.stateData)">
+          <div v-if="property !== 'globals'">
+            <input type="text" placeholder="name" :value="property" disabled />
+            <input
+              v-model="selectedAgent.stateData[property]"
+              type="text"
+              :value="selectedAgent.stateData[property]"
+            />
+            <button @click="delete selectedAgent.stateData[property]">delete</button>
           </div>
-          <div v-else>
-            <input type="text" placeholder="name" :value="item.name" disabled />: 
-            <input type="text" placeholder="value" :value="item.value" disabled /> -
-            <button @click="item.editing = true">edit</button> |
-            <button @click="deleteProperty(item.name)">delete</button>
-          </div>
+          <br/>
         </div>
+        <!-- <div v-else>
+          <input type="text" placeholder="name" :value="item.name" disabled />:
+          <input type="text" placeholder="value" :value="item.value" disabled /> -
+          <button @click="item.editing = true">edit</button> |
+          <button @click="deleteProperty(item.name)">delete</button>
+        </div> -->
 
         <!-- ADD PROPERTY -->
         <div v-if="propertiesSection.adding.status === false" class="add-container">
@@ -96,8 +101,8 @@ canvas {
         <div v-else>
           <input v-model="propertiesSection.adding.newPropertyName" type="text" placeholder="name" />
           <input v-model="propertiesSection.adding.newPropertyValue" type="text" placeholder="value" />
-          <button @click="createProperty">add</button> |
-          <button @click="cancelAddProperty">cancel</button>
+          <button @click="createAgentProperty">add</button> |
+          <button @click="cancelSetAgentProperty">cancel</button>
         </div>
       </div>
     </div>
@@ -379,7 +384,6 @@ canvas {
 
     </div>
 
-
     <div class="menu-section">
 
       <div class="day-container">
@@ -390,10 +394,9 @@ canvas {
         <div><span>Speed: </span><span id="sim-speed-value">1.0</span></div>
         <input type="range" min="0" max="200" value="100" id="sim-speed-slider">
       </div>
+
     </div>
-
   </div>
-
 </div>
 
 </body>
@@ -455,23 +458,6 @@ const agentMenuButtonData = [
 //     scale: AGENT_CONFIGS[agentClassName].config.scale,
 //     config: AGENT_CONFIGS[agentClassName].config
 //   }))
-// }
-
-// function selectOrDeleteAgent(agentClassName, point) {
-//   let agentArray = AGENT_CONFIGS[agentClassName].agentArray
-//   agentArray.forEach((agent, i) => {
-//     const isInArea = pointIsInArea(point, agent.collisionArea)
-
-//     // SELECT AGENT
-//     if (isInArea) {
-//       selectedAgent = agent
-//     }
-//     // DELETE AGENT (in delete mode)
-//     if (isInArea && deleteMode === true) {
-//       agentArray.splice(i, 1)
-//       deleteMode = false
-//     }
-//   })
 // }
 
 
@@ -774,10 +760,10 @@ var vue = new Vue({
         i: this.agentMenuButtons.length
       })
     },
-    createProperty: function () {
+    createAgentProperty: function () {
       const propName = this.propertiesSection.adding.newPropertyName
       const propValue = this.propertiesSection.adding.newPropertyValue
-      this.propertiesSection.items.push({name: propName, value: propValue, editing: false})
+      this.selectedAgent.setProperty(propName, propValue)
       this.propertiesSection.adding.newPropertyName = ''
       this.propertiesSection.adding.newPropertyValue = ''
       this.propertiesSection.adding.status = false
@@ -785,7 +771,7 @@ var vue = new Vue({
     deleteProperty: function (itemName) {
       this.propertiesSection.items = this.propertiesSection.items.filter(item => item.name !== itemName)
     },
-    cancelAddProperty: function () {
+    cancelSetAgentProperty: function () {
       this.propertiesSection.adding.status = false
       this.propertiesSection.adding.newPropertyName = ''
       this.propertiesSection.adding.newPropertyValue = ''
@@ -827,7 +813,6 @@ var vue = new Vue({
 
       if (actionType === 'change') {
 
-        // const agentType = document.getElementById('action-change-property-agent-type').value
         const propertyName = data.property
         const propertyChangeType = data.change
         const propertyChangeValue = Number(data.value)
@@ -969,24 +954,18 @@ var vue = new Vue({
 
     animate: function () {
 
+      let hover = null
+
       c.fillStyle = backgroundColor
       c.fillRect(0, 0, canvas.width, canvas.height)
 
       const animationId = requestAnimationFrame(this.animate)
-
       GlobalSettings.animationFrameId = animationId
 
       this.lemonadeStalls.forEach(stall => stall.draw())
 
-      let hover = null
-
       this.customers.forEach(customer => {
-        customer.update({
-          globals: GlobalSettings,
-          frameId: animationId,
-          stalls: this.lemonadeStalls,
-          stall: firstStall
-        })
+        customer.update({ globals: GlobalSettings })
         const isInArea = pointIsInArea(this.mouse, customer.collisionArea)
         if (isInArea) {
           hover = true
@@ -1001,12 +980,7 @@ var vue = new Vue({
       })
 
       this.supplyVans.forEach(van => {
-        van.update({
-          globals: GlobalSettings,
-          frameId: animationId,
-          stalls: this.lemonadeStalls,
-          stall: firstStall
-        })
+        van.update({ globals: GlobalSettings })
         const isInArea = pointIsInArea(this.mouse, van.collisionArea)
         if (isInArea) {
           hover = true
@@ -1024,18 +998,13 @@ var vue = new Vue({
       })
 
       if (this.agentPreview) this.agentPreview.update(this.mouse)
-
-      if (pointIsInArea(this.mouse, this.deleteButton.area)) {
-        hover = true
-      }
+      if (pointIsInArea(this.mouse, this.deleteButton.area)) hover = true
 
       this.deleteButton.update(this.agentMenuButtons.length, this.deleteMode)
 
       canvas.style.cursor = hover ? 'pointer' : 'auto'
 
-      if (animationId % dayLength === 0) {
-        endDay()
-      }
+      if (animationId % dayLength === 0) endDay()
 
       timers.forEach((timer, i) => {
         timer.check(animationId)
@@ -1076,13 +1045,6 @@ var vue = new Vue({
         scale: this.AGENT_CONFIGS[agentClassName].config.scale,
         config: this.AGENT_CONFIGS[agentClassName].config
       }))
-    },
-
-    addAgentProperty: function () {
-      console.log('adding agent property')
-      const newAgentProperty = document.getElementById('form-add-agent-property').value
-      const newAgentPropertyValue = Number(document.getElementById('form-add-agent-property-value').value)
-      this.selectedAgent.addProperty(newAgentProperty, newAgentPropertyValue)
     },
 
     createTransitionCheck: function () {

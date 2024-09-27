@@ -241,7 +241,7 @@ class Customer extends Sprite {
     return closestAgent
   }
 
-  addProperty(property, value) {
+  setProperty(property, value) {
     this.stateData[property] = value
   }
 }

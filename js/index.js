@@ -535,7 +535,7 @@ function addAgentProperty() {
   const newAgentProperty = document.getElementById('form-add-agent-property').value
   const newAgentPropertyValue = Number(document.getElementById('form-add-agent-property-value').value)
 
-  selectedAgent.addProperty(newAgentProperty, newAgentPropertyValue)
+  selectedAgent.setProperty(newAgentProperty, newAgentPropertyValue)
 
 }
 
