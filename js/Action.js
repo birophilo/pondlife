@@ -129,6 +129,15 @@ class ActionPropertyChanges extends Action {
 }
 
 
+class ActionTransition {
+  constructor(condition, nextAction) {
+    this.condition = condition
+    this.nextAction = nextAction
+    this.editing = false
+  }
+}
+
+
 class ActionDefaults {
   constructor(customer) {
     this.customer = customer
