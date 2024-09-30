@@ -32,7 +32,7 @@ class Action {
   }
 
   meetsConditions() {
-    for (i = 0; i < this.conditions.length; i++) {
+    for (let i = 0; i < this.conditions.length; i++) {
       const qualifies = this.conditions[i].evaluate()
       if (qualifies === false) {
         console.log('did not meet condition')
@@ -44,7 +44,7 @@ class Action {
 
   check(stateData) {
     console.log(this.actionName)
-    for (i = 0; i < this.transitions.length; i++) {
+    for (let i = 0; i < this.transitions.length; i++) {
       const result = this.transitions[i].condition.evaluate()
       if (result === true) {
         this.isComplete = true
@@ -157,7 +157,8 @@ class PropertyChange {
     this.agent = agent
     this.propertyName = propertyName
     this.changeType = changeType
-    this.propertyValue = changeType === 'increase' ? propertyValue : -propertyValue
+    // only handling numbers for now, not strings, boolean etc.
+    this.propertyValue = changeType === 'increase' ? Number(propertyValue) : 0 - Number(propertyValue)
   }
 }
 

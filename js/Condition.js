@@ -47,7 +47,7 @@ class PresetCondition {
   }
   evaluate() {
     const agentValue = this.agent[this.classMethod]()
-    const evalFunc = COMPARISONS[this.condition]
+    const evalFunc = COMPARISONS[this.comparison]
     const result = evalFunc(agentValue, this.conditionValue)
     return result
   }

@@ -80,7 +80,7 @@ canvas {
             <input type="text" placeholder="name" :value="property" disabled />
             <input
               v-model="selectedAgent.stateData[property]"
-              type="text"
+              type="number"
               :value="selectedAgent.stateData[property]"
             />
             <button @click="delete selectedAgent.stateData[property]">delete</button>
@@ -100,7 +100,7 @@ canvas {
         </div>
         <div v-else>
           <input v-model="propertiesSection.adding.newPropertyName" type="text" placeholder="name" />
-          <input v-model="propertiesSection.adding.newPropertyValue" type="text" placeholder="value" />
+          <input v-model="propertiesSection.adding.newPropertyValue" type="number" placeholder="0" />
           <button @click="createAgentProperty">add</button> |
           <button @click="cancelSetAgentProperty">cancel</button>
         </div>
@@ -155,13 +155,13 @@ canvas {
                   <option value="increase">increase</option>
                   <option value="decrease">decrease</option>
                 </select>
-                <input v-model="propertyChange.propertyValue" type="text" placeholder="value" :value="propertyChange.propertyValue" />
+                <input v-model="propertyChange.propertyValue" type="number" placeholder="value" :value="propertyChange.propertyValue" />
               </div>
 
               <div v-else>
                 <input type="text" placeholder="property" :value="propertyChange.propertyName" disabled />
                 <input type="text" placeholder="change" :value="propertyChange.changeType" disabled />
-                <input type="text" placeholder="value" :value="propertyChange.propertyValue" disabled />    
+                <input type="number" placeholder="value" :value="propertyChange.propertyValue" disabled />
               </div>
 
             </div>
@@ -246,7 +246,7 @@ canvas {
               <option value="decrease">decrease</option>
             </select>
             <input
-              type="text"
+              type="number"
               v-model="actionsSection.adding.forms.change.value"
               id="action-change-property-value"
               placeholder="property value"
@@ -254,6 +254,13 @@ canvas {
           </div>
           <button @click="createAction">add</button> |
           <button @click="cancelAddAction">cancel</button>
+        </div>
+      </div>
+
+      <div class="item-list">
+        <h3 class="menu-section-heading">Choose action</h3>
+        <div v-for="action in actionsSection.items">
+          <button @click="cloneAction(action)">{{ action.actionName }}</button>
         </div>
       </div>
     </div>
@@ -353,7 +360,7 @@ canvas {
                 <option value="isLessThan">is less than</option>
               </select>
               <input
-                type="text"
+                number="text"
                 v-model="conditionsSection.adding.forms.property.value"
                 id="action-change-property-value"
                 placeholder="conditions value"
@@ -524,6 +531,45 @@ const DEFAULT_ACTION_TYPE = 'goTo'
 const DEFAULT_CONDITION_TYPE = 'property'
 
 
+let customers = []
+let lemonadeStalls = []
+let supplyVans = []
+
+
+const AGENT_CONFIGS = {
+  customer: {
+    agentClass: Customer,
+    agentArray: customers,
+    config: {
+      width: 40,
+      height: 40,
+      offset: {x: 96, y: 46},
+      scale: 0.7,
+    }
+  },
+  lemonadeStall: {
+    agentClass: LemonadeStall,
+    agentArray: lemonadeStalls,
+    config: {
+      width: 130,
+      height: 100,
+      offset: {x: 0, y: 0},
+      scale: 1
+    }
+  },
+  supplyVan: {
+    agentClass: SupplyVan,
+    agentArray: supplyVans,
+    config: {
+      width: 50,
+      height: 50,
+      offset: {x: 2, y: 0},
+      scale: 2.5
+    }
+  }
+}
+
+
 var vue = new Vue({
   el: '#container',
   data: {
@@ -537,9 +583,6 @@ var vue = new Vue({
 
     mouse: {x: 0, y: 0},
 
-    customers: [],
-    lemonadeStalls: [],
-    supplyVans: [],
     agentMenuButtons: [],
 
     propertiesSection: {
@@ -547,7 +590,7 @@ var vue = new Vue({
       adding: {
         status: false,
         newPropertyName: '',
-        newPropertyValue: ''
+        newPropertyValue: 0
       }
     },
     actionsSection: {
@@ -576,7 +619,7 @@ var vue = new Vue({
           change: {
             property: '',
             change: '',
-            value: ''
+            value: 0
           }
         }
       }
@@ -598,12 +641,12 @@ var vue = new Vue({
           property: {
             property: '',
             comparison: '',
-            value: ''
+            value: 0
           },
           preset: {
             preset: '',
             comparison: '',
-            value: ''
+            value: true
           }
         }
       }
@@ -647,15 +690,15 @@ var vue = new Vue({
           const agentClassName = this.agentPreview.agent.agentName()
           this.addAgent(
             agentClassName,
-            this.AGENT_CONFIGS[agentClassName].agentClass,
-            this.AGENT_CONFIGS[agentClassName].agentArray
+            AGENT_CONFIGS[agentClassName].agentClass,
+            AGENT_CONFIGS[agentClassName].agentArray
           )
           this.placingAgent = false
           this.agentPreview = null
         }
       }
 
-      const agentNameList = Object.keys(this.AGENT_CONFIGS)
+      const agentNameList = Object.keys(AGENT_CONFIGS)
 
       agentNameList.forEach(agentName => {
         this.selectOrDeleteAgent(agentName, point)
@@ -703,27 +746,27 @@ var vue = new Vue({
     loadAgentsAndFixtures: function () {
 
       lemonadeStallData.forEach(stall => {
-        this.lemonadeStalls.push(
+        lemonadeStalls.push(
           new LemonadeStall(stall)
         )
       })
       supplyVanData.forEach(van => {
-        this.supplyVans.push(
+        supplyVans.push(
           new SupplyVan({
             position: van,
             globals: GlobalSettings,
-            offset: this.AGENT_CONFIGS.supplyVan.config.offset,
-            scale: this.AGENT_CONFIGS.supplyVan.config.scale
+            offset: AGENT_CONFIGS.supplyVan.config.offset,
+            scale: AGENT_CONFIGS.supplyVan.config.scale
           })
         )
       })
       customerData.forEach((cust, i) => {
-        this.customers.push( new Customer({
+        customers.push( new Customer({
           position: {x: cust.x, y: cust.y},
           num: i + 1,
           globals: GlobalSettings,
-          offset: this.AGENT_CONFIGS.customer.config.offset,
-          scale: this.AGENT_CONFIGS.customer.config.scale
+          offset: AGENT_CONFIGS.customer.config.offset,
+          scale: AGENT_CONFIGS.customer.config.scale
         }))
       })
       this.itemMenu = new AgentMenu()
@@ -733,8 +776,8 @@ var vue = new Vue({
             menu: this.itemMenu,
             i: i,
             name: icon.name,
-            agent: this.AGENT_CONFIGS[icon.name].agentClass,
-            config: this.AGENT_CONFIGS[icon.name].config
+            agent: AGENT_CONFIGS[icon.name].agentClass,
+            config: AGENT_CONFIGS[icon.name].config
           })
         )
       })
@@ -745,10 +788,10 @@ var vue = new Vue({
     },
     createAgentProperty: function () {
       const propName = this.propertiesSection.adding.newPropertyName
-      const propValue = this.propertiesSection.adding.newPropertyValue
+      const propValue = Number(this.propertiesSection.adding.newPropertyValue)
       this.selectedAgent.setProperty(propName, propValue)
       this.propertiesSection.adding.newPropertyName = ''
-      this.propertiesSection.adding.newPropertyValue = ''
+      this.propertiesSection.adding.newPropertyValue = 0
       this.propertiesSection.adding.status = false
     },
     deleteProperty: function (itemName) {
@@ -757,7 +800,7 @@ var vue = new Vue({
     cancelSetAgentProperty: function () {
       this.propertiesSection.adding.status = false
       this.propertiesSection.adding.newPropertyName = ''
-      this.propertiesSection.adding.newPropertyValue = ''
+      this.propertiesSection.adding.newPropertyValue = 0
     },
     createAction: function () {
       const actionType = this.actionsSection.adding.type
@@ -886,7 +929,7 @@ var vue = new Vue({
 
       this.conditionsSection.items.push(newCondition)
       // hard coding temporarily
-      this.actionsSection.items[0].conditions.push(newCondition)
+      // this.actionsSection.items[0].conditions.push(newCondition)
       this.resetConditionForms()
 
     },
@@ -944,9 +987,9 @@ var vue = new Vue({
       const animationId = requestAnimationFrame(this.animate)
       GlobalSettings.animationFrameId = animationId
 
-      this.lemonadeStalls.forEach(stall => stall.draw())
+      lemonadeStalls.forEach(stall => stall.draw())
 
-      this.customers.forEach(customer => {
+      customers.forEach(customer => {
         customer.update({ globals: GlobalSettings })
         const isInArea = pointIsInArea(this.mouse, customer.collisionArea)
         if (isInArea) {
@@ -954,14 +997,14 @@ var vue = new Vue({
         }
       })
 
-      this.lemonadeStalls.forEach(stall => {
+      lemonadeStalls.forEach(stall => {
         const isInArea = pointIsInArea(this.mouse, stall.collisionArea)
         if (isInArea) {
           hover = true
         }
       })
 
-      this.supplyVans.forEach(van => {
+      supplyVans.forEach(van => {
         van.update({ globals: GlobalSettings })
         const isInArea = pointIsInArea(this.mouse, van.collisionArea)
         if (isInArea) {
@@ -998,7 +1041,7 @@ var vue = new Vue({
     },
 
     selectOrDeleteAgent: function (agentClassName, point) {
-      let agentArray = this.AGENT_CONFIGS[agentClassName].agentArray
+      let agentArray = AGENT_CONFIGS[agentClassName].agentArray
       agentArray.forEach((agent, i) => {
         const isInArea = pointIsInArea(point, agent.collisionArea)
 
@@ -1013,58 +1056,31 @@ var vue = new Vue({
         }
       })
     },
+    cloneAction: function (action) {
+      this.selectedAgent.actionList.push(action.clone(
+        this.selectedAgent,
+        {destination: this.selectedAgent.home, cloned: true}
+      ))
+    },
 
     addAgent: function (agentClassName, agentClass, agentArray) {
       const num = agentArray.length + 1
       agentArray.push( new agentClass({
         position: {
-          x: this.mouse.x - this.AGENT_CONFIGS[agentClassName].config.width / 2,
-          y: this.mouse.y - this.AGENT_CONFIGS[agentClassName].config.height / 2
+          x: this.mouse.x - AGENT_CONFIGS[agentClassName].config.width / 2,
+          y: this.mouse.y - AGENT_CONFIGS[agentClassName].config.height / 2
         },
         num: num,
         globals: GlobalSettings,
-        offset: this.AGENT_CONFIGS[agentClassName].config.offset,
-        scale: this.AGENT_CONFIGS[agentClassName].config.scale,
-        config: this.AGENT_CONFIGS[agentClassName].config
+        offset: AGENT_CONFIGS[agentClassName].config.offset,
+        scale: AGENT_CONFIGS[agentClassName].config.scale,
+        config: AGENT_CONFIGS[agentClassName].config
       }))
     }
   },
 
   computed: {
-    AGENT_CONFIGS: function () {
-      return {
-        customer: {
-          agentClass: Customer,
-          agentArray: this.customers,
-          config: {
-            width: 40,
-            height: 40,
-            offset: {x: 96, y: 46},
-            scale: 0.7,
-          }
-        },
-        lemonadeStall: {
-          agentClass: LemonadeStall,
-          agentArray: this.lemonadeStalls,
-          config: {
-            width: 130,
-            height: 100,
-            offset: {x: 0, y: 0},
-            scale: 1
-          }
-        },
-        supplyVan: {
-          agentClass: SupplyVan,
-          agentArray: this.supplyVans,
-          config: {
-            width: 50,
-            height: 50,
-            offset: {x: 2, y: 0},
-            scale: 2.5
-          }
-        }
-      }
-    }
+
   }
 })
 
