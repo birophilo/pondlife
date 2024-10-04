@@ -1,9 +1,16 @@
 class Condition {
-  constructor(agent, property, comparison, conditionValue) {
+  constructor(
+    agent,
+    conditionName,
+    property,
+    comparison,
+    conditionValue
+  ) {
     this.agent = agent
     this.property = property
     this.comparison = comparison
     this.conditionType = 'property'
+    this.conditionName = conditionName
     this.conditionValue = conditionValue
     this.editing = false
   }
@@ -15,7 +22,7 @@ class Condition {
     return result
   }
 
-  conditionName() {
+  conditionLongformName() {
     return `${this.property} ${this.comparison} ${this.conditionValue}`
   }
 }
@@ -38,12 +45,20 @@ COMPARISONS = {
 
 class PresetCondition {
   // not sure how to incorporate checks like agent.atDestination() yet - this is temporary design
-  constructor(agent, classMethod, comparison, conditionValue, id) {
+  constructor(
+    agent,
+    conditionName,
+    classMethod,
+    comparison,
+    conditionValue,
+    id
+  ) {
     this.id = id
     this.classMethod = classMethod
     this.agent = agent
     this.comparison = comparison
     this.conditionType = 'preset'
+    this.conditionName = conditionName
     this.conditionValue = conditionValue
     this.editing = false
   }
@@ -55,7 +70,7 @@ class PresetCondition {
     return result
   }
 
-  conditionName() {
+  conditionLongformName() {
     return `${this.classMethod} ${this.comparison} ${this.conditionValue}`
   }
 }

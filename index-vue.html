@@ -214,11 +214,13 @@ input,select,button {
             </div>
           </div>
 
+          <h4>Action transitions</h4>
+
           <!-- CREATE TRANSITION -->
           <div v-if="actionTransitionForm.adding === true && actionTransitionForm.action === action">
             <select v-model="actionTransitionForm.condition">
               <option v-for="condition in conditionsSection.items" :value="condition">
-                {{ condition.conditionName() }}
+                {{ condition.conditionName }}
               </option>
             </select>
             <select v-model="actionTransitionForm.nextAction">
@@ -229,49 +231,43 @@ input,select,button {
             <button @click="createTransition(action)">add</button> |
             <button @click="cancelAddTransition(action)">cancel</button>
           </div>
-          <div v-else>
-            <button @click="actionTransitionForm.adding = true; actionTransitionForm.action = action">add transition</button>
-          </div>
 
-          <!-- <div v-if="action.editing === true"> -->
-
-            <h4>Action transitions</h4>
-
-            <!-- ACTION TRANSITIONS -->
-            <div v-for="(transition, index) in action.transitions">
-              <div v-if="transition.editing === true">
-                <select :value="transition.condition">
-                  <option v-for="condition in conditionsSection.items" :value="transition.condition">
-                    {{ condition.conditionName() }}
-                  </option>
-                </select>
-                <select :value="transition.nextAction">
-                  <option v-for="action in actionsSection.items" :value="transition.nextAction">
-                    {{ action.actionName }}
-                  </option>
-                </select>
-                <button @click="transition.editing = false">save</button>
-                <button @click="transition.editing = false">cancel</button>
-              </div>
-              <div v-else>
-                <table>
-                  <tr>
-                    <th>if condition met</th>
-                    <th>transition to</th>
-                  </tr>
-                  <tr v-for="(transition, index) in action.transitions">
-                    <td>{{ transition.condition.conditionName() }}</td>
-                    <td>{{ transition.nextAction.actionName }}</td>
-                  </tr>
-                </table>
-                <br />
-                <button @click="transition.editing = true">edit</button>
-                <button @click="deleteTransition(action, index)">delete</button>
-              </div>
+          <!-- ACTION TRANSITIONS -->
+          <div v-for="(transition, index) in action.transitions">
+            <div v-if="transition.editing === true">
+              <select :value="transition.condition">
+                <option v-for="condition in conditionsSection.items" :value="transition.condition">
+                  {{ condition.conditionName }}
+                </option>
+              </select>
+              <select :value="transition.nextAction">
+                <option v-for="action in actionsSection.items" :value="transition.nextAction">
+                  {{ action.actionName }}
+                </option>
+              </select>
+              <button @click="transition.editing = false">save</button>
+              <button @click="transition.editing = false">cancel</button>
+            </div>
+            <div v-else>
+              <table>
+                <tr>
+                  <th>if condition met</th>
+                  <th>transition to</th>
+                </tr>
+                <tr v-for="(transition, index) in action.transitions">
+                  <td>{{ transition.condition.conditionName }}</td>
+                  <td>{{ transition.nextAction.actionName }}</td>
+                </tr>
+              </table>
+              <br />
+              <button @click="transition.editing = true">edit</button>
+              <button @click="deleteTransition(action, index)">delete</button>
             </div>
 
-          <!-- </div> -->
-          
+          </div>
+
+          <button @click="actionTransitionForm.adding = true; actionTransitionForm.action = action">add transition</button>
+
         </div>
 
         <!-- ACTIONS CREATE -->
@@ -328,15 +324,13 @@ input,select,button {
         <div v-for="(item, index) in conditionsSection.items" class="created-item">
 
           <div class="created-item-header">
-            <div class="menu-action-name">{{ item.conditionName() }}</div>
-            <!-- <div class="menu-action-name">{{ item.conditionType === 'property' ? item.property : item.classMethod }}</div>&nbsp; -->
-            <!-- <div class="menu-action-name">{{ item.comparison }}</div>&nbsp;
-            <div class="menu-action-name">{{ item.conditionValue }}</div> -->
             <div v-if="item.editing">
+              <input v-model="item.conditionName" type="text" placeholder="name" />
               <button @click="item.editing = false">save</button>
               <button @click="item.editing = false">cancel</button>
             </div>
             <div v-else>
+              <div class="menu-action-name">{{ item.conditionName }}</div>
               <button @click="item.editing = true">edit</button>
               <button @click="deleteCondition(index)">delete</button>
             </div>
@@ -690,6 +684,7 @@ var vue = new Vue({
       adding: {
         status: false,
         type: 'property',
+        name: '',
         forms: {
           property: {
             property: '',
@@ -948,6 +943,7 @@ var vue = new Vue({
     },
     createCondition: function () {
       const conditionType = this.conditionsSection.adding.type
+      const conditionName = this.conditionsSection.adding.name
       const data = this.conditionsSection.adding.forms[conditionType]
 
       if (conditionType === 'property') {
@@ -959,6 +955,7 @@ var vue = new Vue({
 
         var newCondition = new Condition(
           this.selectedAgent,
+          conditionName,
           conditionProperty,
           conditionComparison,
           Number(conditionValue),
@@ -973,6 +970,7 @@ var vue = new Vue({
 
         var newCondition = new PresetCondition(
           this.selectedAgent,
+          conditionName,
           conditionPreset,
           conditionComparison,
           true,  // hard-coded for now,
