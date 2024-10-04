@@ -4,12 +4,23 @@
 
 <script src="js/lib/vue@2.7.16.js"></script>
 
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
 <style>
 
 body {
   margin: 0;
   padding: 0;
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: "Rubik", sans-serif;
+  font-weight: 400;
+  font-size: 16px;
+  /* background-color: #f4f0e0; */
+  background-color: #ebe9e1;
+  /* color: #3345a4; */
+  color: #e43d12;
 }
 
 canvas {
@@ -40,14 +51,41 @@ canvas {
   padding: 5px;
 }
 
-.menu-subheading {
-  font-weight: bold;
+.menu-subheading,h3 {
+  font-weight: 500;
+  font-size: 20px;
   margin: 16px 0 16px 0;
 }
 
 .menu-section {
   padding-bottom: 20px;
   border-bottom: 1px solid #ccc;
+}
+
+.menu-action-name {
+  font-size: 20px;
+  padding-right: 10px;
+  font-weight: 500;
+}
+
+input,select,button {
+  padding: 5px 8px 5px 8px;
+  margin: 4px;
+  font-family: "Rubik", sans-serif;
+  border-radius: 3px;
+  border-width: 1px;
+}
+
+.created-item-header {
+  display: flex;
+  align-items: center;
+}
+
+.created-item {
+  border: 1px solid grey;
+  border-radius: 5px;
+  padding: 5px;
+  margin-bottom: 10px;
 }
 
 </style>
@@ -105,7 +143,16 @@ canvas {
           <button @click="cancelSetAgentProperty">cancel</button>
         </div>
       </div>
+
+      <div class="item-list">
+        <h3 class="menu-section-heading">Choose action</h3>
+        <div v-for="action in actionsSection.items">
+          <button @click="cloneAction(action)">{{ action.actionName }}</button>
+        </div>
+      </div>
+
     </div>
+
 
     <!-- ACTIONS -->
 
@@ -127,7 +174,6 @@ canvas {
               <button @click="deleteAction(action.actionName)">delete</button>
             </div>
           </div>
-          <div>action type: {{ action.actionType }}</div>
 
           <!-- GOTO ACTION EDIT FORM -->
           <div v-if="action.actionType === 'goTo'">
@@ -139,7 +185,8 @@ canvas {
               <input v-model="action.args.agentType" type="text" placeholder="target" :value="action.args.agentType" />
             </div>
             <div v-else>
-              <input v-model="action.args.agentType" type="text" placeholder="target" :value="action.args.agentType" disabled />
+              <!-- <div>action type: {{ action.actionType }}</div>
+              <input v-model="action.args.agentType" type="text" placeholder="target" :value="action.args.agentType" disabled /> -->
             </div>
           </div>
 
@@ -166,39 +213,12 @@ canvas {
 
             </div>
           </div>
-          <br />
-
-          <h4>Action transitions</h4>
-
-          <!-- ACTION TRANSITIONS -->
-          <div v-for="(transition, index) in action.transitions">
-            <div v-if="transition.editing === true">
-              <select :value="transition.condition">
-                <option v-for="condition in conditionsSection.items" :value="transition.condition">
-                  {{ condition.conditionName }}
-                </option>
-              </select>
-              <select :value="transition.nextAction">
-                <option v-for="action in actionsSection.items" :value="transition.nextAction">
-                  {{ action.actionName }}
-                </option>
-              </select>
-              <button @click="transition.editing = false">save</button>
-              <button @click="transition.editing = false">cancel</button>
-            </div>
-            <div v-else>
-              IF {{ transition.condition.conditionName }} TRANSITION TO {{ transition.nextAction.actionName }}
-              <br />
-              <button @click="transition.editing = true">edit</button>
-              <button @click="deleteTransition(action, index)">delete</button>
-            </div>
-          </div>
 
           <!-- CREATE TRANSITION -->
           <div v-if="actionTransitionForm.adding === true && actionTransitionForm.action === action">
             <select v-model="actionTransitionForm.condition">
               <option v-for="condition in conditionsSection.items" :value="condition">
-                {{ condition.conditionName }}
+                {{ condition.conditionName() }}
               </option>
             </select>
             <select v-model="actionTransitionForm.nextAction">
@@ -210,14 +230,53 @@ canvas {
             <button @click="cancelAddTransition(action)">cancel</button>
           </div>
           <div v-else>
-            <button @click="actionTransitionForm.adding = true; actionTransitionForm.action = action">+ Add action transition</button>
+            <button @click="actionTransitionForm.adding = true; actionTransitionForm.action = action">add transition</button>
           </div>
+
+          <!-- <div v-if="action.editing === true"> -->
+
+            <h4>Action transitions</h4>
+
+            <!-- ACTION TRANSITIONS -->
+            <div v-for="(transition, index) in action.transitions">
+              <div v-if="transition.editing === true">
+                <select :value="transition.condition">
+                  <option v-for="condition in conditionsSection.items" :value="transition.condition">
+                    {{ condition.conditionName() }}
+                  </option>
+                </select>
+                <select :value="transition.nextAction">
+                  <option v-for="action in actionsSection.items" :value="transition.nextAction">
+                    {{ action.actionName }}
+                  </option>
+                </select>
+                <button @click="transition.editing = false">save</button>
+                <button @click="transition.editing = false">cancel</button>
+              </div>
+              <div v-else>
+                <table>
+                  <tr>
+                    <th>if condition met</th>
+                    <th>transition to</th>
+                  </tr>
+                  <tr v-for="(transition, index) in action.transitions">
+                    <td>{{ transition.condition.conditionName() }}</td>
+                    <td>{{ transition.nextAction.actionName }}</td>
+                  </tr>
+                </table>
+                <br />
+                <button @click="transition.editing = true">edit</button>
+                <button @click="deleteTransition(action, index)">delete</button>
+              </div>
+            </div>
+
+          <!-- </div> -->
           
         </div>
 
         <!-- ACTIONS CREATE -->
         <div v-if="actionsSection.adding.status === false" class="add-container">
-          <button @click="actionsSection.adding.status = true">new action +</button>
+          <button @click="actionsSection.adding.status = true">new action</button>
         </div>
         <div v-else>
           <input v-model="actionsSection.adding.name" type="text" placeholder="name" />
@@ -257,12 +316,6 @@ canvas {
         </div>
       </div>
 
-      <div class="item-list">
-        <h3 class="menu-section-heading">Choose action</h3>
-        <div v-for="action in actionsSection.items">
-          <button @click="cloneAction(action)">{{ action.actionName }}</button>
-        </div>
-      </div>
     </div>
 
     <!-- CONDITIONS -->
@@ -275,10 +328,10 @@ canvas {
         <div v-for="(item, index) in conditionsSection.items" class="created-item">
 
           <div class="created-item-header">
-            <div class="menu-action-name">{{ item.conditionName }}</div>
-            <div class="menu-action-name">{{ item.conditionType === 'property' ? item.property : item.classMethod }}</div>&nbsp;
-            <div class="menu-action-name">{{ item.comparison }}</div>&nbsp;
-            <div class="menu-action-name">{{ item.conditionValue }}</div>
+            <div class="menu-action-name">{{ item.conditionName() }}</div>
+            <!-- <div class="menu-action-name">{{ item.conditionType === 'property' ? item.property : item.classMethod }}</div>&nbsp; -->
+            <!-- <div class="menu-action-name">{{ item.comparison }}</div>&nbsp;
+            <div class="menu-action-name">{{ item.conditionValue }}</div> -->
             <div v-if="item.editing">
               <button @click="item.editing = false">save</button>
               <button @click="item.editing = false">cancel</button>
@@ -335,7 +388,7 @@ canvas {
           <!-- CREATE CONDITION -->
 
           <div v-if="conditionsSection.adding.status === false" class="add-container">
-            <button @click="conditionsSection.adding.status = true">new condition +</button>
+            <button @click="conditionsSection.adding.status = true">new condition</button>
           </div>
           <div v-else>
             <input v-model="conditionsSection.adding.name" type="text" placeholder="name" />
@@ -926,12 +979,10 @@ var vue = new Vue({
           this.conditionsSection.items.length + 1  // id
         )
       }
-
       this.conditionsSection.items.push(newCondition)
       // hard coding temporarily
       // this.actionsSection.items[0].conditions.push(newCondition)
       this.resetConditionForms()
-
     },
     resetConditionForms: function () {
       // reset common form data/settings

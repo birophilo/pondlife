@@ -5,7 +5,6 @@ class Condition {
     this.comparison = comparison
     this.conditionType = 'property'
     this.conditionValue = conditionValue
-    this.conditionName = `${this.property} ${this.comparison} ${this.conditionValue}`
     this.editing = false
   }
 
@@ -14,6 +13,10 @@ class Condition {
     const evalFunc = COMPARISONS[this.condition]
     const result = evalFunc(agentValue, this.conditionValue)
     return result
+  }
+
+  conditionName() {
+    return `${this.property} ${this.comparison} ${this.conditionValue}`
   }
 }
 
@@ -42,13 +45,17 @@ class PresetCondition {
     this.comparison = comparison
     this.conditionType = 'preset'
     this.conditionValue = conditionValue
-    this.conditionName = `${this.classMethod} ${this.comparison} ${this.conditionValue}`
     this.editing = false
   }
+
   evaluate() {
     const agentValue = this.agent[this.classMethod]()
     const evalFunc = COMPARISONS[this.comparison]
     const result = evalFunc(agentValue, this.conditionValue)
     return result
+  }
+
+  conditionName() {
+    return `${this.classMethod} ${this.comparison} ${this.conditionValue}`
   }
 }
