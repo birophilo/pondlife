@@ -83,7 +83,7 @@ class ActionGoTo extends Action {
   start() {
     this.customer.destination = this.destination
     this.customer.currentStateName = this.stateName
-    this.customer.frames.max = 9
+    this.customer.frames.max = 1
   }
 
   defaultCompletionCheckPasses() {
@@ -146,7 +146,7 @@ class ActionDefaults {
   idle() {
     this.customer.currentStateName = 'idle'
     this.customer.destination = null
-    this.customer.image.src = '../img/sprites/GirlSample_Walk_Down.png'
+    this.customer.image.src = '../img/sprites/SupplyVan_Right.png'
     this.customer.frames.max = 1
   }
 }

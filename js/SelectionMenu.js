@@ -108,7 +108,9 @@ class AgentMenuIcon extends agentMenuButton {
     super({menu, i, name, config})
     this.agent = agent
     this.thumbnail = new Image()
-    this.thumbnail.src = this.agent.imageSrc()
+    this.thumbnail.src = config.imageSrc
+    console.log("CONFIG")
+    console.log(config.imageSrc)
     this.config = config
   }
 
@@ -161,13 +163,14 @@ class DeleteButton extends agentMenuButton {
 class AgentPreview {
   constructor({ agent, rgb, config }) {
     this.agent = agent
+    this.agentType = config.name
     this.position = {x: 0, y: 0}
     this.width = config.width,
     this.height = config.height,
     this.scale = agent.scale()
     this.rgb = rgb
     this.thumbnail = new Image()
-    this.thumbnail.src = this.agent.imageSrc()
+    this.thumbnail.src = config.imageSrc
   }
 
   draw() {

@@ -467,7 +467,6 @@ input,select,button {
 <script src="js/Condition.js"></script>
 <script src="js/Action.js"></script>
 <script src="js/LemonadeStall.js"></script>
-<script src="js/SupplyVan.js"></script>
 <script src="js/Agent.js"></script>
 <script src="js/SelectionMenu.js"></script>
 
@@ -477,46 +476,6 @@ let canvas;
 let c;  // canvas context
 
 const backgroundColor = 'rgb(200, 200, 200)'
-
-const AGENTS = {
-  customer: Agent,
-  lemonadeStall: LemonadeStall,
-  supplyVan: SupplyVan
-}
-
-const customerConfigs = {
-  "sprite": {
-    "directionSpriteSheets": CUSTOMER_SPRITE_DIRECTION,
-    "imageSrc": "../img/sprites/GirlSample_Walk_Down.png",
-    "frames": 9,
-    "columns": 4,
-    "rows": 3,
-    "offset": 0,
-    "scale": 0,
-    "hold": 0
-  },
-  "name": "customer",
-  "width": 30,
-  "height": 40,
-  "nominalSpeed": 0.02
-}
-
-// const supplyVanConfigs = {
-//   "sprite": {
-//     "directionSpriteSheets": CUSTOMER_SPRITE_DIRECTION,
-//     "imageSrc": "../img/sprites/SupplyVan_Right.png",
-//     "frames": ,
-//     "columns": ,
-//     "rows": ,
-//     "offset": 0,
-//     "scale": 2.5,
-//     "hold": 0
-//   },
-//   "name": "supplyVan",
-//   "width": 70,
-//   "height": 40,
-//   "nominalSpeed": 0.02
-// }
 
 let globalSpeed = GlobalSettings.globalSpeed
 let dayNumber = 1
@@ -609,27 +568,35 @@ const AGENT_CONFIGS = {
       offset: {x: 96, y: 46},
       scale: 0.7,
       imageSrc: '../img/sprites/GirlSample_Walk_Down.png',
-      nominalSpeed: 0.02
+      spriteSheets: CUSTOMER_SPRITE_DIRECTION,
+      nominalSpeed: 0.02,
     }
   },
   lemonadeStall: {
     agentClass: LemonadeStall,
     agentArray: lemonadeStalls,
     config: {
+      name: 'lemonadeStall',
       width: 130,
       height: 100,
       offset: {x: 0, y: 0},
-      scale: 1
+      scale: 1,
+      imageSrc: '../img/stall-1.png',
     }
   },
   supplyVan: {
-    agentClass: SupplyVan,
+    agentClass: Agent,
     agentArray: supplyVans,
     config: {
+      name: 'supplyVan',
       width: 50,
       height: 50,
+      frames: {max: 1, columns: 1, rows: 1},
       offset: {x: 2, y: 0},
-      scale: 2.5
+      scale: 2.5,
+      imageSrc: '../img/sprites/SupplyVan_Right.png',
+      spriteSheets: VAN_SPRITE_DIRECTION,
+      nominalSpeed: 0.02,
     }
   }
 }
@@ -753,7 +720,7 @@ var vue = new Vue({
       if (this.placingAgent) {
         const isInMenuArea = pointIsInArea(point, this.itemMenu.area)
         if (isInMenuArea === false) {
-          const agentClassName = this.agentPreview.agent.agentName()
+          const agentClassName = this.agentPreview.agentType
           this.addAgent(
             agentClassName,
             AGENT_CONFIGS[agentClassName].agentClass,
@@ -777,7 +744,7 @@ var vue = new Vue({
 
         if (isInArea && !this.agentPreview) {
           this.agentPreview = new AgentPreview({
-            agent: AGENTS[this.agentMenuButtons[i].name],
+            agent: AGENT_CONFIGS[this.agentMenuButtons[i].name].agentClass,
             rgb: this.agentMenuButtons[i].rgb,
             config: AGENT_CONFIGS[this.agentMenuButtons[i].name].config
           })
@@ -816,15 +783,17 @@ var vue = new Vue({
           new LemonadeStall(stall)
         )
       })
-      supplyVanData.forEach(van => {
-        supplyVans.push(
-          new SupplyVan({
-            position: van,
-            globals: GlobalSettings,
-            offset: AGENT_CONFIGS.supplyVan.config.offset,
-            scale: AGENT_CONFIGS.supplyVan.config.scale
-          })
-        )
+      supplyVanData.forEach((van, i) => {
+        supplyVans.push( new Agent({
+          // position: van,
+          // globals: GlobalSettings,
+          // offset: AGENT_CONFIGS.supplyVan.config.offset,
+          // scale: AGENT_CONFIGS.supplyVan.config.scale
+          position: {x: van.x, y: van.y},
+          num: i + 1,
+          globals: GlobalSettings,
+          config: AGENT_CONFIGS.supplyVan.config
+        }))
       })
       customerData.forEach((cust, i) => {
         customers.push( new Agent({

@@ -9,6 +9,17 @@ const CUSTOMER_SPRITE_DIRECTION = {
   upLeft: '../img/sprites/GirlSample_Walk_UpLeft.png'
 }
 
+const VAN_SPRITE_DIRECTION = {
+  up: '../img/sprites/SupplyVan_Up.png',
+  upRight: '../img/sprites/SupplyVan_UpRight.png',
+  right: '../img/sprites/SupplyVan_Right.png',
+  downRight: '../img/sprites/SupplyVan_DownRight.png',
+  down: '../img/sprites/SupplyVan_Down.png',
+  downLeft: '../img/sprites/SupplyVan_DownLeft.png',
+  left: '../img/sprites/SupplyVan_Left.png',
+  upLeft: '../img/sprites/SupplyVan_UpLeft.png',
+}
+
 function get8WayDirection(xVelocity, yVelocity) {
   const diagonalThreshold = 0.2
   const xVelocityIsNotDiagonal = Math.abs(xVelocity) < diagonalThreshold
@@ -69,7 +80,7 @@ class Agent extends Sprite {
     this.position = position
 
     // move to Sprite class
-    this.spriteSheets = CUSTOMER_SPRITE_DIRECTION
+    this.spriteSheets = config.spriteSheets
 
     this.collisionArea = {
       x: this.position.x,
