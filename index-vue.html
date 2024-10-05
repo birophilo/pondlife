@@ -468,25 +468,55 @@ input,select,button {
 <script src="js/Action.js"></script>
 <script src="js/LemonadeStall.js"></script>
 <script src="js/SupplyVan.js"></script>
-<script src="js/Customer.js"></script>
+<script src="js/Agent.js"></script>
 <script src="js/SelectionMenu.js"></script>
 
 <script>
 
 let canvas;
-let c;
+let c;  // canvas context
 
 const backgroundColor = 'rgb(200, 200, 200)'
 
 const AGENTS = {
-  customer: Customer,
+  customer: Agent,
   lemonadeStall: LemonadeStall,
   supplyVan: SupplyVan
 }
 
-let createdActions = []
-let createdConditions = []
-let createdPresetConditions = []
+const customerConfigs = {
+  "sprite": {
+    "directionSpriteSheets": CUSTOMER_SPRITE_DIRECTION,
+    "imageSrc": "../img/sprites/GirlSample_Walk_Down.png",
+    "frames": 9,
+    "columns": 4,
+    "rows": 3,
+    "offset": 0,
+    "scale": 0,
+    "hold": 0
+  },
+  "name": "customer",
+  "width": 30,
+  "height": 40,
+  "nominalSpeed": 0.02
+}
+
+// const supplyVanConfigs = {
+//   "sprite": {
+//     "directionSpriteSheets": CUSTOMER_SPRITE_DIRECTION,
+//     "imageSrc": "../img/sprites/SupplyVan_Right.png",
+//     "frames": ,
+//     "columns": ,
+//     "rows": ,
+//     "offset": 0,
+//     "scale": 2.5,
+//     "hold": 0
+//   },
+//   "name": "supplyVan",
+//   "width": 70,
+//   "height": 40,
+//   "nominalSpeed": 0.02
+// }
 
 let globalSpeed = GlobalSettings.globalSpeed
 let dayNumber = 1
@@ -502,22 +532,6 @@ const agentMenuButtonData = [
   {name: 'lemonadeStall', rgb: [0, 0, 255]},
   {name: 'supplyVan', rgb: [255, 255, 0]}
 ]
-
-
-// function addAgent(agentClassName, agentClass, agentArray) {
-//   const num = agentArray.length + 1
-//   agentArray.push( new agentClass({
-//     position: {
-//       x: mouse.x - AGENT_CONFIGS[agentClassName].config.width / 2,
-//       y: mouse.y - AGENT_CONFIGS[agentClassName].config.height / 2
-//     },
-//     num: num,
-//     globals: GlobalSettings,
-//     offset: AGENT_CONFIGS[agentClassName].config.offset,
-//     scale: AGENT_CONFIGS[agentClassName].config.scale,
-//     config: AGENT_CONFIGS[agentClassName].config
-//   }))
-// }
 
 
 function changeAgentStateFromButton(agent, actionClass, args={}) {
@@ -585,13 +599,17 @@ let supplyVans = []
 
 const AGENT_CONFIGS = {
   customer: {
-    agentClass: Customer,
+    agentClass: Agent,
     agentArray: customers,
     config: {
-      width: 40,
+      name: 'customer',
+      width: 30,
       height: 40,
+      frames: {max: 9, columns: 4, rows: 3},
       offset: {x: 96, y: 46},
       scale: 0.7,
+      imageSrc: '../img/sprites/GirlSample_Walk_Down.png',
+      nominalSpeed: 0.02
     }
   },
   lemonadeStall: {
@@ -758,7 +776,7 @@ var vue = new Vue({
         const isInArea = pointIsInArea(point, this.agentMenuButtons[i].area)
 
         if (isInArea && !this.agentPreview) {
-          agentPreview = new AgentPreview({
+          this.agentPreview = new AgentPreview({
             agent: AGENTS[this.agentMenuButtons[i].name],
             rgb: this.agentMenuButtons[i].rgb,
             config: AGENT_CONFIGS[this.agentMenuButtons[i].name].config
@@ -809,12 +827,11 @@ var vue = new Vue({
         )
       })
       customerData.forEach((cust, i) => {
-        customers.push( new Customer({
+        customers.push( new Agent({
           position: {x: cust.x, y: cust.y},
           num: i + 1,
           globals: GlobalSettings,
-          offset: AGENT_CONFIGS.customer.config.offset,
-          scale: AGENT_CONFIGS.customer.config.scale
+          config: AGENT_CONFIGS.customer.config
         }))
       })
       this.itemMenu = new AgentMenu()
@@ -1072,6 +1089,7 @@ var vue = new Vue({
       })
 
       if (this.agentPreview) this.agentPreview.update(this.mouse)
+
       if (pointIsInArea(this.mouse, this.deleteButton.area)) hover = true
 
       this.deleteButton.update(this.agentMenuButtons.length, this.deleteMode)

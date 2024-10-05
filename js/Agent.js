@@ -34,12 +34,13 @@ function get8WayDirection(xVelocity, yVelocity) {
 }
 
 
-class Customer extends Sprite {
+class Agent extends Sprite {
 
   static agentName() {
     return 'customer'
   }
 
+  // currently being used just for AgentMenuIcon button
   static imageSrc() {
     return '../img/sprites/GirlSample_Walk_Up.png'
   }
@@ -52,21 +53,24 @@ class Customer extends Sprite {
     position = { x: 0, y: 0 },
     num = 0,
     globals,
-    offset,
-    scale
+    config
   }) {
     super({ 
       position,
-      imageSrc: '../img/sprites/GirlSample_Walk_Down.png',
-      frames: {max: 9, columns: 4, rows: 3} ,
-      offset,
-      scale
+      imageSrc: config.imageSrc,
+      frames: config.frames,
+      offset: config.offset,
+      scale: config.scale
     })
-    this.name = 'customer'
+    this.name = config.name
     this.num = num
-    this.width = 30
-    this.height = 40
+    this.width = config.width
+    this.height = config.height
     this.position = position
+
+    // move to Sprite class
+    this.spriteSheets = CUSTOMER_SPRITE_DIRECTION
+
     this.collisionArea = {
       x: this.position.x,
       y: this.position.y,
@@ -78,7 +82,7 @@ class Customer extends Sprite {
       y: this.position.y + this.height / 2
     }
     this.destination = null
-    this.nominalSpeed = 0.02
+    this.nominalSpeed = config.nominalSpeed
     this.homePosition = {x: this.position.x, y: this.position.y}
 
     this.home = {
@@ -93,9 +97,6 @@ class Customer extends Sprite {
     }
 
     this.speed = this.nominalSpeed * globals.globalSpeed
-
-    this.restTimeBetweenTrips = 400 // frames
-    this.actionEndedFrame = null
 
     this.reachedDestination = false
 
@@ -124,7 +125,7 @@ class Customer extends Sprite {
       this.position.y += yVelocity
 
       const direction = get8WayDirection(xVelocity, yVelocity)
-      this.image.src = CUSTOMER_SPRITE_DIRECTION[direction]
+      this.image.src = this.spriteSheets[direction]
     }
 
     this.center = {
