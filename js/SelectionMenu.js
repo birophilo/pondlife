@@ -167,7 +167,7 @@ class AgentPreview {
     this.position = {x: 0, y: 0}
     this.width = config.width,
     this.height = config.height,
-    this.scale = agent.scale()
+    this.scale = config.scale,
     this.rgb = rgb
     this.thumbnail = new Image()
     this.thumbnail.src = config.imageSrc

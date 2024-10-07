@@ -9,6 +9,7 @@ class Sprite {
     this.position = position
     this.image = new Image()
     this.image.src = imageSrc
+    this.defaultImage = imageSrc
     this.frames = {
       max: frames.max,
       columns: frames.columns,

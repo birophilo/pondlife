@@ -1,18 +1,18 @@
 class Action {
-  constructor(customer = null, args, conditions = [], transitions = []) {
+  constructor(agent = null, args, conditions = [], transitions = []) {
     this.id = args.id  // incrementing PK
-    this.customer = customer
+    this.agent = agent
     this.args = args
     // temporary?
     this.editing = false
 
-    if (this.customer !== null) {
+    if (this.agent !== null) {
       if (args.agentType === 'lemonadeStall') {
         this.agentType = args.agentType
 
         if (args.agentChoice === 'nearest') {
           const agentArray = AGENT_CONFIGS[this.agentType].agentArray
-          this.destination = this.customer.getClosestAgent(agentArray)
+          this.destination = this.agent.getClosestAgent(agentArray)
           this.stateName = `goingTo: ${this.destination.name}`
         }
       } else {
@@ -48,10 +48,10 @@ class Action {
       const result = this.transitions[i].condition.evaluate()
       if (result === true) {
         this.isComplete = true
-        this.customer.actionList.push(
+        this.agent.actionList.push(
           this.transitions[i].nextAction.clone(
-            this.customer,
-            {destination: this.customer.home, cloned: true}
+            this.agent,
+            {destination: this.agent.home, cloned: true}
           )
         )
       }
@@ -62,9 +62,9 @@ class Action {
     }
   }
 
-  clone(customer, args) {
+  clone(agent, args) {
     return new this.constructor(
-      customer,
+      agent,
       this.args = {...this.args, ...args},
       this.conditions,
       this.transitions,
@@ -76,35 +76,35 @@ class Action {
 
 
 class ActionGoTo extends Action {
-  constructor(customer = null, args, conditions = [], transitions = []) {
-    super(customer, args, conditions, transitions)
+  constructor(agent = null, args, conditions = [], transitions = []) {
+    super(agent, args, conditions, transitions)
   }
 
   start() {
-    this.customer.destination = this.destination
-    this.customer.currentStateName = this.stateName
-    this.customer.frames.max = 1
+    this.agent.destination = this.destination
+    this.agent.currentStateName = this.stateName
+    this.agent.frames.max = this.agent.config.frames.max
   }
 
   defaultCompletionCheckPasses() {
     // default complete condition for class/action type
-    return this.customer.atDestination()
+    return this.agent.atDestination()
   }
 
 }
 
 
 class ActionPropertyChanges extends Action {
-  constructor(customer = null, args, conditions = [], transitions = [], propertyChanges = []) {
-    super(customer, args, conditions, transitions)
+  constructor(agent = null, args, conditions = [], transitions = [], propertyChanges = []) {
+    super(agent, args, conditions, transitions)
 
     this.propertyChanges = propertyChanges ? propertyChanges : []
     this.changesApplied = false  // temporary duplicate 'complete' flag - find different approach
 
-    if (this.customer !== null) {
+    if (this.agent !== null) {
       this.propertyChanges.forEach(change => {
         // this is currently hard-coded just to apply to self agent, not e.g. target agent
-        change.agent = this.customer
+        change.agent = this.agent
       })
     }
   }
@@ -115,7 +115,7 @@ class ActionPropertyChanges extends Action {
       if (this.args.agentType === 'lemonadeStall') {
         var agentToChange = this.destination
       } else {
-        var agentToChange = this.customer
+        var agentToChange = this.agent
       }
       agentToChange.stateData[change.propertyName] += change.propertyValue
     })
@@ -139,15 +139,15 @@ class ActionTransition {
 
 
 class ActionDefaults {
-  constructor(customer) {
-    this.customer = customer
+  constructor(agent) {
+    this.agent = agent
   }
 
   idle() {
-    this.customer.currentStateName = 'idle'
-    this.customer.destination = null
-    this.customer.image.src = '../img/sprites/SupplyVan_Right.png'
-    this.customer.frames.max = 1
+    this.agent.currentStateName = 'idle'
+    this.agent.destination = null
+    this.agent.image.src = this.agent.defaultImage
+    this.agent.frames.max = 1
   }
 }
 
@@ -161,118 +161,3 @@ class PropertyChange {
     this.propertyValue = changeType === 'increase' ? Number(propertyValue) : 0 - Number(propertyValue)
   }
 }
-
-
-// class ActionGoingToStall {
-//   constructor(customer, args) {
-//     this.inProgress = false
-//     this.isComplete = false
-//     this.customer = customer
-//   }
-//   start() {
-//     const hasEnoughMoney = this.customer.stateData.money >= 20
-//     if (hasEnoughMoney) {
-//       const closestStall = this.customer.getClosestAgent(this.customer.stateData.stalls)
-//       this.customer.destination = closestStall
-//       this.customer.frames.max = 9
-//     }
-//   }
-// }
-
-
-// class ActionGoToAgentIfHaveEnoughMoney {
-//   constructor(customer, args) {
-//     this.inProgress = false
-//     this.isComplete = false
-//     this.customer = customer
-//     this.agent = args.agent
-//     this.actionName = 'goToAgentIfMoney'
-//     this.stateName = `goingToAgentIfMoney: ${this.agent.name}`
-//   }
-
-//   start() {
-
-//     const condition = new Condition(this.customer, 'money', 'isGreaterThan', 20)
-//     const qualifies = condition.evaluate()
-//     if (qualifies) {
-//       this.customer.currentStateName = this.stateName
-//       this.customer.destination = this.agent
-//       this.customer.frames.max = 9
-//     } else {
-//       console.log('does not qualify')
-//     }
-
-//   }
-
-//   check(stateData) {
-//     if (this.customer.atDestination()) {
-//       this.isComplete = true
-//     }
-//   }
-
-// }
-
-// class ActionBuy {
-//   constructor(customer, args) {
-//     this.inProgress = false
-//     this.isComplete = false
-//     this.customer = customer
-//     this.duration = 100
-//     this.actionName = 'buy'
-//     this.stateName = 'buying'
-//   }
-
-//   start() {
-//     this.customer.currentStateName = this.stateName
-//     this.startFrame = GlobalSettings.animationFrameId
-//     this.customer.image.src = '../img/sprites/GirlSample_Walk_Down.png'
-//     this.customer.frames.max = 1
-
-//     const hasEnoughMoney = this.customer.stateData.money >= 20
-//     if (hasEnoughMoney) {
-//       this.customer.stateData.money -= 20
-//       const stall = lemonadeStalls.find(stall => stall.id === this.customer.destination.id)
-//       stall.money += 20
-//       stall.lemons -= 2
-//     }
-
-//     this.customer.destination = null
-//   }
-
-//   check(stateData) {
-//     const currentFrame = stateData.globals.animationFrameId
-//     const timerExpired = currentFrame - (this.startFrame + this.duration) >= 0
-//     if (timerExpired) {
-//       this.isComplete = true
-//     }
-//   }
-
-// }
-
-
-// class ActionRest {
-//   constructor(customer, args) {
-//     this.inProgress = false
-//     this.isComplete = false
-//     this.customer = customer
-//     this.duration = 100
-//     this.actionName = 'rest'
-//     this.stateName = 'resting'
-//   }
-
-//   start() {
-//     this.customer.currentStateName = this.stateName
-//     this.customer.destination = null
-//     this.customer.image.src = '../img/sprites/GirlSample_Walk_Down.png'
-//     this.customer.frames.max = 1
-//     this.startFrame = GlobalSettings.animationFrameId
-//   }
-
-//   check(stateData) {
-//     const currentFrame = stateData.globals.animationFrameId
-//     const timerExpired = currentFrame - (this.startFrame + this.duration) >= 0
-//     if (timerExpired) {
-//       this.isComplete = true
-//     }
-//   }
-// }

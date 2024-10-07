@@ -1,25 +1,3 @@
-const CUSTOMER_SPRITE_DIRECTION = {
-  up: '../img/sprites/GirlSample_Walk_Up.png',
-  upRight: '../img/sprites/GirlSample_Walk_UpRight.png',
-  right: '../img/sprites/GirlSample_Walk_Right.png',
-  downRight: '../img/sprites/GirlSample_Walk_DownRight.png',
-  down: '../img/sprites/GirlSample_Walk_Down.png',
-  downLeft: '../img/sprites/GirlSample_Walk_DownLeft.png',
-  left: '../img/sprites/GirlSample_Walk_Left.png',
-  upLeft: '../img/sprites/GirlSample_Walk_UpLeft.png'
-}
-
-const VAN_SPRITE_DIRECTION = {
-  up: '../img/sprites/SupplyVan_Up.png',
-  upRight: '../img/sprites/SupplyVan_UpRight.png',
-  right: '../img/sprites/SupplyVan_Right.png',
-  downRight: '../img/sprites/SupplyVan_DownRight.png',
-  down: '../img/sprites/SupplyVan_Down.png',
-  downLeft: '../img/sprites/SupplyVan_DownLeft.png',
-  left: '../img/sprites/SupplyVan_Left.png',
-  upLeft: '../img/sprites/SupplyVan_UpLeft.png',
-}
-
 function get8WayDirection(xVelocity, yVelocity) {
   const diagonalThreshold = 0.2
   const xVelocityIsNotDiagonal = Math.abs(xVelocity) < diagonalThreshold
@@ -47,19 +25,6 @@ function get8WayDirection(xVelocity, yVelocity) {
 
 class Agent extends Sprite {
 
-  static agentName() {
-    return 'customer'
-  }
-
-  // currently being used just for AgentMenuIcon button
-  static imageSrc() {
-    return '../img/sprites/GirlSample_Walk_Up.png'
-  }
-
-  static scale() {
-    return 0.7
-  }
-
   constructor({
     position = { x: 0, y: 0 },
     num = 0,
@@ -78,6 +43,7 @@ class Agent extends Sprite {
     this.width = config.width
     this.height = config.height
     this.position = position
+    this.config = config
 
     // move to Sprite class
     this.spriteSheets = config.spriteSheets
