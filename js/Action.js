@@ -159,5 +159,7 @@ class PropertyChange {
     this.changeType = changeType
     // only handling numbers for now, not strings, boolean etc.
     this.propertyValue = changeType === 'increase' ? Number(propertyValue) : 0 - Number(propertyValue)
+
+    this.editing = false
   }
 }
