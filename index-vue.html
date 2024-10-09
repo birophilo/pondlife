@@ -194,7 +194,7 @@ input,select,button {
               <div v-if="propertyChange.editing === true">
                 <select v-model="propertyChangeForm.agent">
                   <option value="self">self</option>
-                  <option value="lemonadeStall">lemonade stall</option>
+                  <option v-for="agent in AGENT_CONFIGS" :value="agent.config.name">{{ agent.config.name }}</option>
                 </select>
                 <select v-model="propertyChange.propertyName">
                   <option value="money">money</option>
@@ -374,6 +374,7 @@ input,select,button {
               <div v-else-if="item.conditionType === 'preset'">
                 <select v-model="item.classMethod">
                   <option value="atDestination">at destination</option>
+                  <option value="actionChangesApplied">is complete</option>
                 </select>
 
                 <select v-model="item.comparison" value="isIdentical">
@@ -437,6 +438,7 @@ input,select,button {
               >
                 <option value="">-- select preset --</option>
                 <option value="atDestination">at destination</option>
+                <option value="actionChangesApplied">is complete</option>
               </select>
 
               <select v-model="conditionsSection.adding.forms.preset.comparison" value="isIdentical">
