@@ -38,8 +38,11 @@ class LemonadeStall {
     // distance from stall to count as collision (same for x and y here)
     this.accessRange = 20
     this.id = id
-    this.money = 0
-    this.lemons = 10
+    this.stateData = {
+      money: 0,
+      lemons: 10
+    }
+
     this.collisionArea = {
       x: this.position.x,
       y: this.position.y,
@@ -67,7 +70,7 @@ class LemonadeStall {
 
     c.fillStyle = 'black'
     c.fillText(
-      `money: ${this.money}, lemons: ${this.lemons}`,
+      `money: ${this.stateData.money}, lemons: ${this.stateData.lemons}`,
       this.position.x,
       this.position.y - 5
     )

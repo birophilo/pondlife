@@ -224,13 +224,13 @@ input,select,button {
 
             <!-- (ACTION) PROPERTY CHANGE ITEM CREATE FORM -->
             <div v-if="propertyChangeForm.adding === true">
-                {{ selectedAgent.stateData }}
                 <select v-model="propertyChangeForm.agent">
                   <option value="self">self</option>
+                  <option v-for="agent in AGENT_CONFIGS" :value="agent.config.name">{{ agent.config.name }}</option>
                   <option value="lemonadeStall">lemonade stall</option>
                 </select>
                 <select v-model="propertyChangeForm.property">
-                  <option v-for="property in selectedAgent.stateData" :value="property">property:</option>
+                  <option v-for="property in Object.keys(selectedAgent.stateData)" :value="property">{{ property }}</option>
                 </select>
                 <select v-model="propertyChangeForm.change">
                   <option value="increase">increase</option>
@@ -700,6 +700,7 @@ var vue = new Vue({
     },
     propertyChangeForm: {
       adding: false,
+      agentType: '',
       property: '',
       change: '',
       value: ''
@@ -909,14 +910,17 @@ var vue = new Vue({
     },
 
     createPropertyChangeItem: function (action) {
+      const agent = this.propertyChangeForm.agent
       const property = this.propertyChangeForm.property
       const change = this.propertyChangeForm.change
       const value = this.propertyChangeForm.value
+      const args = {agentType: agent}
       const propChange = new PropertyChange(
         null,
         property,
         change,
-        value
+        value,
+        args
       )
       action.propertyChanges.push(propChange)
       this.propertyChangeForm.adding = false

@@ -111,13 +111,19 @@ class ActionPropertyChanges extends Action {
 
   start() {
     this.propertyChanges.forEach(change => {
-      // temporary hard-coding
-      if (this.args.agentType === 'lemonadeStall') {
-        var agentToChange = this.destination
-      } else {
+      console.log("AGENT TYPE")
+      console.log(change.args.agentType)
+
+      if (change.args.agentType === 'self') {
         var agentToChange = this.agent
+      } else {
+        const agentArray = AGENT_CONFIGS[change.args.agentType].agentArray
+        const targetAgent = this.agent.getClosestAgent(agentArray)
+        var agentToChange = targetAgent
       }
+
       agentToChange.stateData[change.propertyName] += change.propertyValue
+
     })
     this.changesApplied = true
   }
@@ -153,12 +159,13 @@ class ActionDefaults {
 
 
 class PropertyChange {
-  constructor(agent, propertyName, changeType, propertyValue) {
+  constructor(agent, propertyName, changeType, propertyValue, args) {
     this.agent = agent
     this.propertyName = propertyName
     this.changeType = changeType
     // only handling numbers for now, not strings, boolean etc.
     this.propertyValue = changeType === 'increase' ? Number(propertyValue) : 0 - Number(propertyValue)
+    this.args = args
 
     this.editing = false
   }
