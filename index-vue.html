@@ -194,6 +194,10 @@ input,select,button {
           <div v-if="action.actionType === 'change'">
             <div v-for="(propertyChange, index) in action.propertyChanges">
               <div v-if="propertyChange.editing === true">
+                <select v-model="propertyChangeForm.agent">
+                  <option value="self">self</option>
+                  <option value="lemonadeStall">lemonade stall</option>
+                </select>
                 <select v-model="propertyChange.propertyName">
                   <option value="money">money</option>
                 </select>
@@ -222,6 +226,10 @@ input,select,button {
 
             <!-- (ACTION) PROPERTY CHANGE ITEM CREATE FORM -->
             <div v-if="propertyChangeForm.adding === true">
+                <select v-model="propertyChangeForm.agent">
+                  <option value="self">self</option>
+                  <option value="lemonadeStall">lemonade stall</option>
+                </select>
                 <select v-model="propertyChangeForm.property">
                   <option value="money">money</option>
                 </select>
@@ -315,26 +323,6 @@ input,select,button {
           <!-- FORM FIELDS SPECIFIC TO ACTION TYPE -->
           <div v-if="actionsSection.adding.type === 'goTo'">
             <input v-model="actionsSection.adding.forms.goTo.target" type="text" placeholder="target" />
-          </div>
-          <div v-else-if="actionsSection.adding.type === 'change'">
-            <select
-              v-model="actionsSection.adding.forms.change.property"
-              id="action-change-property-name"
-            >
-              <option value="">-- select property --</option>
-              <option value="money">money</option>
-            </select>
-            <select v-model="actionsSection.adding.forms.change.change" value="change">
-              <option value="">-- select change --</option>
-              <option value="increase">increase</option>
-              <option value="decrease">decrease</option>
-            </select>
-            <input
-              type="number"
-              v-model="actionsSection.adding.forms.change.value"
-              id="action-change-property-value"
-              placeholder="property value"
-            />
           </div>
           <button @click="createAction">add</button> |
           <button @click="cancelAddAction">cancel</button>
@@ -673,11 +661,6 @@ var vue = new Vue({
         forms: {
           goTo: {
             target: ''
-          },
-          change: {
-            property: '',
-            change: '',
-            value: 0
           }
         }
       }
@@ -905,28 +888,17 @@ var vue = new Vue({
 
       if (actionType === 'change') {
 
-        const propertyName = data.property
-        const propertyChangeType = data.change
-        const propertyChangeValue = Number(data.value)
-
-        const change1 = new PropertyChange(
-          null,
-          propertyName,
-          propertyChangeType,
-          propertyChangeValue
-        )
-
         const propertyChangesAction = new ActionPropertyChanges(
           null,
           {
             id: this.actionsSection.items.length + 1,
             actionName: actionName,
             actionType: actionType,
-            propertyChanges: [change1]
+            propertyChanges: []
           },
           [],
           [],
-          [change1]
+          []
         )
 
         this.actionsSection.items.push(propertyChangesAction)
@@ -959,9 +931,6 @@ var vue = new Vue({
 
       // reset specific settings (hard-coded keys for now)
       this.actionsSection.adding.forms.goTo.target = ''
-      this.actionsSection.adding.forms.change.property = ''
-      this.actionsSection.adding.forms.change.change = ''
-      this.actionsSection.adding.forms.change.value = ''
 
     },
     deleteAction: function (itemName) {
