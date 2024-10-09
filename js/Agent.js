@@ -152,18 +152,20 @@ class Agent extends Sprite {
     return false
   }
 
-  update(newData) {
+  update(newData, globals) {
 
     super.update()
 
     this.stateData = {...this.stateData, ...newData}
 
-    if (this.stateData.globals.animationFrameId % 20 === 0) {
+    this.globals = globals
+
+    if (this.globals.animationFrameId % 20 === 0) {
       console.log(this.actionList.map(action => action.actionName))
     }
 
 
-    this.speed = this.nominalSpeed * this.stateData.globals.globalSpeed
+    this.speed = this.nominalSpeed * this.globals.globalSpeed
 
     this.draw()
     this.travel()

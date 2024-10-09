@@ -114,15 +114,13 @@ input,select,button {
       <!-- PROPERTY LIST -->
       <div v-if="selectedAgent !== null" class="item-list">
         <div v-for="property in Object.keys(selectedAgent.stateData)">
-          <div v-if="property !== 'globals'">
-            <input type="text" placeholder="name" :value="property" disabled />
-            <input
-              v-model="selectedAgent.stateData[property]"
-              type="number"
-              :value="selectedAgent.stateData[property]"
-            />
-            <button @click="delete selectedAgent.stateData[property]">delete</button>
-          </div>
+          <input type="text" placeholder="name" :value="property" disabled />
+          <input
+            v-model="selectedAgent.stateData[property]"
+            type="number"
+            :value="selectedAgent.stateData[property]"
+          />
+          <button @click="delete selectedAgent.stateData[property]">delete</button>
           <br/>
         </div>
         <div v-else>
@@ -226,12 +224,13 @@ input,select,button {
 
             <!-- (ACTION) PROPERTY CHANGE ITEM CREATE FORM -->
             <div v-if="propertyChangeForm.adding === true">
+                {{ selectedAgent.stateData }}
                 <select v-model="propertyChangeForm.agent">
                   <option value="self">self</option>
                   <option value="lemonadeStall">lemonade stall</option>
                 </select>
                 <select v-model="propertyChangeForm.property">
-                  <option value="money">money</option>
+                  <option v-for="property in selectedAgent.stateData" :value="property">property:</option>
                 </select>
                 <select v-model="propertyChangeForm.change">
                   <option value="increase">increase</option>
@@ -979,8 +978,6 @@ var vue = new Vue({
         )
       }
       this.conditionsSection.items.push(newCondition)
-      // hard coding temporarily
-      // this.actionsSection.items[0].conditions.push(newCondition)
       this.resetConditionForms()
     },
     resetConditionForms: function () {
@@ -1040,7 +1037,7 @@ var vue = new Vue({
       lemonadeStalls.forEach(stall => stall.draw())
 
       customers.forEach(customer => {
-        customer.update({ globals: GlobalSettings })
+        customer.update({}, GlobalSettings)
         const isInArea = pointIsInArea(this.mouse, customer.collisionArea)
         if (isInArea) {
           hover = true
@@ -1055,7 +1052,7 @@ var vue = new Vue({
       })
 
       supplyVans.forEach(van => {
-        van.update({ globals: GlobalSettings })
+        van.update({}, GlobalSettings)
         const isInArea = pointIsInArea(this.mouse, van.collisionArea)
         if (isInArea) {
           hover = true
