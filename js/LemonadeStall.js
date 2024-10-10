@@ -1,9 +1,9 @@
-class LemonadeStallState {
-  constructor(stall) {
-    this.name = 'idle'
-    this.stall = stall
-  }
-}
+// class LemonadeStallState {
+//   constructor(stall) {
+//     this.name = 'idle'
+//     this.stall = stall
+//   }
+// }
 
 class LemonadeStall {
 
@@ -54,7 +54,7 @@ class LemonadeStall {
       y: this.position.y + this.height / 2
     }
 
-    this.state = new LemonadeStallState(this)
+    // this.state = new LemonadeStallState(this)
   }
 
   draw() {

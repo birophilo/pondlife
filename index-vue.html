@@ -180,6 +180,19 @@ input,select,button {
                 <option value="goTo">go to</option>
                 <option value="change">change</option>
               </select>
+
+              <select>
+                <option>-- select agent or point --</option>
+                <option>agent</option>
+                <option>point</option>
+              </select>
+
+              <select>
+                <option>-- agent type --</option>
+                <option>agent</option>
+                <option>point</option>
+              </select>
+
               <input v-model="action.args.agentType" type="text" placeholder="target" :value="action.args.agentType" />
             </div>
             <div v-else>
@@ -321,7 +334,49 @@ input,select,button {
 
           <!-- FORM FIELDS SPECIFIC TO ACTION TYPE -->
           <div v-if="actionsSection.adding.type === 'goTo'">
-            <input v-model="actionsSection.adding.forms.goTo.target" type="text" placeholder="target" />
+            <select v-model="actionsSection.adding.forms.goTo.destinationType">
+              <option value="">-- destination type --</option>
+              <option value="agent">agent</option>
+              <option value="point">point</option>
+            </select>
+
+            <div v-if="actionsSection.adding.forms.goTo.destinationType === 'agent'">
+              <!-- was <select v-model="actionsSection.adding.forms.goTo.target">  -->
+              <select v-model="actionsSection.adding.forms.goTo.agentType">
+                <option value="">-- agent type --</option>
+                <option v-for="agent in AGENT_CONFIGS" :value="agent.config.name">{{ agent.config.name }}</option>
+              </select>
+
+              <form
+                name="agentRadioSelect"
+                v-model="actionsSection.adding.forms.goTo.agentChoiceMethod"
+                @change="console.log(actionsSection.adding.forms.goTo.agentChoiceMethod)"
+              >
+                <input type="radio" name="agentChoiceMethod" value="nearest" checked="true" />
+                <label for="nearest">nearest</label>
+                <input type="radio" name="agentChoiceMethod" value="specific" />
+                <label for="nearest">specific</label>
+              </form>
+
+              <div v-if="actionsSection.adding.forms.goTo.agentChoiceMethod === 'specific'">
+                <select v-model="actionsSection.adding.forms.goTo.target">
+                  <option value="">-- select agent --</option>
+                  <option v-for="stall in AGENT_CONFIGS['lemonadeStall'].agentArray">{{ stall.name }}</option>
+                </select>
+              </div>
+
+
+            </div>
+
+            <div v-if="actionsSection.adding.forms.goTo.destinationType === 'point'">
+              <div>Select point:<br />
+                x: <input type="text" /><br />
+                y: <input type="text" /><br />
+              </select>
+            </div>
+
+          <!-- <div v-if="actionsSection.adding.type === 'goTo'">
+            <input v-model="actionsSection.adding.forms.goTo.target" type="text" placeholder="target" /> -->
           </div>
           <button @click="createAction">add</button> |
           <button @click="cancelAddAction">cancel</button>
@@ -621,10 +676,15 @@ var vue = new Vue({
   el: '#container',
   data: {
 
+    // agent detail to display in UI
     selectedAgent: null,
     agentPreview: null,
     placingAgent: false,
     deleteMode: false,
+    // mode to select target agent
+    selectionMode: false,
+    // set by click on board in selection mode
+    cursorSelection: null,
     deleteButton: null,
     itemMenu: null,
 
@@ -661,6 +721,8 @@ var vue = new Vue({
         name: '',
         forms: {
           goTo: {
+            destinationType: '',
+            agentChoiceMethod: '',
             target: ''
           }
         }
