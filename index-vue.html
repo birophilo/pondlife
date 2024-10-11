@@ -96,7 +96,7 @@ input,select,button {
 
 <div id="container">
 
-  <canvas :style="{backgroundColor: 'blue'}"></canvas>
+  <canvas></canvas>
 
   <div class="info-container">
 
@@ -193,7 +193,7 @@ input,select,button {
                 <option>point</option>
               </select>
 
-              <input v-model="action.args.agentType" type="text" placeholder="target" :value="action.args.agentType" />
+              <input v-model="action.args.agentType" type="text" placeholder="agent type" :value="action.args.agentType" />
             </div>
             <div v-else>
               <div>action type: {{ action.actionType }}</div>
@@ -341,30 +341,30 @@ input,select,button {
             </select>
 
             <div v-if="actionsSection.adding.forms.goTo.destinationType === 'agent'">
-              <!-- was <select v-model="actionsSection.adding.forms.goTo.target">  -->
               <select v-model="actionsSection.adding.forms.goTo.agentType">
                 <option value="">-- agent type --</option>
                 <option v-for="agent in AGENT_CONFIGS" :value="agent.config.name">{{ agent.config.name }}</option>
               </select>
 
-              <form
-                name="agentRadioSelect"
-                v-model="actionsSection.adding.forms.goTo.agentChoiceMethod"
-                @change="console.log(actionsSection.adding.forms.goTo.agentChoiceMethod)"
-              >
-                <input type="radio" name="agentChoiceMethod" value="nearest" checked="true" />
+              <form name="agentRadioSelect" @change="console.log(actionsSection.adding.forms.goTo.agentChoiceMethod)">
+                choice method value: {{ actionsSection.adding.forms.goTo.agentChoiceMethod }}
+                <input type="radio" v-model="actionsSection.adding.forms.goTo.agentChoiceMethod" name="agentChoiceMethod" value="nearest" checked="true" />
                 <label for="nearest">nearest</label>
-                <input type="radio" name="agentChoiceMethod" value="specific" />
+                <input type="radio" v-model="actionsSection.adding.forms.goTo.agentChoiceMethod" name="agentChoiceMethod" value="specific" />
                 <label for="nearest">specific</label>
               </form>
 
               <div v-if="actionsSection.adding.forms.goTo.agentChoiceMethod === 'specific'">
                 <select v-model="actionsSection.adding.forms.goTo.target">
                   <option value="">-- select agent --</option>
-                  <option v-for="stall in AGENT_CONFIGS['lemonadeStall'].agentArray">{{ stall.name }}</option>
+                  <option
+                    v-for="stall in AGENT_CONFIGS[actionsSection.adding.forms.goTo.agentType].agentArray"
+                    :value="stall"
+                  >
+                    {{ stall.name }}
+                  </option>
                 </select>
               </div>
-
 
             </div>
 
@@ -375,8 +375,6 @@ input,select,button {
               </select>
             </div>
 
-          <!-- <div v-if="actionsSection.adding.type === 'goTo'">
-            <input v-model="actionsSection.adding.forms.goTo.target" type="text" placeholder="target" /> -->
           </div>
           <button @click="createAction">add</button> |
           <button @click="cancelAddAction">cancel</button>
@@ -722,6 +720,7 @@ var vue = new Vue({
         forms: {
           goTo: {
             destinationType: '',
+            agentType: '',
             agentChoiceMethod: '',
             target: ''
           }
@@ -917,34 +916,33 @@ var vue = new Vue({
     },
     createAction: function () {
       const actionType = this.actionsSection.adding.type
-      const data = this.actionsSection.adding.forms[actionType]
       const actionName = this.actionsSection.adding.name
+      const data = this.actionsSection.adding.forms[actionType]
 
       if (actionType === 'goTo') {
 
-        // const agentChoiceValue = document.agentRadioSelect.agentChoice.value
-        // hard-code for now
-        const agentChoiceValue = 'nearest'
-        const actionDestination = data.target
+        const actionTarget = data.target
 
         let args = {
           id: this.actionsSection.items.length + 1,
           actionName: actionName,
           actionType: actionType,
-          agentType: actionDestination,
-          agentChoice: agentChoiceValue,
+          agentType: data.agentType,
+          destinationType: data.destinationType,
+          agentChoiceMethod: data.agentChoiceMethod,
 
           target: data.target
         }
 
-        if (actionDestination === 'home') {
+        if (actionTarget === 'home') {
           args.destination = this.selectedAgent.home
-        } else {
-          args.agentType = actionDestination
-          args.agentChoice = agentChoiceValue
         }
 
+        console.log("ARRRGS")
+        console.log(args)
+
         let newAction = new ActionGoTo(null, args)
+        console.log(newAction)
 
         this.actionsSection.items.push(newAction)
 

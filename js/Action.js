@@ -6,16 +6,23 @@ class Action {
     // temporary?
     this.editing = false
 
+    if (args.agentChoiceMethod === 'specific') {
+      this.destination = args.target
+    }
+
     if (this.agent !== null) {
-      if (args.agentType === 'lemonadeStall') {
+      if (args.destinationType === 'agent') {
+
         this.agentType = args.agentType
 
-        if (args.agentChoice === 'nearest') {
+        if (args.agentChoiceMethod === 'nearest') {
           const agentArray = AGENT_CONFIGS[this.agentType].agentArray
           this.destination = this.agent.getClosestAgent(agentArray)
           this.stateName = `goingTo: ${this.destination.name}`
         }
-      } else {
+
+      } else if (args.destinationType === 'point') {
+
         this.destination = args.destination
         this.stateName = `goingTo: ${this.destination.name}`
       }
@@ -111,8 +118,6 @@ class ActionPropertyChanges extends Action {
 
   start() {
     this.propertyChanges.forEach(change => {
-      console.log("AGENT TYPE")
-      console.log(change.args.agentType)
 
       if (change.args.agentType === 'self') {
         var agentToChange = this.agent
