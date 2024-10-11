@@ -88,6 +88,10 @@ input,select,button {
   margin-bottom: 10px;
 }
 
+.selection-mode-button {
+  cursor: pointer;
+}
+
 </style>
 
 </head>
@@ -353,6 +357,7 @@ input,select,button {
                 <input type="radio" v-model="actionsSection.adding.forms.goTo.agentChoiceMethod" name="agentChoiceMethod" value="specific" />
                 <label for="nearest">specific</label>
               </form>
+              <button class="selection-mode-button" @click="selectionMode = !selectionMode">x</button>
 
               <div v-if="actionsSection.adding.forms.goTo.agentChoiceMethod === 'specific'">
                 <select v-model="actionsSection.adding.forms.goTo.target">
@@ -369,9 +374,30 @@ input,select,button {
             </div>
 
             <div v-if="actionsSection.adding.forms.goTo.destinationType === 'point'">
-              <div>Select point:<br />
-                x: <input type="text" /><br />
-                y: <input type="text" /><br />
+              <div>Select point:
+                <button
+                  class="selection-mode-button"
+                  @click="selectionMode = !selectionMode"
+                  :style="{backgroundColor: selectionMode ? 'grey' : 'white'}"
+                >
+                  x
+                </button>
+                <br />
+                x:
+                <input
+                  v-model="actionsSection.adding.forms.goTo.pointX"
+                  type="text"
+                  :placeholder="mouse.x"
+                />
+                <br />
+                y:
+                <input
+                  v-model="actionsSection.adding.forms.goTo.pointY"
+                  type="text"
+                  :placeholder="mouse.y"
+                  value=""
+                />
+                <br />
               </select>
             </div>
 
@@ -722,7 +748,9 @@ var vue = new Vue({
             destinationType: '',
             agentType: '',
             agentChoiceMethod: '',
-            target: ''
+            target: '',
+            pointX: '',
+            pointY: ''
           }
         }
       }
@@ -787,8 +815,8 @@ var vue = new Vue({
     /* --- CLICK ACTIONS / EVENT LISTENERS --- */
 
     canvas.addEventListener('mousemove', (event) => {
-      this.mouse.x = event.clientX
-      this.mouse.y = event.clientY
+      this.mouse.x = event.pageX
+      this.mouse.y = event.pageY
     })
 
     canvas.addEventListener('click', (event) => {
@@ -841,6 +869,12 @@ var vue = new Vue({
       const isInArea = pointIsInArea(point, this.deleteButton.area)
       if (isInArea) {
         this.deleteMode = !this.deleteMode
+      }
+
+      // POINT/AGENT SELECTION MODE
+      if (this.selectionMode === true) {
+        this.actionsSection.adding.forms.goTo.pointX = this.mouse.x
+        this.actionsSection.adding.forms.goTo.pointY = this.mouse.y
       }
 
     })
@@ -934,12 +968,23 @@ var vue = new Vue({
           target: data.target
         }
 
+        if (data.destinationType === 'point') {
+          const selectedPointX = this.actionsSection.adding.forms.goTo.pointX
+          const selectedPointY = this.actionsSection.adding.forms.goTo.pointY
+          args.target = {
+            name: `point: {x: ${selectedPointX}, y: ${selectedPointY}}`,
+            width: 10,
+            height: 10,
+            position: {
+              x: selectedPointX,
+              y: selectedPointY
+            }
+          }
+        }
+
         if (actionTarget === 'home') {
           args.destination = this.selectedAgent.home
         }
-
-        console.log("ARRRGS")
-        console.log(args)
 
         let newAction = new ActionGoTo(null, args)
         console.log(newAction)
@@ -1139,6 +1184,8 @@ var vue = new Vue({
 
       if (pointIsInArea(this.mouse, this.deleteButton.area)) hover = true
 
+      if (this.selectionMode === true) hover = true
+
       this.deleteButton.update(this.agentMenuButtons.length, this.deleteMode)
 
       canvas.style.cursor = hover ? 'pointer' : 'auto'
@@ -1172,7 +1219,7 @@ var vue = new Vue({
     cloneAction: function (action) {
       this.selectedAgent.actionList.push(action.clone(
         this.selectedAgent,
-        {destination: this.selectedAgent.home, cloned: true}
+        {cloned: true}
       ))
     },
 

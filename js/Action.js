@@ -10,6 +10,10 @@ class Action {
       this.destination = args.target
     }
 
+    if (args.destinationType === 'point') {
+        this.destination = args.target
+    }
+
     if (this.agent !== null) {
       if (args.destinationType === 'agent') {
 
@@ -22,8 +26,6 @@ class Action {
         }
 
       } else if (args.destinationType === 'point') {
-
-        this.destination = args.destination
         this.stateName = `goingTo: ${this.destination.name}`
       }
     }
@@ -55,12 +57,6 @@ class Action {
       const result = this.transitions[i].condition.evaluate()
       if (result === true) {
         this.isComplete = true
-        this.agent.actionList.push(
-          this.transitions[i].nextAction.clone(
-            this.agent,
-            {destination: this.agent.home, cloned: true}
-          )
-        )
       }
     }
 
