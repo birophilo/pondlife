@@ -356,7 +356,11 @@ input,select,button {
                 <input type="radio" v-model="actionsSection.adding.forms.goTo.agentChoiceMethod" name="agentChoiceMethod" value="specific" />
                 <label for="nearest">specific</label>
               </form>
-              <button class="selection-mode-button" @click="selectionMode = !selectionMode">x</button>
+              <button
+                class="selection-mode-button"
+                @click="selectionMode = !selectionMode"
+                :style="{backgroundColor: selectionMode ? 'grey' : 'white'}"
+              >x</button>
 
               <div v-if="actionsSection.adding.forms.goTo.agentChoiceMethod === 'specific'">
                 <select v-model="actionsSection.adding.forms.goTo.target">
@@ -378,9 +382,7 @@ input,select,button {
                   class="selection-mode-button"
                   @click="selectionMode = !selectionMode"
                   :style="{backgroundColor: selectionMode ? 'grey' : 'white'}"
-                >
-                  x
-                </button>
+                >x</button>
                 <br />
                 x:
                 <input
@@ -660,7 +662,7 @@ const AGENT_CONFIGS = {
       name: 'customer',
       width: 30,
       height: 40,
-      frames: {max: 9, columns: 4, rows: 3},
+      frames: {max: 9, columns: 4, rows: 3, hold: 3},
       offset: {x: 96, y: 46},
       scale: 0.7,
       imageSrc: '../img/sprites/GirlSample_Walk_Down.png',
@@ -687,7 +689,7 @@ const AGENT_CONFIGS = {
       name: 'supplyVan',
       width: 50,
       height: 50,
-      frames: {max: 1, columns: 1, rows: 1},
+      frames: {max: 1, columns: 1, rows: 1, hold: 3},
       offset: {x: 2, y: 0},
       scale: 2.5,
       imageSrc: '../img/sprites/SupplyVan_Right.png',
@@ -709,6 +711,8 @@ var vue = new Vue({
 
     // agent detail to display in UI
     selectedAgent: null,
+    // agent to select as target/object in action creation e.g. 'go to'
+    selectedTargetAgent: null,
     agentPreview: null,
     placingAgent: false,
     deleteMode: false,
@@ -1212,6 +1216,11 @@ var vue = new Vue({
         // SELECT AGENT
         if (isInArea) {
           this.selectedAgent = agent
+
+          if (this.selectionMode === true) {
+            this.selectedTargetAgent = agent
+            this.actionsSection.adding.forms.goTo.target = this.selectedTargetAgent
+          }
         }
         // DELETE AGENT (in delete mode)
         if (isInArea && this.deleteMode === true) {

@@ -154,7 +154,7 @@ class Agent extends Sprite {
 
   update(newData, globals) {
 
-    super.update()
+    super.update(globals)
 
     this.stateData = {...this.stateData, ...newData}
 

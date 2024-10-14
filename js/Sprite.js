@@ -2,7 +2,7 @@ class Sprite {
   constructor({
     position = { x: 0, y: 0 },
     imageSrc,
-    frames = {max, columns, rows},
+    frames = {max, columns, rows, hold},
     offset = {x: 0, y: 0},
     scale = 1
   }) {
@@ -10,19 +10,21 @@ class Sprite {
     this.image = new Image()
     this.image.src = imageSrc
     this.defaultImage = imageSrc
+    this.defaultFrames = frames
     this.frames = {
       max: frames.max,
       columns: frames.columns,
       rows: frames.rows,
       current: 0,
       elapsed: 0,
-      hold: 3
+      hold: frames.hold
     }
     this.offset = offset
     this.scale = scale
   }
 
   draw() {
+
     const cropWidth = this.image.width / this.frames.columns
     const cropHeight = this.image.height / this.frames.rows
     const crop = {
@@ -51,7 +53,12 @@ class Sprite {
     )
   }
 
-  update() {
+  update(globals) {
+
+    const frameSpeedMultiple = globals.globalSpeed / 100
+    const hold = Number(this.defaultFrames.hold)
+    this.frames.hold = hold / frameSpeedMultiple
+
     this.frames.elapsed++
     if (this.frames.elapsed % this.frames.hold === 0) {
       this.frames.current++
