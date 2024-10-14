@@ -171,7 +171,7 @@ class Agent extends Sprite {
     this.travel()
 
     // remove any freshly completed Actions from the action list
-    if (this.actionList.length && this.actionList[0].isComplete) {
+    if (this.actionList.length && this.actionList[0].isComplete === true) {
       this.actionList.splice(0, 1)
     }
 

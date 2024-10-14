@@ -38,6 +38,13 @@ class Action {
 
     this.conditions = conditions ? conditions : []
     this.transitions = transitions ? transitions : []
+
+    if (this.transitions.length > 0 && this.agent !== null) {
+      this.transitions.forEach(transition => {
+        // broadly applicable enough?
+        transition.condition.agent = this.agent
+      })
+    }
   }
 
   meetsConditions() {
@@ -57,6 +64,11 @@ class Action {
       const result = this.transitions[i].condition.evaluate()
       if (result === true) {
         this.isComplete = true
+        this.agent.actionList.push(
+          this.transitions[i].nextAction.clone(
+            this.agent
+          )
+        )
       }
     }
 

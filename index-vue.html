@@ -475,7 +475,11 @@ input,select,button {
                 </select>
               </div>
 
-              <input v-model="item.conditionValue" type="text" placeholder="value" :value="item.conditionValue" />
+              <select v-model="item.conditionValue">
+                <option :value="true">true</option>
+                <option :value="false">false</option>
+              </select>
+
             </div>
             <div v-else>
               <div v-if="item.conditionType === 'property'">
@@ -538,12 +542,12 @@ input,select,button {
                 <option value="">-- select comparison --</option>
                 <option value="isIdentical">is</option>
               </select>
-              <input
-                type="text"
-                v-model="conditionsSection.adding.forms.preset.value"
-                id="action-change-property-value"
-                placeholder="conditions value"
-              />
+
+              <select v-model="conditionsSection.adding.forms.preset.value">
+                <option :value="true">true</option>
+                <option :value="false">false</option>
+              </select>
+
             </div>
 
             <button @click="createCondition">add</button> |
@@ -1098,7 +1102,7 @@ var vue = new Vue({
           conditionName,
           conditionPreset,
           conditionComparison,
-          true,  // hard-coded for now,
+          conditionValue,
           this.conditionsSection.items.length + 1  // id
         )
       }
