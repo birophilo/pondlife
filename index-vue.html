@@ -172,7 +172,6 @@ input,select,button {
               <button @click="action.editing = false">cancel</button>
             </div>
             <div v-else>
-              <!-- <button @click="action.editing = true">edit</button> -->
               <button @click="deleteAction(action.actionName)">delete action</button>
             </div>
           </div>
@@ -242,14 +241,17 @@ input,select,button {
             <!-- (ACTION) PROPERTY CHANGE ITEM CREATE FORM -->
             <div v-if="propertyChangeForm.adding === true">
                 <select v-model="propertyChangeForm.agent">
+                  <option value="">-- agent --</option>
                   <option value="self">self</option>
                   <option v-for="agent in AGENT_CONFIGS" :value="agent.config.name">{{ agent.config.name }}</option>
                   <option value="lemonadeStall">lemonade stall</option>
                 </select>
                 <select v-model="propertyChangeForm.property">
+                  <option value="">--  property --</option>
                   <option v-for="property in Object.keys(selectedAgent.stateData)" :value="property">{{ property }}</option>
                 </select>
                 <select v-model="propertyChangeForm.change">
+                  <option value="">-- change --</option>
                   <option value="increase">increase</option>
                   <option value="decrease">decrease</option>
                 </select>
@@ -351,9 +353,20 @@ input,select,button {
               </select>
 
               <form name="agentRadioSelect" @change="console.log(actionsSection.adding.forms.goTo.agentChoiceMethod)">
-                <input type="radio" v-model="actionsSection.adding.forms.goTo.agentChoiceMethod" name="agentChoiceMethod" value="nearest" checked="true" />
+                <input
+                  type="radio"
+                  v-model="actionsSection.adding.forms.goTo.agentChoiceMethod"
+                  name="agentChoiceMethod"
+                  value="nearest"
+                  checked="true"
+                />
                 <label for="nearest">nearest</label>
-                <input type="radio" v-model="actionsSection.adding.forms.goTo.agentChoiceMethod" name="agentChoiceMethod" value="specific" />
+                <input
+                  type="radio"
+                  v-model="actionsSection.adding.forms.goTo.agentChoiceMethod"
+                  name="agentChoiceMethod"
+                  value="specific"
+                />
                 <label for="nearest">specific</label>
               </form>
               <button
@@ -403,9 +416,9 @@ input,select,button {
             </div>
 
           </div>
-          <button @click="createAction">add</button> |
-          <button @click="cancelAddAction">cancel</button>
         </div>
+        <button @click="createAction">add</button> |
+        <button @click="cancelAddAction">cancel</button>
       </div>
 
     </div>
@@ -617,13 +630,6 @@ function pointIsInArea(point = {x, y}, area = {x, y, width, height}) {
 }
 
 
-// var slider = document.getElementById('sim-speed-slider')
-
-// slider.oninput = function() {
-//   GlobalSettings.globalSpeed = this.value
-//   sliderValue.innerHTML = this.value / 100
-// }
-
 function createAgent() {
   console.log('creating agent')
   const newAgentName = document.getElementById('form-create-agent-name')
@@ -802,6 +808,7 @@ var vue = new Vue({
     },
     propertyChangeForm: {
       adding: false,
+      agent: '',
       agentType: '',
       property: '',
       change: '',
@@ -1231,7 +1238,7 @@ var vue = new Vue({
     cloneAction: function (action) {
       this.selectedAgent.actionList.push(action.clone(
         this.selectedAgent,
-        {cloned: true}
+        {}
       ))
     },
 

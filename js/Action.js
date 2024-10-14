@@ -123,7 +123,8 @@ class ActionPropertyChanges extends Action {
         var agentToChange = targetAgent
       }
 
-      agentToChange.stateData[change.propertyName] += change.propertyValue
+      const changeValue = change.changeType === 'increase' ? Number(change.propertyValue) : 0 - Number(change.propertyValue)
+      agentToChange.stateData[change.propertyName] += changeValue
 
     })
     this.changesApplied = true
@@ -165,7 +166,7 @@ class PropertyChange {
     this.propertyName = propertyName
     this.changeType = changeType
     // only handling numbers for now, not strings, boolean etc.
-    this.propertyValue = changeType === 'increase' ? Number(propertyValue) : 0 - Number(propertyValue)
+    this.propertyValue = propertyValue
     this.args = args
 
     this.editing = false
