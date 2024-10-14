@@ -1,4 +1,4 @@
-GlobalSettings = {
-  globalSpeed: 100,
-  animationFrameId: 1
-}
+// GlobalSettings = {
+//   globalSpeed: 100,
+//   animationFrameId: 1
+// }

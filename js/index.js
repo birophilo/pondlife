@@ -530,7 +530,7 @@ function createPresetCondition() {
   updateHtml()
 }
 
-function addAgentProperty() {
+function setAgentProperty() {
   console.log('adding agent property')
   const newAgentProperty = document.getElementById('form-add-agent-property').value
   const newAgentPropertyValue = Number(document.getElementById('form-add-agent-property-value').value)

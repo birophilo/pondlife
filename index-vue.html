@@ -351,7 +351,6 @@ input,select,button {
               </select>
 
               <form name="agentRadioSelect" @change="console.log(actionsSection.adding.forms.goTo.agentChoiceMethod)">
-                choice method value: {{ actionsSection.adding.forms.goTo.agentChoiceMethod }}
                 <input type="radio" v-model="actionsSection.adding.forms.goTo.agentChoiceMethod" name="agentChoiceMethod" value="nearest" checked="true" />
                 <label for="nearest">nearest</label>
                 <input type="radio" v-model="actionsSection.adding.forms.goTo.agentChoiceMethod" name="agentChoiceMethod" value="specific" />
@@ -543,12 +542,19 @@ input,select,button {
     <div class="menu-section">
 
       <div class="day-container">
-        Day: <span id="day-number"></span>
+        Day: <span id="day-number">{{ dayNumber }}</span>
       </div>
 
       <div class="speed-slide-container">
-        <div><span>Speed: </span><span id="sim-speed-value">1.0</span></div>
-        <input type="range" min="0" max="200" value="100" id="sim-speed-slider">
+        <div><span>Speed: {{ GlobalSettings.globalSpeed / 100 }}</span></div>
+        <input
+          v-model="GlobalSettings.globalSpeed"
+          type="range"
+          min="0"
+          max="200"
+          value="100"
+          id="sim-speed-slider"
+        >
       </div>
 
     </div>
@@ -574,7 +580,6 @@ let c;  // canvas context
 
 const backgroundColor = 'rgb(200, 200, 200)'
 
-let globalSpeed = GlobalSettings.globalSpeed
 let dayNumber = 1
 const dayLength = 1000 // frames
 
@@ -610,15 +615,12 @@ function pointIsInArea(point = {x, y}, area = {x, y, width, height}) {
 }
 
 
-var slider = document.getElementById('sim-speed-slider')
-var sliderValue = document.getElementById('sim-speed-value')
+// var slider = document.getElementById('sim-speed-slider')
 
-sliderValue.innerHTML = slider.value / 100
-
-slider.oninput = function() {
-  GlobalSettings.globalSpeed = this.value
-  sliderValue.innerHTML = this.value / 100
-}
+// slider.oninput = function() {
+//   GlobalSettings.globalSpeed = this.value
+//   sliderValue.innerHTML = this.value / 100
+// }
 
 function createAgent() {
   console.log('creating agent')
@@ -699,6 +701,11 @@ const AGENT_CONFIGS = {
 var vue = new Vue({
   el: '#container',
   data: {
+
+    GlobalSettings: {
+      globalSpeed: 100,
+      animationFrameId: 1
+    },
 
     // agent detail to display in UI
     selectedAgent: null,
@@ -897,13 +904,9 @@ var vue = new Vue({
       })
       supplyVanData.forEach((van, i) => {
         supplyVans.push( new Agent({
-          // position: van,
-          // globals: GlobalSettings,
-          // offset: AGENT_CONFIGS.supplyVan.config.offset,
-          // scale: AGENT_CONFIGS.supplyVan.config.scale
           position: {x: van.x, y: van.y},
           num: i + 1,
-          globals: GlobalSettings,
+          globals: this.GlobalSettings,
           config: AGENT_CONFIGS.supplyVan.config
         }))
       })
@@ -911,7 +914,7 @@ var vue = new Vue({
         customers.push( new Agent({
           position: {x: cust.x, y: cust.y},
           num: i + 1,
-          globals: GlobalSettings,
+          globals: this.GlobalSettings,
           config: AGENT_CONFIGS.customer.config
         }))
       })
@@ -1143,12 +1146,12 @@ var vue = new Vue({
       c.fillRect(0, 0, canvas.width, canvas.height)
 
       const animationId = requestAnimationFrame(this.animate)
-      GlobalSettings.animationFrameId = animationId
+      this.GlobalSettings.animationFrameId = animationId
 
       lemonadeStalls.forEach(stall => stall.draw())
 
       customers.forEach(customer => {
-        customer.update({}, GlobalSettings)
+        customer.update({}, this.GlobalSettings)
         const isInArea = pointIsInArea(this.mouse, customer.collisionArea)
         if (isInArea) {
           hover = true
@@ -1163,7 +1166,7 @@ var vue = new Vue({
       })
 
       supplyVans.forEach(van => {
-        van.update({}, GlobalSettings)
+        van.update({}, this.GlobalSettings)
         const isInArea = pointIsInArea(this.mouse, van.collisionArea)
         if (isInArea) {
           hover = true
@@ -1231,7 +1234,7 @@ var vue = new Vue({
           y: this.mouse.y - AGENT_CONFIGS[agentClassName].config.height / 2
         },
         num: num,
-        globals: GlobalSettings,
+        globals: this.GlobalSettings,
         offset: AGENT_CONFIGS[agentClassName].config.offset,
         scale: AGENT_CONFIGS[agentClassName].config.scale,
         config: AGENT_CONFIGS[agentClassName].config
