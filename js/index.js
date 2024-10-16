@@ -346,13 +346,6 @@ function animate() {
 
   updateHtml()
 
-  timers.forEach((timer, i) => {
-    timer.check(animationId)
-    if (timer.active === false) {
-      timers.splice(i, 1)
-    }
-  })
-
 }
 
 animate()

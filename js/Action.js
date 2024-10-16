@@ -58,7 +58,7 @@ class Action {
     return true
   }
 
-  check(stateData) {
+  check(stateData, globals) {
     console.log(this.actionName)
     for (let i = 0; i < this.transitions.length; i++) {
       const result = this.transitions[i].condition.evaluate()
@@ -95,7 +95,7 @@ class ActionGoTo extends Action {
     super(agent, args, conditions, transitions)
   }
 
-  start() {
+  start(globals) {
     this.agent.destination = this.destination
     this.agent.currentStateName = this.stateName
     this.agent.frames.max = this.agent.config.frames.max
@@ -124,7 +124,7 @@ class ActionPropertyChanges extends Action {
     }
   }
 
-  start() {
+  start(globals) {
     this.propertyChanges.forEach(change => {
 
       if (change.args.agentType === 'self') {
@@ -145,6 +145,43 @@ class ActionPropertyChanges extends Action {
   defaultCompletionCheckPasses() {
     // default complete condition for class/action type
     return this.changesApplied === true
+  }
+}
+
+
+class ActionInterval extends Action {
+  /*
+    A timer object; an 'action' that just waits for a specified frame duration.
+  */
+  constructor(agent = null, args, conditions = [], transitions = [], propertyChanges = []) {
+    super(agent, args, conditions, transitions)
+
+    this.duration = args.duration
+  }
+
+  start(globals) {
+    const currentFrame = globals.animationFrameId
+    this.startFrame = currentFrame
+  }
+
+  defaultCompletionCheckPasses() {
+    // default complete condition for class/action type
+    return this.isComplete === true
+  }
+
+  check(stateData, globals) {
+    const currentFrame = globals.animationFrameId
+    console.log("start frame", this.startFrame)
+    console.log("current frame", currentFrame)
+    console.log("duration", this.duration)
+    const timerExpired = currentFrame - (this.startFrame + this.duration) >= 0
+    console.log(timerExpired)
+
+    if (timerExpired) {
+      this.isComplete = true
+    }
+
+    // super.check(stateData, globals) here?
   }
 }
 

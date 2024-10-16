@@ -172,31 +172,68 @@ input,select,button {
               <button @click="action.editing = false">cancel</button>
             </div>
             <div v-else>
-              <button @click="deleteAction(action.actionName)">delete action</button>
+              <div v-if="action.actionType === 'change'">
+                <button @click="deleteAction(action.actionName)">delete action</button>
+              </div>
+              <div v-else>
+                <button @click="action.editing = true">edit</button>
+                <button @click="deleteAction(action.actionName)">delete</button>
+              </div>
+
             </div>
           </div>
 
           <!-- GOTO ACTION EDIT FORM -->
           <div v-if="action.actionType === 'goTo'">
             <div v-if="action.editing === true">
-              <select v-model="action.actionType">
+              <!-- removed until can cleanly change action type -->
+              <!-- <select v-model="action.actionType">
                 <option value="goTo">go to</option>
                 <option value="change">change</option>
-              </select>
+                <option value="interval">wait</option>
+              </select> -->
 
-              <select>
+              <select v-model="action.args.destinationType">
                 <option>-- select agent or point --</option>
-                <option>agent</option>
-                <option>point</option>
+                <option value="agent">agent</option>
+                <option value="point">point</option>
               </select>
 
-              <select>
-                <option>-- agent type --</option>
-                <option>agent</option>
-                <option>point</option>
+              <select v-model="action.args.agentType">
+                <option value="">-- agent type --</option>
+                <option v-for="agent in AGENT_CONFIGS" :value="agent.config.name">{{ agent.config.name }}</option>
               </select>
 
-              <input v-model="action.args.agentType" type="text" placeholder="agent type" :value="action.args.agentType" />
+              <form name="agentRadioSelect">
+                <input
+                  type="radio"
+                  v-model="action.args.agentChoiceMethod"
+                  name="agentChoiceMethod"
+                  value="nearest"
+                  checked="true"
+                />
+                <label for="nearest">nearest</label>
+                <input
+                  type="radio"
+                  v-model="action.args.agentChoiceMethod"
+                  name="agentChoiceMethod"
+                  value="specific"
+                />
+                <label for="nearest">specific</label>
+              </form>
+
+              <div v-if="action.args.agentChoiceMethod === 'specific'">
+                <select v-model="action.args.target">
+                  <option value="">-- select agent --</option>
+                  <option
+                    v-for="agentType in AGENT_CONFIGS[action.args.agentType].agentArray"
+                    :value="agentType"
+                  >
+                    {{ agentType.name }}
+                  </option>
+                </select>
+              </div>
+
             </div>
             <div v-else>
               <div>action type: {{ action.actionType }}</div>
@@ -269,6 +306,17 @@ input,select,button {
             </div>
           </div>
 
+          <!-- (ACTION) PROPERTY CHANGE ITEM EDIT FORM -->
+          <div v-if="action.actionType === 'interval'">
+            <div v-if="action.editing === true">
+              <input v-model="action.duration" type="number" />
+            </div>
+            <div v-else>
+              <div>action type: {{ action.actionType }}</div>
+              <input :value="action.duration" type="number" disabled />
+            </div>
+          </div>
+
           <h4>Action transitions</h4>
 
           <!-- CREATE TRANSITION -->
@@ -335,6 +383,7 @@ input,select,button {
           <select v-model="actionsSection.adding.type">
             <option value="goTo">go to</option>
             <option value="change">change</option>
+            <option value="interval">wait</option>
           </select>
           <br />
 
@@ -379,10 +428,10 @@ input,select,button {
                 <select v-model="actionsSection.adding.forms.goTo.target">
                   <option value="">-- select agent --</option>
                   <option
-                    v-for="stall in AGENT_CONFIGS[actionsSection.adding.forms.goTo.agentType].agentArray"
-                    :value="stall"
+                    v-for="agentType in AGENT_CONFIGS[actionsSection.adding.forms.goTo.agentType].agentArray"
+                    :value="agentType"
                   >
-                    {{ stall.name }}
+                    {{ agentType.name }}
                   </option>
                 </select>
               </div>
@@ -412,15 +461,24 @@ input,select,button {
                   value=""
                 />
                 <br />
-              </select>
+              </div>
             </div>
 
           </div>
-        </div>
-        <button @click="createAction">add</button> |
-        <button @click="cancelAddAction">cancel</button>
-      </div>
 
+          <div v-if="actionsSection.adding.type === 'interval'">
+            <input
+              type="number"
+              v-model="actionsSection.adding.forms.interval.duration"
+              placeholder="0"
+            />
+          </div>
+
+          <button @click="createAction">save action</button> |
+          <button @click="cancelAddAction">cancel</button>
+
+        </div>
+      </div>
     </div>
 
     <!-- CONDITIONS -->
@@ -585,7 +643,7 @@ input,select,button {
 <script src="js/constants.js"></script>
 <script src="js/globalSettings.js"></script>
 <script src="js/Sprite.js"></script>
-<script src="js/Timer.js"></script>
+<!-- <script src="js/Timer.js"></script> -->
 <script src="js/Condition.js"></script>
 <script src="js/Action.js"></script>
 <script src="js/LemonadeStall.js"></script>
@@ -772,6 +830,9 @@ var vue = new Vue({
             target: '',
             pointX: '',
             pointY: ''
+          },
+          interval: {
+            duration: 0
           }
         }
       }
@@ -1005,29 +1066,38 @@ var vue = new Vue({
         }
 
         let newAction = new ActionGoTo(null, args)
-        console.log(newAction)
-
         this.actionsSection.items.push(newAction)
 
       }
 
       if (actionType === 'change') {
 
-        const propertyChangesAction = new ActionPropertyChanges(
-          null,
-          {
-            id: this.actionsSection.items.length + 1,
-            actionName: actionName,
-            actionType: actionType,
-            propertyChanges: []
-          },
-          [],
-          [],
-          []
-        )
+        const args = {
+          id: this.actionsSection.items.length + 1,
+          actionName: actionName,
+          actionType: actionType,
+          propertyChanges: []
+        }
 
-        this.actionsSection.items.push(propertyChangesAction)
+        let newAction = new ActionPropertyChanges(null, args)
+        this.actionsSection.items.push(newAction)
 
+      }
+
+      if (actionType === 'interval') {
+
+        const args = {
+          id: this.actionsSection.items.length + 1,
+          actionName: actionName,
+          actionType: actionType,
+          duration: Number(data.duration)
+        }
+
+        console.log("INTERVAL ARGS")
+        console.log(args)
+
+        let newAction = new ActionInterval(null, args)
+        this.actionsSection.items.push(newAction)
       }
 
       this.resetActionForms()
@@ -1209,13 +1279,6 @@ var vue = new Vue({
       canvas.style.cursor = hover ? 'pointer' : 'auto'
 
       if (animationId % dayLength === 0) endDay()
-
-      timers.forEach((timer, i) => {
-        timer.check(animationId)
-        if (timer.active === false) {
-          timers.splice(i, 1)
-        }
-      })
 
     },
 

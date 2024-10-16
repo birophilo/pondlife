@@ -188,14 +188,14 @@ class Agent extends Sprite {
         console.log('meets conditions', meetsConditions)
         if (meetsConditions) {
           this.actionList[0].inProgress = true
-          this.actionList[0].start()
+          this.actionList[0].start(globals)
         }
       }
     }
 
     if (this.actionList[0].inProgress === true) {
       console.log('checking')
-      this.actionList[0].check(this.stateData)
+      this.actionList[0].check(this.stateData, globals)
     }
 
   }
