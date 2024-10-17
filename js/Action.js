@@ -64,11 +64,7 @@ class Action {
       const result = this.transitions[i].condition.evaluate()
       if (result === true) {
         this.isComplete = true
-        this.agent.actionList.push(
-          this.transitions[i].nextAction.clone(
-            this.agent
-          )
-        )
+        this.agent.currentAction = this.transitions[i].nextAction.clone(this.agent)
       }
     }
 
@@ -102,7 +98,6 @@ class ActionGoTo extends Action {
   }
 
   defaultCompletionCheckPasses() {
-    // default complete condition for class/action type
     return this.agent.atDestination()
   }
 
@@ -143,7 +138,6 @@ class ActionPropertyChanges extends Action {
   }
 
   defaultCompletionCheckPasses() {
-    // default complete condition for class/action type
     return this.changesApplied === true
   }
 }
@@ -165,23 +159,18 @@ class ActionInterval extends Action {
   }
 
   defaultCompletionCheckPasses() {
-    // default complete condition for class/action type
     return this.isComplete === true
   }
 
   check(stateData, globals) {
     const currentFrame = globals.animationFrameId
-    console.log("start frame", this.startFrame)
-    console.log("current frame", currentFrame)
-    console.log("duration", this.duration)
     const timerExpired = currentFrame - (this.startFrame + this.duration) >= 0
-    console.log(timerExpired)
 
     if (timerExpired) {
       this.isComplete = true
     }
 
-    // super.check(stateData, globals) here?
+    super.check(stateData, globals)
   }
 }
 

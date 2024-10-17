@@ -82,7 +82,7 @@ class Agent extends Sprite {
 
     this.defaultActions = new ActionDefaults(this)
 
-    this.actionList = []
+    this.currentAction = null
 
     this.currentActionName = ''
     this.currentStateName = ''
@@ -146,10 +146,16 @@ class Agent extends Sprite {
   }
 
   actionChangesApplied() {
-    if (this.actionList.length) {
-      return this.actionList[0].changesApplied
+    if (this.currentAction) {
+      return this.currentAction.changesApplied
     }
     return false
+  }
+
+  actionIsComplete() {
+    if (this.currentAction) {
+      return this.currentAction.defaultCompletionCheckPasses()
+    }
   }
 
   update(newData, globals) {
@@ -160,42 +166,39 @@ class Agent extends Sprite {
 
     this.globals = globals
 
-    if (this.globals.animationFrameId % 20 === 0) {
-      console.log(this.actionList.map(action => action.actionName))
-    }
-
+    if (globals.animationFrameId % 32 === 0) console.log('action: ' + this.currentAction)
 
     this.speed = this.nominalSpeed * this.globals.globalSpeed
 
     this.draw()
     this.travel()
 
-    // remove any freshly completed Actions from the action list
-    if (this.actionList.length && this.actionList[0].isComplete === true) {
-      this.actionList.splice(0, 1)
+    // remove action if complete
+    if (this.currentAction && this.currentAction.defaultCompletionCheckPasses() === true) {
+      this.currentAction = null
     }
 
     // go into 'idle' mode if no more actions
-    if (this.actionList.length === 0) {
+    if (this.currentAction === null) {
       this.defaultActions.idle()
       return
     }
 
     // if unstarted Action in action list, start it; if already doing action, check if complete
-    if (this.actionList[0].isComplete === false) {
-      if (this.actionList[0].inProgress === false) {
-        const meetsConditions = this.actionList[0].meetsConditions()
+    if (this.currentAction.isComplete === false) {
+      if (this.currentAction.inProgress === false) {
+        const meetsConditions = this.currentAction.meetsConditions()
         console.log('meets conditions', meetsConditions)
         if (meetsConditions) {
-          this.actionList[0].inProgress = true
-          this.actionList[0].start(globals)
+          this.currentAction.inProgress = true
+          this.currentAction.start(globals)
         }
       }
     }
 
-    if (this.actionList[0].inProgress === true) {
+    if (this.currentAction.inProgress === true) {
       console.log('checking')
-      this.actionList[0].check(this.stateData, globals)
+      this.currentAction.check(this.stateData, globals)
     }
 
   }

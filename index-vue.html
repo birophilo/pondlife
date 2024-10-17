@@ -525,7 +525,7 @@ input,select,button {
               <div v-else-if="item.conditionType === 'preset'">
                 <select v-model="item.classMethod">
                   <option value="atDestination">at destination</option>
-                  <option value="actionChangesApplied">is complete</option>
+                  <option value="actionIsComplete">is complete</option>
                 </select>
 
                 <select v-model="item.comparison" value="isIdentical">
@@ -593,7 +593,7 @@ input,select,button {
               >
                 <option value="">-- select preset --</option>
                 <option value="atDestination">at destination</option>
-                <option value="actionChangesApplied">is complete</option>
+                <option value="actionIsComplete">is complete</option>
               </select>
 
               <select v-model="conditionsSection.adding.forms.preset.comparison" value="isIdentical">
@@ -1093,9 +1093,6 @@ var vue = new Vue({
           duration: Number(data.duration)
         }
 
-        console.log("INTERVAL ARGS")
-        console.log(args)
-
         let newAction = new ActionInterval(null, args)
         this.actionsSection.items.push(newAction)
       }
@@ -1303,10 +1300,7 @@ var vue = new Vue({
       })
     },
     cloneAction: function (action) {
-      this.selectedAgent.actionList.push(action.clone(
-        this.selectedAgent,
-        {}
-      ))
+      this.selectedAgent.currentAction = action.clone(this.selectedAgent, {})
     },
 
     addAgent: function (agentClassName, agentClass, agentArray) {
