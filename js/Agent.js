@@ -87,6 +87,11 @@ class Agent extends Sprite {
     this.currentActionName = ''
     this.currentStateName = ''
 
+    this.labelElement = document.createElement('div')
+    this.labelElement.classList.add('canvas-agent-label')
+    const canvasContainer = document.getElementsByClassName('canvas-container')[0]
+    canvasContainer.appendChild(this.labelElement)
+
   }
 
   travel() {
@@ -119,13 +124,8 @@ class Agent extends Sprite {
   }
 
   draw() {
-
     super.draw()
-
-    const destination = this.destination ? this.destination.id : 'none'
-    c.strokeText('dest: ' + destination, this.position.x, this.position.y - 10)
-    c.strokeText(this.currentStateName, this.position.x, this.position.y - 22)
-    c.strokeText('money: ' + this.stateData.money, this.position.x, this.position.y - 34)
+    this.updateLabel()
   }
 
   atDestination() {
@@ -158,17 +158,24 @@ class Agent extends Sprite {
     }
   }
 
+  updateLabel() {
+    /* Update the display text placed just above the agent */
+    this.labelElement.style.top = `${this.position.y - 20}px`
+    this.labelElement.style.left = `${this.position.x}px`
+    this.labelText = `money: ${this.stateData.money}<br />${this.currentStateName}`
+    this.labelElement.innerHTML = this.labelText
+  }
+
   update(newData, globals) {
 
     super.update(globals)
 
     this.stateData = {...this.stateData, ...newData}
-
     this.globals = globals
-
     if (globals.animationFrameId % 32 === 0) console.log('action: ' + this.currentAction)
-
     this.speed = this.nominalSpeed * this.globals.globalSpeed
+
+    this.updateLabel()
 
     this.draw()
     this.travel()
@@ -200,7 +207,6 @@ class Agent extends Sprite {
       console.log('checking')
       this.currentAction.check(this.stateData, globals)
     }
-
   }
 
   endDay() {

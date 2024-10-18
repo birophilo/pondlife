@@ -26,6 +26,7 @@ body {
 canvas {
   width: 1000px;
   height: 600px;
+  position: relative;
 }
 
 #container {
@@ -92,6 +93,15 @@ input,select,button {
   cursor: pointer;
 }
 
+.canvas-agent-label {
+  position: absolute;
+  font-size: 11px;
+  color: black;
+  z-index: 5;
+  font-family: 'Helvetica';
+  font-weight: 400;
+}
+
 </style>
 
 </head>
@@ -100,7 +110,9 @@ input,select,button {
 
 <div id="container">
 
-  <canvas></canvas>
+  <div class="canvas-container">
+    <canvas></canvas>
+  </div>
 
   <div class="info-container">
 
@@ -994,6 +1006,7 @@ var vue = new Vue({
           config: AGENT_CONFIGS.customer.config
         }))
       })
+
       this.itemMenu = new AgentMenu()
       agentMenuButtonData.forEach((icon, i) => {
         this.agentMenuButtons.push(
@@ -1317,10 +1330,6 @@ var vue = new Vue({
         config: AGENT_CONFIGS[agentClassName].config
       }))
     }
-  },
-
-  computed: {
-
   }
 })
 
