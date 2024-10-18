@@ -160,9 +160,18 @@ class Agent extends Sprite {
 
   updateLabel() {
     /* Update the display text placed just above the agent */
-    this.labelElement.style.top = `${this.position.y - 20}px`
+    const properties = Object.keys(this.stateData)
+    const propertiesText = properties.map(key => `${key}: ${this.stateData[key]}`)
+    this.labelTextProperties = propertiesText.join('<br />')
+    this.labelText = properties.length
+      ? `${this.labelTextProperties}<br />${this.currentStateName}`
+      : `${this.currentStateName}`
+
+    const lineHeight = 12
+    const yOffset = 12 + (lineHeight * properties.length)
+
+    this.labelElement.style.top = `${this.position.y - yOffset}px`
     this.labelElement.style.left = `${this.position.x}px`
-    this.labelText = `money: ${this.stateData.money}<br />${this.currentStateName}`
     this.labelElement.innerHTML = this.labelText
   }
 
