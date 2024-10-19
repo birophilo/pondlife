@@ -122,16 +122,26 @@ class ActionPropertyChanges extends Action {
   start(globals) {
     this.propertyChanges.forEach(change => {
 
-      if (change.args.agentType === 'self') {
-        var agentToChange = this.agent
-      } else {
-        const agentArray = AGENT_CONFIGS[change.args.agentType].agentArray
-        const targetAgent = this.agent.getClosestAgent(agentArray)
-        var agentToChange = targetAgent
-      }
+      const value = change.propertyValue
+      const agentType = change.args.agentType
+      const agentArray = AGENT_CONFIGS[change.args.agentType].agentArray
+      const agentChoiceMethod = change.args.agentChoiceMethod
+      const changeValue = change.changeType === 'increase' ? Number(value) : 0 - Number(value)
 
-      const changeValue = change.changeType === 'increase' ? Number(change.propertyValue) : 0 - Number(change.propertyValue)
-      agentToChange.stateData[change.propertyName] += changeValue
+      if (agentType === 'self') {
+        var agentToChange = this.agent
+        agentToChange.stateData[change.propertyName] += changeValue
+      } else {
+
+        if (agentChoiceMethod === 'nearest') {
+          var agentToChange = this.agent.getClosestAgent(agentArray)
+          agentToChange.stateData[change.propertyName] += changeValue
+        }
+
+        else if (agentChoiceMethod === 'all') {
+          agentArray.forEach(agent => agent.stateData[change.propertyName] += changeValue)
+        }
+      }
 
     })
     this.changesApplied = true
