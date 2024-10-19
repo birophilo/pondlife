@@ -280,7 +280,7 @@ input,select,button {
                   <label for="specific">specific</label>
                   <input
                     type="radio"
-                    v-model="propertyChangeForm.args.agentChoiceMethod"
+                    v-model="propertyChange.args.agentChoiceMethod"
                     name="agentChoiceMethod"
                     value="all"
                   />
@@ -347,6 +347,18 @@ input,select,button {
                   <label for="all">all</label>
                 </form>
 
+                <div v-if="propertyChangeForm.agentChoiceMethod === 'specific'">
+                  <select v-model="propertyChangeForm.target">
+                    <option value="">-- select agent --</option>
+                    <option
+                      v-for="agent in AGENT_CONFIGS[propertyChangeForm.agent].agentArray"
+                      :value="agent"
+                    >
+                      {{ agent.name }}
+                    </option>
+                  </select>
+                </div>
+
                 <select v-model="propertyChangeForm.property">
                   <option value="">--  property --</option>
                   <option v-for="property in Object.keys(selectedAgent.stateData)" :value="property">{{ property }}</option>
@@ -370,7 +382,7 @@ input,select,button {
             </div>
           </div>
 
-          <!-- (ACTION) PROPERTY CHANGE ITEM EDIT FORM -->
+          <!-- INTERVAL EDIT FORM -->
           <div v-if="action.actionType === 'interval'">
             <div v-if="action.editing === true">
               <input v-model="action.duration" type="number" />
@@ -492,10 +504,10 @@ input,select,button {
                 <select v-model="actionsSection.adding.forms.goTo.target">
                   <option value="">-- select agent --</option>
                   <option
-                    v-for="agentType in AGENT_CONFIGS[actionsSection.adding.forms.goTo.agentType].agentArray"
-                    :value="agentType"
+                    v-for="agent in AGENT_CONFIGS[actionsSection.adding.forms.goTo.agentType].agentArray"
+                    :value="agent"
                   >
-                    {{ agentType.name }}
+                    {{ agent.name }}
                   </option>
                 </select>
               </div>
@@ -940,6 +952,7 @@ var vue = new Vue({
       agent: '',
       agentType: '',
       agentChoiceMethod: '',
+      target: '',
       property: '',
       change: '',
       value: ''
@@ -1168,12 +1181,16 @@ var vue = new Vue({
     },
 
     createPropertyChangeItem: function (action) {
+
       const property = this.propertyChangeForm.property
       const change = this.propertyChangeForm.change
       const value = this.propertyChangeForm.value
-      const agentType = this.propertyChangeForm.agent
-      const agentChoiceMethod = this.propertyChangeForm.agentChoiceMethod
-      const args = {agentType: agentType, agentChoiceMethod: agentChoiceMethod}
+
+      const args = {
+        agentType: this.propertyChangeForm.agent,
+        agentChoiceMethod: this.propertyChangeForm.agentChoiceMethod,
+        target: this.propertyChangeForm.target
+      }
       const propChange = new PropertyChange(
         null,
         property,

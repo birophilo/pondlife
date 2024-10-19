@@ -6,30 +6,6 @@ class Action {
     // temporary?
     this.editing = false
 
-    if (args.agentChoiceMethod === 'specific') {
-      this.destination = args.target
-    }
-
-    if (args.destinationType === 'point') {
-        this.destination = args.target
-    }
-
-    if (this.agent !== null) {
-      if (args.destinationType === 'agent') {
-
-        this.agentType = args.agentType
-
-        if (args.agentChoiceMethod === 'nearest') {
-          const agentArray = AGENT_CONFIGS[this.agentType].agentArray
-          this.destination = this.agent.getClosestAgent(agentArray)
-          this.stateName = `goingTo: ${this.destination.name}`
-        }
-
-      } else if (args.destinationType === 'point') {
-        this.stateName = `goingTo: ${this.destination.name}`
-      }
-    }
-
     this.actionName = args.actionName
     this.actionType = args.actionType
 
@@ -89,6 +65,30 @@ class Action {
 class ActionGoTo extends Action {
   constructor(agent = null, args, conditions = [], transitions = []) {
     super(agent, args, conditions, transitions)
+
+    if (args.agentChoiceMethod === 'specific') {
+      this.destination = args.target
+    }
+
+    if (args.destinationType === 'point') {
+        this.destination = args.target
+    }
+
+    if (this.agent !== null) {
+      if (args.destinationType === 'agent') {
+
+        this.agentType = args.agentType
+
+        if (args.agentChoiceMethod === 'nearest') {
+          const agentArray = AGENT_CONFIGS[this.agentType].agentArray
+          this.destination = this.agent.getClosestAgent(agentArray)
+          this.stateName = `goingTo: ${this.destination.name}`
+        }
+
+      } else if (args.destinationType === 'point') {
+        this.stateName = `goingTo: ${this.destination.name}`
+      }
+    }
   }
 
   start(globals) {
@@ -122,20 +122,26 @@ class ActionPropertyChanges extends Action {
   start(globals) {
     this.propertyChanges.forEach(change => {
 
-      const value = change.propertyValue
       const agentType = change.args.agentType
-      const agentArray = AGENT_CONFIGS[change.args.agentType].agentArray
-      const agentChoiceMethod = change.args.agentChoiceMethod
+      const value = change.propertyValue
       const changeValue = change.changeType === 'increase' ? Number(value) : 0 - Number(value)
 
       if (agentType === 'self') {
         var agentToChange = this.agent
         agentToChange.stateData[change.propertyName] += changeValue
+
       } else {
+
+        const agentArray = AGENT_CONFIGS[agentType].agentArray
+        const agentChoiceMethod = change.args.agentChoiceMethod
 
         if (agentChoiceMethod === 'nearest') {
           var agentToChange = this.agent.getClosestAgent(agentArray)
           agentToChange.stateData[change.propertyName] += changeValue
+        }
+
+        else if (agentChoiceMethod === 'specific') {
+          var agentToChange = change.args.target
         }
 
         else if (agentChoiceMethod === 'all') {
