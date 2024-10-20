@@ -717,12 +717,11 @@ input,select,button {
 </body>
 
 <script src="js/constants.js"></script>
+<script src="js/utils.js"></script>
 <script src="js/globalSettings.js"></script>
 <script src="js/Sprite.js"></script>
-<!-- <script src="js/Timer.js"></script> -->
 <script src="js/Condition.js"></script>
 <script src="js/Action.js"></script>
-<script src="js/LemonadeStall.js"></script>
 <script src="js/Agent.js"></script>
 <script src="js/SelectionMenu.js"></script>
 
@@ -738,7 +737,7 @@ const dayLength = 1000 // frames
 
 // const customerData = [{x: 0, y: 0}, {x: 900, y: 400}]
 const customerData = [{x: 900, y: 400}]
-const lemonadeStallData = [firstStall, secondStall]
+const lemonadeStallData = [{x: 400, y: 200}, {x: 700, y: 100}]
 // const supplyVanData = [{x: 800, y: 800}]
 const supplyVanData = []
 const agentMenuButtonData = [
@@ -815,15 +814,18 @@ const AGENT_CONFIGS = {
     }
   },
   lemonadeStall: {
-    agentClass: LemonadeStall,
+    agentClass: Agent,
     agentArray: lemonadeStalls,
     config: {
       name: 'lemonadeStall',
       width: 130,
-      height: 100,
+      height: 104,
+      frames: {max: 1, columns: 1, rows: 1, hold: 1},
       offset: {x: 0, y: 0},
       scale: 1,
       imageSrc: '../img/stall-1.png',
+      spriteSheets: null,
+      nominalSpeed: 0.02,
     }
   },
   supplyVan: {
@@ -1050,11 +1052,13 @@ var vue = new Vue({
 
   methods: {
     loadAgentsAndFixtures: function () {
-
-      lemonadeStallData.forEach(stall => {
-        lemonadeStalls.push(
-          new LemonadeStall(stall)
-        )
+      lemonadeStallData.forEach((stall, i) => {
+        lemonadeStalls.push( new Agent({
+          position: {x: stall.x, y: stall.y},
+          num: i + 1,
+          globals: this.GlobalSettings,
+          config: AGENT_CONFIGS.lemonadeStall.config
+        }))
       })
       supplyVanData.forEach((van, i) => {
         supplyVans.push( new Agent({
@@ -1314,29 +1318,17 @@ var vue = new Vue({
       const animationId = requestAnimationFrame(this.animate)
       this.GlobalSettings.animationFrameId = animationId
 
-      lemonadeStalls.forEach(stall => stall.draw())
+      const agentArrays = Object.keys(AGENT_CONFIGS).map(agent => AGENT_CONFIGS[agent].agentArray)
 
-      customers.forEach(customer => {
-        customer.update({}, this.GlobalSettings)
-        const isInArea = pointIsInArea(this.mouse, customer.collisionArea)
-        if (isInArea) {
-          hover = true
-        }
-      })
-
-      lemonadeStalls.forEach(stall => {
-        const isInArea = pointIsInArea(this.mouse, stall.collisionArea)
-        if (isInArea) {
-          hover = true
-        }
-      })
-
-      supplyVans.forEach(van => {
-        van.update({}, this.GlobalSettings)
-        const isInArea = pointIsInArea(this.mouse, van.collisionArea)
-        if (isInArea) {
-          hover = true
-        }
+      // update each agent of each agent type
+      agentArrays.forEach(agentArray => {
+        agentArray.forEach(agent => {
+          agent.update({}, this.GlobalSettings)
+          const isInArea = pointIsInArea(this.mouse, agent.collisionArea)
+          if (isInArea) {
+            hover = true
+          }
+        })
       })
       
       this.itemMenu.update(this.agentMenuButtons.length + 1)
