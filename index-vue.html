@@ -740,6 +740,7 @@ const customerData = [{x: 900, y: 400}]
 const lemonadeStallData = [{x: 400, y: 200}, {x: 700, y: 100}]
 // const supplyVanData = [{x: 800, y: 800}]
 const supplyVanData = []
+const worldData = [{x: 20, y: 20}]
 const agentMenuButtonData = [
   {name: 'customer', rgb: [255, 0, 0]},
   {name: 'lemonadeStall', rgb: [0, 0, 255]},
@@ -796,6 +797,8 @@ let customers = []
 let lemonadeStalls = []
 let supplyVans = []
 
+let world = []
+
 
 const AGENT_CONFIGS = {
   customer: {
@@ -840,6 +843,21 @@ const AGENT_CONFIGS = {
       scale: 2.5,
       imageSrc: '../img/sprites/SupplyVan_Right.png',
       spriteSheets: VAN_SPRITE_DIRECTION,
+      nominalSpeed: 0.02,
+    }
+  },
+  world: {
+    agentClass: Agent,
+    agentArray: world,
+    config: {
+      name: 'world',
+      width: 25,
+      height: 25,
+      frames: {max: 1, columns: 1, rows: 1, hold: 1},
+      offset: {x: 0, y: 0},
+      scale: 1,
+      imageSrc: '../img/blackCircle.png',
+      spriteSheets: null,
       nominalSpeed: 0.02,
     }
   }
@@ -1074,6 +1092,14 @@ var vue = new Vue({
           num: i + 1,
           globals: this.GlobalSettings,
           config: AGENT_CONFIGS.customer.config
+        }))
+      })
+      worldData.forEach((wd, i) => {
+        world.push( new Agent({
+          position: {x: wd.x, y: wd.y},
+          num: i + 1,
+          globals: this.GlobalSettings,
+          config: AGENT_CONFIGS.world.config
         }))
       })
 
