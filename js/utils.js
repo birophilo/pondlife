@@ -21,3 +21,17 @@ function get8WayDirection(xVelocity, yVelocity) {
     return 'downLeft'
   }
 }
+
+
+function pointIsInArea(point = {x, y}, area = {x, y, width, height}) {
+  if (
+    point.x >= area.x &&
+    point.x <= area.x + area.width &&
+    point.y >= area.y &&
+    point.y <= area.y + area.height
+  ) {
+    return true
+  } else {
+    return false
+  }
+}

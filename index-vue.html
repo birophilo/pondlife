@@ -125,6 +125,12 @@ input,select,button {
     </div>
     <div></div>
 
+
+    <div class="menu-section" id="agent-types-section">
+      <h3 class="menu-section-heading">Agent Types</h3>
+    </div>
+
+
     <div class="menu-section" id="properties-section">
       <h3 class="menu-section-heading">Properties</h3>
       <!-- PROPERTY LIST -->
@@ -457,7 +463,9 @@ input,select,button {
           <input v-model="actionsSection.adding.name" type="text" placeholder="name" />
           <br />
           <select v-model="actionsSection.adding.type">
-            <option value="goTo">go to</option>
+            <!-- World agent cannot travel, only change properties and pause for intervals -->
+            <option value="">-- action type --</option>
+            <option v-if="selectedAgent.name !== 'world'" value="goTo">go to</option>
             <option value="change">change</option>
             <option value="interval">wait</option>
           </select>
@@ -733,7 +741,7 @@ let c;  // canvas context
 const backgroundColor = 'rgb(200, 200, 200)'
 
 let dayNumber = 1
-const dayLength = 1000 // frames
+let dayLength = 1000 // frames
 
 // const customerData = [{x: 0, y: 0}, {x: 900, y: 400}]
 const customerData = [{x: 900, y: 400}]
@@ -750,21 +758,6 @@ const agentMenuButtonData = [
 
 function endDay() {
   dayNumber++
-}
-
-
-function pointIsInArea(point = {x, y}, area = {x, y, width, height}) {
-  if (
-    point.x >= area.x &&
-    point.x <= area.x + area.width &&
-    point.y >= area.y &&
-    point.y <= area.y + area.height
-  ) {
-    document.body.style.cursor = 'pointer'
-    return true
-  } else {
-    return false
-  }
 }
 
 
@@ -916,7 +909,7 @@ var vue = new Vue({
       ],
       adding: {
         status: false,
-        type: 'goTo',
+        type: '',
         name: '',
         forms: {
           goTo: {
@@ -1015,6 +1008,8 @@ var vue = new Vue({
           )
           this.placingAgent = false
           this.agentPreview = null
+        } else {
+          hover = true
         }
       }
 
@@ -1029,7 +1024,10 @@ var vue = new Vue({
 
         const isInArea = pointIsInArea(point, this.agentMenuButtons[i].area)
 
+        if (isInArea) hover = 'true'
+
         if (isInArea && !this.agentPreview) {
+          document.body.style.cursor = 'pointer'
           this.agentPreview = new AgentPreview({
             agent: AGENT_CONFIGS[this.agentMenuButtons[i].name].agentClass,
             rgb: this.agentMenuButtons[i].rgb,
@@ -1048,7 +1046,9 @@ var vue = new Vue({
 
       // TOGGLE DELETE MODE
       const isInArea = pointIsInArea(point, this.deleteButton.area)
+
       if (isInArea) {
+        hover = true
         this.deleteMode = !this.deleteMode
       }
 
@@ -1351,9 +1351,7 @@ var vue = new Vue({
         agentArray.forEach(agent => {
           agent.update({}, this.GlobalSettings)
           const isInArea = pointIsInArea(this.mouse, agent.collisionArea)
-          if (isInArea) {
-            hover = true
-          }
+          if (isInArea) hover = true
         })
       })
       
@@ -1362,9 +1360,7 @@ var vue = new Vue({
       this.agentMenuButtons.forEach((button, i) => {
         button.update(i)
         const isInArea = pointIsInArea(this.mouse, button.area)
-        if (isInArea) {
-          hover = true
-        }
+        if (isInArea) hover = true
       })
 
       if (this.agentPreview) this.agentPreview.update(this.mouse)
@@ -1389,6 +1385,7 @@ var vue = new Vue({
         // SELECT AGENT
         if (isInArea) {
           this.selectedAgent = agent
+          hover = true
 
           if (this.selectionMode === true) {
             this.selectedTargetAgent = agent
@@ -1397,6 +1394,8 @@ var vue = new Vue({
         }
         // DELETE AGENT (in delete mode)
         if (isInArea && this.deleteMode === true) {
+          const agent = agentArray[i]
+          agent.labelElement.remove()
           agentArray.splice(i, 1)
         }
       })
