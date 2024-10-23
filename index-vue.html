@@ -127,6 +127,11 @@ input,select,button {
 
     <div class="menu-section" id="agent-types-section">
       <h3 class="menu-section-heading">Agent Types</h3>
+      <input v-model="agentTypeForm.name" type="text" placeholder="name" />
+      <input v-model="agentTypeForm.width" type="number" placeholder="width" />
+      <input v-model="agentTypeForm.height" type="number" placeholder="height" />
+
+      <button @click="createAgentType()">create agent type</button>
 
     </div>
 
@@ -755,11 +760,6 @@ const agentMenuButtonData = [
 ]
 
 
-function endDay() {
-  dayNumber++
-}
-
-
 const DEFAULT_ACTION_TYPE = 'goTo'
 const DEFAULT_CONDITION_TYPE = 'property'
 
@@ -825,6 +825,11 @@ const AGENT_DATA = {
       nominalSpeed: 0.02,
     }
   }
+}
+
+
+function endDay() {
+  dayNumber++
 }
 
 
@@ -1007,7 +1012,7 @@ var vue = new Vue({
         if (isInArea) hover = 'true'
 
         if (isInArea && !this.agentPreview) {
-          document.body.style.cursor = 'pointer'
+
           this.agentPreview = new AgentPreview({
             agent: AGENT_DATA[this.agentMenuButtons[i].name].agentClass,
             rgb: this.agentMenuButtons[i].rgb,
@@ -1103,26 +1108,30 @@ var vue = new Vue({
 
     createAgentType: function () {
 
+      const agentTypeName = this.agentTypeForm.name
+
       agentData = {
         agentClass: Agent,
         agentItems: [],
         config: {
-          name: this.createAgentForm.name,
-          width: Number(this.createAgentForm.width),
-          height: Number(this.createAgentForm.height),
+          name: agentTypeName,
+          width: Number(this.agentTypeForm.width),
+          height: Number(this.agentTypeForm.height),
           frames: {max: 9, columns: 4, rows: 3, hold: 3},
           offset: {x: 96, y: 46},
           scale: 1,
           imageSrc: '../img/sprites/GirlSample_Walk_Down.png',
           spriteSheets: CUSTOMER_SPRITE_DIRECTION,
-          nominalSpeed: this.createAgentForm.movementSpeed,
+          nominalSpeed: this.agentTypeForm.movementSpeed,
         }
       }
+
+      AGENT_DATA[agentTypeName] = agentData
 
       let newIcon = new AgentMenuIcon({
         menu: this.itemMenu,
         i: this.agentMenuButtons.length + 1,
-        name: agentData.name,
+        name: agentData.config.name,
         agent: agentData.agentClass,
         config: agentData.config
       })

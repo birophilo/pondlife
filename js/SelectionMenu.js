@@ -106,6 +106,7 @@ class AgentMenuIcon extends agentMenuButton {
 
   constructor({menu, i = 1, name, agent, config}) {
     super({menu, i, name, config})
+    this.name = name
     this.agent = agent
     this.thumbnail = new Image()
     this.thumbnail.src = config.imageSrc
