@@ -116,20 +116,19 @@ input,select,button {
 
   <div class="info-container">
 
-    <div v-if="selectedAgent !== null">
-      {{ selectedAgent.name }} {{ selectedAgent.num }}.
-      <br/>
-      Money: {{ selectedAgent.stateData.money }}.
-      <br/>
-      {{ selectedAgent.currentStateName }}
+    <div class="menu-section" id="agent-types-section">
+      <h3 class="menu-section-heading">Selected Agent</h3>
+      <div v-if="selectedAgent !== null">
+        {{ selectedAgent.name }} {{ selectedAgent.num }}<br/>
+        current action: {{ selectedAgent.currentStateName }}
+      </div>
+      <div v-else>none</div>
     </div>
-    <div></div>
-
 
     <div class="menu-section" id="agent-types-section">
       <h3 class="menu-section-heading">Agent Types</h3>
-    </div>
 
+    </div>
 
     <div class="menu-section" id="properties-section">
       <h3 class="menu-section-heading">Properties</h3>
@@ -219,7 +218,7 @@ input,select,button {
 
               <select v-model="action.args.agentType">
                 <option value="">-- agent type --</option>
-                <option v-for="agent in AGENT_CONFIGS" :value="agent.config.name">{{ agent.config.name }}</option>
+                <option v-for="agent in AGENT_DATA" :value="agent.config.name">{{ agent.config.name }}</option>
               </select>
 
               <form name="agentRadioSelect">
@@ -244,7 +243,7 @@ input,select,button {
                 <select v-model="action.args.target">
                   <option value="">-- select agent --</option>
                   <option
-                    v-for="agentType in AGENT_CONFIGS[action.args.agentType].agentArray"
+                    v-for="agentType in AGENT_DATA[action.args.agentType].agentItems"
                     :value="agentType"
                   >
                     {{ agentType.name }}
@@ -265,7 +264,7 @@ input,select,button {
               <div v-if="propertyChange.editing === true">
                 <select v-model="propertyChange.agent">
                   <option value="self">self</option>
-                  <option v-for="agent in AGENT_CONFIGS" :value="agent.config.name">{{ agent.config.name }}</option>
+                  <option v-for="agent in AGENT_DATA" :value="agent.config.name">{{ agent.config.name }}</option>
                 </select>
 
                 <form name="agentPropChangeRadioSelect">
@@ -324,7 +323,7 @@ input,select,button {
                 <select v-model="propertyChangeForm.agent">
                   <option value="">-- agent --</option>
                   <option value="self">self</option>
-                  <option v-for="agent in AGENT_CONFIGS" :value="agent.config.name">{{ agent.config.name }}</option>
+                  <option v-for="agent in AGENT_DATA" :value="agent.config.name">{{ agent.config.name }}</option>
                   <option value="lemonadeStall">lemonade stall</option>
                 </select>
 
@@ -357,7 +356,7 @@ input,select,button {
                   <select v-model="propertyChangeForm.target">
                     <option value="">-- select agent --</option>
                     <option
-                      v-for="agent in AGENT_CONFIGS[propertyChangeForm.agent].agentArray"
+                      v-for="agent in AGENT_DATA[propertyChangeForm.agent].agentItems"
                       :value="agent"
                     >
                       {{ agent.name }}
@@ -482,7 +481,7 @@ input,select,button {
             <div v-if="actionsSection.adding.forms.goTo.destinationType === 'agent'">
               <select v-model="actionsSection.adding.forms.goTo.agentType">
                 <option value="">-- agent type --</option>
-                <option v-for="agent in AGENT_CONFIGS" :value="agent.config.name">{{ agent.config.name }}</option>
+                <option v-for="agent in AGENT_DATA" :value="agent.config.name">{{ agent.config.name }}</option>
               </select>
 
               <form name="agentRadioSelect" @change="console.log(actionsSection.adding.forms.goTo.agentChoiceMethod)">
@@ -512,7 +511,7 @@ input,select,button {
                 <select v-model="actionsSection.adding.forms.goTo.target">
                   <option value="">-- select agent --</option>
                   <option
-                    v-for="agent in AGENT_CONFIGS[actionsSection.adding.forms.goTo.agentType].agentArray"
+                    v-for="agent in AGENT_DATA[actionsSection.adding.forms.goTo.agentType].agentItems"
                     :value="agent"
                   >
                     {{ agent.name }}
@@ -761,42 +760,14 @@ function endDay() {
 }
 
 
-function createAgent() {
-  console.log('creating agent')
-  const newAgentName = document.getElementById('form-create-agent-name')
-  const newAgentWidth = document.getElementById('form-create-agent-width')
-  const newAgentHeight = document.getElementById('form-create-agent-height')
-  agentData = AGENT_CONFIGS[newAgentName.value]
-  let config = agentData.config
-  config.width = Number(newAgentWidth.value)
-  config.height = Number(newAgentHeight.value)
-
-  let newIcon = new AgentMenuIcon({
-    menu: itemMenu,
-    i: agentMenuButtons.length + 1,
-    name: newAgentName.value,
-    agent: agentData.agentClass,
-    config: config
-  })
-  agentMenuButtons.push(newIcon)
-}
-
-
 const DEFAULT_ACTION_TYPE = 'goTo'
 const DEFAULT_CONDITION_TYPE = 'property'
 
 
-let customers = []
-let lemonadeStalls = []
-let supplyVans = []
-
-let world = []
-
-
-const AGENT_CONFIGS = {
+const AGENT_DATA = {
   customer: {
     agentClass: Agent,
-    agentArray: customers,
+    agentItems: [],
     config: {
       name: 'customer',
       width: 30,
@@ -811,7 +782,7 @@ const AGENT_CONFIGS = {
   },
   lemonadeStall: {
     agentClass: Agent,
-    agentArray: lemonadeStalls,
+    agentItems: [],
     config: {
       name: 'lemonadeStall',
       width: 130,
@@ -826,7 +797,7 @@ const AGENT_CONFIGS = {
   },
   supplyVan: {
     agentClass: Agent,
-    agentArray: supplyVans,
+    agentItems: [],
     config: {
       name: 'supplyVan',
       width: 50,
@@ -841,7 +812,7 @@ const AGENT_CONFIGS = {
   },
   world: {
     agentClass: Agent,
-    agentArray: world,
+    agentItems: [],
     config: {
       name: 'world',
       width: 25,
@@ -884,6 +855,15 @@ var vue = new Vue({
 
     agentMenuButtons: [],
 
+    agentTypeForm: {
+      adding: false,
+      name: '',
+      height: 0,
+      width: 0,
+      movementSpeed: 1,
+      positionX: 100,
+      positionY: 100
+    },
     propertiesSection: {
       items: [{name: 'money', value: 200, editing: false}],
       adding: {
@@ -1003,8 +983,8 @@ var vue = new Vue({
           const agentClassName = this.agentPreview.agentType
           this.addAgent(
             agentClassName,
-            AGENT_CONFIGS[agentClassName].agentClass,
-            AGENT_CONFIGS[agentClassName].agentArray
+            AGENT_DATA[agentClassName].agentClass,
+            AGENT_DATA[agentClassName].agentItems
           )
           this.placingAgent = false
           this.agentPreview = null
@@ -1013,7 +993,7 @@ var vue = new Vue({
         }
       }
 
-      const agentNameList = Object.keys(AGENT_CONFIGS)
+      const agentNameList = Object.keys(AGENT_DATA)
 
       agentNameList.forEach(agentName => {
         this.selectOrDeleteAgent(agentName, point)
@@ -1029,9 +1009,9 @@ var vue = new Vue({
         if (isInArea && !this.agentPreview) {
           document.body.style.cursor = 'pointer'
           this.agentPreview = new AgentPreview({
-            agent: AGENT_CONFIGS[this.agentMenuButtons[i].name].agentClass,
+            agent: AGENT_DATA[this.agentMenuButtons[i].name].agentClass,
             rgb: this.agentMenuButtons[i].rgb,
-            config: AGENT_CONFIGS[this.agentMenuButtons[i].name].config
+            config: AGENT_DATA[this.agentMenuButtons[i].name].config
           })
 
           this.placingAgent = true
@@ -1071,35 +1051,35 @@ var vue = new Vue({
   methods: {
     loadAgentsAndFixtures: function () {
       lemonadeStallData.forEach((stall, i) => {
-        lemonadeStalls.push( new Agent({
+        AGENT_DATA.lemonadeStall.agentItems.push( new Agent({
           position: {x: stall.x, y: stall.y},
           num: i + 1,
           globals: this.GlobalSettings,
-          config: AGENT_CONFIGS.lemonadeStall.config
+          config: AGENT_DATA.lemonadeStall.config
         }))
       })
       supplyVanData.forEach((van, i) => {
-        supplyVans.push( new Agent({
+        AGENT_DATA.supplyVan.agentItems.push( new Agent({
           position: {x: van.x, y: van.y},
           num: i + 1,
           globals: this.GlobalSettings,
-          config: AGENT_CONFIGS.supplyVan.config
+          config: AGENT_DATA.supplyVan.config
         }))
       })
       customerData.forEach((cust, i) => {
-        customers.push( new Agent({
+        AGENT_DATA.customer.agentItems.push( new Agent({
           position: {x: cust.x, y: cust.y},
           num: i + 1,
           globals: this.GlobalSettings,
-          config: AGENT_CONFIGS.customer.config
+          config: AGENT_DATA.customer.config
         }))
       })
       worldData.forEach((wd, i) => {
-        world.push( new Agent({
+        AGENT_DATA.world.agentItems.push( new Agent({
           position: {x: wd.x, y: wd.y},
           num: i + 1,
           globals: this.GlobalSettings,
-          config: AGENT_CONFIGS.world.config
+          config: AGENT_DATA.world.config
         }))
       })
 
@@ -1110,8 +1090,8 @@ var vue = new Vue({
             menu: this.itemMenu,
             i: i,
             name: icon.name,
-            agent: AGENT_CONFIGS[icon.name].agentClass,
-            config: AGENT_CONFIGS[icon.name].config
+            agent: AGENT_DATA[icon.name].agentClass,
+            config: AGENT_DATA[icon.name].config
           })
         )
       })
@@ -1120,6 +1100,35 @@ var vue = new Vue({
         i: this.agentMenuButtons.length
       })
     },
+
+    createAgentType: function () {
+
+      agentData = {
+        agentClass: Agent,
+        agentItems: [],
+        config: {
+          name: this.createAgentForm.name,
+          width: Number(this.createAgentForm.width),
+          height: Number(this.createAgentForm.height),
+          frames: {max: 9, columns: 4, rows: 3, hold: 3},
+          offset: {x: 96, y: 46},
+          scale: 1,
+          imageSrc: '../img/sprites/GirlSample_Walk_Down.png',
+          spriteSheets: CUSTOMER_SPRITE_DIRECTION,
+          nominalSpeed: this.createAgentForm.movementSpeed,
+        }
+      }
+
+      let newIcon = new AgentMenuIcon({
+        menu: this.itemMenu,
+        i: this.agentMenuButtons.length + 1,
+        name: agentData.name,
+        agent: agentData.agentClass,
+        config: agentData.config
+      })
+      this.agentMenuButtons.push(newIcon)
+    },
+
     createAgentProperty: function () {
       const propName = this.propertiesSection.adding.newPropertyName
       const propValue = Number(this.propertiesSection.adding.newPropertyValue)
@@ -1344,11 +1353,11 @@ var vue = new Vue({
       const animationId = requestAnimationFrame(this.animate)
       this.GlobalSettings.animationFrameId = animationId
 
-      const agentArrays = Object.keys(AGENT_CONFIGS).map(agent => AGENT_CONFIGS[agent].agentArray)
+      const agentTypes = Object.keys(AGENT_DATA).map(agent => AGENT_DATA[agent].agentItems)
 
       // update each agent of each agent type
-      agentArrays.forEach(agentArray => {
-        agentArray.forEach(agent => {
+      agentTypes.forEach(agentItems => {
+        agentItems.forEach(agent => {
           agent.update({}, this.GlobalSettings)
           const isInArea = pointIsInArea(this.mouse, agent.collisionArea)
           if (isInArea) hover = true
@@ -1375,11 +1384,18 @@ var vue = new Vue({
 
       if (animationId % dayLength === 0) endDay()
 
+      if (this.GlobalSettings.animationFrameId % 32 === 0) {
+        const customerActions = AGENT_DATA.customer.agentItems.map(
+          cust => `customer: ${cust.num}, action: ${cust.currentAction ? cust.currentAction.name : 'none'}`
+        )
+        console.log(JSON.stringify(customerActions, null, 2))
+      }
+
     },
 
     selectOrDeleteAgent: function (agentClassName, point) {
-      let agentArray = AGENT_CONFIGS[agentClassName].agentArray
-      agentArray.forEach((agent, i) => {
+      let agentItems = AGENT_DATA[agentClassName].agentItems
+      agentItems.forEach((agent, i) => {
         const isInArea = pointIsInArea(point, agent.collisionArea)
 
         // SELECT AGENT
@@ -1394,9 +1410,9 @@ var vue = new Vue({
         }
         // DELETE AGENT (in delete mode)
         if (isInArea && this.deleteMode === true) {
-          const agent = agentArray[i]
+          const agent = agentItems[i]
           agent.labelElement.remove()
-          agentArray.splice(i, 1)
+          agentItems.splice(i, 1)
         }
       })
     },
@@ -1404,18 +1420,18 @@ var vue = new Vue({
       this.selectedAgent.currentAction = action.clone(this.selectedAgent, {})
     },
 
-    addAgent: function (agentClassName, agentClass, agentArray) {
-      const num = agentArray.length + 1
-      agentArray.push( new agentClass({
+    addAgent: function (agentClassName, agentClass, agentItems) {
+      const num = agentItems.length + 1
+      agentItems.push( new agentClass({
         position: {
-          x: this.mouse.x - AGENT_CONFIGS[agentClassName].config.width / 2,
-          y: this.mouse.y - AGENT_CONFIGS[agentClassName].config.height / 2
+          x: this.mouse.x - AGENT_DATA[agentClassName].config.width / 2,
+          y: this.mouse.y - AGENT_DATA[agentClassName].config.height / 2
         },
         num: num,
         globals: this.GlobalSettings,
-        offset: AGENT_CONFIGS[agentClassName].config.offset,
-        scale: AGENT_CONFIGS[agentClassName].config.scale,
-        config: AGENT_CONFIGS[agentClassName].config
+        offset: AGENT_DATA[agentClassName].config.offset,
+        scale: AGENT_DATA[agentClassName].config.scale,
+        config: AGENT_DATA[agentClassName].config
       }))
     }
   }

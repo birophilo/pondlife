@@ -158,7 +158,6 @@ class Agent extends Sprite {
 
     this.stateData = {...this.stateData, ...newData}
     this.globals = globals
-    if (globals.animationFrameId % 32 === 0) console.log('action: ' + this.currentAction)
     this.speed = this.nominalSpeed * this.globals.globalSpeed
 
     this.updateLabel()
