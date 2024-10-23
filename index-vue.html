@@ -127,11 +127,32 @@ input,select,button {
 
     <div class="menu-section" id="agent-types-section">
       <h3 class="menu-section-heading">Agent Types</h3>
-      <input v-model="agentTypeForm.name" type="text" placeholder="name" />
-      <input v-model="agentTypeForm.width" type="number" placeholder="width" />
-      <input v-model="agentTypeForm.height" type="number" placeholder="height" />
+      <div v-for="(agentType, i) in AGENT_DATA">
+        <div v-if="agentType.config.name !== 'world'">
+          <div v-if="agentType.editing === true">
+            <input v-model="agentType.config.name" type="text" placeholder="name" />
+            <input v-model="agentType.config.width" type="number" placeholder="width" />
+            <input v-model="agentType.config.height" type="number" placeholder="height" />
+            <button @click="agentType.editing = false; $forceUpdate()">save</button>
+            <button @click="agentType.editing = false; $forceUpdate()">cancel</button>
+          </div>
+          <div v-else>
+            <div>
+              {{ agentType.config.name }}
+              <button @click="agentType.editing = true; $forceUpdate()">edit</button>
+              <button @click="deleteAgentType(agentType.config.name)">delete</button>
+            </div>
+          </div>
+        </div>
+      </div>
 
-      <button @click="createAgentType()">create agent type</button>
+      <div v-if="agentTypeForm.adding === true">
+        <input v-model="agentTypeForm.name" type="text" placeholder="name" />
+        <input v-model="agentTypeForm.width" type="number" placeholder="width" />
+        <input v-model="agentTypeForm.height" type="number" placeholder="height" />
+        <button @click="createAgentType()">create agent type</button>
+      </div>
+      <div v-else><button @click="agentTypeForm.adding = true">new agent type</button></div>
 
     </div>
 
@@ -778,7 +799,8 @@ const AGENT_DATA = {
       imageSrc: '../img/sprites/GirlSample_Walk_Down.png',
       spriteSheets: CUSTOMER_SPRITE_DIRECTION,
       nominalSpeed: 0.02,
-    }
+    },
+    editing: false
   },
   lemonadeStall: {
     agentClass: Agent,
@@ -793,7 +815,8 @@ const AGENT_DATA = {
       imageSrc: '../img/stall-1.png',
       spriteSheets: null,
       nominalSpeed: 0.02,
-    }
+    },
+    editing: false
   },
   supplyVan: {
     agentClass: Agent,
@@ -808,7 +831,8 @@ const AGENT_DATA = {
       imageSrc: '../img/sprites/SupplyVan_Right.png',
       spriteSheets: VAN_SPRITE_DIRECTION,
       nominalSpeed: 0.02,
-    }
+    },
+    editing: false
   },
   world: {
     agentClass: Agent,
@@ -1110,7 +1134,7 @@ var vue = new Vue({
 
       const agentTypeName = this.agentTypeForm.name
 
-      agentData = {
+      const agentData = {
         agentClass: Agent,
         agentItems: [],
         config: {
@@ -1136,6 +1160,13 @@ var vue = new Vue({
         config: agentData.config
       })
       this.agentMenuButtons.push(newIcon)
+
+      this.agentTypeForm.adding = false
+    },
+
+    deleteAgentType: function (agentType) {
+      delete AGENT_DATA[agentType]
+      this.$forceUpdate()
     },
 
     createAgentProperty: function () {
