@@ -130,9 +130,10 @@ input,select,button {
       <div v-for="(agentType, i) in AGENT_DATA">
         <div v-if="agentType.config.name !== 'world'">
           <div v-if="agentType.editing === true">
-            <input v-model="agentType.config.name" type="text" placeholder="name" />
-            <input v-model="agentType.config.width" type="number" placeholder="width" />
-            <input v-model="agentType.config.height" type="number" placeholder="height" />
+            name: <input v-model="agentType.config.name" type="text" placeholder="name" /><br />
+            width: <input v-model="agentType.config.width" type="number" placeholder="width" /><br />
+            height: <input v-model="agentType.config.height" type="number" placeholder="height" /><br />
+            <br />
             <button @click="agentType.editing = false; $forceUpdate()">save</button>
             <button @click="agentType.editing = false; $forceUpdate()">cancel</button>
           </div>
@@ -153,6 +154,50 @@ input,select,button {
         <button @click="createAgentType()">create agent type</button>
       </div>
       <div v-else><button @click="agentTypeForm.adding = true">new agent type</button></div>
+
+    </div>
+
+    <div class="menu-section" id="agent-types-section">
+      <h3 class="menu-section-heading">Sprite Sheets</h3>
+
+      <div v-for="(spriteSheet, i) in spriteSheets">
+
+        <!-- EDIT SPRITE SHEET -->
+        <div v-if="spriteSheet.editing === true">
+          name: <input v-model="spriteSheet.name" type="text" placeholder="name" /><br />
+          src: <input v-model="spriteSheet.src" type="text" placeholder="src" /><br />
+          rows: <input v-model="spriteSheet.rows" type="number" placeholder="rows" /><br />
+          columns: <input v-model="spriteSheet.columns" type="number" placeholder="columns" /><br />
+          numImages: <input v-model="spriteSheet.numImages" type="number" placeholder="number of images" /><br />
+          refreshInterval: <input v-model="spriteSheet.refreshInterval" type="number" placeholder="refresh interval" /><br />
+          <br />
+          <button @click="spriteSheet.editing = false">save</button>
+          <button @click="spriteSheet.editing = false">cancel</button>
+        </div>
+        <div v-else>
+          <div>
+            {{ spriteSheet.name }}
+            <button @click="spriteSheet.editing = true">edit</button>
+            <button @click="deleteSpriteSheet(i)">delete</button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- CREATE SPRITE SHEET -->
+      <div v-if="spriteSheetForm.adding === true">
+        name: <input v-model="spriteSheetForm.name" type="text" placeholder="name" /><br />
+        src: <input v-model="spriteSheetForm.src" type="text" placeholder="src" /><br />
+        rows: <input v-model="spriteSheetForm.rows" type="number" placeholder="rows" /><br />
+        columns: <input v-model="spriteSheetForm.columns" type="number" placeholder="columns" /><br />
+        numImages: <input v-model="spriteSheetForm.numImages" type="number" placeholder="number of images" /><br />
+        refreshInterval: <input v-model="spriteSheetForm.refreshInterval" type="number" placeholder="refresh interval" /><br />
+        <button @click="createSpriteSheet()">create sprite sheet</button>
+      </div>
+      <div v-else>
+        <button @click="spriteSheetForm.adding = true">new sprite sheet</button>
+      </div>
+
 
     </div>
 
@@ -884,6 +929,12 @@ var vue = new Vue({
 
     agentMenuButtons: [],
 
+    spriteMaps: [],
+    spriteSheets: [],
+
+    spriteMapsData: JSON.parse(localStorage.getItem('pondlifeSpriteMaps')),
+    spriteSheetsData: JSON.parse(localStorage.getItem('pondlifeSpriteSheets')),
+
     agentTypeForm: {
       adding: false,
       name: '',
@@ -978,6 +1029,15 @@ var vue = new Vue({
       property: '',
       change: '',
       value: ''
+    },
+    spriteSheetForm: {
+      adding: false,
+      name: '',
+      src: '',
+      columns: 1,
+      rows: 1,
+      numImages: 1,
+      refreshInterval: 1
     }
   },
 
@@ -1128,6 +1188,10 @@ var vue = new Vue({
         menu: this.itemMenu,
         i: this.agentMenuButtons.length
       })
+
+      // load from localStorage (temporary solution while frontend-only)
+      this.spriteMaps = this.spriteMapsData !== null ? this.spriteMapsData : []
+      this.spriteSheets = this.spriteSheetsData !== null ? this.spriteSheetsData : []
     },
 
     createAgentType: function () {
@@ -1377,8 +1441,30 @@ var vue = new Vue({
     },
     conditionReadableFormat: function (condition) {
       const readable = `${ condition.property } ${ condition.comparison } ${ condition.value }`
-      console.log(readable)
       return readable
+    },
+    createSpriteSheet: function () {
+      const args = {...this.spriteSheetForm}
+      this.spriteSheets.push(new SpriteSheet(args))
+
+      // 'save' to avoid inputting each page refresh
+      localStorage.setItem('pondlifeSpriteSheets', JSON.stringify(this.spriteSheets))
+
+      this.spriteSheetForm = {
+        adding: false,
+        name: '',
+        src: '',
+        columns: 1,
+        rows: 1,
+        numImages: 1,
+        refreshInterval: 1
+      }
+    },
+    deleteSpriteSheet: function (index) {
+      this.spriteSheets.splice(index, 1)
+
+      // 'save' to avoid inputting each page refresh
+      localStorage.setItem('pondlifeSpriteSheets', JSON.stringify(this.spriteSheets))
     },
 
     /* ANIMATE */

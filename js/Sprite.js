@@ -64,3 +64,31 @@ class Sprite {
   }
 
 }
+
+
+const SPRITE_MAP = {
+  name: '',
+  idle: '',
+  up: '',
+  upRight: '',
+  right: '',
+  downRight: '',
+  down: '',
+  downLeft: '',
+  left: '',
+  upLeft: ''
+}
+
+
+class SpriteSheet {
+  constructor(args) {
+    this.name = args.name
+    this.src = args.src
+    this.columns = args.columns
+    this.rows = args.rows
+    this.numImages = args.numImages
+    this.refreshInterval = args.refreshInterval
+
+    this.editing = false
+  }
+}
