@@ -102,6 +102,12 @@ input,select,button {
   font-weight: 400;
 }
 
+table, th, td {
+  border: 1px solid #e43d12;
+  border-collapse: collapse;
+  padding: 5px;
+}
+
 </style>
 
 </head>
@@ -157,7 +163,7 @@ input,select,button {
 
     </div>
 
-    <div class="menu-section" id="agent-types-section">
+    <div class="menu-section" id="sprite-sheets-section">
       <h3 class="menu-section-heading">Sprite Sheets</h3>
 
       <div v-for="(spriteSheet, i) in spriteSheets">
@@ -165,7 +171,8 @@ input,select,button {
         <!-- EDIT SPRITE SHEET -->
         <div v-if="spriteSheet.editing === true">
           name: <input v-model="spriteSheet.name" type="text" placeholder="name" /><br />
-          src: <input v-model="spriteSheet.src" type="text" placeholder="src" /><br />
+          src: {{ spriteSheet.src }}<br />
+          <input type="file" placeholder="src" @change="spriteSheetForm.src = spriteSheetForm.fileName" /><br />
           rows: <input v-model="spriteSheet.rows" type="number" placeholder="rows" /><br />
           columns: <input v-model="spriteSheet.columns" type="number" placeholder="columns" /><br />
           numImages: <input v-model="spriteSheet.numImages" type="number" placeholder="number of images" /><br />
@@ -187,19 +194,181 @@ input,select,button {
       <!-- CREATE SPRITE SHEET -->
       <div v-if="spriteSheetForm.adding === true">
         name: <input v-model="spriteSheetForm.name" type="text" placeholder="name" /><br />
-        src: <input v-model="spriteSheetForm.src" type="text" placeholder="src" /><br />
+        src: <input type="file" placeholder="src" @change="previewFile($event, spriteSheetForm)" /><br />
         rows: <input v-model="spriteSheetForm.rows" type="number" placeholder="rows" /><br />
         columns: <input v-model="spriteSheetForm.columns" type="number" placeholder="columns" /><br />
         numImages: <input v-model="spriteSheetForm.numImages" type="number" placeholder="number of images" /><br />
         refreshInterval: <input v-model="spriteSheetForm.refreshInterval" type="number" placeholder="refresh interval" /><br />
         <button @click="createSpriteSheet()">create sprite sheet</button>
+        <button @click="spriteSheetForm.adding = false">cancel</button>
       </div>
       <div v-else>
         <button @click="spriteSheetForm.adding = true">new sprite sheet</button>
       </div>
 
-
     </div>
+
+
+    <div class="menu-section" class="sprite-maps-section">
+      <h3 class="menu-section-heading">Sprite Maps</h3>
+
+      <div v-for="(spriteMap, i) in spriteMaps">
+
+        <!-- EDIT SPRITE MAP -->
+        <div v-if="spriteMap.editing === true">
+          name: <input v-model="spriteMap.name" type="text" placeholder="name" /><br />
+
+        <table class="sprite-map-direction-table">
+          <tr>
+            <td>
+              <select v-model="spriteMap.sheets.upLeft">
+                <option value="">-- up left --</option>
+                <option v-for="spriteSheet in spriteSheets" :value="spriteSheet.name">{{ spriteSheet.name }}</option>
+              </select>
+            </td>
+            <td>
+              <select v-model="spriteMap.sheets.up">
+                <option value="">-- up --</option>
+                <option v-for="spriteSheet in spriteSheets" :value="spriteSheet.name">{{ spriteSheet.name }}</option>
+              </select>
+            </td>
+            <td>
+              <select v-model="spriteMap.sheets.upRight">
+                <option value="">-- up right --</option>
+                <option v-for="spriteSheet in spriteSheets" :value="spriteSheet.name">{{ spriteSheet.name }}</option>
+              </select>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <select v-model="spriteMap.sheets.left">
+                <option value="">-- left --</option>
+                <option v-for="spriteSheet in spriteSheets" :value="spriteSheet.name">{{ spriteSheet.name }}</option>
+              </select>
+            </td>
+            <td>
+              <select v-model="spriteMap.sheets.idle">
+                <option value="">-- idle --</option>
+                <option v-for="spriteSheet in spriteSheets" :value="spriteSheet.name">{{ spriteSheet.name }}</option>
+              </select>
+            </td>
+            <td>
+              <select v-model="spriteMap.sheets.right">
+                <option value="">-- right --</option>
+                <option v-for="spriteSheet in spriteSheets" :value="spriteSheet.name">{{ spriteSheet.name }}</option>
+              </select>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <select v-model="spriteMap.sheets.downLeft">
+                <option value="">-- down left --</option>
+                <option v-for="spriteSheet in spriteSheets" :value="spriteSheet.name">{{ spriteSheet.name }}</option>
+              </select>
+            </td>
+            <td>
+              <select v-model="spriteMap.sheets.down">
+                <option value="">-- down --</option>
+                <option v-for="spriteSheet in spriteSheets" :value="spriteSheet.name">{{ spriteSheet.name }}</option>
+              </select>
+            </td>
+            <td>
+              <select v-model="spriteMap.sheets.downRight">
+                <option value="">-- down right --</option>
+                <option v-for="spriteSheet in spriteSheets" :value="spriteSheet.name">{{ spriteSheet.name }}</option>
+              </select>
+            </td>
+          </tr>
+        </table>
+
+          <br />
+          <button @click="spriteMap.editing = false">save</button>
+          <button @click="spriteMap.editing = false">cancel</button>
+        </div>
+        <div v-else>
+          <div>
+            {{ spriteMap.name }}
+            <button @click="spriteMap.editing = true">edit</button>
+            <button @click="deleteSpriteMap(i)">delete</button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- CREATE SPRITE MAP -->
+      <div v-if="spriteMapForm.adding === true">
+        name: <input v-model="spriteMapForm.name" type="text" placeholder="name" /><br />
+
+        <table class="sprite-map-direction-table">
+          <tr>
+            <td>
+              <select v-model="spriteMapForm.sheets.upLeft">
+                <option value="">-- up left --</option>
+                <option v-for="spriteSheet in spriteSheets" :value="spriteSheet.name">{{ spriteSheet.name }}</option>
+              </select>
+            </td>
+            <td>
+              <select v-model="spriteMapForm.sheets.up">
+                <option value="">-- up --</option>
+                <option v-for="spriteSheet in spriteSheets" :value="spriteSheet.name">{{ spriteSheet.name }}</option>
+              </select>
+            </td>
+            <td>
+              <select v-model="spriteMapForm.sheets.upRight">
+                <option value="">-- up right --</option>
+                <option v-for="spriteSheet in spriteSheets" :value="spriteSheet.name">{{ spriteSheet.name }}</option>
+              </select>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <select v-model="spriteMapForm.sheets.left">
+                <option value="">-- left --</option>
+                <option v-for="spriteSheet in spriteSheets" :value="spriteSheet.name">{{ spriteSheet.name }}</option>
+              </select>
+            </td>
+            <td>
+              <select v-model="spriteMapForm.sheets.idle">
+                <option value="">-- idle --</option>
+                <option v-for="spriteSheet in spriteSheets" :value="spriteSheet.name">{{ spriteSheet.name }}</option>
+              </select>
+            </td>
+            <td>
+              <select v-model="spriteMapForm.sheets.right">
+                <option value="">-- right --</option>
+                <option v-for="spriteSheet in spriteSheets" :value="spriteSheet.name">{{ spriteSheet.name }}</option>
+              </select>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <select v-model="spriteMapForm.sheets.downLeft">
+                <option value="">-- down left --</option>
+                <option v-for="spriteSheet in spriteSheets" :value="spriteSheet.name">{{ spriteSheet.name }}</option>
+              </select>
+            </td>
+            <td>
+              <select v-model="spriteMapForm.sheets.down">
+                <option value="">-- down --</option>
+                <option v-for="spriteSheet in spriteSheets" :value="spriteSheet.name">{{ spriteSheet.name }}</option>
+              </select>
+            </td>
+            <td>
+              <select v-model="spriteMapForm.sheets.downRight">
+                <option value="">-- down right --</option>
+                <option v-for="spriteSheet in spriteSheets" :value="spriteSheet.name">{{ spriteSheet.name }}</option>
+              </select>
+            </td>
+          </tr>
+        </table>
+
+        <button @click="createSpriteMap()">create sprite map</button>
+      </div>
+      <div v-else>
+        <button @click="spriteMapForm.adding = true">new sprite map</button>
+      </div>
+    </div>
+
 
     <div class="menu-section" id="properties-section">
       <h3 class="menu-section-heading">Properties</h3>
@@ -1038,6 +1207,21 @@ var vue = new Vue({
       rows: 1,
       numImages: 1,
       refreshInterval: 1
+    },
+    spriteMapForm: {
+      adding: false,
+      name: '',
+      sheets: {
+        idle: '',
+        up: '',
+        upRight: '',
+        right: '',
+        downRight: '',
+        down: '',
+        downLeft: '',
+        left: '',
+        upLeft: ''
+      }
     }
   },
 
@@ -1466,6 +1650,35 @@ var vue = new Vue({
       // 'save' to avoid inputting each page refresh
       localStorage.setItem('pondlifeSpriteSheets', JSON.stringify(this.spriteSheets))
     },
+    createSpriteMap: function () {
+      const args = {...this.spriteMapForm}
+      this.spriteMaps.push(new SpriteMap(args))
+
+      // 'save' to avoid inputting each page refresh
+      localStorage.setItem('pondlifeSpriteMaps', JSON.stringify(this.spriteMaps))
+
+      this.spriteMapForm = {
+        adding: false,
+        name: '',
+        sheets: {
+          idle: '',
+          up: '',
+          upRight: '',
+          right: '',
+          downRight: '',
+          down: '',
+          downLeft: '',
+          left: '',
+          upLeft: ''
+        }
+      }
+    },
+    deleteSpriteMap: function (index) {
+      this.spriteMaps.splice(index, 1)
+
+      // 'save' to avoid inputting each page refresh
+      localStorage.setItem('pondlifeSpriteMaps', JSON.stringify(this.spriteMaps))
+    },
 
     /* ANIMATE */
 
@@ -1559,6 +1772,11 @@ var vue = new Vue({
         scale: AGENT_DATA[agentClassName].config.scale,
         config: AGENT_DATA[agentClassName].config
       }))
+    },
+    previewFile: function (event, spriteSheetForm) {
+      const fileName = event.target.files[0].name
+      spriteSheetForm.src = fileName
+      console.log(event.target.files[0])
     }
   }
 })

@@ -66,20 +66,6 @@ class Sprite {
 }
 
 
-const SPRITE_MAP = {
-  name: '',
-  idle: '',
-  up: '',
-  upRight: '',
-  right: '',
-  downRight: '',
-  down: '',
-  downLeft: '',
-  left: '',
-  upLeft: ''
-}
-
-
 class SpriteSheet {
   constructor(args) {
     this.name = args.name
@@ -88,6 +74,16 @@ class SpriteSheet {
     this.rows = args.rows
     this.numImages = args.numImages
     this.refreshInterval = args.refreshInterval
+
+    this.editing = false
+  }
+}
+
+
+class SpriteMap {
+  constructor(args) {
+    this.name = args.name
+    this.sheets = args.sheets
 
     this.editing = false
   }
