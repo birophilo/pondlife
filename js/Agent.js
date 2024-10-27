@@ -21,7 +21,7 @@ class Agent extends Sprite {
     this.config = config
 
     // move to Sprite class
-    this.spriteSheets = config.spriteSheets
+    this.spriteMap = config.spriteMap
 
     this.collisionArea = {
       x: this.position.x,
@@ -81,9 +81,9 @@ class Agent extends Sprite {
       this.position.x += xVelocity
       this.position.y += yVelocity
 
-      if (this.spriteSheets !== null) {
+      if (this.config.spriteMap !== null) {
         const direction = get8WayDirection(xVelocity, yVelocity)
-        this.image.src = this.spriteSheets[direction]
+        this.image.src = this.config.spriteMap.sheets[direction].src
       }
     }
 

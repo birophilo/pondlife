@@ -133,12 +133,20 @@ table, th, td {
 
     <div class="menu-section" id="agent-types-section">
       <h3 class="menu-section-heading">Agent Types</h3>
+
+      <!-- EDIT AGENT TYPE -->
       <div v-for="(agentType, i) in AGENT_DATA">
         <div v-if="agentType.config.name !== 'world'">
           <div v-if="agentType.editing === true">
             name: <input v-model="agentType.config.name" type="text" placeholder="name" /><br />
             width: <input v-model="agentType.config.width" type="number" placeholder="width" /><br />
             height: <input v-model="agentType.config.height" type="number" placeholder="height" /><br />
+            movement speed: <input v-model="agentType.config.nominalSpeed" type="number" placeholder="1" /><br />
+            spriteMap:
+            <select v-model="agentType.config.spriteMap">
+              <option value="">-- select sprite map --</option>
+              <option :value="spriteMap" v-for="spriteMap in spriteMaps">{{ spriteMap.name }}</option>
+            </select>
             <br />
             <button @click="agentType.editing = false; $forceUpdate()">save</button>
             <button @click="agentType.editing = false; $forceUpdate()">cancel</button>
@@ -153,10 +161,17 @@ table, th, td {
         </div>
       </div>
 
+      <!-- CREATE AGENT TYPE -->
       <div v-if="agentTypeForm.adding === true">
         <input v-model="agentTypeForm.name" type="text" placeholder="name" />
         <input v-model="agentTypeForm.width" type="number" placeholder="width" />
         <input v-model="agentTypeForm.height" type="number" placeholder="height" />
+        movement speed: <input v-model="agentTypeForm.nominalSpeed" type="number" placeholder="1" /><br />
+        spriteMap:
+        <select v-model="agentTypeForm.spriteMap">
+          <option value="">-- select sprite map --</option>
+          <option :value="spriteMap" v-for="spriteMap in spriteMaps">{{ spriteMap.name }}</option>
+        </select>
         <button @click="createAgentType()">create agent type</button>
       </div>
       <div v-else><button @click="agentTypeForm.adding = true">new agent type</button></div>
@@ -911,7 +926,7 @@ const AGENT_DATA = {
       offset: {x: 96, y: 46},
       scale: 0.7,
       imageSrc: '../img/sprites/GirlSample_Walk_Down.png',
-      spriteSheets: CUSTOMER_SPRITE_DIRECTION,
+      spriteMap: null,
       nominalSpeed: 0.02,
     },
     editing: false
@@ -927,7 +942,7 @@ const AGENT_DATA = {
       offset: {x: 0, y: 0},
       scale: 1,
       imageSrc: '../img/stall-1.png',
-      spriteSheets: null,
+      spriteMap: null,
       nominalSpeed: 0.02,
     },
     editing: false
@@ -943,7 +958,7 @@ const AGENT_DATA = {
       offset: {x: 2, y: 0},
       scale: 2.5,
       imageSrc: '../img/sprites/SupplyVan_Right.png',
-      spriteSheets: VAN_SPRITE_DIRECTION,
+      spriteMap: null,
       nominalSpeed: 0.02,
     },
     editing: false
@@ -959,7 +974,7 @@ const AGENT_DATA = {
       offset: {x: 0, y: 0},
       scale: 1,
       imageSrc: '../img/blackCircle.png',
-      spriteSheets: null,
+      spriteMap: null,
       nominalSpeed: 0.02,
     }
   }
@@ -1016,7 +1031,8 @@ var vue = new Vue({
       name: '',
       height: 0,
       width: 0,
-      movementSpeed: 1,
+      spriteMap: '',
+      nominalSpeed: 1,
       positionX: 100,
       positionY: 100
     },
@@ -1300,8 +1316,8 @@ var vue = new Vue({
           offset: {x: 96, y: 46},
           scale: 1,
           imageSrc: '../img/sprites/GirlSample_Walk_Down.png',
-          spriteSheets: CUSTOMER_SPRITE_DIRECTION,
-          nominalSpeed: this.agentTypeForm.movementSpeed,
+          spriteMap: this.agentTypeForm.spriteMap,
+          nominalSpeed: Number(this.agentTypeForm.nominalSpeed),
         }
       }
 
