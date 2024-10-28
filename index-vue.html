@@ -916,13 +916,11 @@ const DEFAULT_CONDITION_TYPE = 'property'
 
 const AGENT_DATA = {
   customer: {
-    agentClass: Agent,
     agentItems: [],
     config: {
       name: 'customer',
       width: 30,
       height: 40,
-      frames: {max: 9, columns: 4, rows: 3, hold: 3},
       offset: {x: 96, y: 46},
       scale: 0.7,
       imageSrc: '../img/sprites/GirlSample_Walk_Down.png',
@@ -932,13 +930,11 @@ const AGENT_DATA = {
     editing: false
   },
   lemonadeStall: {
-    agentClass: Agent,
     agentItems: [],
     config: {
       name: 'lemonadeStall',
       width: 130,
       height: 104,
-      frames: {max: 1, columns: 1, rows: 1, hold: 1},
       offset: {x: 0, y: 0},
       scale: 1,
       imageSrc: '../img/stall-1.png',
@@ -948,13 +944,11 @@ const AGENT_DATA = {
     editing: false
   },
   supplyVan: {
-    agentClass: Agent,
     agentItems: [],
     config: {
       name: 'supplyVan',
       width: 50,
       height: 50,
-      frames: {max: 1, columns: 1, rows: 1, hold: 3},
       offset: {x: 2, y: 0},
       scale: 2.5,
       imageSrc: '../img/sprites/SupplyVan_Right.png',
@@ -964,13 +958,12 @@ const AGENT_DATA = {
     editing: false
   },
   world: {
-    agentClass: Agent,
     agentItems: [],
     config: {
       name: 'world',
       width: 25,
       height: 25,
-      frames: {max: 1, columns: 1, rows: 1, hold: 1},
+      // frames: {max: 1, columns: 1, rows: 1, hold: 1},
       offset: {x: 0, y: 0},
       scale: 1,
       imageSrc: '../img/blackCircle.png',
@@ -1177,11 +1170,7 @@ var vue = new Vue({
         const isInMenuArea = pointIsInArea(point, this.itemMenu.area)
         if (isInMenuArea === false) {
           const agentClassName = this.agentPreview.agentType
-          this.addAgent(
-            agentClassName,
-            AGENT_DATA[agentClassName].agentClass,
-            AGENT_DATA[agentClassName].agentItems
-          )
+          this.addAgent(agentClassName, AGENT_DATA[agentClassName].agentItems)
           this.placingAgent = false
           this.agentPreview = null
         } else {
@@ -1245,7 +1234,13 @@ var vue = new Vue({
   },
 
   methods: {
+
     loadAgentsAndFixtures: function () {
+
+      // load from localStorage (temporary solution while frontend-only)
+      this.spriteMaps = this.spriteMapsData !== null ? this.spriteMapsData : []
+      this.spriteSheets = this.spriteSheetsData !== null ? this.spriteSheetsData : []
+
       lemonadeStallData.forEach((stall, i) => {
         AGENT_DATA.lemonadeStall.agentItems.push( new Agent({
           position: {x: stall.x, y: stall.y},
@@ -1262,14 +1257,19 @@ var vue = new Vue({
           config: AGENT_DATA.supplyVan.config
         }))
       })
+
+      // hard-coding for the moment
+      AGENT_DATA.customer.config.spriteMap = this.spriteMaps[0]
       customerData.forEach((cust, i) => {
         AGENT_DATA.customer.agentItems.push( new Agent({
           position: {x: cust.x, y: cust.y},
           num: i + 1,
           globals: this.GlobalSettings,
+          // hard-coding for the moment
           config: AGENT_DATA.customer.config
         }))
       })
+
       worldData.forEach((wd, i) => {
         AGENT_DATA.world.agentItems.push( new Agent({
           position: {x: wd.x, y: wd.y},
@@ -1295,10 +1295,6 @@ var vue = new Vue({
         menu: this.itemMenu,
         i: this.agentMenuButtons.length
       })
-
-      // load from localStorage (temporary solution while frontend-only)
-      this.spriteMaps = this.spriteMapsData !== null ? this.spriteMapsData : []
-      this.spriteSheets = this.spriteSheetsData !== null ? this.spriteSheetsData : []
     },
 
     createAgentType: function () {
@@ -1551,7 +1547,15 @@ var vue = new Vue({
       return readable
     },
     createSpriteSheet: function () {
-      const args = {...this.spriteSheetForm}
+      const args = {
+        adding: this.spriteSheetForm.adding,
+        name: this.spriteSheetForm.name,
+        src: this.spriteSheetForm.src,
+        columns: Number(this.spriteSheetForm.columns),
+        rows: Number(this.spriteSheetForm.rows),
+        numImages: Number(this.spriteSheetForm.numImages),
+        refreshInterval: Number(this.spriteSheetForm.refreshInterval)
+      }
       this.spriteSheets.push(new SpriteSheet(args))
 
       // 'save' to avoid inputting all after each page refresh
@@ -1569,6 +1573,17 @@ var vue = new Vue({
     },
     saveSpriteSheet: function (spriteSheet) {
       spriteSheet.editing = false
+      const args = {
+        adding: spriteSheet.adding,
+        name: spriteSheet.name,
+        src: spriteSheet.src,
+        columns: Number(spriteSheet.columns),
+        rows: Number(spriteSheet.rows),
+        numImages: Number(spriteSheet.numImages),
+        refreshInterval: Number(spriteSheet.refreshInterval)
+      }
+      const props = Object.keys(args)
+      props.forEach(prop => spriteSheet[prop] = args[prop])
       localStorage.setItem('pondlifeSpriteSheets', JSON.stringify(this.spriteSheets))
     },
     deleteSpriteSheet: function (index) {
@@ -1695,9 +1710,9 @@ var vue = new Vue({
       this.selectedAgent.currentAction = action.clone(this.selectedAgent, {})
     },
 
-    addAgent: function (agentClassName, agentClass, agentItems) {
+    addAgent: function (agentClassName, agentItems) {
       const num = agentItems.length + 1
-      agentItems.push( new agentClass({
+      agentItems.push( new Agent({
         position: {
           x: this.mouse.x - AGENT_DATA[agentClassName].config.width / 2,
           y: this.mouse.y - AGENT_DATA[agentClassName].config.height / 2

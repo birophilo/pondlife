@@ -94,7 +94,7 @@ class ActionGoTo extends Action {
   start(globals) {
     this.agent.destination = this.destination
     this.agent.currentStateName = this.stateName
-    this.agent.frames.max = this.agent.config.frames.max
+    // this.agent.frames.max = this.agent.config.frames.max
   }
 
   defaultCompletionCheckPasses() {
@@ -208,8 +208,19 @@ class ActionDefaults {
   idle() {
     this.agent.currentStateName = 'idle'
     this.agent.destination = null
-    this.agent.image.src = this.agent.defaultImage
-    this.agent.frames.max = 1
+
+    if (this.agent.spriteMap !== null && this.agent.currentDirection !== 'idle') {
+      const spriteSheet = this.agent.spriteMap.sheets['idle']
+      this.agent.image.src = spriteSheet.src
+      this.agent.frames = {
+        ...this.agent.frames,
+        max: spriteSheet.numImages,
+        columns: spriteSheet.columns,
+        rows: spriteSheet.rows,
+        hold: spriteSheet.refreshInterval
+      }
+      this.agent.currentDirection = 'idle'
+    }
   }
 }
 

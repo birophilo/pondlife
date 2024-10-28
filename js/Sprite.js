@@ -2,7 +2,6 @@ class Sprite {
   constructor({
     position = {x: 0, y: 0},
     imageSrc,
-    frames = {max, columns, rows, hold},
     offset = {x: 0, y: 0},
     scale = 1
   }) {
@@ -10,15 +9,18 @@ class Sprite {
     this.image = new Image()
     this.image.src = imageSrc
     this.defaultImage = imageSrc
-    this.defaultFrames = frames
-    this.frames = {
-      max: frames.max,
-      columns: frames.columns,
-      rows: frames.rows,
+
+    this.defaultFrames = {
+      max: 1,
+      columns: 1,
+      rows: 1,
       current: 0,
       elapsed: 0,
-      hold: frames.hold
+      hold: 3
     }
+    // to be set from Agent extending Sprite
+    this.frames = this.defaultFrames
+
     this.offset = offset
     this.scale = scale
   }
@@ -51,7 +53,7 @@ class Sprite {
   update(globals) {
 
     const frameSpeedMultiple = globals.globalSpeed / 100
-    const hold = Number(this.defaultFrames.hold)
+    const hold = Number(this.frames.hold)
     this.frames.hold = hold / frameSpeedMultiple
 
     this.frames.elapsed++

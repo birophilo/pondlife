@@ -9,7 +9,7 @@ class Agent extends Sprite {
     super({ 
       position,
       imageSrc: config.imageSrc,
-      frames: config.frames,
+      // frames: config.frames,
       offset: config.offset,
       scale: config.scale
     })
@@ -22,6 +22,21 @@ class Agent extends Sprite {
 
     // move to Sprite class
     this.spriteMap = config.spriteMap
+
+    if (this.spriteMap !== null) {
+      const spriteSheet = this.config.spriteMap.sheets['idle']
+      this.image.src = spriteSheet.src
+
+      this.frames = {
+        ...this.frames,
+        max: spriteSheet.numImages,
+        columns: spriteSheet.columns,
+        rows: spriteSheet.rows,
+        hold: spriteSheet.refreshInterval
+      }
+      this.defaultFrames = {...this.frames}
+    }
+
 
     this.collisionArea = {
       x: this.position.x,
@@ -62,6 +77,8 @@ class Agent extends Sprite {
     this.currentActionName = ''
     this.currentStateName = ''
 
+    this.currentDirection = null  // temporary approach?
+
     this.labelElement = document.createElement('div')
     this.labelElement.classList.add('canvas-agent-label')
     const canvasContainer = document.getElementsByClassName('canvas-container')[0]
@@ -83,7 +100,19 @@ class Agent extends Sprite {
 
       if (this.config.spriteMap !== null) {
         const direction = get8WayDirection(xVelocity, yVelocity)
-        this.image.src = this.config.spriteMap.sheets[direction].src
+
+        if (this.currentDirection !== direction) {
+          const spriteSheet = this.config.spriteMap.sheets[direction]
+          this.image.src = spriteSheet.src
+          this.frames = {
+            ...this.frames,
+            max: spriteSheet.numImages,
+            columns: spriteSheet.columns,
+            rows: spriteSheet.rows,
+            hold: spriteSheet.refreshInterval
+          }
+        }
+        this.currentDirection = direction
       }
     }
 
