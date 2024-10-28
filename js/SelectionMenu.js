@@ -109,9 +109,7 @@ class AgentMenuIcon extends agentMenuButton {
     this.name = name
     this.agent = agent
     this.thumbnail = new Image()
-    this.thumbnail.src = config.imageSrc
-    console.log("CONFIG")
-    console.log(config.imageSrc)
+    this.thumbnail.src = config.thumbnail
     this.config = config
   }
 
@@ -128,6 +126,9 @@ class AgentMenuIcon extends agentMenuButton {
   }
 
   update(i) {
+    if (this.thumbnail.src !== this.config.thumbnail) {
+      this.thumbnail.src = this.config.thumbnail
+    }
     this.draw()
     super.update(i)
   }

@@ -148,6 +148,8 @@ table, th, td {
               <option :value="spriteMap" v-for="spriteMap in spriteMaps">{{ spriteMap.name }}</option>
             </select>
             <br />
+            thumbnail: {{ agentType.config.thumbnail }}<br />
+            <input type="file" placeholder="thumbnail" @change="updateThumbnailFileInput($event, agentType.config)" /><br />
             <button @click="agentType.editing = false; $forceUpdate()">save</button>
             <button @click="agentType.editing = false; $forceUpdate()">cancel</button>
           </div>
@@ -163,15 +165,17 @@ table, th, td {
 
       <!-- CREATE AGENT TYPE -->
       <div v-if="agentTypeForm.adding === true">
-        <input v-model="agentTypeForm.name" type="text" placeholder="name" />
-        <input v-model="agentTypeForm.width" type="number" placeholder="width" />
-        <input v-model="agentTypeForm.height" type="number" placeholder="height" />
+        name: <input v-model="agentTypeForm.name" type="text" placeholder="name" /><br />
+        width: <input v-model="agentTypeForm.width" type="number" placeholder="width" /><br />
+        height: <input v-model="agentTypeForm.height" type="number" placeholder="height" /><br />
         movement speed: <input v-model="agentTypeForm.nominalSpeed" type="number" placeholder="1" /><br />
         spriteMap:
         <select v-model="agentTypeForm.spriteMap">
           <option value="">-- select sprite map --</option>
           <option :value="spriteMap" v-for="spriteMap in spriteMaps">{{ spriteMap.name }}</option>
-        </select>
+        </select><br />
+        thumbnail: {{ agentTypeForm.thumbnail }}<br />
+        <input type="file" placeholder="thumbnail" @change="updateThumbnailFileInput($event, agentTypeForm)" /><br />
         <button @click="createAgentType()">create agent type</button>
       </div>
       <div v-else><button @click="agentTypeForm.adding = true">new agent type</button></div>
@@ -187,7 +191,7 @@ table, th, td {
         <div v-if="spriteSheet.editing === true">
           name: <input v-model="spriteSheet.name" type="text" placeholder="name" /><br />
           src: {{ spriteSheet.src }}<br />
-          <input type="file" placeholder="src" @change="updateFileInput($event, spriteSheet)" /><br />
+          <input type="file" placeholder="src" @change="updateSpritesheetFileInput($event, spriteSheet)" /><br />
           rows: <input v-model="spriteSheet.rows" type="number" placeholder="rows" /><br />
           columns: <input v-model="spriteSheet.columns" type="number" placeholder="columns" /><br />
           numImages: <input v-model="spriteSheet.numImages" type="number" placeholder="number of images" /><br />
@@ -209,7 +213,7 @@ table, th, td {
       <!-- CREATE SPRITE SHEET -->
       <div v-if="spriteSheetForm.adding === true">
         name: <input v-model="spriteSheetForm.name" type="text" placeholder="name" /><br />
-        src: <input type="file" placeholder="src" @change="updateFileInput($event, spriteSheetForm)" /><br />
+        src: <input type="file" placeholder="src" @change="updateSpritesheetFileInput($event, spriteSheetForm)" /><br />
         rows: <input v-model="spriteSheetForm.rows" type="number" placeholder="rows" /><br />
         columns: <input v-model="spriteSheetForm.columns" type="number" placeholder="columns" /><br />
         numImages: <input v-model="spriteSheetForm.numImages" type="number" placeholder="number of images" /><br />
@@ -923,9 +927,10 @@ const AGENT_DATA = {
       height: 40,
       offset: {x: 96, y: 46},
       scale: 0.7,
+      nominalSpeed: 0.02,
       imageSrc: '../img/sprites/GirlSample_Walk_Down.png',
       spriteMap: null,
-      nominalSpeed: 0.02,
+      thumbnail: ''
     },
     editing: false
   },
@@ -937,9 +942,10 @@ const AGENT_DATA = {
       height: 104,
       offset: {x: 0, y: 0},
       scale: 1,
+      nominalSpeed: 0.02,
       imageSrc: '../img/stall-1.png',
       spriteMap: null,
-      nominalSpeed: 0.02,
+      thumbnail: ''
     },
     editing: false
   },
@@ -951,9 +957,10 @@ const AGENT_DATA = {
       height: 50,
       offset: {x: 2, y: 0},
       scale: 2.5,
+      nominalSpeed: 0.02,
       imageSrc: '../img/sprites/SupplyVan_Right.png',
       spriteMap: null,
-      nominalSpeed: 0.02,
+      thumbnail: ''
     },
     editing: false
   },
@@ -966,9 +973,11 @@ const AGENT_DATA = {
       // frames: {max: 1, columns: 1, rows: 1, hold: 1},
       offset: {x: 0, y: 0},
       scale: 1,
+      nominalSpeed: 0.02,
       imageSrc: '../img/blackCircle.png',
       spriteMap: null,
-      nominalSpeed: 0.02,
+      thumbnail: ''
+
     }
   }
 }
@@ -1022,10 +1031,11 @@ var vue = new Vue({
     agentTypeForm: {
       adding: false,
       name: '',
-      height: 0,
-      width: 0,
+      height: 50,
+      width: 50,
       spriteMap: '',
-      nominalSpeed: 1,
+      thumbnail: '',
+      nominalSpeed: 0.02,
       positionX: 100,
       positionY: 100
     },
@@ -1311,9 +1321,10 @@ var vue = new Vue({
           frames: {max: 9, columns: 4, rows: 3, hold: 3},
           offset: {x: 96, y: 46},
           scale: 1,
+          nominalSpeed: Number(this.agentTypeForm.nominalSpeed),
           imageSrc: '../img/sprites/GirlSample_Walk_Down.png',
           spriteMap: this.agentTypeForm.spriteMap,
-          nominalSpeed: Number(this.agentTypeForm.nominalSpeed),
+          thumbnail: this.agentTypeForm.thumbnail
         }
       }
 
@@ -1591,11 +1602,16 @@ var vue = new Vue({
       // 'save' to avoid inputting all after each page refresh
       localStorage.setItem('pondlifeSpriteSheets', JSON.stringify(this.spriteSheets))
     },
-    updateFileInput: function (event, spriteSheetForm) {
+    updateSpritesheetFileInput: function (event, spriteSheetForm) {
       const fileName = "../img/sprites/" + event.target.files[0].name
       spriteSheetForm.src = fileName
       localStorage.setItem('pondlifeSpriteSheets', JSON.stringify(this.spriteSheets))
       localStorage.setItem('pondlifeSpriteMaps', JSON.stringify(this.spriteMaps))
+    },
+    updateThumbnailFileInput: function (event, agentTypeForm) {
+      const fileName = "../img/thumbnails/" + event.target.files[0].name
+      agentTypeForm.thumbnail = fileName
+      this.$forceUpdate()
     },
     createSpriteMap: function () {
       const args = {...this.spriteMapForm}

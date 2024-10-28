@@ -9,7 +9,6 @@ class Agent extends Sprite {
     super({ 
       position,
       imageSrc: config.imageSrc,
-      // frames: config.frames,
       offset: config.offset,
       scale: config.scale
     })

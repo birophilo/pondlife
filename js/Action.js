@@ -94,7 +94,6 @@ class ActionGoTo extends Action {
   start(globals) {
     this.agent.destination = this.destination
     this.agent.currentStateName = this.stateName
-    // this.agent.frames.max = this.agent.config.frames.max
   }
 
   defaultCompletionCheckPasses() {
