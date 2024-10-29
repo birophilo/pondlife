@@ -8,7 +8,7 @@ class AgentType {
       offset: args.offset,
       scale: args.scale,
       nominalSpeed: args.nominalSpeed,
-      imageSrc: args.imageSrc,
+      previewImage: args.previewImage,
       spriteMap: args.spriteMap,
       thumbnail: args.thumbnail
     }

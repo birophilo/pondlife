@@ -177,6 +177,7 @@ table, th, td {
         thumbnail: {{ agentTypeForm.thumbnail }}<br />
         <input type="file" placeholder="thumbnail" @change="updateThumbnailFileInput($event, agentTypeForm)" /><br />
         <button @click="createAgentType()">create agent type</button>
+        <button @click="agentTypeForm.adding = false">cancel</button>
       </div>
       <div v-else><button @click="agentTypeForm.adding = true">new agent type</button></div>
 
@@ -377,7 +378,7 @@ table, th, td {
 
               <select v-model="action.args.agentType">
                 <option value="">-- agent type --</option>
-                <option v-for="agent in agentTypes" :value="agent.config.name">{{ agent.config.name }}</option>
+                <option v-for="agentType in agentTypes" :value="agentType.name">{{ agentType.name }}</option>
               </select>
 
               <form name="agentRadioSelect">
@@ -402,10 +403,10 @@ table, th, td {
                 <select v-model="action.args.target">
                   <option value="">-- select agent --</option>
                   <option
-                    v-for="agentType in agentTypes[action.args.agentType].agentItems"
-                    :value="agentType"
+                    v-for="agent in agentTypes[action.args.agentType].agentItems"
+                    :value="agent"
                   >
-                    {{ agentType.name }}
+                    {{ agent.name }}
                   </option>
                 </select>
               </div>
@@ -640,7 +641,7 @@ table, th, td {
             <div v-if="actionsSection.adding.forms.goTo.destinationType === 'agent'">
               <select v-model="actionsSection.adding.forms.goTo.agentType">
                 <option value="">-- agent type --</option>
-                <option v-for="agent in agentTypes" :value="agent.config.name">{{ agent.config.name }}</option>
+                <option v-for="agentType in agentTypes" :value="agentType.name">{{ agentType.name }}</option>
               </select>
 
               <form name="agentRadioSelect" @change="console.log(actionsSection.adding.forms.goTo.agentChoiceMethod)">
@@ -927,9 +928,9 @@ const agentTypesData = [
     offset: {x: 96, y: 46},
     scale: 0.7,
     nominalSpeed: 0.02,
-    imageSrc: '../img/sprites/GirlSample_Walk_Down.png',
+    previewImage: '../img/sprites/GirlSample_Walk_Down.png',
     spriteMap: null,
-    thumbnail: ''
+    thumbnail: '../img/thumbnails/customer-thumbnail.png'
   },
   {
     name: 'lemonadeStall',
@@ -938,9 +939,9 @@ const agentTypesData = [
     offset: {x: 0, y: 0},
     scale: 1,
     nominalSpeed: 0.02,
-    imageSrc: '../img/stall-1.png',
+    previewImage: '../img/stall-1.png',
     spriteMap: null,
-    thumbnail: ''
+    thumbnail: '../img/thumbnails/lemonade-stall-thumbnail.png'
   },
   {
     name: 'supplyVan',
@@ -949,9 +950,9 @@ const agentTypesData = [
     offset: {x: 2, y: 0},
     scale: 2.5,
     nominalSpeed: 0.02,
-    imageSrc: '../img/sprites/SupplyVan_Right.png',
+    previewImage: '../img/sprites/SupplyVan_Right.png',
     spriteMap: null,
-    thumbnail: ''
+    thumbnail: '../img/thumbnails/supply-van-thumbnail.png'
   },
   {
     name: 'world',
@@ -960,7 +961,7 @@ const agentTypesData = [
     offset: {x: 0, y: 0},
     scale: 1,
     nominalSpeed: 0.02,
-    imageSrc: '../img/blackCircle.png',
+    previewImage: '../img/thumbnails/world-thumbnail.png',
     spriteMap: null,
     thumbnail: ''
   }
@@ -1164,9 +1165,10 @@ var vue = new Vue({
       // PLACE NEW AGENT ON
       if (this.placingAgent) {
         const isInMenuArea = pointIsInArea(point, this.itemMenu.area)
+
         if (isInMenuArea === false) {
-          const agentClassName = this.agentPreview.agentType
-          this.addAgent(agentClassName, this.agentTypes[agentClassName].agentItems)
+          const agentClassName = this.agentPreview.agentType.name
+          this.addAgent(agentClassName)
           this.placingAgent = false
           this.agentPreview = null
         } else {
@@ -1174,11 +1176,9 @@ var vue = new Vue({
         }
       }
 
-      const agentNameList = Object.keys(this.agentTypes)
+      const agentTypeNames = Object.keys(this.agentTypes)
 
-      agentNameList.forEach(agentName => {
-        this.selectOrDeleteAgent(agentName, point)
-      })
+      agentTypeNames.forEach(agentTypeName => this.selectOrDeleteAgent(agentTypeName, point))
 
       // SELECT AGENT BUTTON TO CREATE CURSOR PREVIEW (to place new agent on board)
       for (let i = 0; i < this.agentMenuButtons.length; i++) {
@@ -1188,13 +1188,8 @@ var vue = new Vue({
         if (isInArea) hover = 'true'
 
         if (isInArea && !this.agentPreview) {
-
-          this.agentPreview = new AgentPreview({
-            agent: this.agentTypes[this.agentMenuButtons[i].name].agentClass,
-            rgb: this.agentMenuButtons[i].rgb,
-            config: this.agentTypes[this.agentMenuButtons[i].name].config
-          })
-
+          const agentTypeName = this.agentMenuButtons[i].name
+          this.agentPreview = new AgentPreview(this.agentTypes[agentTypeName])
           this.placingAgent = true
           break
 
@@ -1250,6 +1245,7 @@ var vue = new Vue({
       agentTypeNames.forEach(agentTypeName => {
         initialAgentData[agentTypeName].forEach((item, i) => {
           this.agentTypes[agentTypeName].agentItems.push( new Agent({
+            agentType: this.agentTypes[agentTypeName],
             position: {x: item.x, y: item.y},
             num: i + 1,
             globals: this.GlobalSettings,
@@ -1291,7 +1287,7 @@ var vue = new Vue({
           offset: {x: 96, y: 46},
           scale: 1,
           nominalSpeed: Number(this.agentTypeForm.nominalSpeed),
-          imageSrc: '../img/sprites/GirlSample_Walk_Down.png',
+          previewImage: '../img/sprites/GirlSample_Walk_Down.png',
           spriteMap: this.agentTypeForm.spriteMap,
           thumbnail: this.agentTypeForm.thumbnail
         }
@@ -1695,18 +1691,20 @@ var vue = new Vue({
       this.selectedAgent.currentAction = action.clone(this.selectedAgent, {})
     },
 
-    addAgent: function (agentClassName, agentItems) {
+    addAgent: function (agentTypeName) {
+      const agentItems = this.agentTypes[agentTypeName].agentItems
       const num = agentItems.length + 1
       agentItems.push( new Agent({
+        agentType: this.agentTypes[agentTypeName],
         position: {
-          x: this.mouse.x - this.agentTypes[agentClassName].config.width / 2,
-          y: this.mouse.y - this.agentTypes[agentClassName].config.height / 2
+          x: this.mouse.x - this.agentTypes[agentTypeName].config.width / 2,
+          y: this.mouse.y - this.agentTypes[agentTypeName].config.height / 2
         },
         num: num,
         globals: this.GlobalSettings,
-        offset: this.agentTypes[agentClassName].config.offset,
-        scale: this.agentTypes[agentClassName].config.scale,
-        config: this.agentTypes[agentClassName].config
+        offset: this.agentTypes[agentTypeName].config.offset,
+        scale: this.agentTypes[agentTypeName].config.scale,
+        config: this.agentTypes[agentTypeName].config
       }))
     }
   }

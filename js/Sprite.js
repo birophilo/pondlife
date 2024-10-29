@@ -1,14 +1,14 @@
 class Sprite {
   constructor({
     position = {x: 0, y: 0},
-    imageSrc,
+    previewImage,
     offset = {x: 0, y: 0},
     scale = 1
   }) {
     this.position = position
     this.image = new Image()
-    this.image.src = imageSrc
-    this.defaultImage = imageSrc
+    this.image.src = previewImage
+    this.defaultImage = previewImage
 
     this.defaultFrames = {
       max: 1,

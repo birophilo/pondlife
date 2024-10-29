@@ -163,21 +163,19 @@ class DeleteButton extends agentMenuButton {
 
 
 class AgentPreview {
-  constructor({ agent, rgb, config }) {
-    this.agent = agent
-    this.agentType = config.name
+  constructor(agentType) {
+    this.agentType = agentType
     this.position = {x: 0, y: 0}
-    this.width = config.width,
-    this.height = config.height,
-    this.scale = config.scale,
-    this.rgb = rgb
-    this.thumbnail = new Image()
-    this.thumbnail.src = config.imageSrc
+    this.width = agentType.config.width,
+    this.height = agentType.config.height,
+    this.scale = agentType.config.scale,
+    this.image = new Image()
+    this.image.src = agentType.config.previewImage
   }
 
   draw() {
     c.drawImage(
-      this.thumbnail,
+      this.image,
       this.position.x,
       this.position.y,
       this.width,

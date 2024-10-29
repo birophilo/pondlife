@@ -80,7 +80,7 @@ class ActionGoTo extends Action {
         this.agentType = args.agentType
 
         if (args.agentChoiceMethod === 'nearest') {
-          const agentItems = AGENT_DATA[this.agentType].agentItems
+          const agentItems = this.agent.agentType.agentItems
           this.destination = this.agent.getClosestAgent(agentItems)
           this.stateName = `goingTo: ${this.destination.name}`
         }
@@ -131,7 +131,7 @@ class ActionPropertyChanges extends Action {
 
       } else {
 
-        const agentItems = AGENT_DATA[agentType].agentItems
+        const agentItems = this.agent.agentType.agentItems
         const agentChoiceMethod = change.args.agentChoiceMethod
 
         if (agentChoiceMethod === 'nearest') {

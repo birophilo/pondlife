@@ -1,6 +1,7 @@
 class Agent extends Sprite {
 
   constructor({
+    agentType,
     position = { x: 0, y: 0 },
     num = 0,
     globals,
@@ -8,12 +9,13 @@ class Agent extends Sprite {
   }) {
     super({ 
       position,
-      imageSrc: config.imageSrc,
+      previewImage: config.previewImage,
       offset: config.offset,
       scale: config.scale
     })
     this.name = config.name
     this.num = num
+    this.agentType = agentType
     this.width = config.width
     this.height = config.height
     this.position = position
