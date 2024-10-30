@@ -2,8 +2,7 @@ class Sprite {
   constructor({
     position = {x: 0, y: 0},
     previewImage,
-    offset = {x: 0, y: 0},
-    scale = 1
+    spriteMap = null
   }) {
     this.position = position
     this.image = new Image()
@@ -18,14 +17,23 @@ class Sprite {
       elapsed: 0,
       hold: 3
     }
-    // to be set from Agent extending Sprite
-    this.frames = this.defaultFrames
 
-    this.offset = offset
-    this.scale = scale
+    this.frames = this.defaultFrames
+    this.spriteMap = spriteMap
+    this.useSpriteSheet('idle')
   }
 
   draw() {
+
+    var offset
+    var scale
+    if (this.spriteMap !== null) {
+      offset = this.spriteMap.offset
+      scale = this.spriteMap.scale
+    } else {
+      offset = {x: 0, y: 0}
+      scale = 1
+    }
 
     const cropWidth = this.image.width / this.frames.columns
     const cropHeight = this.image.height / this.frames.rows
@@ -39,14 +47,14 @@ class Sprite {
     }
     c.drawImage(
       this.image,
-      crop.position.x + this.offset.x,
-      crop.position.y + this.offset.y,
+      crop.position.x + offset.x,
+      crop.position.y + offset.y,
       crop.width, // image width
       crop.height, // image height
       this.position.x,
       this.position.y,
-      crop.width * this.scale,  // image crop width
-      crop.height * this.scale  // image crop height
+      crop.width * scale,  // image crop width
+      crop.height * scale  // image crop height
     )
   }
 
@@ -61,6 +69,22 @@ class Sprite {
       this.frames.current++
       if (this.frames.current >= this.frames.max) {
         this.frames.current = 0
+      }
+    }
+  }
+
+  useSpriteSheet(spriteSheetName) {
+    if (this.spriteMap !== null) {
+      // hard-coding - to change
+      const spriteSheet = this.spriteMap.sheets[spriteSheetName]
+      this.image.src = spriteSheet.src
+
+      this.frames = {
+        ...this.frames,
+        max: spriteSheet.numImages,
+        columns: spriteSheet.columns,
+        rows: spriteSheet.rows,
+        hold: spriteSheet.refreshInterval
       }
     }
   }
@@ -86,6 +110,9 @@ class SpriteMap {
   constructor(args) {
     this.name = args.name
     this.sheets = args.sheets
+
+    this.offset = {x: args.offsetX, y: args.offsetY}
+    this.scale = args.scale
 
     this.editing = false
   }

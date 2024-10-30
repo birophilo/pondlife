@@ -154,11 +154,9 @@ table, th, td {
             <button @click="agentType.editing = false; $forceUpdate()">cancel</button>
           </div>
           <div v-else>
-            <div>
-              {{ agentType.name }}
-              <button @click="agentType.editing = true; $forceUpdate()">edit</button>
-              <button @click="deleteAgentType(agentType.name)">delete</button>
-            </div>
+            {{ agentType.name }}
+            <button @click="agentType.editing = true; $forceUpdate()">edit</button>
+            <button @click="deleteAgentType(agentType.name)">delete</button>
           </div>
         </div>
       </div>
@@ -237,6 +235,9 @@ table, th, td {
         <!-- EDIT SPRITE MAP -->
         <div v-if="spriteMap.editing === true">
           name: <input v-model="spriteMap.name" type="text" placeholder="name" /><br />
+          scale: <input v-model="spriteMap.scale" type="number" placeholder="scale" /><br />
+          offset X: <input v-model="spriteMap.offset.x" type="number" placeholder="offset X" /><br />
+          offset Y: <input v-model="spriteMap.offset.y" type="number" placeholder="offset Y" /><br />
 
         <table class="sprite-map-direction-table">
           <tr v-for="row in directionList">
@@ -268,6 +269,9 @@ table, th, td {
       <!-- CREATE SPRITE MAP -->
       <div v-if="spriteMapForm.adding === true">
         name: <input v-model="spriteMapForm.name" type="text" placeholder="name" /><br />
+        scale: <input v-model="spriteMapForm.scale" type="number" placeholder="scale" /><br />
+        offset X: <input v-model="spriteMapForm.offsetX" type="number" placeholder="offset X" /><br />
+        offset Y: <input v-model="spriteMapForm.offsetY" type="number" placeholder="offset Y" /><br />
 
         <table class="sprite-map-direction-table">
           <tr v-for="row in directionList">
@@ -1128,6 +1132,9 @@ var vue = new Vue({
     spriteMapForm: {
       adding: false,
       name: '',
+      scale: 0,
+      offsetX: 0,
+      offsetY: 0,
       sheets: {
         idle: '',
         up: '',
@@ -1314,7 +1321,6 @@ var vue = new Vue({
 
     deleteAgentType: function (agentType) {
       delete this.agentTypes[agentType]
-      this.$forceUpdate()
     },
 
     createAgentProperty: function () {
@@ -1581,10 +1587,12 @@ var vue = new Vue({
     updateThumbnailFileInput: function (event, agentTypeForm) {
       const fileName = "../img/thumbnails/" + event.target.files[0].name
       agentTypeForm.thumbnail = fileName
-      this.$forceUpdate()
     },
     createSpriteMap: function () {
       const args = {...this.spriteMapForm}
+      args.scale = Number(args.scale)
+      args.offsetX = Number(args.offsetX)
+      args.offsetY = Number(args.offsetY)
       this.spriteMaps.push(new SpriteMap(args))
 
       // 'save' to avoid inputting all after each page refresh

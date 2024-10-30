@@ -10,8 +10,7 @@ class Agent extends Sprite {
     super({ 
       position,
       previewImage: config.previewImage,
-      offset: config.offset,
-      scale: config.scale
+      spriteMap: config.spriteMap
     })
     this.num = num
     this.name = `${agentTypeName} ${num}`
@@ -20,25 +19,6 @@ class Agent extends Sprite {
     this.height = config.height
     this.position = position
     this.config = config
-
-    // move to Sprite class
-    this.spriteMap = config.spriteMap
-
-    if (this.spriteMap !== null) {
-      // hard-coding - to change
-      const spriteSheet = this.spriteMap.sheets['idle']
-      this.image.src = spriteSheet.src
-
-      this.frames = {
-        ...this.frames,
-        max: spriteSheet.numImages,
-        columns: spriteSheet.columns,
-        rows: spriteSheet.rows,
-        hold: spriteSheet.refreshInterval
-      }
-      this.defaultFrames = {...this.frames}
-    }
-
 
     this.collisionArea = {
       x: this.position.x,
@@ -100,18 +80,7 @@ class Agent extends Sprite {
 
       if (this.config.spriteMap !== null) {
         const direction = get8WayDirection(xVelocity, yVelocity)
-
-        if (this.currentDirection !== direction) {
-          const spriteSheet = this.config.spriteMap.sheets[direction]
-          this.image.src = spriteSheet.src
-          this.frames = {
-            ...this.frames,
-            max: spriteSheet.numImages,
-            columns: spriteSheet.columns,
-            rows: spriteSheet.rows,
-            hold: spriteSheet.refreshInterval
-          }
-        }
+        if (this.currentDirection !== direction) this.useSpriteSheet(direction)
         this.currentDirection = direction
       }
     }
@@ -254,15 +223,7 @@ class Agent extends Sprite {
     this.destination = null
 
     if (this.spriteMap !== null && this.currentDirection !== 'idle') {
-      const spriteSheet = this.spriteMap.sheets['idle']
-      this.image.src = spriteSheet.src
-      this.frames = {
-        ...this.frames,
-        max: spriteSheet.numImages,
-        columns: spriteSheet.columns,
-        rows: spriteSheet.rows,
-        hold: spriteSheet.refreshInterval
-      }
+      this.useSpriteSheet('idle')
       this.currentDirection = 'idle'
     }
   }
