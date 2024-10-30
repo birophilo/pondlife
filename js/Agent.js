@@ -13,8 +13,8 @@ class Agent extends Sprite {
       offset: config.offset,
       scale: config.scale
     })
-    this.name = config.name
     this.num = num
+    this.name = `${agentTypeName} ${num}`
     this.agentType = agentTypeName
     this.width = config.width
     this.height = config.height
@@ -25,7 +25,8 @@ class Agent extends Sprite {
     this.spriteMap = config.spriteMap
 
     if (this.spriteMap !== null) {
-      const spriteSheet = this.config.spriteMap.sheets['idle']
+      // hard-coding - to change
+      const spriteSheet = this.spriteMap.sheets['idle']
       this.image.src = spriteSheet.src
 
       this.frames = {
@@ -70,8 +71,6 @@ class Agent extends Sprite {
 
     // stateful configurable properties/parameters/variables
     this.stateData = {}  // e.g. money: 100
-
-    // this.defaultActions = new ActionDefaults(this)
 
     this.currentAction = null
 
@@ -251,21 +250,20 @@ class Agent extends Sprite {
   }
 
   idle() {
-    return
-    // this.currentStateName = 'idle'
-    // this.destination = null
+    this.currentStateName = 'idle'
+    this.destination = null
 
-    // if (this.spriteMap !== null && this.currentDirection !== 'idle') {
-    //   const spriteSheet = this.spriteMap.sheets['idle']
-    //   // this.image.src = spriteSheet.src
-    //   this.frames = {
-    //     ...this.frames,
-    //     max: spriteSheet.numImages,
-    //     columns: spriteSheet.columns,
-    //     rows: spriteSheet.rows,
-    //     hold: spriteSheet.refreshInterval
-    //   }
-    //   this.currentDirection = 'idle'
-    // }
+    if (this.spriteMap !== null && this.currentDirection !== 'idle') {
+      const spriteSheet = this.spriteMap.sheets['idle']
+      this.image.src = spriteSheet.src
+      this.frames = {
+        ...this.frames,
+        max: spriteSheet.numImages,
+        columns: spriteSheet.columns,
+        rows: spriteSheet.rows,
+        hold: spriteSheet.refreshInterval
+      }
+      this.currentDirection = 'idle'
+    }
   }
 }

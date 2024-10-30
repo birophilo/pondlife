@@ -198,31 +198,6 @@ class ActionTransition {
 }
 
 
-// class ActionDefaults {
-//   constructor(agent) {
-//     this.agent = agent
-//   }
-
-//   idle() {
-//     this.agent.currentStateName = 'idle'
-//     this.agent.destination = null
-
-//     if (this.agent.spriteMap !== null && this.agent.currentDirection !== 'idle') {
-//       const spriteSheet = this.agent.spriteMap.sheets['idle']
-//       this.agent.image.src = spriteSheet.src
-//       this.agent.frames = {
-//         ...this.agent.frames,
-//         max: spriteSheet.numImages,
-//         columns: spriteSheet.columns,
-//         rows: spriteSheet.rows,
-//         hold: spriteSheet.refreshInterval
-//       }
-//       this.agent.currentDirection = 'idle'
-//     }
-//   }
-// }
-
-
 class PropertyChange {
   constructor(agent, propertyName, changeType, propertyValue, args) {
     this.agent = agent

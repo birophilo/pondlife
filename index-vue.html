@@ -125,7 +125,7 @@ table, th, td {
     <div class="menu-section" id="agent-types-section">
       <h3 class="menu-section-heading">Selected Agent</h3>
       <div v-if="selectedAgent !== null">
-        {{ selectedAgent.name }} {{ selectedAgent.num }}<br/>
+        {{ selectedAgent.name }}<br/>
         current action: {{ selectedAgent.currentStateName }}
       </div>
       <div v-else>none</div>
@@ -402,12 +402,12 @@ table, th, td {
               <div v-if="action.args.agentChoiceMethod === 'specific'">
                 <select v-model="action.args.target">
                   <option value="">-- select agent --</option>
-                  <!-- <option
+                  <option
                     v-for="agent in agentItems[action.args.agentType]"
                     :value="agent"
                   >
                     {{ agent.name }}
-                  </option> -->
+                  </option>
                 </select>
               </div>
 
@@ -480,7 +480,7 @@ table, th, td {
 
             <!-- (ACTION) PROPERTY CHANGE ITEM CREATE FORM -->
             <div v-if="propertyChangeForm.adding === true">
-                <select v-model="propertyChangeForm.agent">
+                <select v-model="propertyChangeForm.agentType">
                   <option value="">-- agent --</option>
                   <option value="self">self</option>
                   <option v-for="agent in agentTypes" :value="agent.config.name">{{ agent.config.name }}</option>
@@ -516,7 +516,7 @@ table, th, td {
                   <select v-model="propertyChangeForm.target">
                     <option value="">-- select agent --</option>
                     <option
-                      v-for="agent in agentItems[propertyChangeForm.agent]"
+                      v-for="agent in agentItems[propertyChangeForm.agentType]"
                       :value="agent"
                     >
                       {{ agent.name }}
@@ -670,12 +670,12 @@ table, th, td {
               <div v-if="actionsSection.adding.forms.goTo.agentChoiceMethod === 'specific'">
                 <select v-model="actionsSection.adding.forms.goTo.target">
                   <option value="">-- select agent --</option>
-                  <!-- <option
+                  <option
                     v-for="agent in agentItems[actionsSection.adding.forms.goTo.agentType]"
                     :value="agent"
                   >
                     {{ agent.name }}
-                  </option> -->
+                  </option>
                 </select>
               </div>
 
@@ -906,13 +906,13 @@ let dayLength = 1000 // frames
 // const customerData = [{x: 0, y: 0}, {x: 900, y: 400}]
 // const supplyVanData = [{x: 800, y: 800}]
 
-const agentMenuButtonData = ['customer']
+const agentMenuButtonData = ['customer', 'lemonadeStall', 'supplyVan']
 
 const initialAgentData = {
-  // lemonadeStall: [{x: 400, y: 200}, {x: 700, y: 100}],
+  lemonadeStall: [{x: 400, y: 200}, {x: 700, y: 100}],
   customer: [{x: 900, y: 400}],
-  // supplyVan: [],
-  // world: [{x: 20, y: 20}]
+  supplyVan: [],
+  world: [{x: 20, y: 20}]
 }
 
 
@@ -932,39 +932,39 @@ const agentTypesData = [
     spriteMap: null,
     thumbnail: '../img/thumbnails/customer-thumbnail.png'
   },
-  // {
-  //   name: 'lemonadeStall',
-  //   width: 130,
-  //   height: 104,
-  //   offset: {x: 0, y: 0},
-  //   scale: 1,
-  //   nominalSpeed: 0.02,
-  //   previewImage: '../img/stall-1.png',
-  //   spriteMap: null,
-  //   thumbnail: '../img/thumbnails/lemonade-stall-thumbnail.png'
-  // },
-  // {
-  //   name: 'supplyVan',
-  //   width: 50,
-  //   height: 50,
-  //   offset: {x: 2, y: 0},
-  //   scale: 2.5,
-  //   nominalSpeed: 0.02,
-  //   previewImage: '../img/sprites/SupplyVan_Right.png',
-  //   spriteMap: null,
-  //   thumbnail: '../img/thumbnails/supply-van-thumbnail.png'
-  // },
-  // {
-  //   name: 'world',
-  //   width: 25,
-  //   height: 25,
-  //   offset: {x: 0, y: 0},
-  //   scale: 1,
-  //   nominalSpeed: 0.02,
-  //   previewImage: '../img/thumbnails/world-thumbnail.png',
-  //   spriteMap: null,
-  //   thumbnail: ''
-  // }
+  {
+    name: 'lemonadeStall',
+    width: 130,
+    height: 104,
+    offset: {x: 0, y: 0},
+    scale: 1,
+    nominalSpeed: 0.02,
+    previewImage: '../img/stall-1.png',
+    spriteMap: null,
+    thumbnail: '../img/thumbnails/lemonade-stall-thumbnail.png'
+  },
+  {
+    name: 'supplyVan',
+    width: 50,
+    height: 50,
+    offset: {x: 2, y: 0},
+    scale: 2.5,
+    nominalSpeed: 0.02,
+    previewImage: '../img/sprites/SupplyVan_Right.png',
+    spriteMap: null,
+    thumbnail: '../img/thumbnails/supply-van-thumbnail.png'
+  },
+  {
+    name: 'world',
+    width: 25,
+    height: 25,
+    offset: {x: 0, y: 0},
+    scale: 1,
+    nominalSpeed: 0.02,
+    previewImage: '../img/thumbnails/world-thumbnail.png',
+    spriteMap: null,
+    thumbnail: ''
+  }
 ]
 
 
@@ -1250,7 +1250,7 @@ var vue = new Vue({
         this.agentItems[agentTypeName] = []
         initialAgentData[agentTypeName].forEach((item, i) => {
           this.agentItems[agentTypeName].push( new Agent({
-            agentType: agentTypeName,
+            agentTypeName: agentTypeName,
             position: {x: item.x, y: item.y},
             num: i + 1,
             globals: this.GlobalSettings,
@@ -1414,7 +1414,7 @@ var vue = new Vue({
       const value = this.propertyChangeForm.value
 
       const args = {
-        agentType: this.propertyChangeForm.agent,
+        agentType: this.propertyChangeForm.agentType,
         agentChoiceMethod: this.propertyChangeForm.agentChoiceMethod,
         target: this.propertyChangeForm.target
       }
@@ -1662,7 +1662,7 @@ var vue = new Vue({
 
       if (this.GlobalSettings.animationFrameId % 32 === 0) {
         const customerActions = this.agentItems['customer'].map(cust =>
-          `customer: ${cust.num}, action: ${cust.currentAction ? cust.currentAction.name : 'none'}`
+          `${cust.name}, action: ${cust.currentAction ? cust.currentAction.name : 'none'}`
         )
         console.log(JSON.stringify(customerActions, null, 2))
       }
