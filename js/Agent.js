@@ -1,7 +1,7 @@
 class Agent extends Sprite {
 
   constructor({
-    agentType,
+    agentTypeName,
     position = { x: 0, y: 0 },
     num = 0,
     globals,
@@ -15,7 +15,7 @@ class Agent extends Sprite {
     })
     this.name = config.name
     this.num = num
-    this.agentType = agentType
+    this.agentType = agentTypeName
     this.width = config.width
     this.height = config.height
     this.position = position
@@ -71,7 +71,7 @@ class Agent extends Sprite {
     // stateful configurable properties/parameters/variables
     this.stateData = {}  // e.g. money: 100
 
-    this.defaultActions = new ActionDefaults(this)
+    // this.defaultActions = new ActionDefaults(this)
 
     this.currentAction = null
 
@@ -202,7 +202,7 @@ class Agent extends Sprite {
 
     // go into 'idle' mode if no more actions
     if (this.currentAction === null) {
-      this.defaultActions.idle()
+      this.idle()
       return
     }
 
@@ -234,7 +234,8 @@ class Agent extends Sprite {
     return Math.hypot(xDiff, yDiff)
   }
 
-  getClosestAgent(agents) {
+  getClosestAgent(agentTypeName) {
+    const agents = vue.agentItems[agentTypeName]
     let closestDistance = this.getDistanceToAgent(agents[0])
     let closestAgent = agents[0]
     for (let i = 1; i < agents.length; i++) {
@@ -247,5 +248,24 @@ class Agent extends Sprite {
 
   setProperty(property, value) {
     this.stateData[property] = value
+  }
+
+  idle() {
+    return
+    // this.currentStateName = 'idle'
+    // this.destination = null
+
+    // if (this.spriteMap !== null && this.currentDirection !== 'idle') {
+    //   const spriteSheet = this.spriteMap.sheets['idle']
+    //   // this.image.src = spriteSheet.src
+    //   this.frames = {
+    //     ...this.frames,
+    //     max: spriteSheet.numImages,
+    //     columns: spriteSheet.columns,
+    //     rows: spriteSheet.rows,
+    //     hold: spriteSheet.refreshInterval
+    //   }
+    //   this.currentDirection = 'idle'
+    // }
   }
 }

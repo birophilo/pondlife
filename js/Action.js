@@ -80,8 +80,8 @@ class ActionGoTo extends Action {
         this.agentType = args.agentType
 
         if (args.agentChoiceMethod === 'nearest') {
-          const agentItems = this.agent.agentType.agentItems
-          this.destination = this.agent.getClosestAgent(agentItems)
+          const agentType = args.agentType
+          this.destination = this.agent.getClosestAgent(agentType)
           this.stateName = `goingTo: ${this.destination.name}`
         }
 
@@ -131,11 +131,10 @@ class ActionPropertyChanges extends Action {
 
       } else {
 
-        const agentItems = this.agent.agentType.agentItems
         const agentChoiceMethod = change.args.agentChoiceMethod
 
         if (agentChoiceMethod === 'nearest') {
-          var agentToChange = this.agent.getClosestAgent(agentItems)
+          var agentToChange = this.agent.getClosestAgent(agentType)
           agentToChange.stateData[change.propertyName] += changeValue
         }
 
@@ -199,29 +198,29 @@ class ActionTransition {
 }
 
 
-class ActionDefaults {
-  constructor(agent) {
-    this.agent = agent
-  }
+// class ActionDefaults {
+//   constructor(agent) {
+//     this.agent = agent
+//   }
 
-  idle() {
-    this.agent.currentStateName = 'idle'
-    this.agent.destination = null
+//   idle() {
+//     this.agent.currentStateName = 'idle'
+//     this.agent.destination = null
 
-    if (this.agent.spriteMap !== null && this.agent.currentDirection !== 'idle') {
-      const spriteSheet = this.agent.spriteMap.sheets['idle']
-      this.agent.image.src = spriteSheet.src
-      this.agent.frames = {
-        ...this.agent.frames,
-        max: spriteSheet.numImages,
-        columns: spriteSheet.columns,
-        rows: spriteSheet.rows,
-        hold: spriteSheet.refreshInterval
-      }
-      this.agent.currentDirection = 'idle'
-    }
-  }
-}
+//     if (this.agent.spriteMap !== null && this.agent.currentDirection !== 'idle') {
+//       const spriteSheet = this.agent.spriteMap.sheets['idle']
+//       this.agent.image.src = spriteSheet.src
+//       this.agent.frames = {
+//         ...this.agent.frames,
+//         max: spriteSheet.numImages,
+//         columns: spriteSheet.columns,
+//         rows: spriteSheet.rows,
+//         hold: spriteSheet.refreshInterval
+//       }
+//       this.agent.currentDirection = 'idle'
+//     }
+//   }
+// }
 
 
 class PropertyChange {

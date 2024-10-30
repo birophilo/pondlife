@@ -402,12 +402,12 @@ table, th, td {
               <div v-if="action.args.agentChoiceMethod === 'specific'">
                 <select v-model="action.args.target">
                   <option value="">-- select agent --</option>
-                  <option
-                    v-for="agent in agentTypes[action.args.agentType].agentItems"
+                  <!-- <option
+                    v-for="agent in agentItems[action.args.agentType]"
                     :value="agent"
                   >
                     {{ agent.name }}
-                  </option>
+                  </option> -->
                 </select>
               </div>
 
@@ -516,7 +516,7 @@ table, th, td {
                   <select v-model="propertyChangeForm.target">
                     <option value="">-- select agent --</option>
                     <option
-                      v-for="agent in agentTypes[propertyChangeForm.agent].agentItems"
+                      v-for="agent in agentItems[propertyChangeForm.agent]"
                       :value="agent"
                     >
                       {{ agent.name }}
@@ -670,12 +670,12 @@ table, th, td {
               <div v-if="actionsSection.adding.forms.goTo.agentChoiceMethod === 'specific'">
                 <select v-model="actionsSection.adding.forms.goTo.target">
                   <option value="">-- select agent --</option>
-                  <option
-                    v-for="agent in agentTypes[actionsSection.adding.forms.goTo.agentType].agentItems"
+                  <!-- <option
+                    v-for="agent in agentItems[actionsSection.adding.forms.goTo.agentType]"
                     :value="agent"
                   >
                     {{ agent.name }}
-                  </option>
+                  </option> -->
                 </select>
               </div>
 
@@ -906,13 +906,13 @@ let dayLength = 1000 // frames
 // const customerData = [{x: 0, y: 0}, {x: 900, y: 400}]
 // const supplyVanData = [{x: 800, y: 800}]
 
-const agentMenuButtonData = ['customer', 'lemonadeStall', 'supplyVan']
+const agentMenuButtonData = ['customer']
 
 const initialAgentData = {
-  lemonadeStall: [{x: 400, y: 200}, {x: 700, y: 100}],
+  // lemonadeStall: [{x: 400, y: 200}, {x: 700, y: 100}],
   customer: [{x: 900, y: 400}],
-  supplyVan: [],
-  world: [{x: 20, y: 20}]
+  // supplyVan: [],
+  // world: [{x: 20, y: 20}]
 }
 
 
@@ -932,39 +932,39 @@ const agentTypesData = [
     spriteMap: null,
     thumbnail: '../img/thumbnails/customer-thumbnail.png'
   },
-  {
-    name: 'lemonadeStall',
-    width: 130,
-    height: 104,
-    offset: {x: 0, y: 0},
-    scale: 1,
-    nominalSpeed: 0.02,
-    previewImage: '../img/stall-1.png',
-    spriteMap: null,
-    thumbnail: '../img/thumbnails/lemonade-stall-thumbnail.png'
-  },
-  {
-    name: 'supplyVan',
-    width: 50,
-    height: 50,
-    offset: {x: 2, y: 0},
-    scale: 2.5,
-    nominalSpeed: 0.02,
-    previewImage: '../img/sprites/SupplyVan_Right.png',
-    spriteMap: null,
-    thumbnail: '../img/thumbnails/supply-van-thumbnail.png'
-  },
-  {
-    name: 'world',
-    width: 25,
-    height: 25,
-    offset: {x: 0, y: 0},
-    scale: 1,
-    nominalSpeed: 0.02,
-    previewImage: '../img/thumbnails/world-thumbnail.png',
-    spriteMap: null,
-    thumbnail: ''
-  }
+  // {
+  //   name: 'lemonadeStall',
+  //   width: 130,
+  //   height: 104,
+  //   offset: {x: 0, y: 0},
+  //   scale: 1,
+  //   nominalSpeed: 0.02,
+  //   previewImage: '../img/stall-1.png',
+  //   spriteMap: null,
+  //   thumbnail: '../img/thumbnails/lemonade-stall-thumbnail.png'
+  // },
+  // {
+  //   name: 'supplyVan',
+  //   width: 50,
+  //   height: 50,
+  //   offset: {x: 2, y: 0},
+  //   scale: 2.5,
+  //   nominalSpeed: 0.02,
+  //   previewImage: '../img/sprites/SupplyVan_Right.png',
+  //   spriteMap: null,
+  //   thumbnail: '../img/thumbnails/supply-van-thumbnail.png'
+  // },
+  // {
+  //   name: 'world',
+  //   width: 25,
+  //   height: 25,
+  //   offset: {x: 0, y: 0},
+  //   scale: 1,
+  //   nominalSpeed: 0.02,
+  //   previewImage: '../img/thumbnails/world-thumbnail.png',
+  //   spriteMap: null,
+  //   thumbnail: ''
+  // }
 ]
 
 
@@ -1013,7 +1013,11 @@ var vue = new Vue({
       ['downLeft', 'down', 'downRight']
     ],
 
+    // e.g. {customer: AgentType, lemonadeStall: AgentType}
     agentTypes: {},
+
+    // e.g. {customer: [Agent, Agent, Agent], lemonadeStall: [Agent, Agent]}
+    agentItems: {},
 
     agentTypeForm: {
       adding: false,
@@ -1243,9 +1247,10 @@ var vue = new Vue({
 
       // populate agents from initial data
       agentTypeNames.forEach(agentTypeName => {
+        this.agentItems[agentTypeName] = []
         initialAgentData[agentTypeName].forEach((item, i) => {
-          this.agentTypes[agentTypeName].agentItems.push( new Agent({
-            agentType: this.agentTypes[agentTypeName],
+          this.agentItems[agentTypeName].push( new Agent({
+            agentType: agentTypeName,
             position: {x: item.x, y: item.y},
             num: i + 1,
             globals: this.GlobalSettings,
@@ -1624,11 +1629,11 @@ var vue = new Vue({
       const animationId = requestAnimationFrame(this.animate)
       this.GlobalSettings.animationFrameId = animationId
 
-      const agentTypes = Object.keys(this.agentTypes).map(agent => this.agentTypes[agent].agentItems)
+      const agentTypeNames = Object.keys(this.agentItems)
 
       // update each agent of each agent type
-      agentTypes.forEach(agentItems => {
-        agentItems.forEach(agent => {
+      agentTypeNames.forEach(agentTypeName => {
+        this.agentItems[agentTypeName].forEach(agent => {
           agent.update({}, this.GlobalSettings)
           const isInArea = pointIsInArea(this.mouse, agent.collisionArea)
           if (isInArea) hover = true
@@ -1656,16 +1661,16 @@ var vue = new Vue({
       if (animationId % dayLength === 0) endDay()
 
       if (this.GlobalSettings.animationFrameId % 32 === 0) {
-        const customerActions = this.agentTypes.customer.agentItems.map(
-          cust => `customer: ${cust.num}, action: ${cust.currentAction ? cust.currentAction.name : 'none'}`
+        const customerActions = this.agentItems['customer'].map(cust =>
+          `customer: ${cust.num}, action: ${cust.currentAction ? cust.currentAction.name : 'none'}`
         )
         console.log(JSON.stringify(customerActions, null, 2))
       }
 
     },
 
-    selectOrDeleteAgent: function (agentClassName, point) {
-      let agentItems = this.agentTypes[agentClassName].agentItems
+    selectOrDeleteAgent: function (agentTypeName, point) {
+      const agentItems = this.agentItems[agentTypeName]
       agentItems.forEach((agent, i) => {
         const isInArea = pointIsInArea(point, agent.collisionArea)
 
@@ -1692,10 +1697,10 @@ var vue = new Vue({
     },
 
     addAgent: function (agentTypeName) {
-      const agentItems = this.agentTypes[agentTypeName].agentItems
+      const agentItems = this.agentItems[agentTypeName]
       const num = agentItems.length + 1
       agentItems.push( new Agent({
-        agentType: this.agentTypes[agentTypeName],
+        agentType: agentTypeName,
         position: {
           x: this.mouse.x - this.agentTypes[agentTypeName].config.width / 2,
           y: this.mouse.y - this.agentTypes[agentTypeName].config.height / 2

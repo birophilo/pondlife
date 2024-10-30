@@ -27,6 +27,8 @@ class Sprite {
 
   draw() {
 
+    console.log(this.defaultImage)
+
     const cropWidth = this.image.width / this.frames.columns
     const cropHeight = this.image.height / this.frames.rows
     const crop = {
