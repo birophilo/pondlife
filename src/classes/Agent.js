@@ -1,4 +1,7 @@
-class Agent extends Sprite {
+import { Sprite } from "./Sprite.js" 
+import { get8WayDirection } from "./utils.js"
+
+export default class Agent extends Sprite {
 
   constructor({
     agentTypeName,
@@ -98,11 +101,6 @@ class Agent extends Sprite {
     }
   }
 
-  draw() {
-    super.draw()
-    this.updateLabel()
-  }
-
   atDestination() {
     if (!this.destination) {
       return false
@@ -150,7 +148,12 @@ class Agent extends Sprite {
     this.labelElement.innerHTML = this.labelText
   }
 
-  update(newData, globals) {
+  draw(c) {
+    super.draw(c)
+    this.updateLabel()
+  }
+
+  update(c, newData, globals) {
 
     super.update(globals)
 
@@ -160,7 +163,7 @@ class Agent extends Sprite {
 
     this.updateLabel()
 
-    this.draw()
+    this.draw(c)
     this.travel()
 
     // remove action if complete
@@ -202,16 +205,18 @@ class Agent extends Sprite {
     return Math.hypot(xDiff, yDiff)
   }
 
+  // eslint-disable-next-line
   getClosestAgent(agentTypeName) {
-    const agents = vue.agentItems[agentTypeName]
-    let closestDistance = this.getDistanceToAgent(agents[0])
-    let closestAgent = agents[0]
-    for (let i = 1; i < agents.length; i++) {
-      if (this.getDistanceToAgent(agents[i]) < closestDistance) {
-        closestAgent = agents[i]
-      }
-    }
-    return closestAgent
+    // COMMENTING OUT TEMPORARILY
+    // const agents = vue.agentItems[agentTypeName]
+    // let closestDistance = this.getDistanceToAgent(agents[0])
+    // let closestAgent = agents[0]
+    // for (let i = 1; i < agents.length; i++) {
+    //   if (this.getDistanceToAgent(agents[i]) < closestDistance) {
+    //     closestAgent = agents[i]
+    //   }
+    // }
+    // return closestAgent
   }
 
   setProperty(property, value) {

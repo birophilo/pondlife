@@ -1,4 +1,4 @@
-class Condition {
+export class Condition {
   constructor(
     agent,
     conditionName,
@@ -37,13 +37,13 @@ function isIdentical(comparisonValue, refValue) {
 }
 
 
-COMPARISONS = {
+const COMPARISONS = {
   isGreaterThan: isGreaterThan,
   isIdentical: isIdentical
 }
 
 
-class PresetCondition {
+export class PresetCondition {
   // not sure how to incorporate checks like agent.atDestination() yet - this is temporary design
   constructor(
     agent,

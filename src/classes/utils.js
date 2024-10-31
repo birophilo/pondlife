@@ -1,4 +1,4 @@
-function get8WayDirection(xVelocity, yVelocity) {
+export function get8WayDirection(xVelocity, yVelocity) {
   const diagonalThreshold = 0.2
   const xVelocityIsNotDiagonal = Math.abs(xVelocity) < diagonalThreshold
   const yVelocityIsNotDiagonal = Math.abs(yVelocity) < diagonalThreshold
@@ -23,7 +23,7 @@ function get8WayDirection(xVelocity, yVelocity) {
 }
 
 
-function pointIsInArea(point = {x, y}, area = {x, y, width, height}) {
+export function pointIsInArea(point, area) {
   if (
     point.x >= area.x &&
     point.x <= area.x + area.width &&

@@ -9,7 +9,7 @@ const menuPosX = 20
 const menuPosY = 520
 
 
-class AgentMenu {
+export class AgentMenu {
   constructor() {
     this.position = {x: menuPosX, y: menuPosY}
     this.width = menuWidth
@@ -23,7 +23,7 @@ class AgentMenu {
     }
   }
 
-  draw() {
+  draw(c) {
     c.fillStyle = 'white'
     c.fillRect(
       this.position.x,
@@ -41,13 +41,13 @@ class AgentMenu {
     )
   }
 
-  update(numButtons) {
-    this.draw()
+  update(c, numButtons) {
+    this.draw(c)
     this.width = (numButtons * (menuButtonWidth + menuBorder)) + menuBorder
   }
 }
 
-class agentMenuButton {
+class AgentMenuButton {
   constructor({ menu, i = 0, name, config }) {
     this.name = name
     this.width = menuButtonWidth
@@ -71,7 +71,7 @@ class agentMenuButton {
     this.agentConfig = config  // need this or not?
   }
 
-  draw() {
+  draw(c) {
     c.lineWidth = 0.2
     c.strokeStyle = 'grey'
     c.strokeRect(
@@ -102,7 +102,7 @@ class agentMenuButton {
 
 }
 
-class AgentMenuIcon extends agentMenuButton {
+export class AgentMenuIcon extends AgentMenuButton {
 
   constructor({menu, i = 1, name, agent, config}) {
     super({menu, i, name, config})
@@ -113,8 +113,8 @@ class AgentMenuIcon extends agentMenuButton {
     this.config = config
   }
 
-  draw() {
-    super.draw()
+  draw(c) {
+    super.draw(c)
 
     c.drawImage(
       this.thumbnail,
@@ -125,20 +125,20 @@ class AgentMenuIcon extends agentMenuButton {
     )
   }
 
-  update(i) {
+  update(c, i) {
     if (this.thumbnail.src !== this.config.thumbnail) {
       this.thumbnail.src = this.config.thumbnail
     }
-    this.draw()
+    this.draw(c)
     super.update(i)
   }
 }
 
 
-class DeleteButton extends agentMenuButton {
+export class DeleteButton extends AgentMenuButton {
 
-  draw(selected) {
-    super.draw()
+  draw(c, selected) {
+    super.draw(c)
     c.fillStyle = selected ? 'rgba(0, 0, 0, 0.4)' : 'rgba(0, 0, 0, 0.1)'
     c.stroke 
     c.fillRect(this.position.x, this.position.y, this.width, this.height)
@@ -155,14 +155,14 @@ class DeleteButton extends agentMenuButton {
     c.lineWidth = 0.8
   }
 
-  update(i, selected) {
-    this.draw(selected)
+  update(c, i, selected) {
+    this.draw(c, selected)
     super.update(i)
   }
 }
 
 
-class AgentPreview {
+export class AgentPreview {
   constructor(agentType) {
     this.agentType = agentType
     this.position = {x: 0, y: 0}
@@ -173,7 +173,7 @@ class AgentPreview {
     this.image.src = agentType.config.previewImage
   }
 
-  draw() {
+  draw(c) {
     c.drawImage(
       this.image,
       this.position.x,
@@ -183,9 +183,9 @@ class AgentPreview {
     )
   }
 
-  update(mouse) {
+  update(c, mouse) {
     this.position.x = mouse.x - this.width / 2
     this.position.y = mouse.y - this.height / 2
-    this.draw()
+    this.draw(c)
   }
 }

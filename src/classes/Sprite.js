@@ -1,4 +1,4 @@
-class Sprite {
+export class Sprite {
   constructor({
     position = {x: 0, y: 0},
     previewImage,
@@ -23,7 +23,7 @@ class Sprite {
     this.useSpriteSheet('idle')
   }
 
-  draw() {
+  draw(c) {
 
     var offset
     var scale
@@ -92,7 +92,7 @@ class Sprite {
 }
 
 
-class SpriteSheet {
+export class SpriteSheet {
   constructor(args) {
     this.name = args.name
     this.src = args.src
@@ -106,7 +106,7 @@ class SpriteSheet {
 }
 
 
-class SpriteMap {
+export class SpriteMap {
   constructor(args) {
     this.name = args.name
     this.sheets = args.sheets

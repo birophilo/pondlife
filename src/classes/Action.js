@@ -1,4 +1,4 @@
-class Action {
+export class Action {
   constructor(agent = null, args, conditions = [], transitions = []) {
     this.id = args.id  // incrementing PK
     this.agent = agent
@@ -34,6 +34,7 @@ class Action {
     return true
   }
 
+  // eslint-disable-next-line
   check(stateData, globals) {
     console.log(this.actionName)
     for (let i = 0; i < this.transitions.length; i++) {
@@ -62,7 +63,7 @@ class Action {
 }
 
 
-class ActionGoTo extends Action {
+export class ActionGoTo extends Action {
   constructor(agent = null, args, conditions = [], transitions = []) {
     super(agent, args, conditions, transitions)
 
@@ -91,6 +92,7 @@ class ActionGoTo extends Action {
     }
   }
 
+  // eslint-disable-next-line
   start(globals) {
     this.agent.destination = this.destination
     this.agent.currentStateName = this.stateName
@@ -103,7 +105,7 @@ class ActionGoTo extends Action {
 }
 
 
-class ActionPropertyChanges extends Action {
+export class ActionPropertyChanges extends Action {
   constructor(agent = null, args, conditions = [], transitions = [], propertyChanges = []) {
     super(agent, args, conditions, transitions)
 
@@ -118,6 +120,7 @@ class ActionPropertyChanges extends Action {
     }
   }
 
+  // eslint-disable-next-line
   start(globals) {
     this.propertyChanges.forEach(change => {
 
@@ -125,8 +128,10 @@ class ActionPropertyChanges extends Action {
       const value = change.propertyValue
       const changeValue = change.changeType === 'increase' ? Number(value) : 0 - Number(value)
 
+      var agentToChange
+
       if (agentType === 'self') {
-        var agentToChange = this.agent
+        agentToChange = this.agent
         agentToChange.stateData[change.propertyName] += changeValue
 
       } else {
@@ -134,16 +139,17 @@ class ActionPropertyChanges extends Action {
         const agentChoiceMethod = change.args.agentChoiceMethod
 
         if (agentChoiceMethod === 'nearest') {
-          var agentToChange = this.agent.getClosestAgent(agentType)
+          agentToChange = this.agent.getClosestAgent(agentType)
           agentToChange.stateData[change.propertyName] += changeValue
         }
 
         else if (agentChoiceMethod === 'specific') {
-          var agentToChange = change.args.target
+          agentToChange = change.args.target
         }
 
         else if (agentChoiceMethod === 'all') {
-          agentItems.forEach(agent => agent.stateData[change.propertyName] += changeValue)
+          // COMMENTING OUT TEMPORARILY
+          // vue.agentItems[agentType].forEach(agent => agent.stateData[change.propertyName] += changeValue)
         }
       }
 
@@ -157,11 +163,11 @@ class ActionPropertyChanges extends Action {
 }
 
 
-class ActionInterval extends Action {
+export class ActionInterval extends Action {
   /*
     A timer object; an 'action' that just waits for a specified frame duration.
   */
-  constructor(agent = null, args, conditions = [], transitions = [], propertyChanges = []) {
+  constructor(agent = null, args, conditions = [], transitions = []) {
     super(agent, args, conditions, transitions)
 
     this.duration = args.duration
@@ -189,7 +195,7 @@ class ActionInterval extends Action {
 }
 
 
-class ActionTransition {
+export class ActionTransition {
   constructor(condition, nextAction) {
     this.condition = condition
     this.nextAction = nextAction
@@ -198,7 +204,7 @@ class ActionTransition {
 }
 
 
-class PropertyChange {
+export class PropertyChange {
   constructor(agent, propertyName, changeType, propertyValue, args) {
     this.agent = agent
     this.propertyName = propertyName

@@ -1,4 +1,4 @@
-class AgentType {
+export default class AgentType {
   constructor(args) {
     this.name = args.name
     this.agentItems = []
