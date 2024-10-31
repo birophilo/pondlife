@@ -75,7 +75,6 @@ export class Sprite {
 
   useSpriteSheet(spriteSheetName) {
     if (this.spriteMap !== null) {
-      // hard-coding - to change
       const spriteSheet = this.spriteMap.sheets[spriteSheetName]
       this.image.src = spriteSheet.src
 

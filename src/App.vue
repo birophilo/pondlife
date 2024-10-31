@@ -91,7 +91,7 @@
         <div v-else>
           <div>
             {{ spriteSheet.name }}
-            <button @click="spriteSheet.editing = true">edit</button>
+            <button @click="spriteSheet.editing = true; $forceUpdate()">edit</button>
             <button @click="deleteSpriteSheet(i)">delete</button>
           </div>
         </div>
@@ -148,7 +148,7 @@
         <div v-else>
           <div>
             {{ spriteMap.name }}
-            <button @click="spriteMap.editing = true">edit</button>
+            <button @click="spriteMap.editing = true; $forceUpdate()">edit</button>
             <button @click="deleteSpriteMap(i)">delete</button>
           </div>
         </div>
@@ -816,9 +816,9 @@ const agentTypesData = [
     offset: {x: 96, y: 46},
     scale: 0.7,
     nominalSpeed: 0.02,
-    previewImage: '../img/sprites/GirlSample_Walk_Down.png',
+    previewImage: '/img/sprites/GirlSample_Walk_Down.png',
     spriteMap: null,
-    thumbnail: '../img/thumbnails/customer-thumbnail.png'
+    thumbnail: '/img/thumbnails/customer-thumbnail.png'
   },
   {
     name: 'lemonadeStall',
@@ -827,9 +827,9 @@ const agentTypesData = [
     offset: {x: 0, y: 0},
     scale: 1,
     nominalSpeed: 0.02,
-    previewImage: '../img/stall-1.png',
+    previewImage: '/img/sprites/stall-1.png',
     spriteMap: null,
-    thumbnail: '../img/thumbnails/lemonade-stall-thumbnail.png'
+    thumbnail: '/img/thumbnails/lemonade-stall-thumbnail.png'
   },
   {
     name: 'supplyVan',
@@ -838,9 +838,9 @@ const agentTypesData = [
     offset: {x: 2, y: 0},
     scale: 2.5,
     nominalSpeed: 0.02,
-    previewImage: '../img/sprites/SupplyVan_Right.png',
+    previewImage: '/img/sprites/SupplyVan_Right.png',
     spriteMap: null,
-    thumbnail: '../img/thumbnails/supply-van-thumbnail.png'
+    thumbnail: '/img/thumbnails/supply-van-thumbnail.png'
   },
   {
     name: 'world',
@@ -849,7 +849,7 @@ const agentTypesData = [
     offset: {x: 0, y: 0},
     scale: 1,
     nominalSpeed: 0.02,
-    previewImage: '../img/thumbnails/world-thumbnail.png',
+    previewImage: '/img/thumbnails/world-thumbnail.png',
     spriteMap: null,
     thumbnail: ''
   }
@@ -1032,6 +1032,7 @@ export default {
   },
 
   mounted: function () {
+
     canvas = document.querySelector('canvas')
     c = canvas.getContext('2d')
 
@@ -1181,7 +1182,7 @@ export default {
           offset: {x: 96, y: 46},
           scale: 1,
           nominalSpeed: Number(this.agentTypeForm.nominalSpeed),
-          previewImage: '../img/sprites/GirlSample_Walk_Down.png',
+          previewImage: '/img/sprites/GirlSample_Walk_Down.png',
           spriteMap: this.agentTypeForm.spriteMap,
           thumbnail: this.agentTypeForm.thumbnail
         }
@@ -1463,13 +1464,13 @@ export default {
       localStorage.setItem('pondlifeSpriteSheets', JSON.stringify(this.spriteSheets))
     },
     updateSpritesheetFileInput: function (event, spriteSheetForm) {
-      const fileName = "../img/sprites/" + event.target.files[0].name
+      const fileName = "/img/sprites/" + event.target.files[0].name
       spriteSheetForm.src = fileName
       localStorage.setItem('pondlifeSpriteSheets', JSON.stringify(this.spriteSheets))
       localStorage.setItem('pondlifeSpriteMaps', JSON.stringify(this.spriteMaps))
     },
     updateThumbnailFileInput: function (event, agentTypeForm) {
-      const fileName = "../img/thumbnails/" + event.target.files[0].name
+      const fileName = "/img/thumbnails/" + event.target.files[0].name
       agentTypeForm.thumbnail = fileName
     },
     createSpriteMap: function () {
@@ -1501,6 +1502,7 @@ export default {
     saveSpriteMap: function (spriteMap) {
       spriteMap.editing = false
       localStorage.setItem('pondlifeSpriteMaps', JSON.stringify(this.spriteMaps))
+      this.$forceUpdate()
     },
     deleteSpriteMap: function (index) {
       this.spriteMaps.splice(index, 1)
