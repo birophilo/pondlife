@@ -75,46 +75,10 @@
 
     <div class="menu-section" id="sprite-sheets-section">
       <h3 class="menu-section-heading">Sprite Sheets</h3>
-
-      <div v-for="(spriteSheet, i) in store.spriteSheets">
-
-        <!-- EDIT SPRITE SHEET -->
-        <div v-if="spriteSheet.editing === true">
-          name: <input v-model="spriteSheet.name" type="text" placeholder="name" /><br />
-          src: {{ spriteSheet.src }}<br />
-          <input type="file" placeholder="src" @change="updateSpritesheetFileInput($event, spriteSheet)" /><br />
-          rows: <input v-model="spriteSheet.rows" type="number" placeholder="rows" /><br />
-          columns: <input v-model="spriteSheet.columns" type="number" placeholder="columns" /><br />
-          numImages: <input v-model="spriteSheet.numImages" type="number" placeholder="number of images" /><br />
-          refreshInterval: <input v-model="spriteSheet.refreshInterval" type="number" placeholder="refresh interval" /><br />
-          <br />
-          <button @click="saveSpriteSheet(spriteSheet)">save</button>
-          <button @click="spriteSheet.editing = false">cancel</button>
-        </div>
-        <div v-else>
-          <div>
-            {{ spriteSheet.name }}
-            <button @click="spriteSheet.editing = true; $forceUpdate()">edit</button>
-            <button @click="deleteSpriteSheet(i)">delete</button>
-          </div>
-        </div>
-
+      <div v-for="(spriteSheet, index) in store.spriteSheets">
+        <MenuSpriteSheet :spriteSheet="spriteSheet" :i="index" />
       </div>
-
-      <!-- CREATE SPRITE SHEET -->
-      <div v-if="spriteSheetForm.adding === true">
-        name: <input v-model="spriteSheetForm.name" type="text" placeholder="name" /><br />
-        src: <input type="file" placeholder="src" @change="updateSpritesheetFileInput($event, spriteSheetForm)" /><br />
-        rows: <input v-model="spriteSheetForm.rows" type="number" placeholder="rows" /><br />
-        columns: <input v-model="spriteSheetForm.columns" type="number" placeholder="columns" /><br />
-        numImages: <input v-model="spriteSheetForm.numImages" type="number" placeholder="number of images" /><br />
-        refreshInterval: <input v-model="spriteSheetForm.refreshInterval" type="number" placeholder="refresh interval" /><br />
-        <button @click="createSpriteSheet()">create sprite sheet</button>
-        <button @click="spriteSheetForm.adding = false">cancel</button>
-      </div>
-      <div v-else>
-        <button @click="spriteSheetForm.adding = true">new sprite sheet</button>
-      </div>
+      <SpriteSheetForm />
 
     </div>
 
@@ -779,7 +743,7 @@
 
 <script>
 import { pointIsInArea } from "./classes/utils.js"
-import { SpriteSheet, SpriteMap } from "./classes/Sprite.js"
+import { SpriteMap } from "./classes/Sprite.js"
 import { Condition, PresetCondition } from "./classes/Condition.js"
 import AgentType from "./classes/AgentType.js"
 import { ActionGoTo, ActionPropertyChanges, ActionInterval, ActionTransition, PropertyChange } from "./classes/Action.js"
@@ -787,6 +751,9 @@ import Agent from "./classes/Agent.js"
 import { AgentMenu, AgentMenuIcon, DeleteButton, AgentPreview } from "./classes/SelectionMenu.js"
 
 import { useStore } from './store/mainStore.js'
+
+import SpriteSheetForm from './components/SpriteSheetForm.vue'
+import MenuSpriteSheet from './components/MenuSpriteSheet.vue'
 
 
 let canvas;
@@ -866,6 +833,10 @@ export default {
   setup() {
     const store = useStore()
     return { store }
+  },
+  components: {
+    MenuSpriteSheet,
+    SpriteSheetForm
   },
   data: function () {
     return {
@@ -976,15 +947,6 @@ export default {
       property: '',
       change: '',
       value: ''
-    },
-    spriteSheetForm: {
-      adding: false,
-      name: '',
-      src: '',
-      columns: 1,
-      rows: 1,
-      numImages: 1,
-      refreshInterval: 1
     },
     spriteMapForm: {
       adding: false,
@@ -1397,51 +1359,6 @@ export default {
     conditionReadableFormat: function (condition) {
       const readable = `${ condition.property } ${ condition.comparison } ${ condition.value }`
       return readable
-    },
-    createSpriteSheet: function () {
-      const args = {
-        adding: this.spriteSheetForm.adding,
-        name: this.spriteSheetForm.name,
-        src: this.spriteSheetForm.src,
-        columns: Number(this.spriteSheetForm.columns),
-        rows: Number(this.spriteSheetForm.rows),
-        numImages: Number(this.spriteSheetForm.numImages),
-        refreshInterval: Number(this.spriteSheetForm.refreshInterval)
-      }
-      this.store.spriteSheets.push(new SpriteSheet(args))
-
-      // 'save' to avoid inputting all after each page refresh
-      localStorage.setItem('pondlifeSpriteSheets', JSON.stringify(this.store.spriteSheets))
-
-      this.spriteSheetForm = {
-        adding: false,
-        name: '',
-        src: '',
-        columns: 1,
-        rows: 1,
-        numImages: 1,
-        refreshInterval: 1
-      }
-    },
-    saveSpriteSheet: function (spriteSheet) {
-      spriteSheet.editing = false
-      const args = {
-        adding: spriteSheet.adding,
-        name: spriteSheet.name,
-        src: spriteSheet.src,
-        columns: Number(spriteSheet.columns),
-        rows: Number(spriteSheet.rows),
-        numImages: Number(spriteSheet.numImages),
-        refreshInterval: Number(spriteSheet.refreshInterval)
-      }
-      const props = Object.keys(args)
-      props.forEach(prop => spriteSheet[prop] = args[prop])
-      localStorage.setItem('pondlifeSpriteSheets', JSON.stringify(this.store.spriteSheets))
-    },
-    deleteSpriteSheet: function (index) {
-      this.store.spriteSheets.splice(index, 1)
-      // 'save' to avoid inputting all after each page refresh
-      localStorage.setItem('pondlifeSpriteSheets', JSON.stringify(this.store.spriteSheets))
     },
     updateSpritesheetFileInput: function (event, spriteSheetForm) {
       const fileName = "/img/sprites/" + event.target.files[0].name
