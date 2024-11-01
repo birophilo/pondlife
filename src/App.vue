@@ -11,11 +11,14 @@
 
   <div class="info-container">
 
+    <div>{{ store.myData }}</div>
+    <button @click="store.myData = 'goodbye'">change store</button>
+
     <div class="menu-section" id="agent-types-section">
       <h3 class="menu-section-heading">Selected Agent</h3>
-      <div v-if="selectedAgent !== null">
-        {{ selectedAgent.name }}<br/>
-        current action: {{ selectedAgent.currentStateName }}
+      <div v-if="store.selectedAgent !== null">
+        {{ store.selectedAgent.name }}<br/>
+        current action: {{ store.selectedAgent.currentStateName }}
       </div>
       <div v-else>none</div>
     </div>
@@ -24,7 +27,7 @@
       <h3 class="menu-section-heading">Agent Types</h3>
 
       <!-- EDIT AGENT TYPE -->
-      <div v-for="(agentType) in agentTypes">
+      <div v-for="(agentType) in store.agentTypes">
         <div v-if="agentType.name !== 'world'">
           <div v-if="agentType.editing === true">
             name: <input v-model="agentType.name" type="text" placeholder="name" /><br />
@@ -34,7 +37,7 @@
             spriteMap:
             <select v-model="agentType.config.spriteMap">
               <option value="">-- select sprite map --</option>
-              <option :value="spriteMap" v-for="spriteMap in spriteMaps">{{ spriteMap.name }}</option>
+              <option :value="spriteMap" v-for="spriteMap in store.spriteMaps">{{ spriteMap.name }}</option>
             </select>
             <br />
             thumbnail: {{ agentType.config.thumbnail }}<br />
@@ -59,7 +62,7 @@
         spriteMap:
         <select v-model="agentTypeForm.spriteMap">
           <option value="">-- select sprite map --</option>
-          <option :value="spriteMap" v-for="spriteMap in spriteMaps">{{ spriteMap.name }}</option>
+          <option :value="spriteMap" v-for="spriteMap in store.spriteMaps">{{ spriteMap.name }}</option>
         </select><br />
         thumbnail: {{ agentTypeForm.thumbnail }}<br />
         <input type="file" placeholder="thumbnail" @change="updateThumbnailFileInput($event, agentTypeForm)" /><br />
@@ -73,7 +76,7 @@
     <div class="menu-section" id="sprite-sheets-section">
       <h3 class="menu-section-heading">Sprite Sheets</h3>
 
-      <div v-for="(spriteSheet, i) in spriteSheets">
+      <div v-for="(spriteSheet, i) in store.spriteSheets">
 
         <!-- EDIT SPRITE SHEET -->
         <div v-if="spriteSheet.editing === true">
@@ -119,7 +122,7 @@
     <div class="menu-section" id="sprite-maps-section">
       <h3 class="menu-section-heading">Sprite Maps</h3>
 
-      <div v-for="(spriteMap, i) in spriteMaps">
+      <div v-for="(spriteMap, i) in store.spriteMaps">
 
         <!-- EDIT SPRITE MAP -->
         <div v-if="spriteMap.editing === true">
@@ -133,7 +136,7 @@
             <td v-for="directionName in row">
               <select v-model="spriteMap.sheets[directionName]">
                 <option value="">-- {{directionName  }} --</option>
-                <option v-for="spriteSheet in spriteSheets" :value="spriteSheet">{{ spriteSheet.name }}</option>
+                <option v-for="spriteSheet in store.spriteSheets" :value="spriteSheet">{{ spriteSheet.name }}</option>
               </select>
               <br />
               <img :src="spriteMap.sheets[directionName].src" width="70" height="70"/>
@@ -167,7 +170,7 @@
             <td v-for="directionName in row">
               <select v-model="spriteMapForm.sheets[directionName]">
                 <option value="">-- {{directionName  }} --</option>
-                <option v-for="spriteSheet in spriteSheets" :value="spriteSheet">{{ spriteSheet.name }}</option>
+                <option v-for="spriteSheet in store.spriteSheets" :value="spriteSheet">{{ spriteSheet.name }}</option>
               </select>
               <br />
               <img :src="spriteMapForm.sheets[directionName].src" width="70" height="70"/>
@@ -186,12 +189,12 @@
     <div class="menu-section" id="properties-section">
       <h3 class="menu-section-heading">Properties</h3>
       <!-- PROPERTY LIST -->
-      <div v-if="selectedAgent !== null" class="item-list">
-        <div v-for="property in Object.keys(selectedAgent.stateData)">
+      <div v-if="store.selectedAgent !== null" class="item-list">
+        <div v-for="property in Object.keys(store.selectedAgent.stateData)">
           <div v-if="property.editing === true">
             <input type="text" placeholder="name" :value="property" disabled />
-            <input v-model="selectedAgent.stateData[property]" type="number" />
-            <button @click="delete selectedAgent.stateData[property]">delete</button>
+            <input v-model="store.selectedAgent.stateData[property]" type="number" />
+            <button @click="delete store.selectedAgent.stateData[property]">delete</button>
             <br/>
           </div>
           <div v-else>
@@ -269,7 +272,7 @@
 
               <select v-model="action.args.agentType">
                 <option value="">-- agent type --</option>
-                <option v-for="agentType in agentTypes" :value="agentType.name">{{ agentType.name }}</option>
+                <option v-for="agentType in store.agentTypes" :value="agentType.name">{{ agentType.name }}</option>
               </select>
 
               <form name="agentRadioSelect">
@@ -294,7 +297,7 @@
                 <select v-model="action.args.target">
                   <option value="">-- select agent --</option>
                   <option
-                    v-for="agent in agentItems[action.args.agentType]"
+                    v-for="agent in store.agentItems[action.args.agentType]"
                     :value="agent"
                   >
                     {{ agent.name }}
@@ -315,7 +318,7 @@
               <div v-if="propertyChange.editing === true">
                 <select v-model="propertyChange.agent">
                   <option value="self">self</option>
-                  <option v-for="agent in agentTypes" :value="agent.config.name">{{ agent.config.name }}</option>
+                  <option v-for="agent in store.agentTypes" :value="agent.config.name">{{ agent.config.name }}</option>
                 </select>
 
                 <form name="agentPropChangeRadioSelect">
@@ -373,7 +376,7 @@
                 <select v-model="propertyChangeForm.agentType">
                   <option value="">-- agent --</option>
                   <option value="self">self</option>
-                  <option v-for="agent in agentTypes" :value="agent.config.name">{{ agent.config.name }}</option>
+                  <option v-for="agent in store.agentTypes" :value="agent.config.name">{{ agent.config.name }}</option>
                   <option value="lemonadeStall">lemonade stall</option>
                 </select>
 
@@ -406,7 +409,7 @@
                   <select v-model="propertyChangeForm.target">
                     <option value="">-- select agent --</option>
                     <option
-                      v-for="agent in agentItems[propertyChangeForm.agentType]"
+                      v-for="agent in store.agentItems[propertyChangeForm.agentType]"
                       :value="agent"
                     >
                       {{ agent.name }}
@@ -416,7 +419,7 @@
 
                 <select v-model="propertyChangeForm.property">
                   <option value="">--  property --</option>
-                  <option v-for="property in Object.keys(selectedAgent.stateData)" :value="property">{{ property }}</option>
+                  <option v-for="property in Object.keys(store.selectedAgent.stateData)" :value="property">{{ property }}</option>
                 </select>
                 <select v-model="propertyChangeForm.change">
                   <option value="">-- change --</option>
@@ -513,7 +516,7 @@
           <select v-model="actionsSection.adding.type">
             <!-- World agent cannot travel, only change properties and pause for intervals -->
             <option value="">-- action type --</option>
-            <option v-if="selectedAgent.name !== 'world'" value="goTo">go to</option>
+            <option v-if="store.selectedAgent.name !== 'world'" value="goTo">go to</option>
             <option value="change">change</option>
             <option value="interval">wait</option>
           </select>
@@ -530,7 +533,7 @@
             <div v-if="actionsSection.adding.forms.goTo.destinationType === 'agent'">
               <select v-model="actionsSection.adding.forms.goTo.agentType">
                 <option value="">-- agent type --</option>
-                <option v-for="agentType in agentTypes" :value="agentType.name">{{ agentType.name }}</option>
+                <option v-for="agentType in store.agentTypes" :value="agentType.name">{{ agentType.name }}</option>
               </select>
 
               <form name="agentRadioSelect" @change="console.log(actionsSection.adding.forms.goTo.agentChoiceMethod)">
@@ -552,15 +555,15 @@
               </form>
               <button
                 class="selection-mode-button"
-                @click="selectionMode = !selectionMode"
-                :style="{backgroundColor: selectionMode ? 'grey' : 'white'}"
+                @click="store.selectionMode = !store.selectionMode"
+                :style="{backgroundColor: store.selectionMode ? 'grey' : 'white'}"
               >x</button>
 
               <div v-if="actionsSection.adding.forms.goTo.agentChoiceMethod === 'specific'">
                 <select v-model="actionsSection.adding.forms.goTo.target">
                   <option value="">-- select agent --</option>
                   <option
-                    v-for="agent in agentItems[actionsSection.adding.forms.goTo.agentType]"
+                    v-for="agent in store.agentItems[actionsSection.adding.forms.goTo.agentType]"
                     :value="agent"
                   >
                     {{ agent.name }}
@@ -574,22 +577,22 @@
               <div>Select point:
                 <button
                   class="selection-mode-button"
-                  @click="selectionMode = !selectionMode"
-                  :style="{backgroundColor: selectionMode ? 'grey' : 'white'}"
+                  @click="store.selectionMode = !store.selectionMode"
+                  :style="{backgroundColor: store.selectionMode ? 'grey' : 'white'}"
                 >x</button>
                 <br />
                 x:
                 <input
                   v-model="actionsSection.adding.forms.goTo.pointX"
                   type="text"
-                  :placeholder="mouse.x"
+                  :placeholder="store.mouse.x"
                 />
                 <br />
                 y:
                 <input
                   v-model="actionsSection.adding.forms.goTo.pointY"
                   type="text"
-                  :placeholder="mouse.y"
+                  :placeholder="store.mouse.y"
                   value=""
                 />
                 <br />
@@ -751,13 +754,13 @@
     <div class="menu-section">
 
       <div class="day-container">
-        Day: <span id="day-number">{{ dayNumber }}</span>
+        Day: <span id="day-number">{{ store.dayNumber }}</span>
       </div>
 
       <div class="speed-slide-container">
-        <div><span>Speed: {{ GlobalSettings.globalSpeed / 100 }}</span></div>
+        <div><span>Speed: {{ store.GlobalSettings.globalSpeed / 100 }}</span></div>
         <input
-          v-model="GlobalSettings.globalSpeed"
+          v-model="store.GlobalSettings.globalSpeed"
           type="range"
           min="0"
           max="200"
@@ -782,6 +785,8 @@ import AgentType from "./classes/AgentType.js"
 import { ActionGoTo, ActionPropertyChanges, ActionInterval, ActionTransition, PropertyChange } from "./classes/Action.js"
 import Agent from "./classes/Agent.js"
 import { AgentMenu, AgentMenuIcon, DeleteButton, AgentPreview } from "./classes/SelectionMenu.js"
+
+import { useStore } from './store/mainStore.js'
 
 
 let canvas;
@@ -816,7 +821,7 @@ const agentTypesData = [
     offset: {x: 96, y: 46},
     scale: 0.7,
     nominalSpeed: 0.02,
-    previewImage: '/img/sprites/GirlSample_Walk_Down.png',
+    previewImage: '/img/thumbnails/customer-thumbnail.png',
     spriteMap: null,
     thumbnail: '/img/thumbnails/customer-thumbnail.png'
   },
@@ -858,38 +863,15 @@ const agentTypesData = [
 
 export default {
   name: 'App',
+  setup() {
+    const store = useStore()
+    return { store }
+  },
   data: function () {
     return {
-    GlobalSettings: {
-      globalSpeed: 100,
-      animationFrameId: 1
-    },
-    // agent detail to display in UI
-    selectedAgent: null,
-    // agent to select as target/object in action creation e.g. 'go to'
-    selectedTargetAgent: null,
-    agentPreview: null,
-    placingAgent: false,
-    deleteMode: false,
-    // mode to select target agent
-    selectionMode: false,
-    // set by click on board in selection mode
-    cursorSelection: null,
-    deleteButton: null,
-    itemMenu: null,
-
-    mouse: {x: 0, y: 0},
-    hover: null,
-
-    agentMenuButtons: [],
-
-    spriteMaps: [],
-    spriteSheets: [],
 
     spriteMapsData: JSON.parse(localStorage.getItem('pondlifeSpriteMaps')),
     spriteSheetsData: JSON.parse(localStorage.getItem('pondlifeSpriteSheets')),
-
-    dayNumber: 1,
 
     // hard-coded 8-way list (9 including 'idle') for basic 2D directional sprite movements
     directionList: [
@@ -897,12 +879,6 @@ export default {
       ['left', 'idle', 'right'],
       ['downLeft', 'down', 'downRight']
     ],
-
-    // e.g. {customer: AgentType, lemonadeStall: AgentType}
-    agentTypes: {},
-
-    // e.g. {customer: [Agent, Agent, Agent], lemonadeStall: [Agent, Agent]}
-    agentItems: {},
 
     agentTypeForm: {
       adding: false,
@@ -1049,121 +1025,125 @@ export default {
     /* --- CLICK ACTIONS / EVENT LISTENERS --- */
 
     canvas.addEventListener('mousemove', (event) => {
-      this.mouse.x = event.pageX
-      this.mouse.y = event.pageY
+      this.store.mouse.x = event.pageX
+      this.store.mouse.y = event.pageY
     })
 
     canvas.addEventListener('click', (event) => {
       const point = {x: event.x, y: event.y}
 
       // PLACE NEW AGENT ON
-      if (this.placingAgent) {
-        const isInMenuArea = pointIsInArea(point, this.itemMenu.area)
+      if (this.store.placingAgent) {
+        const isInMenuArea = pointIsInArea(point, this.store.itemMenu.area)
 
         if (isInMenuArea === false) {
-          const agentClassName = this.agentPreview.agentType.name
+          const agentClassName = this.store.agentPreview.agentType.name
           this.addAgent(agentClassName)
-          this.placingAgent = false
-          this.agentPreview = null
+          this.store.placingAgent = false
+          this.store.agentPreview = null
         } else {
-          this.hover = true
+          this.store.hover = true
         }
       }
 
-      const agentTypeNames = Object.keys(this.agentTypes)
+      const agentTypeNames = Object.keys(this.store.agentTypes)
 
       agentTypeNames.forEach(agentTypeName => this.selectOrDeleteAgent(agentTypeName, point))
 
       // SELECT AGENT BUTTON TO CREATE CURSOR PREVIEW (to place new agent on board)
-      for (let i = 0; i < this.agentMenuButtons.length; i++) {
+      for (let i = 0; i < this.store.agentMenuButtons.length; i++) {
 
-        const isInArea = pointIsInArea(point, this.agentMenuButtons[i].area)
+        const isInArea = pointIsInArea(point, this.store.agentMenuButtons[i].area)
 
-        if (isInArea) this.hover = 'true'
+        if (isInArea) this.store.hover = 'true'
 
-        if (isInArea && !this.agentPreview) {
-          const agentTypeName = this.agentMenuButtons[i].name
-          this.agentPreview = new AgentPreview(this.agentTypes[agentTypeName])
-          this.placingAgent = true
+        if (isInArea && !this.store.agentPreview) {
+          const agentTypeName = this.store.agentMenuButtons[i].name
+          this.store.agentPreview = new AgentPreview(this.store.agentTypes[agentTypeName])
+          this.store.placingAgent = true
           break
 
-        } else if (isInArea && this.agentPreview) {
+        } else if (isInArea && this.store.agentPreview) {
           // if have active agent preview (tracking cursor), clicking on the agent menu again cancels the selection
-          this.placingAgent = false
-          this.agentPreview = null
+          this.store.placingAgent = false
+          this.store.agentPreview = null
         }
       }
 
       // TOGGLE DELETE MODE
-      const isInArea = pointIsInArea(point, this.deleteButton.area)
+      const isInArea = pointIsInArea(point, this.store.deleteButton.area)
 
       if (isInArea) {
-        this.hover = true
-        this.deleteMode = !this.deleteMode
+        this.store.hover = true
+        this.store.deleteMode = !this.store.deleteMode
       }
 
       // POINT/AGENT SELECTION MODE
-      if (this.selectionMode === true) {
-        this.actionsSection.adding.forms.goTo.pointX = this.mouse.x
-        this.actionsSection.adding.forms.goTo.pointY = this.mouse.y
+      if (this.store.selectionMode === true) {
+        this.actionsSection.adding.forms.goTo.pointX = this.store.mouse.x
+        this.actionsSection.adding.forms.goTo.pointY = this.store.mouse.y
       }
 
     })
 
     document.addEventListener('keydown', (e) => {
-      if (e.code === 'Escape' && this.placingAgent === true) {
-        this.placingAgent = false
-        this.agentPreview = null
+      if (e.code === 'Escape' && this.store.placingAgent === true) {
+        this.store.placingAgent = false
+        this.store.agentPreview = null
       }
     })
   },
 
   methods: {
 
+    changeStoreData: function () {
+      this.store.changeMyData('goodbye')
+    },
+
     loadAgentsAndFixtures: function () {
 
       // load from localStorage (temporary solution while frontend-only)
-      this.spriteMaps = this.spriteMapsData !== null ? this.spriteMapsData : []
-      this.spriteSheets = this.spriteSheetsData !== null ? this.spriteSheetsData : []
+      this.store.spriteMaps = this.spriteMapsData !== null ? this.spriteMapsData : []
+      this.store.spriteSheets = this.spriteSheetsData !== null ? this.spriteSheetsData : []
 
       agentTypesData.forEach(agentType => {
-        this.agentTypes[agentType.name] = new AgentType(agentType)
+        this.store.agentTypes[agentType.name] = new AgentType(agentType)
       })
 
-      const agentTypeNames = Object.keys(this.agentTypes)
+      const agentTypeNames = Object.keys(this.store.agentTypes)
 
       // hard-coding for the moment
-      this.agentTypes.customer.config.spriteMap = this.spriteMaps[0]
+      this.store.agentTypes.customer.config.spriteMap = this.store.spriteMaps[0]
 
       // populate agents from initial data
       agentTypeNames.forEach(agentTypeName => {
-        this.agentItems[agentTypeName] = []
+        this.store.agentItems[agentTypeName] = []
         initialAgentData[agentTypeName].forEach((item, i) => {
-          this.agentItems[agentTypeName].push( new Agent({
+          this.store.agentItems[agentTypeName].push( new Agent({
             agentTypeName: agentTypeName,
             position: {x: item.x, y: item.y},
             num: i + 1,
-            globals: this.GlobalSettings,
-            config: this.agentTypes[agentTypeName].config
+            globals: this.store.GlobalSettings,
+            config: this.store.agentTypes[agentTypeName].config
           }))
         })
       })
 
-      this.itemMenu = new AgentMenu()
+      this.store.itemMenu = new AgentMenu()
       agentMenuButtonData.forEach((agentName, i) => {
-        this.agentMenuButtons.push(
+        this.store.agentMenuButtons.push(
           new AgentMenuIcon({
-            menu: this.itemMenu,
+            menu: this.store.itemMenu,
             i: i,
             name: agentName,
             agent: Agent,
-            config: this.agentTypes[agentName].config
+            config: this.store.agentTypes[agentName].config
           })
         )
       })
-      this.deleteButton = new DeleteButton({
-        menu: this.itemMenu,
-        i: this.agentMenuButtons.length
+      this.store.deleteButton = new DeleteButton({
+        menu: this.store.itemMenu,
+        i: this.store.agentMenuButtons.length
       })
     },
 
@@ -1188,28 +1168,28 @@ export default {
         }
       }
 
-      this.agentTypes[agentTypeName] = new AgentType(agentData.config)
+      this.store.agentTypes[agentTypeName] = new AgentType(agentData.config)
 
       let newIcon = new AgentMenuIcon({
-        menu: this.itemMenu,
-        i: this.agentMenuButtons.length + 1,
+        menu: this.store.itemMenu,
+        i: this.store.agentMenuButtons.length + 1,
         name: agentData.config.name,
         agent: Agent,
         config: agentData.config
       })
-      this.agentMenuButtons.push(newIcon)
+      this.store.agentMenuButtons.push(newIcon)
 
       this.agentTypeForm.adding = false
     },
 
     deleteAgentType: function (agentType) {
-      delete this.agentTypes[agentType]
+      delete this.store.agentTypes[agentType]
     },
 
     createAgentProperty: function () {
       const propName = this.propertiesSection.adding.newPropertyName
       const propValue = Number(this.propertiesSection.adding.newPropertyValue)
-      this.selectedAgent.setProperty(propName, propValue)
+      this.store.selectedAgent.setProperty(propName, propValue)
       this.propertiesSection.adding.newPropertyName = ''
       this.propertiesSection.adding.newPropertyValue = 0
       this.propertiesSection.adding.status = false
@@ -1257,7 +1237,7 @@ export default {
         }
 
         if (actionTarget === 'home') {
-          args.destination = this.selectedAgent.home
+          args.destination = this.store.selectedAgent.home
         }
 
         let newAction = new ActionGoTo(null, args)
@@ -1352,7 +1332,7 @@ export default {
         const conditionValue = data.value
 
         newCondition = new Condition(
-          this.selectedAgent,
+          this.store.selectedAgent,
           conditionName,
           conditionProperty,
           conditionComparison,
@@ -1367,7 +1347,7 @@ export default {
         const conditionValue = data.value
 
         newCondition = new PresetCondition(
-          this.selectedAgent,
+          this.store.selectedAgent,
           conditionName,
           conditionPreset,
           conditionComparison,
@@ -1428,10 +1408,10 @@ export default {
         numImages: Number(this.spriteSheetForm.numImages),
         refreshInterval: Number(this.spriteSheetForm.refreshInterval)
       }
-      this.spriteSheets.push(new SpriteSheet(args))
+      this.store.spriteSheets.push(new SpriteSheet(args))
 
       // 'save' to avoid inputting all after each page refresh
-      localStorage.setItem('pondlifeSpriteSheets', JSON.stringify(this.spriteSheets))
+      localStorage.setItem('pondlifeSpriteSheets', JSON.stringify(this.store.spriteSheets))
 
       this.spriteSheetForm = {
         adding: false,
@@ -1456,18 +1436,18 @@ export default {
       }
       const props = Object.keys(args)
       props.forEach(prop => spriteSheet[prop] = args[prop])
-      localStorage.setItem('pondlifeSpriteSheets', JSON.stringify(this.spriteSheets))
+      localStorage.setItem('pondlifeSpriteSheets', JSON.stringify(this.store.spriteSheets))
     },
     deleteSpriteSheet: function (index) {
-      this.spriteSheets.splice(index, 1)
+      this.store.spriteSheets.splice(index, 1)
       // 'save' to avoid inputting all after each page refresh
-      localStorage.setItem('pondlifeSpriteSheets', JSON.stringify(this.spriteSheets))
+      localStorage.setItem('pondlifeSpriteSheets', JSON.stringify(this.store.spriteSheets))
     },
     updateSpritesheetFileInput: function (event, spriteSheetForm) {
       const fileName = "/img/sprites/" + event.target.files[0].name
       spriteSheetForm.src = fileName
-      localStorage.setItem('pondlifeSpriteSheets', JSON.stringify(this.spriteSheets))
-      localStorage.setItem('pondlifeSpriteMaps', JSON.stringify(this.spriteMaps))
+      localStorage.setItem('pondlifeSpriteSheets', JSON.stringify(this.store.spriteSheets))
+      localStorage.setItem('pondlifeSpriteMaps', JSON.stringify(this.store.spriteMaps))
     },
     updateThumbnailFileInput: function (event, agentTypeForm) {
       const fileName = "/img/thumbnails/" + event.target.files[0].name
@@ -1478,10 +1458,10 @@ export default {
       args.scale = Number(args.scale)
       args.offsetX = Number(args.offsetX)
       args.offsetY = Number(args.offsetY)
-      this.spriteMaps.push(new SpriteMap(args))
+      this.store.spriteMaps.push(new SpriteMap(args))
 
       // 'save' to avoid inputting all after each page refresh
-      localStorage.setItem('pondlifeSpriteMaps', JSON.stringify(this.spriteMaps))
+      localStorage.setItem('pondlifeSpriteMaps', JSON.stringify(this.store.spriteMaps))
 
       this.spriteMapForm = {
         adding: false,
@@ -1501,61 +1481,61 @@ export default {
     },
     saveSpriteMap: function (spriteMap) {
       spriteMap.editing = false
-      localStorage.setItem('pondlifeSpriteMaps', JSON.stringify(this.spriteMaps))
+      localStorage.setItem('pondlifeSpriteMaps', JSON.stringify(this.store.spriteMaps))
       this.$forceUpdate()
     },
     deleteSpriteMap: function (index) {
-      this.spriteMaps.splice(index, 1)
+      this.store.spriteMaps.splice(index, 1)
 
       // 'save' to avoid inputting each page refresh
-      localStorage.setItem('pondlifeSpriteMaps', JSON.stringify(this.spriteMaps))
+      localStorage.setItem('pondlifeSpriteMaps', JSON.stringify(this.store.spriteMaps))
     },
 
     /* ANIMATE */
 
     animate: function () {
 
-      this.hover = null
+      this.store.hover = null
 
       c.fillStyle = backgroundColor
       c.fillRect(0, 0, canvas.width, canvas.height)
 
       const animationId = requestAnimationFrame(this.animate)
-      this.GlobalSettings.animationFrameId = animationId
+      this.store.GlobalSettings.animationFrameId = animationId
 
-      const agentTypeNames = Object.keys(this.agentItems)
+      const agentTypeNames = Object.keys(this.store.agentItems)
 
       // update each agent of each agent type
       agentTypeNames.forEach(agentTypeName => {
-        this.agentItems[agentTypeName].forEach(agent => {
-          agent.update(c, {}, this.GlobalSettings)
-          const isInArea = pointIsInArea(this.mouse, agent.collisionArea)
-          if (isInArea) this.hover = true
+        this.store.agentItems[agentTypeName].forEach(agent => {
+          agent.update(c, {}, this.store.GlobalSettings)
+          const isInArea = pointIsInArea(this.store.mouse, agent.collisionArea)
+          if (isInArea) this.store.hover = true
         })
       })
       
-      this.itemMenu.update(c, this.agentMenuButtons.length + 1)
+      this.store.itemMenu.update(c, this.store.agentMenuButtons.length + 1)
 
-      this.agentMenuButtons.forEach((button, i) => {
+      this.store.agentMenuButtons.forEach((button, i) => {
         button.update(c, i)
-        const isInArea = pointIsInArea(this.mouse, button.area)
-        if (isInArea) this.hover = true
+        const isInArea = pointIsInArea(this.store.mouse, button.area)
+        if (isInArea) this.store.hover = true
       })
 
-      if (this.agentPreview) this.agentPreview.update(c, this.mouse)
+      if (this.store.agentPreview) this.store.agentPreview.update(c, this.store.mouse)
 
-      if (pointIsInArea(this.mouse, this.deleteButton.area)) this.hover = true
+      if (pointIsInArea(this.store.mouse, this.store.deleteButton.area)) this.store.hover = true
 
-      if (this.selectionMode === true) this.hover = true
+      if (this.store.selectionMode === true) this.store.hover = true
 
-      this.deleteButton.update(c, this.agentMenuButtons.length, this.deleteMode)
+      this.store.deleteButton.update(c, this.store.agentMenuButtons.length, this.store.deleteMode)
 
-      canvas.style.cursor = this.hover ? 'pointer' : 'auto'
+      canvas.style.cursor = this.store.hover ? 'pointer' : 'auto'
 
       if (animationId % dayLength === 0) this.endDay()
 
-      if (this.GlobalSettings.animationFrameId % 32 === 0) {
-        const customerActions = this.agentItems['customer'].map(cust =>
+      if (this.store.GlobalSettings.animationFrameId % 32 === 0) {
+        const customerActions = this.store.agentItems['customer'].map(cust =>
           `${cust.name}, action: ${cust.currentAction ? cust.currentAction.name : 'none'}`
         )
         console.log(JSON.stringify(customerActions, null, 2))
@@ -1564,22 +1544,22 @@ export default {
     },
 
     selectOrDeleteAgent: function (agentTypeName, point) {
-      const agentItems = this.agentItems[agentTypeName]
+      const agentItems = this.store.agentItems[agentTypeName]
       agentItems.forEach((agent, i) => {
         const isInArea = pointIsInArea(point, agent.collisionArea)
 
         // SELECT AGENT
         if (isInArea) {
-          this.selectedAgent = agent
-          this.hover = true
+          this.store.selectedAgent = agent
+          this.store.hover = true
 
-          if (this.selectionMode === true) {
-            this.selectedTargetAgent = agent
-            this.actionsSection.adding.forms.goTo.target = this.selectedTargetAgent
+          if (this.store.selectionMode === true) {
+            this.store.selectedTargetAgent = agent
+            this.actionsSection.adding.forms.goTo.target = this.store.selectedTargetAgent
           }
         }
         // DELETE AGENT (in delete mode)
-        if (isInArea && this.deleteMode === true) {
+        if (isInArea && this.store.deleteMode === true) {
           const agent = agentItems[i]
           agent.labelElement.remove()
           agentItems.splice(i, 1)
@@ -1587,27 +1567,27 @@ export default {
       })
     },
     cloneAction: function (action) {
-      this.selectedAgent.currentAction = action.clone(this.selectedAgent, {})
+      this.store.selectedAgent.currentAction = action.clone(this.store.selectedAgent, {})
     },
 
     addAgent: function (agentTypeName) {
-      const agentItems = this.agentItems[agentTypeName]
+      const agentItems = this.store.agentItems[agentTypeName]
       const num = agentItems.length + 1
       agentItems.push( new Agent({
         agentType: agentTypeName,
         position: {
-          x: this.mouse.x - this.agentTypes[agentTypeName].config.width / 2,
-          y: this.mouse.y - this.agentTypes[agentTypeName].config.height / 2
+          x: this.store.mouse.x - this.store.agentTypes[agentTypeName].config.width / 2,
+          y: this.store.mouse.y - this.store.agentTypes[agentTypeName].config.height / 2
         },
         num: num,
-        globals: this.GlobalSettings,
-        offset: this.agentTypes[agentTypeName].config.offset,
-        scale: this.agentTypes[agentTypeName].config.scale,
-        config: this.agentTypes[agentTypeName].config
+        globals: this.store.GlobalSettings,
+        offset: this.store.agentTypes[agentTypeName].config.offset,
+        scale: this.store.agentTypes[agentTypeName].config.scale,
+        config: this.store.agentTypes[agentTypeName].config
       }))
     },
     endDay: function() {
-      this.dayNumber++
+      this.store.dayNumber += 1
     }
   }
 }

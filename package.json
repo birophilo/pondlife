@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "core-js": "^3.6.5",
+    "pinia": "^2.2.5",
     "vue": "^3.0.0"
   },
   "devDependencies": {
@@ -34,7 +35,7 @@
     },
     "rules": {
       "vue/require-v-for-key": "off"
-    }    
+    }
   },
   "browserslist": [
     "> 1%",
