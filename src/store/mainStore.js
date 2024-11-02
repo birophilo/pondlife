@@ -37,7 +37,9 @@ export const useStore = defineStore({
     agentTypes: {},
 
     // e.g. {customer: [Agent, Agent, Agent], lemonadeStall: [Agent, Agent]}
-    agentItems: {}
+    agentItems: {},
+
+    actions: []
 
   })
 })

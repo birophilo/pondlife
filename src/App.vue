@@ -183,7 +183,7 @@
 
       <div class="item-list">
         <h3 class="menu-section-heading">Choose action</h3>
-        <div v-for="action in actionsSection.items">
+        <div v-for="action in store.actions">
           <button @click="cloneAction(action)">{{ action.actionName }}</button>
         </div>
       </div>
@@ -198,7 +198,7 @@
 
       <!-- ACTION LIST -->
       <div class="item-list">
-        <div v-for="action in actionsSection.items" class="created-item">
+        <div v-for="action in store.actions" class="created-item">
 
           <div class="created-item-header">
             <div class="menu-action-name">{{ action.actionName }}</div>
@@ -424,7 +424,7 @@
               </option>
             </select>
             <select v-model="actionTransitionForm.nextAction">
-              <option v-for="action in actionsSection.items" :value="action">
+              <option v-for="action in store.actions" :value="action">
                 {{ action.actionName }}
               </option>
             </select>
@@ -441,7 +441,7 @@
                 </option>
               </select>
               <select :value="transition.nextAction">
-                <option v-for="action in actionsSection.items" :value="transition.nextAction">
+                <option v-for="action in store.actions" :value="transition.nextAction">
                   {{ action.actionName }}
                 </option>
               </select>
@@ -470,113 +470,8 @@
 
         </div>
 
-        <!-- ACTIONS CREATE -->
-        <div v-if="actionsSection.adding.status === false" class="add-container">
-          <button @click="actionsSection.adding.status = true">new action</button>
-        </div>
-        <div v-else>
-          <input v-model="actionsSection.adding.name" type="text" placeholder="name" />
-          <br />
-          <select v-model="actionsSection.adding.type">
-            <!-- World agent cannot travel, only change properties and pause for intervals -->
-            <option value="">-- action type --</option>
-            <option v-if="store.selectedAgent.name !== 'world'" value="goTo">go to</option>
-            <option value="change">change</option>
-            <option value="interval">wait</option>
-          </select>
-          <br />
+        <ActionCreateForm />
 
-          <!-- FORM FIELDS SPECIFIC TO ACTION TYPE -->
-          <div v-if="actionsSection.adding.type === 'goTo'">
-            <select v-model="actionsSection.adding.forms.goTo.destinationType">
-              <option value="">-- destination type --</option>
-              <option value="agent">agent</option>
-              <option value="point">point</option>
-            </select>
-
-            <div v-if="actionsSection.adding.forms.goTo.destinationType === 'agent'">
-              <select v-model="actionsSection.adding.forms.goTo.agentType">
-                <option value="">-- agent type --</option>
-                <option v-for="agentType in store.agentTypes" :value="agentType.name">{{ agentType.name }}</option>
-              </select>
-
-              <form name="agentRadioSelect" @change="console.log(actionsSection.adding.forms.goTo.agentChoiceMethod)">
-                <input
-                  type="radio"
-                  v-model="actionsSection.adding.forms.goTo.agentChoiceMethod"
-                  name="agentChoiceMethod"
-                  value="nearest"
-                  checked="true"
-                />
-                <label for="nearest">nearest</label>
-                <input
-                  type="radio"
-                  v-model="actionsSection.adding.forms.goTo.agentChoiceMethod"
-                  name="agentChoiceMethod"
-                  value="specific"
-                />
-                <label for="nearest">specific</label>
-              </form>
-              <button
-                class="selection-mode-button"
-                @click="store.selectionMode = !store.selectionMode"
-                :style="{backgroundColor: store.selectionMode ? 'grey' : 'white'}"
-              >x</button>
-
-              <div v-if="actionsSection.adding.forms.goTo.agentChoiceMethod === 'specific'">
-                <select v-model="actionsSection.adding.forms.goTo.target">
-                  <option value="">-- select agent --</option>
-                  <option
-                    v-for="agent in store.agentItems[actionsSection.adding.forms.goTo.agentType]"
-                    :value="agent"
-                  >
-                    {{ agent.name }}
-                  </option>
-                </select>
-              </div>
-
-            </div>
-
-            <div v-if="actionsSection.adding.forms.goTo.destinationType === 'point'">
-              <div>Select point:
-                <button
-                  class="selection-mode-button"
-                  @click="store.selectionMode = !store.selectionMode"
-                  :style="{backgroundColor: store.selectionMode ? 'grey' : 'white'}"
-                >x</button>
-                <br />
-                x:
-                <input
-                  v-model="actionsSection.adding.forms.goTo.pointX"
-                  type="text"
-                  :placeholder="store.mouse.x"
-                />
-                <br />
-                y:
-                <input
-                  v-model="actionsSection.adding.forms.goTo.pointY"
-                  type="text"
-                  :placeholder="store.mouse.y"
-                  value=""
-                />
-                <br />
-              </div>
-            </div>
-
-          </div>
-
-          <div v-if="actionsSection.adding.type === 'interval'">
-            <input
-              type="number"
-              v-model="actionsSection.adding.forms.interval.duration"
-              placeholder="0"
-            />
-          </div>
-
-          <button @click="createAction">save action</button> |
-          <button @click="cancelAddAction">cancel</button>
-
-        </div>
       </div>
     </div>
 
@@ -746,7 +641,7 @@ import { pointIsInArea } from "./classes/utils.js"
 import { SpriteMap } from "./classes/Sprite.js"
 import { Condition, PresetCondition } from "./classes/Condition.js"
 import AgentType from "./classes/AgentType.js"
-import { ActionGoTo, ActionPropertyChanges, ActionInterval, ActionTransition, PropertyChange } from "./classes/Action.js"
+import { ActionTransition, PropertyChange } from "./classes/Action.js"
 import Agent from "./classes/Agent.js"
 import { AgentMenu, AgentMenuIcon, DeleteButton, AgentPreview } from "./classes/SelectionMenu.js"
 
@@ -754,6 +649,7 @@ import { useStore } from './store/mainStore.js'
 
 import SpriteSheetForm from './components/SpriteSheetForm.vue'
 import MenuSpriteSheet from './components/MenuSpriteSheet.vue'
+import ActionCreateForm from './components/ActionCreateForm.vue'
 
 
 let canvas;
@@ -776,7 +672,6 @@ const initialAgentData = {
 }
 
 
-const DEFAULT_ACTION_TYPE = 'goTo'
 const DEFAULT_CONDITION_TYPE = 'property'
 
 
@@ -835,6 +730,7 @@ export default {
     return { store }
   },
   components: {
+    ActionCreateForm,
     MenuSpriteSheet,
     SpriteSheetForm
   },
@@ -1164,80 +1060,6 @@ export default {
       this.propertiesSection.adding.newPropertyName = ''
       this.propertiesSection.adding.newPropertyValue = 0
     },
-    createAction: function () {
-      const actionType = this.actionsSection.adding.type
-      const actionName = this.actionsSection.adding.name
-      const data = this.actionsSection.adding.forms[actionType]
-
-      if (actionType === 'goTo') {
-
-        const actionTarget = data.target
-
-        let args = {
-          id: this.actionsSection.items.length + 1,
-          actionName: actionName,
-          actionType: actionType,
-          agentType: data.agentType,
-          destinationType: data.destinationType,
-          agentChoiceMethod: data.agentChoiceMethod,
-
-          target: data.target
-        }
-
-        if (data.destinationType === 'point') {
-          const selectedPointX = this.actionsSection.adding.forms.goTo.pointX
-          const selectedPointY = this.actionsSection.adding.forms.goTo.pointY
-          args.target = {
-            name: `point: {x: ${selectedPointX}, y: ${selectedPointY}}`,
-            width: 10,
-            height: 10,
-            position: {
-              x: selectedPointX,
-              y: selectedPointY
-            }
-          }
-        }
-
-        if (actionTarget === 'home') {
-          args.destination = this.store.selectedAgent.home
-        }
-
-        let newAction = new ActionGoTo(null, args)
-        this.actionsSection.items.push(newAction)
-
-      }
-
-      if (actionType === 'change') {
-
-        const args = {
-          id: this.actionsSection.items.length + 1,
-          actionName: actionName,
-          actionType: actionType,
-          propertyChanges: []
-        }
-
-        let newAction = new ActionPropertyChanges(null, args)
-        this.actionsSection.items.push(newAction)
-
-      }
-
-      if (actionType === 'interval') {
-
-        const args = {
-          id: this.actionsSection.items.length + 1,
-          actionName: actionName,
-          actionType: actionType,
-          duration: Number(data.duration)
-        }
-
-        let newAction = new ActionInterval(null, args)
-        this.actionsSection.items.push(newAction)
-      }
-
-      this.resetActionForms()
-
-    },
-
     createPropertyChangeItem: function (action) {
 
       const property = this.propertyChangeForm.property
@@ -1259,22 +1081,8 @@ export default {
       action.propertyChanges.push(propChange)
       this.propertyChangeForm.adding = false
     },
-
-    resetActionForms: function () {
-      // reset common form data/settings
-      this.actionsSection.adding.name = ''
-      this.actionsSection.adding.type = DEFAULT_ACTION_TYPE
-      this.actionsSection.adding.status = false
-
-      // reset specific settings (hard-coded keys for now)
-      this.actionsSection.adding.forms.goTo.target = ''
-
-    },
     deleteAction: function (itemName) {
-      this.actionsSection.items = this.actionsSection.items.filter(item => item.actionName !== itemName)
-    },
-    cancelAddAction: function () {
-      this.resetActionForms()
+      this.store.actions = this.store.actions.filter(item => item.actionName !== itemName)
     },
     deleteCondition: function (index) {
       this.conditionsSection.items.splice(index, 1)
@@ -1359,12 +1167,6 @@ export default {
     conditionReadableFormat: function (condition) {
       const readable = `${ condition.property } ${ condition.comparison } ${ condition.value }`
       return readable
-    },
-    updateSpritesheetFileInput: function (event, spriteSheetForm) {
-      const fileName = "/img/sprites/" + event.target.files[0].name
-      spriteSheetForm.src = fileName
-      localStorage.setItem('pondlifeSpriteSheets', JSON.stringify(this.store.spriteSheets))
-      localStorage.setItem('pondlifeSpriteMaps', JSON.stringify(this.store.spriteMaps))
     },
     updateThumbnailFileInput: function (event, agentTypeForm) {
       const fileName = "/img/thumbnails/" + event.target.files[0].name

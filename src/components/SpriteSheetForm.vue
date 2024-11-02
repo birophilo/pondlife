@@ -20,7 +20,7 @@ import { SpriteSheet } from "../classes/Sprite.js"
 
 export default {
   name: 'SpriteSheetForm',
-  setup() {
+  setup: function () {
     const store = useStore()
     return { store }
   },
