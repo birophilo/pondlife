@@ -86,67 +86,10 @@
     <div class="menu-section" id="sprite-maps-section">
       <h3 class="menu-section-heading">Sprite Maps</h3>
 
-      <div v-for="(spriteMap, i) in store.spriteMaps">
-
-        <!-- EDIT SPRITE MAP -->
-        <div v-if="spriteMap.editing === true">
-          name: <input v-model="spriteMap.name" type="text" placeholder="name" /><br />
-          scale: <input v-model="spriteMap.scale" type="number" placeholder="scale" /><br />
-          offset X: <input v-model="spriteMap.offset.x" type="number" placeholder="offset X" /><br />
-          offset Y: <input v-model="spriteMap.offset.y" type="number" placeholder="offset Y" /><br />
-
-        <table class="sprite-map-direction-table">
-          <tr v-for="row in directionList">
-            <td v-for="directionName in row">
-              <select v-model="spriteMap.sheets[directionName]">
-                <option value="">-- {{directionName  }} --</option>
-                <option v-for="spriteSheet in store.spriteSheets" :value="spriteSheet">{{ spriteSheet.name }}</option>
-              </select>
-              <br />
-              <img :src="spriteMap.sheets[directionName].src" width="70" height="70"/>
-            </td>
-          </tr>
-        </table>
-
-          <br />
-          <button @click="saveSpriteMap(spriteMap)">save</button>
-          <button @click="spriteMap.editing = false">cancel</button>
-        </div>
-        <div v-else>
-          <div>
-            {{ spriteMap.name }}
-            <button @click="spriteMap.editing = true; $forceUpdate()">edit</button>
-            <button @click="deleteSpriteMap(i)">delete</button>
-          </div>
-        </div>
-
+      <div v-for="(spriteMap, index) in store.spriteMaps">
+        <MenuSpriteMap :spriteMap="spriteMap" :i="index" />
       </div>
-
-      <!-- CREATE SPRITE MAP -->
-      <div v-if="spriteMapForm.adding === true">
-        name: <input v-model="spriteMapForm.name" type="text" placeholder="name" /><br />
-        scale: <input v-model="spriteMapForm.scale" type="number" placeholder="scale" /><br />
-        offset X: <input v-model="spriteMapForm.offsetX" type="number" placeholder="offset X" /><br />
-        offset Y: <input v-model="spriteMapForm.offsetY" type="number" placeholder="offset Y" /><br />
-
-        <table class="sprite-map-direction-table">
-          <tr v-for="row in directionList">
-            <td v-for="directionName in row">
-              <select v-model="spriteMapForm.sheets[directionName]">
-                <option value="">-- {{directionName  }} --</option>
-                <option v-for="spriteSheet in store.spriteSheets" :value="spriteSheet">{{ spriteSheet.name }}</option>
-              </select>
-              <br />
-              <img :src="spriteMapForm.sheets[directionName].src" width="70" height="70"/>
-            </td>
-          </tr>
-        </table>
-
-        <button @click="createSpriteMap()">create sprite map</button>
-      </div>
-      <div v-else>
-        <button @click="spriteMapForm.adding = true">new sprite map</button>
-      </div>
+      <SpriteMapForm />
     </div>
 
 
@@ -637,19 +580,20 @@
 
 
 <script>
+import { useStore } from './store/mainStore.js'
+
 import { pointIsInArea } from "./classes/utils.js"
-import { SpriteMap } from "./classes/Sprite.js"
 import { Condition, PresetCondition } from "./classes/Condition.js"
 import AgentType from "./classes/AgentType.js"
 import { ActionTransition, PropertyChange } from "./classes/Action.js"
 import Agent from "./classes/Agent.js"
 import { AgentMenu, AgentMenuIcon, DeleteButton, AgentPreview } from "./classes/SelectionMenu.js"
 
-import { useStore } from './store/mainStore.js'
-
+import ActionCreateForm from './components/ActionCreateForm.vue'
 import SpriteSheetForm from './components/SpriteSheetForm.vue'
 import MenuSpriteSheet from './components/MenuSpriteSheet.vue'
-import ActionCreateForm from './components/ActionCreateForm.vue'
+import SpriteMapForm from './components/SpriteMapForm.vue'
+import MenuSpriteMap from './components/MenuSpriteMap.vue'
 
 
 let canvas;
@@ -732,20 +676,15 @@ export default {
   components: {
     ActionCreateForm,
     MenuSpriteSheet,
-    SpriteSheetForm
+    SpriteSheetForm,
+    MenuSpriteMap,
+    SpriteMapForm
   },
   data: function () {
     return {
 
     spriteMapsData: JSON.parse(localStorage.getItem('pondlifeSpriteMaps')),
     spriteSheetsData: JSON.parse(localStorage.getItem('pondlifeSpriteSheets')),
-
-    // hard-coded 8-way list (9 including 'idle') for basic 2D directional sprite movements
-    directionList: [
-      ['upLeft', 'up', 'upRight'],
-      ['left', 'idle', 'right'],
-      ['downLeft', 'down', 'downRight']
-    ],
 
     agentTypeForm: {
       adding: false,
@@ -843,24 +782,6 @@ export default {
       property: '',
       change: '',
       value: ''
-    },
-    spriteMapForm: {
-      adding: false,
-      name: '',
-      scale: 0,
-      offsetX: 0,
-      offsetY: 0,
-      sheets: {
-        idle: '',
-        up: '',
-        upRight: '',
-        right: '',
-        downRight: '',
-        down: '',
-        downLeft: '',
-        left: '',
-        upLeft: ''
-      }
     }
   }
   },
@@ -1171,43 +1092,6 @@ export default {
     updateThumbnailFileInput: function (event, agentTypeForm) {
       const fileName = "/img/thumbnails/" + event.target.files[0].name
       agentTypeForm.thumbnail = fileName
-    },
-    createSpriteMap: function () {
-      const args = {...this.spriteMapForm}
-      args.scale = Number(args.scale)
-      args.offsetX = Number(args.offsetX)
-      args.offsetY = Number(args.offsetY)
-      this.store.spriteMaps.push(new SpriteMap(args))
-
-      // 'save' to avoid inputting all after each page refresh
-      localStorage.setItem('pondlifeSpriteMaps', JSON.stringify(this.store.spriteMaps))
-
-      this.spriteMapForm = {
-        adding: false,
-        name: '',
-        sheets: {
-          idle: '',
-          up: '',
-          upRight: '',
-          right: '',
-          downRight: '',
-          down: '',
-          downLeft: '',
-          left: '',
-          upLeft: ''
-        }
-      }
-    },
-    saveSpriteMap: function (spriteMap) {
-      spriteMap.editing = false
-      localStorage.setItem('pondlifeSpriteMaps', JSON.stringify(this.store.spriteMaps))
-      this.$forceUpdate()
-    },
-    deleteSpriteMap: function (index) {
-      this.store.spriteMaps.splice(index, 1)
-
-      // 'save' to avoid inputting each page refresh
-      localStorage.setItem('pondlifeSpriteMaps', JSON.stringify(this.store.spriteMaps))
     },
 
     /* ANIMATE */

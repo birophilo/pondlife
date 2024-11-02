@@ -39,7 +39,14 @@ export const useStore = defineStore({
     // e.g. {customer: [Agent, Agent, Agent], lemonadeStall: [Agent, Agent]}
     agentItems: {},
 
-    actions: []
+    actions: [],
+
+        // hard-coded 8-way list (9 including 'idle') for basic 2D directional sprite movements
+    directionList: [
+      ['upLeft', 'up', 'upRight'],
+      ['left', 'idle', 'right'],
+      ['downLeft', 'down', 'downRight']
+    ]
 
   })
 })

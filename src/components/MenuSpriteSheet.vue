@@ -15,7 +15,7 @@
     <div>
       {{ spriteSheetData.name }}
       <button @click="spriteSheetData.editing = true; $forceUpdate()">edit</button>
-      <button @click="deleteSpriteSheet(index)">delete</button>
+      <button @click="deleteSpriteSheet()">delete</button>
     </div>
   </div>
 </template>
@@ -62,8 +62,9 @@ export default {
       keys.forEach(key => this.store.spriteSheets[i][key] = this.spriteSheetData[key])
       localStorage.setItem('pondlifeSpriteSheets', JSON.stringify(this.store.spriteSheets))
     },
-    deleteSpriteSheet: function (index) {
-      this.store.spriteSheets.splice(index, 1)
+    deleteSpriteSheet: function () {
+      console.log(this.i)
+      this.store.spriteSheets.splice(this.i, 1)
       // 'save' to avoid inputting all after each page refresh
       localStorage.setItem('pondlifeSpriteSheets', JSON.stringify(this.store.spriteSheets))
     },
