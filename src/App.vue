@@ -7,9 +7,6 @@
 
   <div class="info-container">
 
-    <div>{{ store.myData }}</div>
-    <button @click="store.myData = 'goodbye'">change store</button>
-
     <div class="menu-section" id="agent-types-section">
       <h3 class="menu-section-heading">Selected Agent</h3>
       <div v-if="store.selectedAgent !== null">
@@ -85,47 +82,20 @@
       <SpriteMapForm />
     </div>
 
-
     <div class="menu-section" id="properties-section">
       <h3 class="menu-section-heading">Properties</h3>
-      <!-- PROPERTY LIST -->
       <div v-if="store.selectedAgent !== null" class="item-list">
-        <div v-for="property in Object.keys(store.selectedAgent.stateData)">
-          <div v-if="property.editing === true">
-            <input type="text" placeholder="name" :value="property" disabled />
-            <input v-model="store.selectedAgent.stateData[property]" type="number" />
-            <button @click="delete store.selectedAgent.stateData[property]">delete</button>
-            <br/>
-          </div>
-          <div v-else>
-            <input type="text" placeholder="name" :value="item.name" disabled />:
-            <input type="text" placeholder="value" :value="item.value" disabled /> -
-            <button @click="item.editing = true">edit</button> |
-            <button @click="deleteProperty(item.name)">delete</button>
-          </div>
-        </div>
-
-        <!-- ADD PROPERTY -->
-        <div v-if="propertiesSection.adding.status === false" class="add-container">
-          <button @click="propertiesSection.adding.status = true">new property +</button>
-        </div>
-        <div v-else>
-          <input v-model="propertiesSection.adding.newPropertyName" type="text" placeholder="name" />
-          <input v-model="propertiesSection.adding.newPropertyValue" type="number" placeholder="0" />
-          <button @click="createAgentProperty">add</button> |
-          <button @click="cancelSetAgentProperty">cancel</button>
-        </div>
+        <MenuProperty :selectedAgentProperties="store.selectedAgent.stateData"/>
+        <SetPropertyForm />
       </div>
-
-      <div class="item-list">
-        <h3 class="menu-section-heading">Choose action</h3>
-        <div v-for="action in store.actions">
-          <button @click="cloneAction(action)">{{ action.actionName }}</button>
-        </div>
-      </div>
-
     </div>
 
+    <div class="item-list">
+      <h3 class="menu-section-heading">Choose action</h3>
+      <div v-for="action in store.actions">
+        <button @click="cloneAction(action)">{{ action.actionName }}</button>
+      </div>
+    </div>
 
     <!-- ACTIONS -->
 
@@ -412,19 +382,14 @@
     </div>
 
     <!-- CONDITIONS -->
-
     <div class="menu-section" id="actions-section">
       <h3 class="menu-section-heading">Conditions</h3>
-
-      <!-- CONDITION LIST -->
       <div class="item-list">
         <div v-for="(item, index) in store.conditions" class="created-item">
-         <MenuCondition :item="item" :index="index" />
+          <MenuCondition :item="item" :index="index" />
         </div>
       </div>
-
       <ConditionCreateForm />
-
     </div>
 
     <div class="menu-section">
@@ -460,6 +425,8 @@ import { ActionTransition, PropertyChange } from "./classes/Action.js"
 import Agent from "./classes/Agent.js"
 import { AgentMenu, AgentMenuIcon, DeleteButton, AgentPreview } from "./classes/SelectionMenu.js"
 
+import SetPropertyForm from './components/SetPropertyForm.vue'
+import MenuProperty from './components/MenuProperty.vue'
 import ActionCreateForm from './components/ActionCreateForm.vue'
 import ConditionCreateForm from './components/ConditionCreateForm.vue'
 import MenuCondition from './components/MenuCondition.vue'
@@ -543,6 +510,8 @@ export default {
     return { store }
   },
   components: {
+    SetPropertyForm,
+    MenuProperty,
     ActionCreateForm,
     ConditionCreateForm,
     MenuCondition,
@@ -772,23 +741,6 @@ export default {
 
     deleteAgentType: function (agentType) {
       delete this.store.agentTypes[agentType]
-    },
-
-    createAgentProperty: function () {
-      const propName = this.propertiesSection.adding.newPropertyName
-      const propValue = Number(this.propertiesSection.adding.newPropertyValue)
-      this.store.selectedAgent.setProperty(propName, propValue)
-      this.propertiesSection.adding.newPropertyName = ''
-      this.propertiesSection.adding.newPropertyValue = 0
-      this.propertiesSection.adding.status = false
-    },
-    deleteProperty: function (itemName) {
-      this.propertiesSection.items = this.propertiesSection.items.filter(item => item.name !== itemName)
-    },
-    cancelSetAgentProperty: function () {
-      this.propertiesSection.adding.status = false
-      this.propertiesSection.adding.newPropertyName = ''
-      this.propertiesSection.adding.newPropertyValue = 0
     },
     createPropertyChangeItem: function (action) {
 
