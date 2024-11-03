@@ -185,128 +185,10 @@
           <!-- (ACTION) PROPERTY CHANGE ITEM EDIT FORM -->
           <div v-if="action.actionType === 'change'">
             <div v-for="(propertyChange, index) in action.propertyChanges">
-              <div v-if="propertyChange.editing === true">
-                <select v-model="propertyChange.agent">
-                  <option value="self">self</option>
-                  <option v-for="agent in store.agentTypes" :value="agent.config.name">{{ agent.config.name }}</option>
-                </select>
-
-                <form name="agentPropChangeRadioSelect">
-                  <input
-                    type="radio"
-                    v-model="propertyChange.args.agentChoiceMethod"
-                    name="agentChoiceMethod"
-                    value="nearest"
-                    checked="true"
-                  />
-                  <label for="nearest">nearest</label>
-                  <input
-                    type="radio"
-                    v-model="propertyChange.args.agentChoiceMethod"
-                    name="agentChoiceMethod"
-                    value="specific"
-                  />
-                  <label for="specific">specific</label>
-                  <input
-                    type="radio"
-                    v-model="propertyChange.args.agentChoiceMethod"
-                    name="agentChoiceMethod"
-                    value="all"
-                  />
-                  <label for="all">all</label>
-                </form>
-
-                <select v-model="propertyChange.propertyName">
-                  <option value="money">money</option>
-                </select>
-                <select v-model="propertyChange.changeType">
-                  <option value="increase">increase</option>
-                  <option value="decrease">decrease</option>
-                </select>
-                <input
-                  v-model="propertyChange.propertyValue"
-                  type="number"
-                  placeholder="value"
-                />
-                <button @click="propertyChange.editing = false">save</button>
-                <button @click="propertyChange.editing = false">cancel</button>
-              </div>
-              <div v-else>
-                <div>change {{ index + 1 }}:</div>
-                <input type="text" placeholder="property" :value="propertyChange.propertyName" disabled />
-                <input type="text" placeholder="change" :value="propertyChange.changeType" disabled />
-                <input type="number" placeholder="value" :value="propertyChange.propertyValue" disabled />
-                <button @click="propertyChange.editing = true">edit item</button>
-                <button @click="action.propertyChanges.splice(index, 1); action.adding = true">delete item</button>
-              </div>
+              <MenuActionPropertyChange :propertyChange="propertyChange" :index="index" />
             </div>
 
-            <!-- (ACTION) PROPERTY CHANGE ITEM CREATE FORM -->
-            <div v-if="propertyChangeForm.adding === true">
-                <select v-model="propertyChangeForm.agentType">
-                  <option value="">-- agent --</option>
-                  <option value="self">self</option>
-                  <option v-for="agent in store.agentTypes" :value="agent.config.name">{{ agent.config.name }}</option>
-                  <option value="lemonadeStall">lemonade stall</option>
-                </select>
-
-                <form name="agentPropChangeRadioCreate">
-                  <input
-                    type="radio"
-                    v-model="propertyChangeForm.agentChoiceMethod"
-                    name="agentChoiceMethod"
-                    value="nearest"
-                    checked="true"
-                  />
-                  <label for="nearest">nearest</label>
-                  <input
-                    type="radio"
-                    v-model="propertyChangeForm.agentChoiceMethod"
-                    name="agentChoiceMethod"
-                    value="specific"
-                  />
-                  <label for="specific">specific</label>
-                  <input
-                    type="radio"
-                    v-model="propertyChangeForm.agentChoiceMethod"
-                    name="agentChoiceMethod"
-                    value="all"
-                  />
-                  <label for="all">all</label>
-                </form>
-
-                <div v-if="propertyChangeForm.agentChoiceMethod === 'specific'">
-                  <select v-model="propertyChangeForm.target">
-                    <option value="">-- select agent --</option>
-                    <option
-                      v-for="agent in store.agentItems[propertyChangeForm.agentType]"
-                      :value="agent"
-                    >
-                      {{ agent.name }}
-                    </option>
-                  </select>
-                </div>
-
-                <select v-model="propertyChangeForm.property">
-                  <option value="">--  property --</option>
-                  <option v-for="property in Object.keys(store.selectedAgent.stateData)" :value="property">{{ property }}</option>
-                </select>
-                <select v-model="propertyChangeForm.change">
-                  <option value="">-- change --</option>
-                  <option value="increase">increase</option>
-                  <option value="decrease">decrease</option>
-                </select>
-                <input
-                  v-model="propertyChangeForm.value"
-                  type="number"
-                  placeholder="value"
-                />
-                <button @click="createPropertyChangeItem(action)">save</button>
-                <button @click="propertyChangeForm.adding = false">cancel</button>
-            </div>
-            <div v-else>
-              <button @click="propertyChangeForm.adding = true">new property change</button>
-            </div>
+            <ActionPropertyChangeForm :action="action"/>
           </div>
 
           <!-- INTERVAL EDIT FORM -->
@@ -421,13 +303,15 @@ import { useStore } from './store/mainStore.js'
 
 import { pointIsInArea } from "./classes/utils.js"
 import AgentType from "./classes/AgentType.js"
-import { ActionTransition, PropertyChange } from "./classes/Action.js"
+import { ActionTransition } from "./classes/Action.js"
 import Agent from "./classes/Agent.js"
 import { AgentMenu, AgentMenuIcon, DeleteButton, AgentPreview } from "./classes/SelectionMenu.js"
 
 import SetPropertyForm from './components/SetPropertyForm.vue'
 import MenuProperty from './components/MenuProperty.vue'
 import ActionCreateForm from './components/ActionCreateForm.vue'
+import ActionPropertyChangeForm from './components/ActionPropertyChangeForm.vue'
+import MenuActionPropertyChange from './components/MenuActionPropertyChange.vue'
 import ConditionCreateForm from './components/ConditionCreateForm.vue'
 import MenuCondition from './components/MenuCondition.vue'
 import SpriteSheetForm from './components/SpriteSheetForm.vue'
@@ -518,50 +402,42 @@ export default {
     MenuSpriteSheet,
     SpriteSheetForm,
     MenuSpriteMap,
-    SpriteMapForm
+    SpriteMapForm,
+    ActionPropertyChangeForm,
+    MenuActionPropertyChange
   },
   data: function () {
     return {
 
-    spriteMapsData: JSON.parse(localStorage.getItem('pondlifeSpriteMaps')),
-    spriteSheetsData: JSON.parse(localStorage.getItem('pondlifeSpriteSheets')),
+      spriteMapsData: JSON.parse(localStorage.getItem('pondlifeSpriteMaps')),
+      spriteSheetsData: JSON.parse(localStorage.getItem('pondlifeSpriteSheets')),
 
-    agentTypeForm: {
-      adding: false,
-      name: '',
-      height: 50,
-      width: 50,
-      spriteMap: '',
-      thumbnail: '',
-      nominalSpeed: 0.02,
-      positionX: 100,
-      positionY: 100
-    },
-    propertiesSection: {
-      items: [{name: 'money', value: 200, editing: false}],
-      adding: {
-        status: false,
-        newPropertyName: '',
-        newPropertyValue: 0
+      agentTypeForm: {
+        adding: false,
+        name: '',
+        height: 50,
+        width: 50,
+        spriteMap: '',
+        thumbnail: '',
+        nominalSpeed: 0.02,
+        positionX: 100,
+        positionY: 100
+      },
+      propertiesSection: {
+        items: [{name: 'money', value: 200, editing: false}],
+        adding: {
+          status: false,
+          newPropertyName: '',
+          newPropertyValue: 0
+        }
+      },
+      actionTransitionForm: {
+        adding: false,
+        action: null,
+        condition: null,
+        nextAction: null
       }
-    },
-    actionTransitionForm: {
-      adding: false,
-      action: null,
-      condition: null,
-      nextAction: null
-    },
-    propertyChangeForm: {
-      adding: false,
-      agent: '',
-      agentType: '',
-      agentChoiceMethod: '',
-      target: '',
-      property: '',
-      change: '',
-      value: ''
     }
-  }
   },
 
   mounted: function () {
@@ -741,27 +617,6 @@ export default {
 
     deleteAgentType: function (agentType) {
       delete this.store.agentTypes[agentType]
-    },
-    createPropertyChangeItem: function (action) {
-
-      const property = this.propertyChangeForm.property
-      const change = this.propertyChangeForm.change
-      const value = this.propertyChangeForm.value
-
-      const args = {
-        agentType: this.propertyChangeForm.agentType,
-        agentChoiceMethod: this.propertyChangeForm.agentChoiceMethod,
-        target: this.propertyChangeForm.target
-      }
-      const propChange = new PropertyChange(
-        null,
-        property,
-        change,
-        value,
-        args
-      )
-      action.propertyChanges.push(propChange)
-      this.propertyChangeForm.adding = false
     },
     deleteAction: function (itemName) {
       this.store.actions = this.store.actions.filter(item => item.actionName !== itemName)
