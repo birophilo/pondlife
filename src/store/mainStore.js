@@ -41,7 +41,9 @@ export const useStore = defineStore({
 
     actions: [],
 
-        // hard-coded 8-way list (9 including 'idle') for basic 2D directional sprite movements
+    conditions: [],
+
+    // hard-coded 8-way list (9 including 'idle') for basic 2D directional sprite movements
     directionList: [
       ['upLeft', 'up', 'upRight'],
       ['left', 'idle', 'right'],

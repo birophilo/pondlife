@@ -1,8 +1,4 @@
 <template>
-  <!-- <img alt="Vue logo" src="./assets/logo.png">
-  <HelloWorld msg="Welcome to Your Vue.js App"/> -->
-  <body>
-
 <div id="container">
 
   <div class="canvas-container">
@@ -79,13 +75,10 @@
         <MenuSpriteSheet :spriteSheet="spriteSheet" :i="index" />
       </div>
       <SpriteSheetForm />
-
     </div>
-
 
     <div class="menu-section" id="sprite-maps-section">
       <h3 class="menu-section-heading">Sprite Maps</h3>
-
       <div v-for="(spriteMap, index) in store.spriteMaps">
         <MenuSpriteMap :spriteMap="spriteMap" :i="index" />
       </div>
@@ -362,7 +355,7 @@
           <!-- CREATE TRANSITION -->
           <div v-if="actionTransitionForm.adding === true && actionTransitionForm.action === action">
             <select v-model="actionTransitionForm.condition">
-              <option v-for="condition in conditionsSection.items" :value="condition">
+              <option v-for="condition in store.conditions" :value="condition">
                 {{ condition.conditionName }}
               </option>
             </select>
@@ -379,7 +372,7 @@
           <div v-for="(transition, index) in action.transitions">
             <div v-if="transition.editing === true">
               <select :value="transition.condition">
-                <option v-for="condition in conditionsSection.items" :value="transition.condition">
+                <option v-for="condition in store.conditions" :value="transition.condition">
                   {{ condition.conditionName }}
                 </option>
               </select>
@@ -425,131 +418,12 @@
 
       <!-- CONDITION LIST -->
       <div class="item-list">
-        <div v-for="(item, index) in conditionsSection.items" class="created-item">
-
-          <div class="created-item-header">
-            <div v-if="item.editing">
-              <input v-model="item.conditionName" type="text" placeholder="name" />
-              <button @click="item.editing = false">save</button>
-              <button @click="item.editing = false">cancel</button>
-            </div>
-            <div v-else>
-              <div class="menu-action-name">{{ item.conditionName }}</div>
-              <button @click="item.editing = true">edit</button>
-              <button @click="deleteCondition(index)">delete</button>
-            </div>
-          </div>
-
-          <!-- CONDITION FORM -->
-          <div v-if="item.editing === true">
-            <select v-model="item.conditionType">
-              <option value="property">property</option>
-              <option value="preset">preset</option>
-            </select>
-          </div>
-          
-            <div v-if="item.editing === true">
-              <div v-if="item.conditionType === 'property'">
-                <select v-model="item.property">
-                  <option value="money">money</option>
-                </select>
-
-                <select v-model="item.comparison">
-                  <option value="isGreaterThan">is greater than</option>
-                  <option value="isLessThan">is less than</option>
-                </select>
-              </div>
-              <div v-else-if="item.conditionType === 'preset'">
-                <select v-model="item.classMethod">
-                  <option value="atDestination">at destination</option>
-                  <option value="actionIsComplete">is complete</option>
-                </select>
-
-                <select v-model="item.comparison" value="isIdentical">
-                  <option value="isIdentical">is</option>
-                </select>
-              </div>
-
-              <select v-model="item.conditionValue">
-                <option :value="true">true</option>
-                <option :value="false">false</option>
-              </select>
-
-            </div>
-            <div v-else>
-              <div v-if="item.conditionType === 'property'">
-                <input type="text" placeholder="property" :value="item.property" disabled />
-              </div>
-              <div v-else-if="item.conditionType === 'preset'">
-                <input type="text" placeholder="preset" :value="item.classMethod" disabled />
-              </div>
-              <input type="text" placeholder="comparison" :value="item.comparison" disabled />
-              <input type="text" placeholder="value" :value="item.conditionValue" disabled />
-            </div>
-          </div>
-
-          <!-- CREATE CONDITION -->
-
-          <div v-if="conditionsSection.adding.status === false" class="add-container">
-            <button @click="conditionsSection.adding.status = true">new condition</button>
-          </div>
-          <div v-else>
-            <input v-model="conditionsSection.adding.name" type="text" placeholder="name" />
-            <br />
-            <select v-model="conditionsSection.adding.type">
-              <option value="property">property</option>
-              <option value="preset">preset</option>
-            </select>
-            <br />
-
-            <div v-if="conditionsSection.adding.type === 'property'">
-              <select
-                v-model="conditionsSection.adding.forms.property.property"
-                id="action-change-property-name"
-              >
-                <option value="">-- select property --</option>
-                <option value="money">money</option>
-              </select>
-              <select v-model="conditionsSection.adding.forms.property.comparison" value="isGreaterThan">
-                <option value="">-- select comparison --</option>
-                <option value="isGreaterThan">is greater than</option>
-                <option value="isLessThan">is less than</option>
-              </select>
-              <input
-                number="text"
-                v-model="conditionsSection.adding.forms.property.value"
-                id="action-change-property-value"
-                placeholder="conditions value"
-              />
-            </div>
-
-            <div v-else-if="conditionsSection.adding.type === 'preset'">
-              <select
-                v-model="conditionsSection.adding.forms.preset.preset"
-                id="action-change-property-name"
-              >
-                <option value="">-- select preset --</option>
-                <option value="atDestination">at destination</option>
-                <option value="actionIsComplete">is complete</option>
-              </select>
-
-              <select v-model="conditionsSection.adding.forms.preset.comparison" value="isIdentical">
-                <option value="">-- select comparison --</option>
-                <option value="isIdentical">is</option>
-              </select>
-
-              <select v-model="conditionsSection.adding.forms.preset.value">
-                <option :value="true">true</option>
-                <option :value="false">false</option>
-              </select>
-
-            </div>
-
-            <button @click="createCondition">add</button> |
-            <button @click="cancelAddCondition">cancel</button>
-
+        <div v-for="(item, index) in store.conditions" class="created-item">
+         <MenuCondition :item="item" :index="index" />
         </div>
       </div>
+
+      <ConditionCreateForm />
 
     </div>
 
@@ -574,8 +448,6 @@
     </div>
   </div>
 </div>
-
-</body>
 </template>
 
 
@@ -583,13 +455,14 @@
 import { useStore } from './store/mainStore.js'
 
 import { pointIsInArea } from "./classes/utils.js"
-import { Condition, PresetCondition } from "./classes/Condition.js"
 import AgentType from "./classes/AgentType.js"
 import { ActionTransition, PropertyChange } from "./classes/Action.js"
 import Agent from "./classes/Agent.js"
 import { AgentMenu, AgentMenuIcon, DeleteButton, AgentPreview } from "./classes/SelectionMenu.js"
 
 import ActionCreateForm from './components/ActionCreateForm.vue'
+import ConditionCreateForm from './components/ConditionCreateForm.vue'
+import MenuCondition from './components/MenuCondition.vue'
 import SpriteSheetForm from './components/SpriteSheetForm.vue'
 import MenuSpriteSheet from './components/MenuSpriteSheet.vue'
 import SpriteMapForm from './components/SpriteMapForm.vue'
@@ -614,10 +487,6 @@ const initialAgentData = {
   supplyVan: [],
   world: [{x: 20, y: 20}]
 }
-
-
-const DEFAULT_CONDITION_TYPE = 'property'
-
 
 const agentTypesData = [
   {
@@ -675,6 +544,8 @@ export default {
   },
   components: {
     ActionCreateForm,
+    ConditionCreateForm,
+    MenuCondition,
     MenuSpriteSheet,
     SpriteSheetForm,
     MenuSpriteMap,
@@ -703,68 +574,6 @@ export default {
         status: false,
         newPropertyName: '',
         newPropertyValue: 0
-      }
-    },
-    actionsSection: {
-      items: [
-        // {
-        //   name: 'go to shop',
-        //   type: 'goTo',
-        //   target: 'lemonadeStall 1',
-        //   editing: false,
-        //   transitions: {
-        //     items: [],
-        //     adding: false,
-        //     newCondition: '',
-        //     newNextAction: ''
-        //   }
-        // }
-      ],
-      adding: {
-        status: false,
-        type: '',
-        name: '',
-        forms: {
-          goTo: {
-            destinationType: '',
-            agentType: '',
-            agentChoiceMethod: '',
-            target: '',
-            pointX: '',
-            pointY: ''
-          },
-          interval: {
-            duration: 0
-          }
-        }
-      }
-    },
-    conditionsSection: {
-      items: [
-        // {
-        //   type: 'property',
-        //   property: 'money',
-        //   comparison: 'isGreaterThan',
-        //   value: 20,
-        //   editing: false
-        // }
-      ],
-      adding: {
-        status: false,
-        type: 'property',
-        name: '',
-        forms: {
-          property: {
-            property: '',
-            comparison: '',
-            value: 0
-          },
-          preset: {
-            preset: '',
-            comparison: '',
-            value: true
-          }
-        }
       }
     },
     actionTransitionForm: {
@@ -1006,65 +815,7 @@ export default {
       this.store.actions = this.store.actions.filter(item => item.actionName !== itemName)
     },
     deleteCondition: function (index) {
-      this.conditionsSection.items.splice(index, 1)
-    },
-    createCondition: function () {
-      const conditionType = this.conditionsSection.adding.type
-      const conditionName = this.conditionsSection.adding.name
-      const data = this.conditionsSection.adding.forms[conditionType]
-
-      var newCondition
-
-      if (conditionType === 'property') {
-
-        console.log('creating condition')
-        const conditionProperty = data.property
-        const conditionComparison = data.comparison
-        const conditionValue = data.value
-
-        newCondition = new Condition(
-          this.store.selectedAgent,
-          conditionName,
-          conditionProperty,
-          conditionComparison,
-          Number(conditionValue),
-          this.conditionsSection.items.length + 1  // id
-        )
-      } else {
-
-        console.log('creating preset condition')
-        const conditionPreset = data.preset
-        const conditionComparison = data.comparison
-        const conditionValue = data.value
-
-        newCondition = new PresetCondition(
-          this.store.selectedAgent,
-          conditionName,
-          conditionPreset,
-          conditionComparison,
-          conditionValue,
-          this.conditionsSection.items.length + 1  // id
-        )
-      }
-      this.conditionsSection.items.push(newCondition)
-      this.resetConditionForms()
-    },
-    resetConditionForms: function () {
-      // reset common form data/settings
-      this.conditionsSection.adding.name = ''
-      this.conditionsSection.adding.type = DEFAULT_CONDITION_TYPE
-      this.conditionsSection.adding.status = false
-
-      // reset specific settings (hard-coded keys for now)
-      this.conditionsSection.adding.forms.property.property = ''
-      this.conditionsSection.adding.forms.property.comparison = ''
-      this.conditionsSection.adding.forms.property.value = ''
-      this.conditionsSection.adding.forms.preset.preset = ''
-      this.conditionsSection.adding.forms.preset.comparison = ''
-      this.conditionsSection.adding.forms.preset.value = ''
-    },
-    cancelAddCondition: function () {
-      this.resetConditionForms()
+      this.store.conditions.splice(index, 1)
     },
     createTransition: function (action) {
       const condition = this.actionTransitionForm.condition
