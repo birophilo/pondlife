@@ -18,14 +18,10 @@
 
     <div class="menu-section" id="agent-types-section">
       <h3 class="menu-section-heading">Agent Types</h3>
-
-      <!-- EDIT AGENT TYPE -->
       <div v-for="(agentType) in store.agentTypes">
         <MenuAgentType :agentType="agentType" />
       </div>
-
       <CreateAgentTypeForm />
-
     </div>
 
     <div class="menu-section" id="sprite-sheets-section">
@@ -168,58 +164,11 @@
           </div>
 
           <h4>Action transitions</h4>
-
-          <!-- CREATE TRANSITION -->
-          <div v-if="actionTransitionForm.adding === true && actionTransitionForm.action === action">
-            <select v-model="actionTransitionForm.condition">
-              <option v-for="condition in store.conditions" :value="condition">
-                {{ condition.conditionName }}
-              </option>
-            </select>
-            <select v-model="actionTransitionForm.nextAction">
-              <option v-for="action in store.actions" :value="action">
-                {{ action.actionName }}
-              </option>
-            </select>
-            <button @click="createTransition(action)">add</button> |
-            <button @click="cancelAddTransition(action)">cancel</button>
-          </div>
-
+          <CreateActionTransitionForm :action="action" />
           <!-- ACTION TRANSITIONS -->
           <div v-for="(transition, index) in action.transitions">
-            <div v-if="transition.editing === true">
-              <select :value="transition.condition">
-                <option v-for="condition in store.conditions" :value="transition.condition">
-                  {{ condition.conditionName }}
-                </option>
-              </select>
-              <select :value="transition.nextAction">
-                <option v-for="action in store.actions" :value="transition.nextAction">
-                  {{ action.actionName }}
-                </option>
-              </select>
-              <button @click="transition.editing = false">save</button>
-              <button @click="transition.editing = false">cancel</button>
-            </div>
-            <div v-else>
-              <table>
-                <tr>
-                  <th>if condition met</th>
-                  <th>transition to</th>
-                </tr>
-                <tr v-for="(transition) in action.transitions">
-                  <td>{{ transition.condition.conditionName }}</td>
-                  <td>{{ transition.nextAction.actionName }}</td>
-                </tr>
-              </table>
-              <br />
-              <button @click="transition.editing = true">edit</button>
-              <button @click="deleteTransition(action, index)">delete</button>
-            </div>
-
+            <MenuActionTransition :action="action" :transition="transition" :index="index" />
           </div>
-
-          <button @click="actionTransitionForm.adding = true; actionTransitionForm.action = action">add transition</button>
 
         </div>
 
@@ -268,7 +217,6 @@ import { useStore } from './store/mainStore.js'
 
 import { pointIsInArea } from "./classes/utils.js"
 import AgentType from "./classes/AgentType.js"
-import { ActionTransition } from "./classes/Action.js"
 import Agent from "./classes/Agent.js"
 import { AgentMenu, AgentMenuIcon, DeleteButton, AgentPreview } from "./classes/SelectionMenu.js"
 
@@ -279,6 +227,8 @@ import MenuProperty from './components/MenuProperty.vue'
 import ActionCreateForm from './components/ActionCreateForm.vue'
 import ActionPropertyChangeForm from './components/ActionPropertyChangeForm.vue'
 import MenuActionPropertyChange from './components/MenuActionPropertyChange.vue'
+import CreateActionTransitionForm from './components/CreateActionTransitionForm.vue'
+import MenuActionTransition from './components/MenuActionTransition.vue'
 import ConditionCreateForm from './components/ConditionCreateForm.vue'
 import MenuCondition from './components/MenuCondition.vue'
 import SpriteSheetForm from './components/SpriteSheetForm.vue'
@@ -366,6 +316,8 @@ export default {
     SetPropertyForm,
     MenuProperty,
     ActionCreateForm,
+    CreateActionTransitionForm,
+    MenuActionTransition,
     ConditionCreateForm,
     MenuCondition,
     MenuSpriteSheet,
@@ -388,12 +340,6 @@ export default {
           newPropertyName: '',
           newPropertyValue: 0
         }
-      },
-      actionTransitionForm: {
-        adding: false,
-        action: null,
-        condition: null,
-        nextAction: null
       }
     }
   },
@@ -542,25 +488,6 @@ export default {
     },
     deleteCondition: function (index) {
       this.store.conditions.splice(index, 1)
-    },
-    createTransition: function (action) {
-      const condition = this.actionTransitionForm.condition
-      const nextAction = this.actionTransitionForm.nextAction
-
-      const transition = new ActionTransition(condition, nextAction)
-      action.transitions.push(transition)
-
-      this.actionTransitionForm.condition = null
-      this.actionTransitionForm.nextAction = null
-      this.actionTransitionForm.adding = false
-    },
-    cancelAddTransition: function () {
-      this.actionTransitionForm.condition = null
-      this.actionTransitionForm.nextAction = null
-      this.actionTransitionForm.adding = false
-    },
-    deleteTransition: function (action, transitionIndex) {
-      action.transitions.splice(transitionIndex, 1)
     },
     conditionReadableFormat: function (condition) {
       const readable = `${ condition.property } ${ condition.comparison } ${ condition.value }`
