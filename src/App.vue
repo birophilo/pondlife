@@ -63,117 +63,9 @@
       <!-- ACTION LIST -->
       <div class="item-list">
         <div v-for="action in store.actions" class="created-item">
-
-          <div class="created-item-header">
-            <div class="menu-action-name">{{ action.actionName }}</div>
-            <div v-if="action.editing">
-              <button @click="action.editing = false">save</button>
-              <button @click="action.editing = false">cancel</button>
-            </div>
-            <div v-else>
-              <div v-if="action.actionType === 'change'">
-                <button @click="deleteAction(action.actionName)">delete action</button>
-              </div>
-              <div v-else>
-                <button @click="action.editing = true">edit</button>
-                <button @click="deleteAction(action.actionName)">delete</button>
-              </div>
-
-            </div>
-          </div>
-
-          <!-- GOTO ACTION EDIT FORM -->
-          <div v-if="action.actionType === 'goTo'">
-            <div v-if="action.editing === true">
-              <!-- removed until can cleanly change action type -->
-              <!-- <select v-model="action.actionType">
-                <option value="goTo">go to</option>
-                <option value="change">change</option>
-                <option value="interval">wait</option>
-              </select> -->
-
-              <select v-model="action.args.destinationType">
-                <option>-- select agent or point --</option>
-                <option value="agent">agent</option>
-                <option value="point">point</option>
-              </select>
-
-              <select v-model="action.args.agentType">
-                <option value="">-- agent type --</option>
-                <option v-for="agentType in store.agentTypes" :value="agentType.name">{{ agentType.name }}</option>
-              </select>
-
-              <form name="agentRadioSelect">
-                <input
-                  type="radio"
-                  v-model="action.args.agentChoiceMethod"
-                  name="agentChoiceMethod"
-                  value="nearest"
-                  checked="true"
-                />
-                <label for="nearest">nearest</label>
-                <input
-                  type="radio"
-                  v-model="action.args.agentChoiceMethod"
-                  name="agentChoiceMethod"
-                  value="specific"
-                />
-                <label for="nearest">specific</label>
-              </form>
-
-              <div v-if="action.args.agentChoiceMethod === 'specific'">
-                <select v-model="action.args.target">
-                  <option value="">-- select agent --</option>
-                  <option
-                    v-for="agent in store.agentItems[action.args.agentType]"
-                    :value="agent"
-                  >
-                    {{ agent.name }}
-                  </option>
-                </select>
-              </div>
-
-            </div>
-            <div v-else>
-              <div>action type: {{ action.actionType }}</div>
-              <input v-model="action.args.agentType" type="text" placeholder="target" disabled />
-            </div>
-          </div>
-
-          <!-- (ACTION) PROPERTY CHANGE ITEM EDIT FORM -->
-          <div v-if="action.actionType === 'change'">
-            <div v-for="(propertyChange, index) in action.propertyChanges">
-              <MenuActionPropertyChange
-                :action="action"
-                :propertyChange="propertyChange"
-                :index="index"
-              />
-            </div>
-            <ActionPropertyChangeForm :action="action"/>
-          </div>
-
-          <!-- INTERVAL EDIT FORM -->
-          <div v-if="action.actionType === 'interval'">
-            <div v-if="action.editing === true">
-              <input v-model="action.duration" type="number" />
-            </div>
-            <div v-else>
-              <div>action type: {{ action.actionType }}</div>
-              <input :value="action.duration" type="number" disabled />
-            </div>
-          </div>
-
-          <h4>Action transitions</h4>
-          <CreateActionTransitionForm :action="action" />
-          <!-- ACTION TRANSITIONS -->
-          <div v-for="(transition, index) in action.transitions">
-            <MenuActionTransition :action="action" :transition="transition" :index="index" />
-          </div>
-
+          <MenuAction :action="action"/>
         </div>
-
         <ActionCreateForm />
-
       </div>
     </div>
 
@@ -225,10 +117,7 @@ import MenuAgentType from './components/MenuAgentType.vue'
 import SetPropertyForm from './components/SetPropertyForm.vue'
 import MenuProperty from './components/MenuProperty.vue'
 import ActionCreateForm from './components/ActionCreateForm.vue'
-import ActionPropertyChangeForm from './components/ActionPropertyChangeForm.vue'
-import MenuActionPropertyChange from './components/MenuActionPropertyChange.vue'
-import CreateActionTransitionForm from './components/CreateActionTransitionForm.vue'
-import MenuActionTransition from './components/MenuActionTransition.vue'
+import MenuAction from './components/MenuAction.vue'
 import ConditionCreateForm from './components/ConditionCreateForm.vue'
 import MenuCondition from './components/MenuCondition.vue'
 import SpriteSheetForm from './components/SpriteSheetForm.vue'
@@ -316,16 +205,13 @@ export default {
     SetPropertyForm,
     MenuProperty,
     ActionCreateForm,
-    CreateActionTransitionForm,
-    MenuActionTransition,
+    MenuAction,
     ConditionCreateForm,
     MenuCondition,
     MenuSpriteSheet,
     SpriteSheetForm,
     MenuSpriteMap,
-    SpriteMapForm,
-    ActionPropertyChangeForm,
-    MenuActionPropertyChange
+    SpriteMapForm
   },
   data: function () {
     return {
@@ -482,9 +368,6 @@ export default {
         menu: this.store.itemMenu,
         i: this.store.agentMenuButtons.length
       })
-    },
-    deleteAction: function (itemName) {
-      this.store.actions = this.store.actions.filter(item => item.actionName !== itemName)
     },
     deleteCondition: function (index) {
       this.store.conditions.splice(index, 1)
