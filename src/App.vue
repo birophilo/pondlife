@@ -21,48 +21,10 @@
 
       <!-- EDIT AGENT TYPE -->
       <div v-for="(agentType) in store.agentTypes">
-        <div v-if="agentType.name !== 'world'">
-          <div v-if="agentType.editing === true">
-            name: <input v-model="agentType.name" type="text" placeholder="name" /><br />
-            width: <input v-model="agentType.config.width" type="number" placeholder="width" /><br />
-            height: <input v-model="agentType.config.height" type="number" placeholder="height" /><br />
-            movement speed: <input v-model="agentType.config.nominalSpeed" type="number" placeholder="1" /><br />
-            spriteMap:
-            <select v-model="agentType.config.spriteMap">
-              <option value="">-- select sprite map --</option>
-              <option :value="spriteMap" v-for="spriteMap in store.spriteMaps">{{ spriteMap.name }}</option>
-            </select>
-            <br />
-            thumbnail: {{ agentType.config.thumbnail }}<br />
-            <input type="file" placeholder="thumbnail" @change="updateThumbnailFileInput($event, agentType.config)" /><br />
-            <button @click="agentType.editing = false; $forceUpdate()">save</button>
-            <button @click="agentType.editing = false; $forceUpdate()">cancel</button>
-          </div>
-          <div v-else>
-            {{ agentType.name }}
-            <button @click="agentType.editing = true; $forceUpdate()">edit</button>
-            <button @click="deleteAgentType(agentType.name)">delete</button>
-          </div>
-        </div>
+        <MenuAgentType :agentType="agentType" />
       </div>
 
-      <!-- CREATE AGENT TYPE -->
-      <div v-if="agentTypeForm.adding === true">
-        name: <input v-model="agentTypeForm.name" type="text" placeholder="name" /><br />
-        width: <input v-model="agentTypeForm.width" type="number" placeholder="width" /><br />
-        height: <input v-model="agentTypeForm.height" type="number" placeholder="height" /><br />
-        movement speed: <input v-model="agentTypeForm.nominalSpeed" type="number" placeholder="1" /><br />
-        spriteMap:
-        <select v-model="agentTypeForm.spriteMap">
-          <option value="">-- select sprite map --</option>
-          <option :value="spriteMap" v-for="spriteMap in store.spriteMaps">{{ spriteMap.name }}</option>
-        </select><br />
-        thumbnail: {{ agentTypeForm.thumbnail }}<br />
-        <input type="file" placeholder="thumbnail" @change="updateThumbnailFileInput($event, agentTypeForm)" /><br />
-        <button @click="createAgentType()">create agent type</button>
-        <button @click="agentTypeForm.adding = false">cancel</button>
-      </div>
-      <div v-else><button @click="agentTypeForm.adding = true">new agent type</button></div>
+      <CreateAgentTypeForm />
 
     </div>
 
@@ -185,9 +147,12 @@
           <!-- (ACTION) PROPERTY CHANGE ITEM EDIT FORM -->
           <div v-if="action.actionType === 'change'">
             <div v-for="(propertyChange, index) in action.propertyChanges">
-              <MenuActionPropertyChange :propertyChange="propertyChange" :index="index" />
+              <MenuActionPropertyChange
+                :action="action"
+                :propertyChange="propertyChange"
+                :index="index"
+              />
             </div>
-
             <ActionPropertyChangeForm :action="action"/>
           </div>
 
@@ -307,6 +272,8 @@ import { ActionTransition } from "./classes/Action.js"
 import Agent from "./classes/Agent.js"
 import { AgentMenu, AgentMenuIcon, DeleteButton, AgentPreview } from "./classes/SelectionMenu.js"
 
+import CreateAgentTypeForm from './components/CreateAgentTypeForm.vue'
+import MenuAgentType from './components/MenuAgentType.vue'
 import SetPropertyForm from './components/SetPropertyForm.vue'
 import MenuProperty from './components/MenuProperty.vue'
 import ActionCreateForm from './components/ActionCreateForm.vue'
@@ -394,6 +361,8 @@ export default {
     return { store }
   },
   components: {
+    CreateAgentTypeForm,
+    MenuAgentType,
     SetPropertyForm,
     MenuProperty,
     ActionCreateForm,
@@ -412,17 +381,6 @@ export default {
       spriteMapsData: JSON.parse(localStorage.getItem('pondlifeSpriteMaps')),
       spriteSheetsData: JSON.parse(localStorage.getItem('pondlifeSpriteSheets')),
 
-      agentTypeForm: {
-        adding: false,
-        name: '',
-        height: 50,
-        width: 50,
-        spriteMap: '',
-        thumbnail: '',
-        nominalSpeed: 0.02,
-        positionX: 100,
-        positionY: 100
-      },
       propertiesSection: {
         items: [{name: 'money', value: 200, editing: false}],
         adding: {
@@ -579,45 +537,6 @@ export default {
         i: this.store.agentMenuButtons.length
       })
     },
-
-    createAgentType: function () {
-
-      const agentTypeName = this.agentTypeForm.name
-
-      const agentData = {
-        agentClass: Agent,
-        agentItems: [],
-        config: {
-          name: agentTypeName,
-          width: Number(this.agentTypeForm.width),
-          height: Number(this.agentTypeForm.height),
-          frames: {max: 9, columns: 4, rows: 3, hold: 3},
-          offset: {x: 96, y: 46},
-          scale: 1,
-          nominalSpeed: Number(this.agentTypeForm.nominalSpeed),
-          previewImage: '/img/sprites/GirlSample_Walk_Down.png',
-          spriteMap: this.agentTypeForm.spriteMap,
-          thumbnail: this.agentTypeForm.thumbnail
-        }
-      }
-
-      this.store.agentTypes[agentTypeName] = new AgentType(agentData.config)
-
-      let newIcon = new AgentMenuIcon({
-        menu: this.store.itemMenu,
-        i: this.store.agentMenuButtons.length + 1,
-        name: agentData.config.name,
-        agent: Agent,
-        config: agentData.config
-      })
-      this.store.agentMenuButtons.push(newIcon)
-
-      this.agentTypeForm.adding = false
-    },
-
-    deleteAgentType: function (agentType) {
-      delete this.store.agentTypes[agentType]
-    },
     deleteAction: function (itemName) {
       this.store.actions = this.store.actions.filter(item => item.actionName !== itemName)
     },
@@ -735,7 +654,7 @@ export default {
       const agentItems = this.store.agentItems[agentTypeName]
       const num = agentItems.length + 1
       agentItems.push( new Agent({
-        agentType: agentTypeName,
+        agentTypeName: agentTypeName,
         position: {
           x: this.store.mouse.x - this.store.agentTypes[agentTypeName].config.width / 2,
           y: this.store.mouse.y - this.store.agentTypes[agentTypeName].config.height / 2
