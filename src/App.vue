@@ -55,12 +55,8 @@
       </div>
     </div>
 
-    <!-- ACTIONS -->
-
     <div class="menu-section" id="actions-section">
       <h3 class="menu-section-heading">Actions</h3>
-
-      <!-- ACTION LIST -->
       <div class="item-list">
         <div v-for="action in store.actions" class="created-item">
           <MenuAction :action="action"/>
@@ -69,7 +65,6 @@
       </div>
     </div>
 
-    <!-- CONDITIONS -->
     <div class="menu-section" id="actions-section">
       <h3 class="menu-section-heading">Conditions</h3>
       <div class="item-list">
@@ -81,13 +76,13 @@
     </div>
 
     <div class="menu-section">
-
       <div class="day-container">
         Day: <span id="day-number">{{ store.dayNumber }}</span>
       </div>
-
       <div class="speed-slide-container">
-        <div><span>Speed: {{ store.GlobalSettings.globalSpeed / 100 }}</span></div>
+        <div>
+          <span>Speed: {{ store.GlobalSettings.globalSpeed / 100 }}</span>
+        </div>
         <input
           v-model="store.GlobalSettings.globalSpeed"
           type="range"
@@ -97,8 +92,8 @@
           id="sim-speed-slider"
         >
       </div>
-
     </div>
+
   </div>
 </div>
 </template>
@@ -107,7 +102,7 @@
 <script>
 import { useStore } from './store/mainStore.js'
 
-import { pointIsInArea } from "./classes/utils.js"
+import { pointIsInArea } from "./utils.js"
 import AgentType from "./classes/AgentType.js"
 import Agent from "./classes/Agent.js"
 import { AgentMenu, AgentMenuIcon, DeleteButton, AgentPreview } from "./classes/SelectionMenu.js"
@@ -125,6 +120,8 @@ import MenuSpriteSheet from './components/MenuSpriteSheet.vue'
 import SpriteMapForm from './components/SpriteMapForm.vue'
 import MenuSpriteMap from './components/MenuSpriteMap.vue'
 
+import { initialAgentInstances, initialAgentTypes, initialAgentMenuButtons } from './initialData.js'
+
 
 let canvas;
 let c;  // canvas context
@@ -135,62 +132,6 @@ let dayLength = 1000 // frames
 
 // const customerData = [{x: 0, y: 0}, {x: 900, y: 400}]
 // const supplyVanData = [{x: 800, y: 800}]
-
-const agentMenuButtonData = ['customer', 'lemonadeStall', 'supplyVan']
-
-const initialAgentData = {
-  lemonadeStall: [{x: 400, y: 200}, {x: 700, y: 100}],
-  customer: [{x: 900, y: 400}],
-  supplyVan: [],
-  world: [{x: 20, y: 20}]
-}
-
-const agentTypesData = [
-  {
-    name: 'customer',
-    width: 30,
-    height: 40,
-    offset: {x: 96, y: 46},
-    scale: 0.7,
-    nominalSpeed: 0.02,
-    previewImage: '/img/thumbnails/customer-thumbnail.png',
-    spriteMap: null,
-    thumbnail: '/img/thumbnails/customer-thumbnail.png'
-  },
-  {
-    name: 'lemonadeStall',
-    width: 130,
-    height: 104,
-    offset: {x: 0, y: 0},
-    scale: 1,
-    nominalSpeed: 0.02,
-    previewImage: '/img/sprites/stall-1.png',
-    spriteMap: null,
-    thumbnail: '/img/thumbnails/lemonade-stall-thumbnail.png'
-  },
-  {
-    name: 'supplyVan',
-    width: 50,
-    height: 50,
-    offset: {x: 2, y: 0},
-    scale: 2.5,
-    nominalSpeed: 0.02,
-    previewImage: '/img/sprites/SupplyVan_Right.png',
-    spriteMap: null,
-    thumbnail: '/img/thumbnails/supply-van-thumbnail.png'
-  },
-  {
-    name: 'world',
-    width: 25,
-    height: 25,
-    offset: {x: 0, y: 0},
-    scale: 1,
-    nominalSpeed: 0.02,
-    previewImage: '/img/thumbnails/world-thumbnail.png',
-    spriteMap: null,
-    thumbnail: ''
-  }
-]
 
 
 export default {
@@ -319,17 +260,13 @@ export default {
 
   methods: {
 
-    changeStoreData: function () {
-      this.store.changeMyData('goodbye')
-    },
-
     loadAgentsAndFixtures: function () {
 
       // load from localStorage (temporary solution while frontend-only)
       this.store.spriteMaps = this.spriteMapsData !== null ? this.spriteMapsData : []
       this.store.spriteSheets = this.spriteSheetsData !== null ? this.spriteSheetsData : []
 
-      agentTypesData.forEach(agentType => {
+      initialAgentTypes.forEach(agentType => {
         this.store.agentTypes[agentType.name] = new AgentType(agentType)
       })
 
@@ -341,7 +278,7 @@ export default {
       // populate agents from initial data
       agentTypeNames.forEach(agentTypeName => {
         this.store.agentItems[agentTypeName] = []
-        initialAgentData[agentTypeName].forEach((item, i) => {
+        initialAgentInstances[agentTypeName].forEach((item, i) => {
           this.store.agentItems[agentTypeName].push( new Agent({
             agentTypeName: agentTypeName,
             position: {x: item.x, y: item.y},
@@ -353,7 +290,7 @@ export default {
       })
 
       this.store.itemMenu = new AgentMenu()
-      agentMenuButtonData.forEach((agentName, i) => {
+      initialAgentMenuButtons.forEach((agentName, i) => {
         this.store.agentMenuButtons.push(
           new AgentMenuIcon({
             menu: this.store.itemMenu,

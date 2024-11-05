@@ -1,5 +1,5 @@
 import { Sprite } from "./Sprite.js" 
-import { get8WayDirection } from "./utils.js"
+import { get8WayDirection } from "../utils.js"
 
 export default class Agent extends Sprite {
 
