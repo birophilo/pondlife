@@ -6,10 +6,18 @@
   <div v-else>
     <input v-model="actionForm.name" type="text" placeholder="name" />
     <br />
+    <!-- <div>
+      <select v-model="actionForm.forms.goTo.agentType">
+        <option value="">-- agent type --</option>
+        <option v-for="agentType in store.agentTypes" :value="agentType.name">{{ agentType.name }}</option>
+      </select>
+    </div> -->
+
     <select v-model="actionForm.type">
       <!-- World agent cannot travel, only change properties and pause for intervals -->
       <option value="">-- action type --</option>
-      <option v-if="store.selectedAgent.agentType !== 'world'" value="goTo">go to</option>
+      <!-- <option v-if="store.selectedAgent.agentType !== 'world'" value="goTo">go to</option> -->
+      <option value="goTo">go to</option>
       <option value="change">change</option>
       <option value="interval">wait</option>
     </select>

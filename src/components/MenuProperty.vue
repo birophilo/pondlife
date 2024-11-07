@@ -1,6 +1,5 @@
 <template>
   <div>
-    {{ JSON.stringify(propertiesData) }}
     <div v-for="property in Object.keys(propertiesData)">
       hello<br/>
       <div v-if="editFlags[property] === true">

@@ -7,74 +7,6 @@
 
   <div class="info-container">
 
-    <div class="menu-section" id="agent-types-section">
-      <h3 class="menu-section-heading">Selected Agent</h3>
-      <div v-if="store.selectedAgent !== null">
-        {{ store.selectedAgent.name }}<br/>
-        current action: {{ store.selectedAgent.currentStateName }}
-      </div>
-      <div v-else>none</div>
-    </div>
-
-    <div class="menu-section" id="agent-types-section">
-      <h3 class="menu-section-heading">Agent Types</h3>
-      <div v-for="(agentType) in store.agentTypes">
-        <MenuAgentType :agentType="agentType" />
-      </div>
-      <CreateAgentTypeForm />
-    </div>
-
-    <div class="menu-section" id="sprite-sheets-section">
-      <h3 class="menu-section-heading">Sprite Sheets</h3>
-      <div v-for="(spriteSheet, index) in store.spriteSheets">
-        <MenuSpriteSheet :spriteSheet="spriteSheet" :i="index" />
-      </div>
-      <SpriteSheetForm />
-    </div>
-
-    <div class="menu-section" id="sprite-maps-section">
-      <h3 class="menu-section-heading">Sprite Maps</h3>
-      <div v-for="(spriteMap, index) in store.spriteMaps">
-        <MenuSpriteMap :spriteMap="spriteMap" :i="index" />
-      </div>
-      <SpriteMapForm />
-    </div>
-
-    <div class="menu-section" id="properties-section">
-      <h3 class="menu-section-heading">Properties</h3>
-      <div v-if="store.selectedAgent !== null" class="item-list">
-        <MenuProperty :selectedAgentProperties="store.selectedAgent.stateData"/>
-        <SetPropertyForm />
-      </div>
-    </div>
-
-    <div class="item-list">
-      <h3 class="menu-section-heading">Choose action</h3>
-      <div v-for="action in store.actions">
-        <button @click="cloneAction(action)">{{ action.actionName }}</button>
-      </div>
-    </div>
-
-    <div class="menu-section" id="actions-section">
-      <h3 class="menu-section-heading">Actions</h3>
-      <div class="item-list">
-        <div v-for="action in store.actions" class="created-item">
-          <MenuAction :action="action"/>
-        </div>
-        <ActionCreateForm />
-      </div>
-    </div>
-
-    <div class="menu-section" id="actions-section">
-      <h3 class="menu-section-heading">Conditions</h3>
-      <div class="item-list">
-        <div v-for="(item, index) in store.conditions" class="created-item">
-          <MenuCondition :item="item" :index="index" />
-        </div>
-      </div>
-      <ConditionCreateForm />
-    </div>
-
     <div class="menu-section">
       <div class="day-container">
         Day: <span id="day-number">{{ store.dayNumber }}</span>
@@ -85,14 +17,85 @@
         </div>
         <input
           v-model="store.GlobalSettings.globalSpeed"
-          type="range"
-          min="0"
-          max="200"
-          value="100"
           id="sim-speed-slider"
+          type="range" min="0" max="200" value="100"
         >
       </div>
     </div>
+
+    <details class="menu-section" id="agent-types-section">
+      <summary class="menu-section-heading">
+        Selected Agent: &nbsp;
+        <span class="body-small">{{ store.selectedAgent !== null ? store.selectedAgent.name : 'none' }}</span>
+      </summary>
+      <div v-if="store.selectedAgent !== null">
+        {{ store.selectedAgent.name }}<br/>
+        current action: {{ store.selectedAgent.currentStateName }}
+      </div>
+      <div v-else>none</div>
+    </details>
+
+    <details class="menu-section" id="agent-types-section">
+      <summary class="menu-section-heading">Agent Types</summary>
+      <div v-for="(agentType) in store.agentTypes">
+        <MenuAgentType :agentType="agentType" />
+      </div>
+      <CreateAgentTypeForm />
+    </details>
+
+    <details class="menu-section" id="sprite-sheets-section">
+      <summary>Sprites</summary>
+      <h3 class="menu-section-heading">Sprite Sheets</h3>
+      <div v-for="(spriteSheet, index) in store.spriteSheets">
+        <MenuSpriteSheet :spriteSheet="spriteSheet" :i="index" />
+      </div>
+      <SpriteSheetForm />
+
+      <h3 class="menu-section-heading">Sprite Maps</h3>
+      <div v-for="(spriteMap, index) in store.spriteMaps">
+        <MenuSpriteMap :spriteMap="spriteMap" :i="index" />
+      </div>
+      <SpriteMapForm />
+    </details>
+
+    <details class="menu-section" id="properties-section">
+      <summary class="menu-section-heading">Properties</summary>
+      <div v-if="store.selectedAgent !== null" class="item-list">
+        <MenuProperty :selectedAgentProperties="store.selectedAgent.stateData"/>
+        <SetPropertyForm />
+      </div>
+    </details>
+
+    <details class="menu-section" id="actions-section">
+      <summary class="menu-section-heading">Actions</summary>
+      <div class="item-list">
+        <div v-for="action in store.actions" class="created-item">
+          <MenuAction :action="action"/>
+        </div>
+        <ActionCreateForm />
+      </div>
+      <div class="item-list">
+        <h3 class="menu-section-heading">Choose action</h3>
+        <div v-if="store.actions.length > 0">
+          <div v-for="action in store.actions">
+            <button @click="cloneAction(action)">{{ action.actionName }}</button>
+          </div>
+        </div>
+        <div v-else>
+          no actions yet
+        </div>
+      </div>
+    </details>
+
+    <details class="menu-section" id="actions-section">
+      <summary class="menu-section-heading">Conditions</summary>
+      <div class="item-list">
+        <div v-for="(item, index) in store.conditions" class="created-item">
+          <MenuCondition :item="item" :index="index" />
+        </div>
+      </div>
+      <ConditionCreateForm />
+    </details>
 
   </div>
 </div>
@@ -126,12 +129,8 @@ import { initialAgentInstances, initialAgentTypes, initialAgentMenuButtons } fro
 let canvas;
 let c;  // canvas context
 
-const backgroundColor = 'rgb(200, 200, 200)'
-
 let dayLength = 1000 // frames
-
-// const customerData = [{x: 0, y: 0}, {x: 900, y: 400}]
-// const supplyVanData = [{x: 800, y: 800}]
+const backgroundColor = 'rgb(200, 200, 200)'
 
 
 export default {
@@ -456,11 +455,22 @@ canvas {
   justify-content: left;
 }
 
+details {
+  margin-top: 24px;
+}
+
+summary {
+  font-size: 1.1rem;
+  user-select: none;
+}
+
+details[open] summary {
+  margin-bottom: 20px;
+}
+
 .info-container {
-  border: 1px solid black;
   width: 100%;
-  padding: 5px;
-  height: 1200px;
+  padding: 5px 5px 5px 10px;
 }
 
 .speed-slide-container {
@@ -527,6 +537,14 @@ table, th, td {
   border: 1px solid #e43d12;
   border-collapse: collapse;
   padding: 5px;
+}
+
+button {
+  border: 1px solid #e43d12;
+}
+
+.body-small {
+  font-size: 0.85rem;
 }
 
 </style>
