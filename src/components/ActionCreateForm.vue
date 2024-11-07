@@ -1,7 +1,7 @@
 <template>
   <!-- ACTIONS CREATE -->
   <div v-if="actionForm.adding === false" class="add-container">
-    <button @click="actionForm.adding = true; console.log(store.selectedAgent)">new action</button>
+    <button @click="actionForm.adding = true">new action</button>
   </div>
   <div v-else>
     <input v-model="actionForm.name" type="text" placeholder="name" />
@@ -37,7 +37,7 @@
           <option v-for="agentType in store.agentTypes" :value="agentType.name">{{ agentType.name }}</option>
         </select>
 
-        <form name="agentRadioSelect" @change="console.log(actionForm.forms.goTo.agentChoiceMethod)">
+        <form name="agentRadioSelect">
           <input
             type="radio"
             v-model="actionForm.forms.goTo.agentChoiceMethod"
@@ -140,7 +140,7 @@ export default {
           goTo: {
             destinationType: '',
             agentType: '',
-            agentChoiceMethod: '',
+            agentChoiceMethod: 'nearest',
             target: '',
             pointX: '',
             pointY: ''
@@ -230,7 +230,7 @@ export default {
       // reset common form data/settings
       this.actionForm.name = ''
       this.actionForm.type = DEFAULT_ACTION_TYPE
-      this.actionForm.status = false
+      this.actionForm.adding = false
 
       // reset specific settings (hard-coded keys for now)
       this.actionForm.forms.goTo.target = ''

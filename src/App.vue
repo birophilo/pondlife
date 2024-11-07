@@ -74,16 +74,17 @@
         </div>
         <ActionCreateForm />
       </div>
-      <div class="item-list">
-        <h3 class="menu-section-heading">Choose action</h3>
-        <div v-if="store.actions.length > 0">
-          <div v-for="action in store.actions">
-            <button @click="cloneAction(action)">{{ action.actionName }}</button>
-          </div>
+    </details>
+
+    <details class="menu-section" id="start-actions-section" :open="store.actions.length > 0">
+      <summary class="menu-section-heading">Start action</summary>
+      <div v-if="store.actions.length > 0">
+        <div v-for="action in store.actions">
+          <button @click="cloneAction(action)">{{ action.actionName }}</button>
         </div>
-        <div v-else>
-          no actions yet
-        </div>
+      </div>
+      <div v-else>
+        no actions yet
       </div>
     </details>
 
@@ -392,10 +393,51 @@ export default {
         }
       })
     },
-    cloneAction: function (action) {
-      this.store.selectedAgent.currentAction = action.clone(this.store.selectedAgent, {})
-    },
+    setDynamicActionTargetAgents: function (action) {
+      /*
+      Some target agent/s need to be set dynamically according to criteria that can
+      only be determined when the action starts:
+      - nearest agent: dynamic
+      - specific agent: not dynamic
+      - all agents: dynamic (number could change between creating action and starting it)
 
+      Note: this may not be generalisable enough - to re-organise?
+      */
+
+      if (action.args.agentChoiceMethod === 'nearest') {
+        const agentTypeName = action.args.agentType
+        const agentItems = this.store.agentItems[agentTypeName]
+        const targetAgent = this.store.selectedAgent.getClosestAgent(agentItems)
+        action.args.target = targetAgent
+      } else if (action.args.agentChoiceMethod === 'all') {
+        const agentTypeName = action.args.agentType
+        const agentItems = this.store.agentItems[agentTypeName]
+        action.args.target = agentItems
+      }
+
+      // if action involves property changes, set target for each change based on
+      // agentChoiceMethod ('nearest' etc)
+      if (action.actionType === 'change') {
+        action.propertyChanges.forEach(change => {
+          if (change.args.agentType !== 'self') {
+            if (change.args.agentChoiceMethod === 'nearest') {
+              const agentTypeName = change.args.agentType
+              const agentItems = this.store.agentItems[agentTypeName]
+              const targetAgent = this.store.selectedAgent.getClosestAgent(agentItems)
+              change.args = {...change.args, target: targetAgent}
+            } else if (change.args.agentChoiceMethod === 'all') {
+              const agentTypeName = change.args.agentType
+              const agentItems = this.store.agentItems[agentTypeName]
+              change.args = {...change.args, target: agentItems}
+            }
+          }
+        })
+      }
+    },
+    cloneAction: function (action) {
+      this.setDynamicActionTargetAgents(action)
+      this.store.selectedAgent.currentAction = action.clone(this.store.selectedAgent)
+    },
     addAgent: function (agentTypeName) {
       const agentItems = this.store.agentItems[agentTypeName]
       const num = agentItems.length + 1

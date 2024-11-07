@@ -5,8 +5,7 @@
       <select v-model="propertyChangeForm.agentType">
         <option value="">-- agent --</option>
         <option value="self">self</option>
-        <option v-for="agent in store.agentTypes" :value="agent.config.name">{{ agent.config.name }}</option>
-        <option value="lemonadeStall">lemonade stall</option>
+        <option v-for="agent in store.agentTypes" :value="agent.name">{{ agent.name }}</option>
       </select>
 
       <form name="agentPropChangeRadioCreate">
@@ -89,7 +88,7 @@ export default {
         adding: false,
         agent: '',
         agentType: '',
-        agentChoiceMethod: '',
+        agentChoiceMethod: 'nearest',
         target: '',
         property: '',
         change: '',

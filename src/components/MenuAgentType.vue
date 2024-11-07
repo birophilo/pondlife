@@ -78,7 +78,6 @@ export default {
         positionX: this.agentTypeData.positionX,
         positionY: this.agentTypeData.positionY
       }
-      console.log(data)
 
       this.store.agentTypes[agentTypeName] = data
 

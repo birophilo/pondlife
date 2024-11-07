@@ -205,18 +205,15 @@ export default class Agent extends Sprite {
     return Math.hypot(xDiff, yDiff)
   }
 
-  // eslint-disable-next-line
-  getClosestAgent(agentTypeName) {
-    // COMMENTING OUT TEMPORARILY
-    // const agents = vue.agentItems[agentTypeName]
-    // let closestDistance = this.getDistanceToAgent(agents[0])
-    // let closestAgent = agents[0]
-    // for (let i = 1; i < agents.length; i++) {
-    //   if (this.getDistanceToAgent(agents[i]) < closestDistance) {
-    //     closestAgent = agents[i]
-    //   }
-    // }
-    // return closestAgent
+  getClosestAgent(agentItems) {
+    let closestDistance = this.getDistanceToAgent(agentItems[0])
+    let closestAgent = agentItems[0]
+    for (let i = 1; i < agentItems.length; i++) {
+      if (this.getDistanceToAgent(agentItems[i]) < closestDistance) {
+        closestAgent = agentItems[i]
+      }
+    }
+    return closestAgent
   }
 
   setProperty(property, value) {

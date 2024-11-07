@@ -112,9 +112,7 @@ export default {
     saveCondition: function () {
       this.condition.editing = false
       const i = this.index
-      console.log(i)
       const keys = Object.keys(this.condition)
-      console.log(keys)
       keys.forEach(key => this.store.conditions[i][key] = this.condition[key])
     },
     deleteCondition: function () {

@@ -63,7 +63,6 @@ export default {
       localStorage.setItem('pondlifeSpriteSheets', JSON.stringify(this.store.spriteSheets))
     },
     deleteSpriteSheet: function () {
-      console.log(this.i)
       this.store.spriteSheets.splice(this.i, 1)
       // 'save' to avoid inputting all after each page refresh
       localStorage.setItem('pondlifeSpriteSheets', JSON.stringify(this.store.spriteSheets))

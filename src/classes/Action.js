@@ -74,28 +74,19 @@ export class ActionGoTo extends Action {
     if (args.destinationType === 'point') {
         this.destination = args.target
     }
-
-    if (this.agent !== null) {
-      if (args.destinationType === 'agent') {
-
-        this.agentType = args.agentType
-
-        if (args.agentChoiceMethod === 'nearest') {
-          const agentType = args.agentType
-          this.destination = this.agent.getClosestAgent(agentType)
-          this.stateName = `goingTo: ${this.destination.name}`
-        }
-
-      } else if (args.destinationType === 'point') {
-        this.stateName = `goingTo: ${this.destination.name}`
-      }
-    }
   }
 
   // eslint-disable-next-line
   start(globals) {
-    this.agent.destination = this.destination
+    this.destination = this.args.target
+    this.agent.destination = this.args.target
     this.agent.currentStateName = this.stateName
+
+    if (this.agent !== null) {
+      if (this.args.destinationType === 'agent') {
+        this.stateName = `goingTo: ${this.destination.name}`
+      }
+    }
   }
 
   defaultCompletionCheckPasses() {
@@ -124,33 +115,21 @@ export class ActionPropertyChanges extends Action {
   start(globals) {
     this.propertyChanges.forEach(change => {
 
-      const agentType = change.args.agentType
       const value = change.propertyValue
       const changeValue = change.changeType === 'increase' ? Number(value) : 0 - Number(value)
 
-      var agentToChange
+      if (change.args.agentType === 'self') {
 
-      if (agentType === 'self') {
-        agentToChange = this.agent
-        agentToChange.stateData[change.propertyName] += changeValue
+        this.agent.stateData[change.propertyName] += changeValue
 
       } else {
 
-        const agentChoiceMethod = change.args.agentChoiceMethod
+          if (change.args.agentChoiceMethod === 'all') {
+            change.args.target.forEach(agentItem => agentItem.stateData[change.propertyName] += changeValue)
+          } else {
+            change.args.target.stateData[change.propertyName] += changeValue
+          }
 
-        if (agentChoiceMethod === 'nearest') {
-          agentToChange = this.agent.getClosestAgent(agentType)
-          agentToChange.stateData[change.propertyName] += changeValue
-        }
-
-        else if (agentChoiceMethod === 'specific') {
-          agentToChange = change.args.target
-        }
-
-        else if (agentChoiceMethod === 'all') {
-          // COMMENTING OUT TEMPORARILY
-          // vue.agentItems[agentType].forEach(agent => agent.stateData[change.propertyName] += changeValue)
-        }
       }
 
     })
@@ -193,6 +172,13 @@ export class ActionInterval extends Action {
     super.check(stateData, globals)
   }
 }
+
+
+// export class ActionRemove extends Action {
+//   constructor(agent = null, args, conditions = [], transitions = []) {
+//     super(agent, args, conditions, transitions)
+//   }
+// }
 
 
 export class ActionTransition {
