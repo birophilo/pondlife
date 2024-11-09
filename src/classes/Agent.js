@@ -10,10 +10,10 @@ export default class Agent extends Sprite {
     globals,
     config
   }) {
-    super({ 
+    super({
       position,
       previewImage: config.previewImage,
-      spriteMap: config.spriteMap
+      animationSet: config.animationSet
     })
     this.num = num
     this.name = `${agentTypeName} ${num}`
@@ -81,7 +81,7 @@ export default class Agent extends Sprite {
       this.position.x += xVelocity
       this.position.y += yVelocity
 
-      if (this.config.spriteMap !== null) {
+      if (this.config.animationSet !== null) {
         const direction = get8WayDirection(xVelocity, yVelocity)
         if (this.currentDirection !== direction) this.useSpriteSheet(direction)
         this.currentDirection = direction
@@ -224,7 +224,7 @@ export default class Agent extends Sprite {
     this.currentStateName = 'idle'
     this.destination = null
 
-    if (this.spriteMap !== null && this.currentDirection !== 'idle') {
+    if (this.animationSet !== null && this.currentDirection !== 'idle') {
       this.useSpriteSheet('idle')
       this.currentDirection = 'idle'
     }

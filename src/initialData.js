@@ -15,7 +15,7 @@ export const initialAgentTypes = [
     scale: 0.7,
     nominalSpeed: 0.02,
     previewImage: '/img/thumbnails/customer-thumbnail.png',
-    spriteMap: null,
+    animationSet: null,
     thumbnail: '/img/thumbnails/customer-thumbnail.png'
   },
   {
@@ -26,7 +26,7 @@ export const initialAgentTypes = [
     scale: 1,
     nominalSpeed: 0.02,
     previewImage: '/img/sprites/stall-1.png',
-    spriteMap: null,
+    animationSet: null,
     thumbnail: '/img/thumbnails/lemonade-stall-thumbnail.png'
   },
   {
@@ -37,7 +37,7 @@ export const initialAgentTypes = [
     scale: 2.5,
     nominalSpeed: 0.02,
     previewImage: '/img/sprites/SupplyVan_Right.png',
-    spriteMap: null,
+    animationSet: null,
     thumbnail: '/img/thumbnails/supply-van-thumbnail.png'
   },
   {
@@ -48,7 +48,7 @@ export const initialAgentTypes = [
     scale: 1,
     nominalSpeed: 0.02,
     previewImage: '/img/thumbnails/world-thumbnail.png',
-    spriteMap: null,
+    animationSet: null,
     thumbnail: ''
   }
 ]

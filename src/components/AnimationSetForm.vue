@@ -1,45 +1,45 @@
 <template>
   <div>
-    <div v-if="spriteMapForm.adding === true">
-      name: <input v-model="spriteMapForm.name" type="text" placeholder="name" /><br />
-      scale: <input v-model="spriteMapForm.scale" type="number" placeholder="scale" /><br />
-      offset X: <input v-model="spriteMapForm.offset.x" type="number" placeholder="offset X" /><br />
-      offset Y: <input v-model="spriteMapForm.offset.y" type="number" placeholder="offset Y" /><br />
+    <div v-if="animationSetForm.adding === true">
+      name: <input v-model="animationSetForm.name" type="text" placeholder="name" /><br />
+      scale: <input v-model="animationSetForm.scale" type="number" placeholder="scale" /><br />
+      offset X: <input v-model="animationSetForm.offset.x" type="number" placeholder="offset X" /><br />
+      offset Y: <input v-model="animationSetForm.offset.y" type="number" placeholder="offset Y" /><br />
 
       <table class="sprite-map-direction-table">
         <tr v-for="row in store.directionList">
           <td v-for="directionName in row">
-            <select v-model="spriteMapForm.sheets[directionName]">
+            <select v-model="animationSetForm.sheets[directionName]">
               <option value="">-- {{directionName  }} --</option>
               <option v-for="spriteSheet in store.spriteSheets" :value="spriteSheet">{{ spriteSheet.name }}</option>
             </select>
             <br />
-            <img :src="spriteMapForm.sheets[directionName].src" width="70" height="70"/>
+            <img :src="animationSetForm.sheets[directionName].src" width="70" height="70"/>
           </td>
         </tr>
       </table>
 
-      <button @click="createSpriteMap()">create sprite map</button>
+      <button @click="createAnimationSet()">create sprite map</button>
     </div>
     <div v-else>
-      <button @click="spriteMapForm.adding = true">new sprite map</button>
+      <button @click="animationSetForm.adding = true">new sprite map</button>
     </div>
   </div>
 </template>
 
 <script>
 import { useStore } from '../store/mainStore.js'
-import { SpriteMap } from "../classes/Sprite.js"
+import { AnimationSet } from "../classes/Sprite.js"
 
 export default {
-  name: 'SpriteMapForm',
+  name: 'AnimationSetForm',
   setup: function () {
     const store = useStore()
     return { store }
   },
   data: function () {
     return {
-      spriteMapForm: {
+      animationSetForm: {
         adding: false,
         name: '',
         scale: 1,
@@ -62,19 +62,19 @@ export default {
     }
   },
   methods: {
-    createSpriteMap: function () {
-      const args = {...this.spriteMapForm}
+    createAnimationSet: function () {
+      const args = {...this.animationSetForm}
       args.scale = Number(args.scale)
       args.offset = {
         x: Number(args.offset.x),
         y: Number(args.offset.y)
       }
-      this.store.spriteMaps.push(new SpriteMap(args))
+      this.store.animationSets.push(new AnimationSet(args))
 
       // 'save' to avoid inputting all after each page refresh
-      localStorage.setItem('pondlifeSpriteMaps', JSON.stringify(this.store.spriteMaps))
+      localStorage.setItem('pondlifeSpriteMaps', JSON.stringify(this.store.animationSets))
 
-      this.spriteMapForm = {
+      this.animationSetForm = {
         adding: false,
         name: '',
         sheets: {

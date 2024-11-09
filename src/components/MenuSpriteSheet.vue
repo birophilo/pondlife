@@ -72,7 +72,7 @@ export default {
       this.spriteSheetData.src = fileName
       this.store.spriteSheets[this.i].src = fileName
       localStorage.setItem('pondlifeSpriteSheets', JSON.stringify(this.store.spriteSheets))
-      localStorage.setItem('pondlifeSpriteMaps', JSON.stringify(this.store.spriteMaps))
+      localStorage.setItem('pondlifeSpriteMaps', JSON.stringify(this.store.animationSets))
     },
   }
 }

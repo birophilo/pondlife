@@ -2,7 +2,7 @@ export class Sprite {
   constructor({
     position = {x: 0, y: 0},
     previewImage,
-    spriteMap = null
+    animationSet = null
   }) {
     this.position = position
     this.image = new Image()
@@ -19,7 +19,7 @@ export class Sprite {
     }
 
     this.frames = this.defaultFrames
-    this.spriteMap = spriteMap
+    this.animationSet = animationSet
     this.useSpriteSheet('idle')
   }
 
@@ -27,9 +27,9 @@ export class Sprite {
 
     var offset
     var scale
-    if (this.spriteMap !== null) {
-      offset = this.spriteMap.offset
-      scale = this.spriteMap.scale
+    if (this.animationSet !== null) {
+      offset = this.animationSet.offset
+      scale = this.animationSet.scale
     } else {
       offset = {x: 0, y: 0}
       scale = 1
@@ -74,8 +74,8 @@ export class Sprite {
   }
 
   useSpriteSheet(spriteSheetName) {
-    if (this.spriteMap !== null) {
-      const spriteSheet = this.spriteMap.sheets[spriteSheetName]
+    if (this.animationSet !== null) {
+      const spriteSheet = this.animationSet.sheets[spriteSheetName]
       this.image.src = spriteSheet.src
 
       this.frames = {
@@ -105,7 +105,7 @@ export class SpriteSheet {
 }
 
 
-export class SpriteMap {
+export class AnimationSet {
   constructor(args) {
     this.name = args.name
     this.sheets = args.sheets

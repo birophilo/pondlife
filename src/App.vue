@@ -51,11 +51,11 @@
       </div>
       <SpriteSheetForm />
 
-      <h3 class="menu-section-heading">Sprite Maps</h3>
-      <div v-for="(spriteMap, index) in store.spriteMaps">
-        <MenuSpriteMap :spriteMap="spriteMap" :i="index" />
+      <h3 class="menu-section-heading">Animation Sets</h3>
+      <div v-for="(animationSet, index) in store.animationSets">
+        <MenuAnimationSet :animationSet="animationSet" :i="index" />
       </div>
-      <SpriteMapForm />
+      <AnimationSetForm />
     </details>
 
     <details class="menu-section" id="properties-section">
@@ -121,8 +121,8 @@ import ConditionCreateForm from './components/ConditionCreateForm.vue'
 import MenuCondition from './components/MenuCondition.vue'
 import SpriteSheetForm from './components/SpriteSheetForm.vue'
 import MenuSpriteSheet from './components/MenuSpriteSheet.vue'
-import SpriteMapForm from './components/SpriteMapForm.vue'
-import MenuSpriteMap from './components/MenuSpriteMap.vue'
+import AnimationSetForm from './components/AnimationSetForm.vue'
+import MenuAnimationSet from './components/MenuAnimationSet.vue'
 
 import { initialAgentInstances, initialAgentTypes, initialAgentMenuButtons } from './initialData.js'
 
@@ -151,13 +151,13 @@ export default {
     MenuCondition,
     MenuSpriteSheet,
     SpriteSheetForm,
-    MenuSpriteMap,
-    SpriteMapForm
+    MenuAnimationSet,
+    AnimationSetForm
   },
   data: function () {
     return {
 
-      spriteMapsData: JSON.parse(localStorage.getItem('pondlifeSpriteMaps')),
+      animationSetsData: JSON.parse(localStorage.getItem('pondlifeSpriteMaps')),
       spriteSheetsData: JSON.parse(localStorage.getItem('pondlifeSpriteSheets')),
 
       propertiesSection: {
@@ -263,7 +263,7 @@ export default {
     loadAgentsAndFixtures: function () {
 
       // load from localStorage (temporary solution while frontend-only)
-      this.store.spriteMaps = this.spriteMapsData !== null ? this.spriteMapsData : []
+      this.store.animationSets = this.animationSetsData !== null ? this.animationSetsData : []
       this.store.spriteSheets = this.spriteSheetsData !== null ? this.spriteSheetsData : []
 
       initialAgentTypes.forEach(agentType => {
@@ -273,7 +273,7 @@ export default {
       const agentTypeNames = Object.keys(this.store.agentTypes)
 
       // hard-coding for the moment
-      this.store.agentTypes.customer.config.spriteMap = this.store.spriteMaps[0]
+      this.store.agentTypes.customer.config.animationSet = this.store.animationSets[0]
 
       // populate agents from initial data
       agentTypeNames.forEach(agentTypeName => {

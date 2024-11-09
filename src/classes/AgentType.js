@@ -9,7 +9,7 @@ export default class AgentType {
       scale: args.scale,
       nominalSpeed: args.nominalSpeed,
       previewImage: args.previewImage,
-      spriteMap: args.spriteMap,
+      animationSet: args.animationSet,
       thumbnail: args.thumbnail
     }
     this.editing = false

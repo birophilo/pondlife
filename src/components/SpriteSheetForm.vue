@@ -67,7 +67,7 @@ export default {
       const fileName = "/img/sprites/" + event.target.files[0].name
       spriteSheetForm.src = fileName
       localStorage.setItem('pondlifeSpriteSheets', JSON.stringify(this.store.spriteSheets))
-      localStorage.setItem('pondlifeSpriteMaps', JSON.stringify(this.store.spriteMaps))
+      localStorage.setItem('pondlifeSpriteMaps', JSON.stringify(this.store.animationSets))
     },
   }
 }

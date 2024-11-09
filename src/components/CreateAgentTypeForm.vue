@@ -5,10 +5,10 @@
       width: <input v-model="agentTypeForm.width" type="number" placeholder="width" /><br />
       height: <input v-model="agentTypeForm.height" type="number" placeholder="height" /><br />
       movement speed: <input v-model="agentTypeForm.nominalSpeed" type="number" placeholder="1" /><br />
-      spriteMap:
-      <select v-model="agentTypeForm.spriteMap">
+      animationSet:
+      <select v-model="agentTypeForm.animationSet">
         <option value="">-- select sprite map --</option>
-        <option :value="spriteMap" v-for="spriteMap in store.spriteMaps">{{ spriteMap.name }}</option>
+        <option :value="animationSet" v-for="animationSet in store.animationSets">{{ animationSet.name }}</option>
       </select><br />
       thumbnail: {{ agentTypeForm.thumbnail }}<br />
       <input type="file" placeholder="thumbnail" @change="updateThumbnailFileInput($event, agentTypeForm)" /><br />
@@ -39,7 +39,7 @@ export default {
         name: '',
         height: 50,
         width: 50,
-        spriteMap: '',
+        animationSet: '',
         thumbnail: '',
         nominalSpeed: 0.02,
         positionX: 100,
@@ -64,7 +64,7 @@ export default {
           scale: 1,
           nominalSpeed: Number(this.agentTypeForm.nominalSpeed),
           previewImage: '/img/sprites/GirlSample_Walk_Down.png',
-          spriteMap: this.agentTypeForm.spriteMap,
+          animationSet: this.agentTypeForm.animationSet,
           thumbnail: this.agentTypeForm.thumbnail
         }
       }

@@ -30,7 +30,7 @@ export const useStore = defineStore({
 
     agentMenuButtons: [],
 
-    spriteMaps: [],
+    animationSets: [],
     spriteSheets: [],
 
     // e.g. {customer: AgentType, lemonadeStall: AgentType}

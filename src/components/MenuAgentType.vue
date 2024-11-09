@@ -6,10 +6,10 @@
         width: <input v-model="agentTypeData.width" type="number" placeholder="width" /><br />
         height: <input v-model="agentTypeData.height" type="number" placeholder="height" /><br />
         movement speed: <input v-model="agentTypeData.nominalSpeed" type="number" placeholder="1" /><br />
-        spriteMap:
-        <select v-model="agentTypeData.spriteMap">
-          <option value="">-- select sprite map --</option>
-          <option :value="spriteMap" v-for="spriteMap in store.spriteMaps">{{ spriteMap.name }}</option>
+        animationSet:
+        <select v-model="agentTypeData.animationSet">
+          <option value="">-- select animation set --</option>
+          <option :value="animationSet" v-for="animationSet in store.animationSets">{{ animationSet.name }}</option>
         </select>
         <br />
         thumbnail: {{ agentTypeData.thumbnail }}<br />
@@ -53,7 +53,7 @@ export default {
         name: this.agentType.name,
         height: this.agentType.config.height,
         width: this.agentType.config.width,
-        spriteMap: this.agentType.config.spriteMap,
+        animationSet: this.agentType.config.animationSet,
         thumbnail: this.agentType.config.thumbnail,
         nominalSpeed: this.agentType.config.nominalSpeed,
         positionX: 100,
@@ -71,7 +71,7 @@ export default {
         config: {
           height: this.agentTypeData.height,
           width: this.agentTypeData.width,
-          spriteMap: this.agentTypeData.spriteMap,
+          animationSet: this.agentTypeData.animationSet,
           thumbnail: this.agentTypeData.thumbnail,
           nominalSpeed: this.agentTypeData.nominalSpeed,
         },
