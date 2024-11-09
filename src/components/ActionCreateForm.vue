@@ -110,6 +110,8 @@
       />
     </div>
 
+    <input type="text" v-model="actionForm.spriteSheet" placeholder="sprite sheet" />
+
     <button @click="createAction">save action</button> |
     <button @click="cancelAddAction">cancel</button>
 
@@ -136,6 +138,7 @@ export default {
         adding: false,
         type: '',
         name: '',
+        spriteSheet: '',
         forms: {
           goTo: {
             destinationType: '',
@@ -156,6 +159,7 @@ export default {
     createAction: function () {
       const actionType = this.actionForm.type
       const actionName = this.actionForm.name
+      const spriteSheet = this.actionForm.spriteSheet
       const data = this.actionForm.forms[actionType]
 
       if (actionType === 'goTo') {
@@ -191,6 +195,8 @@ export default {
           args.destination = this.store.selectedAgent.home
         }
 
+        if (spriteSheet !== null) args.spriteSheet = spriteSheet
+
         let newAction = new ActionGoTo(null, args)
         this.store.actions.push(newAction)
 
@@ -218,6 +224,8 @@ export default {
           actionType: actionType,
           duration: Number(data.duration)
         }
+
+        if (spriteSheet !== null) args.spriteSheet = spriteSheet
 
         let newAction = new ActionInterval(null, args)
         this.store.actions.push(newAction)

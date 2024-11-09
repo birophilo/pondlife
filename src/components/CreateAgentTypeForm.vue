@@ -65,7 +65,8 @@ export default {
           nominalSpeed: Number(this.agentTypeForm.nominalSpeed),
           previewImage: '/img/sprites/GirlSample_Walk_Down.png',
           animationSet: this.agentTypeForm.animationSet,
-          thumbnail: this.agentTypeForm.thumbnail
+          thumbnail: this.agentTypeForm.thumbnail,
+          defaultSpriteSheet: 'idle'
         }
       }
 

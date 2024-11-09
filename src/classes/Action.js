@@ -15,6 +15,8 @@ export class Action {
     this.conditions = conditions ? conditions : []
     this.transitions = transitions ? transitions : []
 
+    this.actionSpriteSheet = args.spriteSheet
+
     if (this.transitions.length > 0 && this.agent !== null) {
       this.transitions.forEach(transition => {
         // broadly applicable enough?
@@ -80,13 +82,14 @@ export class ActionGoTo extends Action {
   start(globals) {
     this.destination = this.args.target
     this.agent.destination = this.args.target
-    this.agent.currentStateName = this.stateName
 
     if (this.agent !== null) {
       if (this.args.destinationType === 'agent') {
         this.stateName = `goingTo: ${this.destination.name}`
       }
     }
+
+    this.agent.currentStateName = this.stateName
   }
 
   defaultCompletionCheckPasses() {
@@ -153,8 +156,11 @@ export class ActionInterval extends Action {
   }
 
   start(globals) {
+    this.agent.useSpriteSheet(this.actionSpriteSheet)
     const currentFrame = globals.animationFrameId
     this.startFrame = currentFrame
+
+    this.agent.currentStateName = `waiting for ${this.duration} frames`
   }
 
   defaultCompletionCheckPasses() {

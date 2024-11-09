@@ -2,7 +2,8 @@ export class Sprite {
   constructor({
     position = {x: 0, y: 0},
     previewImage,
-    animationSet = null
+    animationSet = null,
+    defaultSpriteSheet = 'idle'
   }) {
     this.position = position
     this.image = new Image()
@@ -20,7 +21,7 @@ export class Sprite {
 
     this.frames = this.defaultFrames
     this.animationSet = animationSet
-    this.useSpriteSheet('idle')
+    this.useSpriteSheet(defaultSpriteSheet)
   }
 
   draw(c) {

@@ -91,11 +91,11 @@
     <!-- INTERVAL EDIT FORM -->
     <div v-if="actionData.actionType === 'interval'">
       <div v-if="actionData.editing === true">
-        <input v-model="actionData.duration" type="number" />
+        <div>interval (frames): <input v-model="actionData.duration" type="number" /></div>
       </div>
       <div v-else>
         <div>action type: {{ actionData.actionType }}</div>
-        <input :value="actionData.duration" type="number" disabled />
+        <div>interval (frames): <input :value="actionData.duration" type="number" disabled /></div>
       </div>
     </div>
 

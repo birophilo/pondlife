@@ -13,7 +13,8 @@ export default class Agent extends Sprite {
     super({
       position,
       previewImage: config.previewImage,
-      animationSet: config.animationSet
+      animationSet: config.animationSet,
+      initialSpriteSheet: config.initialSpriteSheet
     })
     this.num = num
     this.name = `${agentTypeName} ${num}`
@@ -190,7 +191,7 @@ export default class Agent extends Sprite {
     }
 
     if (this.currentAction.inProgress === true) {
-      console.log('checking')
+      // console.log('checking')
       this.currentAction.check(this.stateData, globals)
     }
   }
@@ -221,12 +222,12 @@ export default class Agent extends Sprite {
   }
 
   idle() {
-    this.currentStateName = 'idle'
     this.destination = null
 
-    if (this.animationSet !== null && this.currentDirection !== 'idle') {
+    if (this.animationSet !== null && this.currentStateName !== 'idle') {
       this.useSpriteSheet('idle')
-      this.currentDirection = 'idle'
+      this.currentStateName = 'idle'
+      // this.currentDirection = 'idle'
     }
   }
 }
