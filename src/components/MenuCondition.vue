@@ -1,63 +1,63 @@
 <template>
   <div>
-    <div class="created-item-header">
-    <div v-if="condition.editing">
-      <input v-model="condition.conditionName" type="text" placeholder="name" />
-      <button @click="condition.editing = false">save</button>
-      <button @click="condition.editing = false">cancel</button>
-    </div>
-    <div v-else>
-      <div class="menu-action-name">{{ item.conditionName }}</div>
-      <button @click="condition.editing = true">edit</button>
-      <button @click="deleteCondition(index)">delete</button>
-    </div>
-  </div>
-
-  <!-- CONDITION FORM -->
-  <div v-if="condition.editing === true">
-    <select v-model="condition.conditionType">
-      <option value="property">property</option>
-      <option value="preset">preset</option>
-    </select>
-  </div>
-    
-  <div v-if="condition.editing === true">
-    <div v-if="condition.conditionType === 'property'">
-      <select v-model="condition.property">
-        <option value="money">money</option>
-      </select>
-
-      <select v-model="condition.comparison">
-        <option value="isGreaterThan">is greater than</option>
-        <option value="isLessThan">is less than</option>
-      </select>
-    </div>
-    <div v-else-if="condition.conditionType === 'preset'">
-      <select v-model="condition.classMethod">
-        <option value="atDestination">at destination</option>
-        <option value="actionIsComplete">is complete</option>
-      </select>
-
-      <select v-model="condition.comparison" value="isIdentical">
-        <option value="isIdentical">is</option>
-      </select>
-    </div>
-
-    <select v-model="condition.conditionValue">
-      <option :value="true">true</option>
-      <option :value="false">false</option>
-    </select>
-
-    </div>
-    <div v-else>
-      <div v-if="item.conditionType === 'property'">
-        <input type="text" placeholder="property" :value="item.property" disabled />
+    <div>
+      <div class="created-item-header">
+      <div v-if="editing">
+        <input v-model="itemForm.conditionName" type="text" placeholder="name" />
+        <button @click="saveItem">save</button>
+        <button @click="cancelEdit">cancel</button>
       </div>
-      <div v-else-if="item.conditionType === 'preset'">
-        <input type="text" placeholder="preset" :value="item.classMethod" disabled />
+      <div v-else>
+        <div class="menu-action-name">{{ item.conditionName }}</div>
+        <button @click="editItem">edit</button>
+        <button @click="deleteItem(index)">delete</button>
       </div>
-      <input type="text" placeholder="comparison" :value="item.comparison" disabled />
-      <input type="text" placeholder="value" :value="item.conditionValue" disabled />
+    </div>
+
+    <!-- CONDITION FORM -->    
+    <div v-if="editing === true">
+      <select v-model="itemForm.conditionType">
+        <option value="property">property</option>
+        <option value="preset">preset</option>
+      </select>
+
+      <div v-if="itemForm.conditionType === 'property'">
+        <select v-model="itemForm.property">
+          <option value="money">money</option>
+        </select>
+
+        <select v-model="itemForm.comparison">
+          <option value="isGreaterThan">is greater than</option>
+          <option value="isLessThan">is less than</option>
+        </select>
+      </div>
+      <div v-else-if="itemForm.conditionType === 'preset'">
+        <select v-model="itemForm.classMethod">
+          <option value="atDestination">at destination</option>
+          <option value="actionIsComplete">is complete</option>
+        </select>
+
+        <select v-model="itemForm.comparison" value="isIdentical">
+          <option value="isIdentical">is</option>
+        </select>
+      </div>
+
+      <select v-model="itemForm.conditionValue">
+        <option :value="true">true</option>
+        <option :value="false">false</option>
+      </select>
+
+      </div>
+      <div v-else>
+        <div v-if="item.conditionType === 'property'">
+          <input type="text" placeholder="property" :value="item.property" disabled />
+        </div>
+        <div v-else-if="item.conditionType === 'preset'">
+          <input type="text" placeholder="preset" :value="item.classMethod" disabled />
+        </div>
+        <input type="text" placeholder="comparison" :value="item.comparison" disabled />
+        <input type="text" placeholder="value" :value="item.conditionValue" disabled />
+      </div>
     </div>
   </div>
 </template>
@@ -75,12 +75,9 @@ export default {
     item: Object,
     index: Number
   },
-  mounted: function () {
-    this.setupConditionData()
-  },
   data: function () {
     return {
-      condition: {
+      defaultCondition: {
         adding: false,
         type: 'property',
         name: '',
@@ -88,13 +85,15 @@ export default {
         value: 0,
         property: '',
         classMethod: ''
-      }
+      },
+      editing: false,
+      itemForm: {}
     }
   },
   methods: {
-    setupConditionData: function () {
+    populateItemForm: function () {
+
       const data = {
-        adding: this.item.editing,
         conditionType: this.item.conditionType,
         conditionName: this.item.conditionName,
         conditionValue: this.item.conditionValue,
@@ -106,20 +105,24 @@ export default {
       } else {
         data.classMethod = this.item.classMethod
       }
-
-      this.condition = {...data}
+      this.itemForm = {...data}
     },
-    saveCondition: function () {
-      this.condition.editing = false
-      const i = this.index
-      const keys = Object.keys(this.condition)
-      keys.forEach(key => this.store.conditions[i][key] = this.condition[key])
+    saveItem: function () {
+      this.editing = false
+      const keys = Object.keys(this.itemForm)
+      keys.forEach(key => this.store.conditions[this.index][key] = this.itemForm[key])
     },
-    deleteCondition: function () {
+    deleteItem: function () {
       this.store.conditions.splice(this.index, 1)
-      this.$forceUpdate()
+    },
+    editItem: function () {
+      this.populateItemForm()
+      this.editing = true
+    },
+    cancelEdit: function () {
+      this.editing = false
+      this.itemForm = {}
     }
   }
 }
-
 </script>

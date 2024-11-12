@@ -1,21 +1,21 @@
 <template>
-  <div v-if="spriteSheetData.editing === true">
-    name: <input v-model="spriteSheetData.name" type="text" placeholder="name" /><br />
-    src: {{ spriteSheetData.src }}<br />
+  <div v-if="editing === true">
+    name: <input v-model="itemForm.name" type="text" placeholder="name" /><br />
+    src: {{ itemForm.src }}<br />
     <input type="file" placeholder="src" @change="updateSpritesheetFileInput($event)" /><br />
-    rows: <input v-model="spriteSheetData.rows" type="number" placeholder="rows" /><br />
-    columns: <input v-model="spriteSheetData.columns" type="number" placeholder="columns" /><br />
-    numImages: <input v-model="spriteSheetData.numImages" type="number" placeholder="number of images" /><br />
-    refreshInterval: <input v-model="spriteSheetData.refreshInterval" type="number" placeholder="refresh interval" /><br />
+    rows: <input v-model="itemForm.rows" type="number" placeholder="rows" /><br />
+    columns: <input v-model="itemForm.columns" type="number" placeholder="columns" /><br />
+    numImages: <input v-model="itemForm.numImages" type="number" placeholder="number of images" /><br />
+    refreshInterval: <input v-model="itemForm.refreshInterval" type="number" placeholder="refresh interval" /><br />
     <br />
-    <button @click="saveSpriteSheet(spriteSheetData)">save</button>
-    <button @click="spriteSheetData.editing = false">cancel</button>
+    <button @click="saveItem">save</button>
+    <button @click="cancelEdit">cancel</button>
   </div>
   <div v-else>
     <div>
-      {{ spriteSheetData.name }}
-      <button @click="spriteSheetData.editing = true; $forceUpdate()">edit</button>
-      <button @click="deleteSpriteSheet()">delete</button>
+      {{ spriteSheet.name }}
+      <button @click="editItem">edit</button>
+      <button @click="deleteItem">delete</button>
     </div>
   </div>
 </template>
@@ -30,12 +30,10 @@ export default {
     const store = useStore()
     return { store }
   },
-  mounted: function () {
-    this.setupSpriteSheetData()
-  },
   data: function () {
     return {
-      spriteSheetData: {}
+      editing: false,
+      itemForm: {}
     }
   },
   props: { 
@@ -43,9 +41,8 @@ export default {
     i: Number
   },
   methods: {
-    setupSpriteSheetData: function () {
-      const data = {
-        adding: this.spriteSheet.adding,
+    populateItemForm: function () {
+      this.itemForm = {
         name: this.spriteSheet.name,
         src: this.spriteSheet.src,
         columns: Number(this.spriteSheet.columns),
@@ -53,27 +50,33 @@ export default {
         numImages: Number(this.spriteSheet.numImages),
         refreshInterval: Number(this.spriteSheet.refreshInterval)
       }
-      this.spriteSheetData = data
     },
-    saveSpriteSheet: function () {
-      this.spriteSheetData.editing = false
-      const i = this.i
-      const keys = Object.keys(this.spriteSheetData)
-      keys.forEach(key => this.store.spriteSheets[i][key] = this.spriteSheetData[key])
+    saveItem: function () {
+      this.editing = false
+      const keys = Object.keys(this.spriteSheet)
+      keys.forEach(key => this.store.spriteSheets[this.i][key] = this.itemForm[key])
       localStorage.setItem('pondlifeSpriteSheets', JSON.stringify(this.store.spriteSheets))
     },
-    deleteSpriteSheet: function () {
+    deleteItem: function () {
       this.store.spriteSheets.splice(this.i, 1)
       // 'save' to avoid inputting all after each page refresh
       localStorage.setItem('pondlifeSpriteSheets', JSON.stringify(this.store.spriteSheets))
     },
     updateSpritesheetFileInput: function (event) {
       const fileName = "/img/sprites/" + event.target.files[0].name
-      this.spriteSheetData.src = fileName
+      this.itemForm.src = fileName
       this.store.spriteSheets[this.i].src = fileName
       localStorage.setItem('pondlifeSpriteSheets', JSON.stringify(this.store.spriteSheets))
       localStorage.setItem('pondlifeSpriteMaps', JSON.stringify(this.store.animationSets))
     },
+    editItem: function () {
+      this.populateItemForm()
+      this.editing = true
+    },
+    cancelEdit: function () {
+      this.editing = false
+      this.itemForm = {}
+    }
   }
 }
 </script>

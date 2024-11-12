@@ -1,10 +1,10 @@
 <template>
   <div>
-    <div v-for="property in Object.keys(propertiesData)">
+    <div v-for="property in Object.keys(agentProperties)">
       hello<br/>
       <div v-if="editFlags[property] === true">
         <input type="text" placeholder="name" :value="property" disabled />
-        <input v-model="propertiesData[property]" type="number" />
+        <input v-model="propertiesForm[property]" type="number" />
         <button @click="setProperty(property)">save</button>
         <button @click="cancelSetProperty(property)">cancel</button>
         <br/>
@@ -12,8 +12,8 @@
       <div v-else>
         something here<br/>
         <input type="text" placeholder="name" :value="property" disabled />:
-        <input type="text" placeholder="value" :value="propertiesData[property]" disabled /> -
-        <button @click="editFlags[property] = true">edit</button> |
+        <input type="text" placeholder="value" :value="agentProperties[property]" disabled /> -
+        <button @click="editItem(property)">edit</button> |
         <button @click="deleteProperty(item.name)">delete</button>
       </div>
     </div>
@@ -29,35 +29,38 @@ export default {
     return { store }
   },
   props: {
-    selectedAgentProperties: Object
-  },
-  mounted: function () {
-    this.setupPropertiesData()
+    agentProperties: Object
   },
   data: function () {
     return {
-      propertiesData: {},
+      propertiesForm: {},
       editFlags: {}
     }
   },
   methods: {
-    setupPropertiesData: function () {
-      // const properties = this.store.selectedAgent.stateData
-      this.propertiesData = {...this.selectedAgentProperties}
+    populatePropertiesForm: function () {
+      this.propertiesForm = {...this.agentProperties}
       this.propertyKeys = Object.keys(this.propertiesData)
       this.propertyKeys.forEach(key => this.editFlags[key] = false)
     },
-    deleteProperty: function (itemName) {
-      this.propertiesData = this.propertiesData.filter(item => item.name !== itemName)
-      this.store.selectedAgent.stateData = {...this.propertiesData}
+    deleteProperty: function (property) {
+      delete this.store.selectedAgent.stateData[property]
     },
     setProperty: function (property) {
-      this.store.selectedAgent.stateData[property] = this.propertiesData[property]
+      this.store.selectedAgent.stateData[property] = this.propertiesForm[property]
       this.editFlags[property] = false
     },
     cancelSetProperty: function (property) {
-       this.propertiesData[property] = this.store.selectedAgent.stateData[property]
+       this.propertiesForm[property] = this.store.selectedAgent.stateData[property]
        this.editFlags[property] = false
+    },
+    editItem: function (property) {
+      this.populatePropertiesForm()
+      this.editFlags[property] = true
+    },
+    cancelEdit: function (property) {
+      this.editFlags[property] = false
+      this.itemForm = {}
     }
   }
 }

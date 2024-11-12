@@ -1,18 +1,18 @@
 <template>
   <div>
-    <div v-if="transitionData.editing === true">
-      <select :value="transitionData.condition">
-        <option v-for="condition in store.conditions" :value="transitionData.condition">
+    <div v-if="editing === true">
+      <select :value="itemForm.condition">
+        <option v-for="condition in store.conditions" :value="itemForm.condition">
           {{ condition.conditionName }}
         </option>
       </select>
-      <select :value="transitionData.nextAction">
-        <option v-for="action in store.actions" :value="transitionData.nextAction">
+      <select :value="itemForm.nextAction">
+        <option v-for="action in store.actions" :value="itemForm.nextAction">
           {{ action.actionName }}
         </option>
       </select>
-      <button @click="saveTransition(this.action, this.index)">save</button>
-      <button @click="transitionData.editing = false">cancel</button>
+      <button @click="saveItem(this.action, this.index)">save</button>
+      <button @click="cancelEdit">cancel</button>
     </div>
     <div v-else>
       <table>
@@ -26,8 +26,8 @@
         </tr>
       </table>
       <br />
-      <button @click="transitionData.editing = true">edit</button>
-      <button @click="deleteTransition(this.action, this.index)">delete</button>
+      <button @click="editItem">edit</button>
+      <button @click="deleteItem(this.action, this.index)">delete</button>
     </div>
   </div>
 </template>
@@ -46,34 +46,37 @@ export default {
     transition: Object,
     index: Number
   },
-  mounted: function () {
-    this.setupTransitionData()
-  },
   data: function () {
     return {
-      transitionData: {}
+      editing: false,
+      itemForm: {}
     }
   },
   methods: {
-    setupTransitionData: function () {
-      const data = {
+    populateItemForm: function () {
+      this.itemForm = {
         editing: this.transition.editing,
         action: this.transition.action,
         condition: this.transition.condition,
         nextAction: this.transition.nextAction
       }
-      this.transitionData = {...data}
     },
-    saveTransition: function (action, transitionIndex) {
-      this.transitionData.editing = false
-
-      const data = {...this.transitionData}
+    saveItem: function (action, transitionIndex) {
+      this.editing = false
       const selectedAction = this.store.actions.find(a => a.name === action.name)
-      selectedAction.transitions[transitionIndex] = data
+      selectedAction.transitions[transitionIndex] = {...this.itemForm}
     },
-    deleteTransition: function (action, transitionIndex) {
+    deleteItem: function (action, transitionIndex) {
       const selectedAction = this.store.actions.find(a => a.name === action.name)
       selectedAction.transitions.splice(transitionIndex, 1)
+    },
+    editItem: function () {
+      this.populateItemForm()
+      this.editing = true
+    },
+    cancelEdit: function () {
+      this.editing = false
+      this.itemForm = {}
     }
   }
 }

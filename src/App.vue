@@ -61,7 +61,7 @@
     <details class="menu-section" id="properties-section">
       <summary class="menu-section-heading">Properties</summary>
       <div v-if="store.selectedAgent !== null" class="item-list">
-        <MenuProperty :selectedAgentProperties="store.selectedAgent.stateData"/>
+        <MenuProperty :agentProperties="store.selectedAgent.stateData"/>
         <SetPropertyForm />
       </div>
     </details>

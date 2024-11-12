@@ -1,26 +1,26 @@
 <template>
   <div>
     <div class="created-item-header">
-      <div class="menu-action-name">{{ actionData.actionName }}</div>
-      <div v-if="actionData.editing">
-        <button @click="actionData.editing = false">save</button>
-        <button @click="actionData.editing = false">cancel</button>
+      <div class="menu-action-name">{{ action.actionName }}</div>
+      <div v-if="editing">
+        <button @click="saveItem">save</button>
+        <button @click="cancelEdit">cancel</button>
       </div>
       <div v-else>
-        <div v-if="actionData.actionType === 'change'">
-          <button @click="deleteAction(actionData.actionName)">delete action</button>
+        <div v-if="action.actionType === 'change'">
+          <button @click="deleteItem(action.actionName)">delete action</button>
         </div>
         <div v-else>
-          <button @click="actionData.editing = true">edit</button>
-          <button @click="deleteAction(actionData.actionName)">delete</button>
+          <button @click="editItem">edit</button>
+          <button @click="deleteItem(action.actionName)">delete</button>
         </div>
 
       </div>
     </div>
 
     <!-- GOTO ACTION EDIT FORM -->
-    <div v-if="actionData.actionType === 'goTo'">
-      <div v-if="actionData.editing === true">
+    <div v-if="itemForm.actionType === 'goTo'">
+      <div v-if="editing === true">
         <!-- removed until can cleanly change action type -->
         <!-- <select v-model="action.actionType">
           <option value="goTo">go to</option>
@@ -28,13 +28,13 @@
           <option value="interval">wait</option>
         </select> -->
 
-        <select v-model="actionData.destinationType">
+        <select v-model="itemForm.destinationType">
           <option>-- select agent or point --</option>
           <option value="agent">agent</option>
           <option value="point">point</option>
         </select>
 
-        <select v-model="actionData.agentType">
+        <select v-model="itemForm.agentType">
           <option value="">-- agent type --</option>
           <option v-for="agentType in store.agentTypes" :value="agentType.name">{{ agentType.name }}</option>
         </select>
@@ -42,7 +42,7 @@
         <form name="agentRadioSelect">
           <input
             type="radio"
-            v-model="actionData.agentChoiceMethod"
+            v-model="itemForm.agentChoiceMethod"
             name="agentChoiceMethod"
             value="nearest"
             checked="true"
@@ -50,15 +50,15 @@
           <label for="nearest">nearest</label>
           <input
             type="radio"
-            v-model="actionData.agentChoiceMethod"
+            v-model="itemForm.agentChoiceMethod"
             name="agentChoiceMethod"
             value="specific"
           />
           <label for="nearest">specific</label>
         </form>
 
-        <div v-if="actionData.agentChoiceMethod === 'specific'">
-          <select v-model="actionData.target">
+        <div v-if="itemForm.agentChoiceMethod === 'specific'">
+          <select v-model="itemForm.target">
             <option value="">-- select agent --</option>
             <option
               v-for="agent in store.agentItems[actionData.agentType]"
@@ -72,13 +72,13 @@
       </div>
       <div v-else>
         <div>action type: {{ action.actionType }}</div>
-        <input v-model="actionData.agentType" type="text" placeholder="target" disabled />
+        <div>{{ action.agentType }}</div>
       </div>
     </div>
 
     <!-- (ACTION) PROPERTY CHANGE ITEM EDIT FORM -->
-    <div v-if="actionData.actionType === 'change'">
-      <div v-for="(propertyChange, index) in actionData.propertyChanges">
+    <div v-if="itemForm.actionType === 'change'">
+      <div v-for="(propertyChange, index) in itemForm.propertyChanges">
         <MenuActionPropertyChange
           :action="action"
           :propertyChange="propertyChange"
@@ -89,13 +89,13 @@
     </div>
 
     <!-- INTERVAL EDIT FORM -->
-    <div v-if="actionData.actionType === 'interval'">
-      <div v-if="actionData.editing === true">
-        <div>interval (frames): <input v-model="actionData.duration" type="number" /></div>
+    <div v-if="itemForm.actionType === 'interval'">
+      <div v-if="editing === true">
+        <div>interval (frames): <input v-model="itemForm.duration" type="number" /></div>
       </div>
       <div v-else>
-        <div>action type: {{ actionData.actionType }}</div>
-        <div>interval (frames): <input :value="actionData.duration" type="number" disabled /></div>
+        <div>action type: {{ itemForm.actionType }}</div>
+        <div>interval (frames): <input :value="itemForm.duration" type="number" disabled /></div>
       </div>
     </div>
 
@@ -130,18 +130,15 @@ export default {
   props: {
     action: Object
   },
-  mounted: function () {
-    this.setupActionData()
-  },
   data: function () {
     return {
-      actionData: {}
+      editing: false,
+      itemForm: {}
     }
   },
   methods: {
-    setupActionData: function () {
-      const data = {
-        editing: this.action.editing,
+    populateItemForm: function () {
+      this.itemForm = {
         actionName: this.action.actionName,
         actionType: this.action.actionType,
         destinationType: this.action.args.destinationType,
@@ -152,28 +149,35 @@ export default {
         duration: this.action.duration,
         target: this.action.args.target
       }
-      this.actionData = {...data}
     },
-    saveAction: function () {
-      this.actionData.editing = false
+    saveItem: function () {
+      this.editing = false
 
       const act = this.store.actions.find(a => a.name === this.action.name)
+      console.log(act)
 
-      act.editing = this.actionData.editing
-      act.actionName = this.actionData.actionName
-      act.actionType = this.actionData.actionType
-      act.propertyChanges = this.actionData.propertyChanges
-      act.transitions = this.actionData.transitions
-      act.duration = this.actionData.duration
-      act.args.destinationType = this.actionData.destinationType
-      act.args.agentType = this.actionData.agentType
-      act.args.target = this.actionData.target
-      act.agentChoiceMethod = this.actionData.agentChoiceMethod
+      act.actionName = this.itemForm.actionName
+      act.actionType = this.itemForm.actionType
+      act.propertyChanges = this.itemForm.propertyChanges
+      act.transitions = this.itemForm.transitions
+      act.duration = this.itemForm.duration
+      act.args.destinationType = this.itemForm.destinationType
+      act.args.agentType = this.itemForm.agentType
+      act.args.target = this.itemForm.target
+      act.agentChoiceMethod = this.itemForm.agentChoiceMethod
 
     },
-    deleteAction: function (itemName) {
+    deleteItem: function (itemName) {
       this.store.actions = this.store.actions.filter(item => item.actionName !== itemName)
     },
+    editItem: function () {
+      this.populateItemForm()
+      this.editing = true
+    },
+    cancelEdit: function () {
+      this.editing = false
+      this.itemForm = {}
+    }
   }
 }
 
