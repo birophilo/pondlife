@@ -156,6 +156,8 @@ export default class Agent extends Sprite {
 
   update(c, newData, globals) {
 
+    let emissions = {agentsToDelete: []}
+
     super.update(globals)
 
     this.stateData = {...this.stateData, ...newData}
@@ -175,7 +177,7 @@ export default class Agent extends Sprite {
     // go into 'idle' mode if no more actions
     if (this.currentAction === null) {
       this.idle()
-      return
+      return emissions
     }
 
     // if unstarted Action in action list, start it; if already doing action, check if complete
@@ -185,7 +187,10 @@ export default class Agent extends Sprite {
         console.log('meets conditions', meetsConditions)
         if (meetsConditions) {
           this.currentAction.inProgress = true
-          this.currentAction.start(globals)
+          const emissionsFromAction = this.currentAction.start(globals)
+          if (emissionsFromAction !== null) {
+            emissions.agentsToDelete = emissions.agentsToDelete.concat(emissionsFromAction.agentsToDelete)
+          }
         }
       }
     }
@@ -194,6 +199,8 @@ export default class Agent extends Sprite {
       // console.log('checking')
       this.currentAction.check(this.stateData, globals)
     }
+
+    return emissions
   }
 
   endDay() {
@@ -227,7 +234,6 @@ export default class Agent extends Sprite {
     if (this.animationSet !== null && this.currentStateName !== 'idle') {
       this.useSpriteSheet('idle')
       this.currentStateName = 'idle'
-      // this.currentDirection = 'idle'
     }
   }
 }

@@ -20,6 +20,7 @@
       <option value="goTo">go to</option>
       <option value="change">change</option>
       <option value="interval">wait</option>
+      <option value="removeAgent">remove agent</option>
     </select>
     <br />
 
@@ -110,6 +111,52 @@
       />
     </div>
 
+    <div v-if="actionForm.type === 'removeAgent'">
+
+      <select v-model="actionForm.forms.removeAgent.agentType">
+        <option value="">-- agent type --</option>
+        <option v-for="agentType in store.agentTypes" :value="agentType.name">{{ agentType.name }}</option>
+      </select>
+
+      <form name="agentRadioSelect">
+        <input
+          type="radio"
+          v-model="actionForm.forms.removeAgent.agentChoiceMethod"
+          name="agentChoiceMethod"
+          value="nearest"
+          checked="true"
+        />
+        <label for="nearest">nearest</label>
+        <input
+          type="radio"
+          v-model="actionForm.forms.removeAgent.agentChoiceMethod"
+          name="agentChoiceMethod"
+          value="specific"
+        />
+        <label for="nearest">specific</label>
+        <input
+          type="radio"
+          v-model="actionForm.forms.removeAgent.agentChoiceMethod"
+          name="agentChoiceMethod"
+          value="all"
+        />
+        <label for="all">all</label>
+      </form>
+
+      <div v-if="actionForm.forms.removeAgent.agentChoiceMethod === 'specific'">
+        <select v-model="actionForm.forms.removeAgent.target">
+          <option value="">-- select agent --</option>
+          <option
+            v-for="agent in store.agentItems[actionForm.forms.removeAgent.agentType]"
+            :value="agent"
+          >
+            {{ agent.name }}
+          </option>
+        </select>
+      </div>
+
+    </div>
+
     <input type="text" v-model="actionForm.spriteSheet" placeholder="sprite sheet" />
 
     <button @click="createAction">save action</button> |
@@ -120,7 +167,12 @@
 
 <script>
 import { useStore } from '../store/mainStore.js'
-import { ActionGoTo, ActionPropertyChanges, ActionInterval } from "../classes/Action.js"
+import {
+  ActionGoTo,
+  ActionPropertyChanges,
+  ActionInterval,
+  ActionRemoveAgent
+} from "../classes/Action.js"
 
 
 const DEFAULT_ACTION_TYPE = 'goTo'
@@ -150,6 +202,11 @@ export default {
           },
           interval: {
             duration: 0
+          },
+          removeAgent: {
+            agentType: '',
+            agentChoiceMethod: 'nearest',
+            target: ''
           }
         }
       }
@@ -229,6 +286,25 @@ export default {
 
         let newAction = new ActionInterval(null, args)
         this.store.actions.push(newAction)
+      }
+
+      if (actionType === 'removeAgent') {
+
+        let args = {
+          id: this.store.actions.length + 1,
+          actionName: actionName,
+          actionType: actionType,
+          agentType: data.agentType,
+          agentChoiceMethod: data.agentChoiceMethod,
+
+          target: data.target
+        }
+
+        if (spriteSheet !== null) args.spriteSheet = spriteSheet
+
+        let newAction = new ActionRemoveAgent(null, args)
+        this.store.actions.push(newAction)
+
       }
 
       this.resetActionForms()

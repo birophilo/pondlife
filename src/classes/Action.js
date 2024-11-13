@@ -156,10 +156,11 @@ export class ActionInterval extends Action {
   }
 
   start(globals) {
-    this.agent.useSpriteSheet(this.actionSpriteSheet)
+    if (this.actionSpriteSheet !== null) {
+      this.agent.useSpriteSheet(this.actionSpriteSheet)
+    }
     const currentFrame = globals.animationFrameId
     this.startFrame = currentFrame
-
     this.agent.currentStateName = `waiting for ${this.duration} frames`
   }
 
@@ -180,11 +181,22 @@ export class ActionInterval extends Action {
 }
 
 
-// export class ActionRemove extends Action {
-//   constructor(agent = null, args, conditions = [], transitions = []) {
-//     super(agent, args, conditions, transitions)
-//   }
-// }
+export class ActionRemoveAgent extends Action {
+  constructor(agent = null, args, conditions = [], transitions = []) {
+    super(agent, args, conditions, transitions)
+  }
+
+  // eslint-disable-next-line
+  start(globals) {
+    this.isComplete = true
+    return {agentsToDelete: [this.agent]}
+  }
+
+  defaultCompletionCheckPasses() {
+    return this.agent.atDestination()
+  }
+
+}
 
 
 export class ActionTransition {
@@ -206,5 +218,16 @@ export class PropertyChange {
     this.args = args
 
     this.editing = false
+  }
+
+  start(globals) {
+    this.agent.useSpriteSheet(this.actionSpriteSheet)
+    const currentFrame = globals.animationFrameId
+    this.startFrame = currentFrame
+    this.agent.currentStateName = `waiting for ${this.duration} frames`
+  }
+
+  defaultCompletionCheckPasses() {
+    return this.agent.atDestination()
   }
 }

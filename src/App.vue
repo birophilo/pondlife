@@ -131,7 +131,7 @@ let canvas;
 let c;  // canvas context
 
 let dayLength = 1000 // frames
-const backgroundColor = 'rgb(200, 200, 200)'
+const backgroundColor = 'rgb(220, 220, 220)'
 
 
 export default {
@@ -335,7 +335,22 @@ export default {
       // update each agent of each agent type
       agentTypeNames.forEach(agentTypeName => {
         this.store.agentItems[agentTypeName].forEach(agent => {
-          agent.update(c, {}, this.store.GlobalSettings)
+          const emissions = agent.update(c, {}, this.store.GlobalSettings)
+          if (agent.name === 'customer 1') {
+            console.log(emissions)
+          }
+
+          if (emissions && emissions.agentsToDelete.length > 0) {
+
+            console.log("IN REMOVE CODE")
+            emissions.agentsToDelete.forEach(agent => {
+              const agentType = agent.agentType
+              const items = this.store.agentItems[agentType]
+              const item = items.find(ag => ag.name === agent.name)
+              item.labelElement.remove()
+              items.splice(items.indexOf(item), 1)
+            })
+          }
           const isInArea = pointIsInArea(this.store.mouse, agent.collisionArea)
           if (isInArea) this.store.hover = true
         })
@@ -480,7 +495,7 @@ body {
   font-weight: 400;
   font-size: 16px;
   /* background-color: #f4f0e0; */
-  background-color: #ebe9e1;
+  background-color: #efeee8;
   /* color: #3345a4; */
   color: #e43d12;
 }

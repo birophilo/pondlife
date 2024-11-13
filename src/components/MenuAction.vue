@@ -154,7 +154,6 @@ export default {
       this.editing = false
 
       const act = this.store.actions.find(a => a.name === this.action.name)
-      console.log(act)
 
       act.actionName = this.itemForm.actionName
       act.actionType = this.itemForm.actionType
