@@ -152,7 +152,7 @@ export class ActionInterval extends Action {
   constructor(agent = null, args, conditions = [], transitions = []) {
     super(agent, args, conditions, transitions)
 
-    this.duration = args.duration
+    this.duration = Number(args.duration)
   }
 
   start(globals) {

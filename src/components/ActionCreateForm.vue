@@ -1,19 +1,19 @@
 <template>
   <!-- ACTIONS CREATE -->
-  <div v-if="actionForm.adding === false" class="add-container">
-    <button @click="actionForm.adding = true">new action</button>
+  <div v-if="adding === false" class="add-container">
+    <button @click="adding = true">new action</button>
   </div>
   <div v-else>
-    <input v-model="actionForm.name" type="text" placeholder="name" />
+    <input v-model="itemForm.actionName" type="text" placeholder="name" />
     <br />
     <!-- <div>
-      <select v-model="actionForm.forms.goTo.agentType">
+      <select v-model="itemForm.agentType">
         <option value="">-- agent type --</option>
         <option v-for="agentType in store.agentTypes" :value="agentType.name">{{ agentType.name }}</option>
       </select>
     </div> -->
 
-    <select v-model="actionForm.type">
+    <select v-model="itemForm.actionType">
       <!-- World agent cannot travel, only change properties and pause for intervals -->
       <option value="">-- action type --</option>
       <!-- <option v-if="store.selectedAgent.agentType !== 'world'" value="goTo">go to</option> -->
@@ -25,15 +25,15 @@
     <br />
 
     <!-- FORM FIELDS SPECIFIC TO ACTION TYPE -->
-    <div v-if="actionForm.type === 'goTo'">
-      <select v-model="actionForm.forms.goTo.destinationType">
+    <div v-if="itemForm.actionType === 'goTo'">
+      <select v-model="itemForm.destinationType">
         <option value="">-- destination type --</option>
         <option value="agent">agent</option>
         <option value="point">point</option>
       </select>
 
-      <div v-if="actionForm.forms.goTo.destinationType === 'agent'">
-        <select v-model="actionForm.forms.goTo.agentType">
+      <div v-if="itemForm.destinationType === 'agent'">
+        <select v-model="itemForm.agentType">
           <option value="">-- agent type --</option>
           <option v-for="agentType in store.agentTypes" :value="agentType.name">{{ agentType.name }}</option>
         </select>
@@ -41,7 +41,7 @@
         <form name="agentRadioSelect">
           <input
             type="radio"
-            v-model="actionForm.forms.goTo.agentChoiceMethod"
+            v-model="itemForm.agentChoiceMethod"
             name="agentChoiceMethod"
             value="nearest"
             checked="true"
@@ -49,7 +49,7 @@
           <label for="nearest">nearest</label>
           <input
             type="radio"
-            v-model="actionForm.forms.goTo.agentChoiceMethod"
+            v-model="itemForm.agentChoiceMethod"
             name="agentChoiceMethod"
             value="specific"
           />
@@ -61,11 +61,11 @@
           :style="{backgroundColor: store.selectionMode ? 'grey' : 'white'}"
         >x</button>
 
-        <div v-if="actionForm.forms.goTo.agentChoiceMethod === 'specific'">
-          <select v-model="actionForm.forms.goTo.target">
+        <div v-if="itemForm.agentChoiceMethod === 'specific'">
+          <select v-model="itemForm.target">
             <option value="">-- select agent --</option>
             <option
-              v-for="agent in store.agentItems[actionForm.forms.goTo.agentType]"
+              v-for="agent in store.agentItems[itemForm.pointYagentType]"
               :value="agent"
             >
               {{ agent.name }}
@@ -75,7 +75,7 @@
 
       </div>
 
-      <div v-if="actionForm.forms.goTo.destinationType === 'point'">
+      <div v-if="itemForm.destinationType === 'point'">
         <div>Select point:
           <button
             class="selection-mode-button"
@@ -85,14 +85,14 @@
           <br />
           x:
           <input
-            v-model="actionForm.forms.goTo.pointX"
+            v-model="itemForm.pointX"
             type="text"
             :placeholder="store.mouse.x"
           />
           <br />
           y:
           <input
-            v-model="actionForm.forms.goTo.pointY"
+            v-model="itemForm.pointY"
             type="text"
             :placeholder="store.mouse.y"
             value=""
@@ -103,17 +103,17 @@
 
     </div>
 
-    <div v-if="actionForm.type === 'interval'">
+    <div v-if="itemForm.actionType === 'interval'">
       <input
         type="number"
-        v-model="actionForm.forms.interval.duration"
+        v-model="itemForm.duration"
         placeholder="0"
       />
     </div>
 
-    <div v-if="actionForm.type === 'removeAgent'">
+    <div v-if="itemForm.type === 'removeAgent'">
 
-      <select v-model="actionForm.forms.removeAgent.agentType">
+      <select v-model="itemForm.agentType">
         <option value="">-- agent type --</option>
         <option v-for="agentType in store.agentTypes" :value="agentType.name">{{ agentType.name }}</option>
       </select>
@@ -121,7 +121,7 @@
       <form name="agentRadioSelect">
         <input
           type="radio"
-          v-model="actionForm.forms.removeAgent.agentChoiceMethod"
+          v-model="itemForm.agentChoiceMethod"
           name="agentChoiceMethod"
           value="nearest"
           checked="true"
@@ -129,25 +129,25 @@
         <label for="nearest">nearest</label>
         <input
           type="radio"
-          v-model="actionForm.forms.removeAgent.agentChoiceMethod"
+          v-model="itemForm.agentChoiceMethod"
           name="agentChoiceMethod"
           value="specific"
         />
         <label for="nearest">specific</label>
         <input
           type="radio"
-          v-model="actionForm.forms.removeAgent.agentChoiceMethod"
+          v-model="itemForm.agentChoiceMethod"
           name="agentChoiceMethod"
           value="all"
         />
         <label for="all">all</label>
       </form>
 
-      <div v-if="actionForm.forms.removeAgent.agentChoiceMethod === 'specific'">
-        <select v-model="actionForm.forms.removeAgent.target">
+      <div v-if="itemForm.agentChoiceMethod === 'specific'">
+        <select v-model="itemForm.target">
           <option value="">-- select agent --</option>
           <option
-            v-for="agent in store.agentItems[actionForm.forms.removeAgent.agentType]"
+            v-for="agent in store.agentItems[itemForm.agentType]"
             :value="agent"
           >
             {{ agent.name }}
@@ -157,7 +157,7 @@
 
     </div>
 
-    <input type="text" v-model="actionForm.spriteSheet" placeholder="sprite sheet" />
+    <input type="text" v-model="itemForm.spriteSheet" placeholder="sprite sheet" />
 
     <button @click="createAction">save action</button> |
     <button @click="cancelAddAction">cancel</button>
@@ -178,6 +178,13 @@ import {
 const DEFAULT_ACTION_TYPE = 'goTo'
 
 
+const ACTION_TYPES = {
+  'goTo': ActionGoTo,
+  'change': ActionPropertyChanges,
+  'interval': ActionInterval,
+  'removeAgent': ActionRemoveAgent
+}
+
 export default {
   name: 'ActionCreateForm',
   setup() {
@@ -186,146 +193,79 @@ export default {
   },
   data() {
     return {
-      actionForm: {
-        adding: false,
-        type: '',
-        name: '',
+      adding: false,
+      itemForm: {
+        actionType: '',
+        actionName: '',
+        agentType: '',
+        agentChoiceMethod: 'nearest',
+        target: '',
+        pointX: '',
+        pointY: '',
+        duration: 0,
+        destinationType: '',
         spriteSheet: '',
-        forms: {
-          goTo: {
-            destinationType: '',
-            agentType: '',
-            agentChoiceMethod: 'nearest',
-            target: '',
-            pointX: '',
-            pointY: ''
-          },
-          interval: {
-            duration: 0
-          },
-          removeAgent: {
-            agentType: '',
-            agentChoiceMethod: 'nearest',
-            target: ''
-          }
-        }
+        propertyChanges: []
+      },
+      forms: {
+        goTo: ['destinationType', 'agentType', 'agentChoiceMethod', 'target'],
+        change: ['propertyChanges'],
+        interval: ['duration'],
+        removeAgent: ['agentType', 'agentChoiceMethod', 'target']
       }
     }
   },
   methods: {
     createAction: function () {
-      const actionType = this.actionForm.type
-      const actionName = this.actionForm.name
-      const spriteSheet = this.actionForm.spriteSheet
-      const data = this.actionForm.forms[actionType]
+      const actionType = this.itemForm.actionType
+
+      const args = {
+        id: this.store.actions.length + 1,
+        actionName: this.itemForm.actionName,
+        actionType: actionType,
+      }
+
+      // use config arguments specific to each action type
+      const formArgs = this.forms[actionType]
+      formArgs.forEach(key => {
+        args[key] = this.itemForm[key]
+      })
+
+      if (this.itemForm.spriteSheet !== null) args.spriteSheet = this.itemForm.spriteSheet
 
       if (actionType === 'goTo') {
-
-        const actionTarget = data.target
-
-        let args = {
-          id: this.store.actions.length + 1,
-          actionName: actionName,
-          actionType: actionType,
-          agentType: data.agentType,
-          destinationType: data.destinationType,
-          agentChoiceMethod: data.agentChoiceMethod,
-
-          target: data.target
-        }
-
-        if (data.destinationType === 'point') {
-          const selectedPointX = this.actionForm.forms.goTo.pointX
-          const selectedPointY = this.actionForm.forms.goTo.pointY
+        if (this.itemForm.destinationType === 'point') {
           args.target = {
-            name: `point: {x: ${selectedPointX}, y: ${selectedPointY}}`,
+            name: `point: {x: ${this.itemForm.pointX}, y: ${this.itemForm.pointY}}`,
             width: 10,
             height: 10,
             position: {
-              x: selectedPointX,
-              y: selectedPointY
+              x: this.itemForm.pointX,
+              y: this.itemForm.pointY
             }
           }
         }
-
-        if (actionTarget === 'home') {
-          args.destination = this.store.selectedAgent.home
-        }
-
-        if (spriteSheet !== null) args.spriteSheet = spriteSheet
-
-        let newAction = new ActionGoTo(null, args)
-        this.store.actions.push(newAction)
-
+        if (this.itemForm.target === 'home') args.destination = this.store.selectedAgent.home
       }
 
-      if (actionType === 'change') {
-
-        const args = {
-          id: this.store.actions.length + 1,
-          actionName: actionName,
-          actionType: actionType,
-          propertyChanges: []
-        }
-
-        let newAction = new ActionPropertyChanges(null, args)
-        this.store.actions.push(newAction)
-
-      }
-
-      if (actionType === 'interval') {
-
-        const args = {
-          id: this.store.actions.length + 1,
-          actionName: actionName,
-          actionType: actionType,
-          duration: Number(data.duration)
-        }
-
-        if (spriteSheet !== null) args.spriteSheet = spriteSheet
-
-        let newAction = new ActionInterval(null, args)
-        this.store.actions.push(newAction)
-      }
-
-      if (actionType === 'removeAgent') {
-
-        let args = {
-          id: this.store.actions.length + 1,
-          actionName: actionName,
-          actionType: actionType,
-          agentType: data.agentType,
-          agentChoiceMethod: data.agentChoiceMethod,
-
-          target: data.target
-        }
-
-        if (spriteSheet !== null) args.spriteSheet = spriteSheet
-
-        let newAction = new ActionRemoveAgent(null, args)
-        this.store.actions.push(newAction)
-
-      }
+      let actionClass = ACTION_TYPES[actionType]
+      let newAction = new actionClass(null, args)
+      this.store.actions.push(newAction)
 
       this.resetActionForms()
 
     },
     resetActionForms: function () {
       // reset common form data/settings
-      this.actionForm.name = ''
-      this.actionForm.type = DEFAULT_ACTION_TYPE
-      this.actionForm.adding = false
-
-      // reset specific settings (hard-coded keys for now)
-      this.actionForm.forms.goTo.target = ''
+      this.adding = false
+      this.itemForm.actionName = ''
+      this.itemForm.actionType = DEFAULT_ACTION_TYPE
+      this.itemForm.target = ''
     },
     cancelAddAction: function () {
       this.resetActionForms()
     },
   }
-
-
-
 }
 
 </script>

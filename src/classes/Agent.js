@@ -188,7 +188,7 @@ export default class Agent extends Sprite {
         if (meetsConditions) {
           this.currentAction.inProgress = true
           const emissionsFromAction = this.currentAction.start(globals)
-          if (emissionsFromAction !== null) {
+          if (emissionsFromAction && emissionsFromAction.agentsToDelete) {
             emissions.agentsToDelete = emissions.agentsToDelete.concat(emissionsFromAction.agentsToDelete)
           }
         }
