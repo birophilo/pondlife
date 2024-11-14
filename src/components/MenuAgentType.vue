@@ -13,7 +13,7 @@
         </select>
         <br />
         thumbnail: {{ itemForm.thumbnail }}<br />
-        <input type="file" placeholder="thumbnail" @change="updateThumbnailFileInput($event, agentTypeData)" /><br />
+        <input type="file" placeholder="thumbnail" @change="updateThumbnailFileInput($event)" /><br />
         <button @click="saveItem(itemForm.name)">save</button>
         <button @click="cancelEdit">cancel</button>
       </div>

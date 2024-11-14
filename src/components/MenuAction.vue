@@ -1,25 +1,28 @@
 <template>
   <div>
     <div class="created-item-header">
-      <div class="menu-action-name">{{ action.actionName }}</div>
-      <div v-if="editing">
+      <div class="menu-action-name">
+        <div v-if="editing === true">
+          <input v-model="itemForm.actionName" type="text" />
+        </div>
+        <div v-else>
+          {{ action.actionName }}
+        </div>
+      </div>
+      <div v-if="editing === true">
         <button @click="saveItem">save</button>
         <button @click="cancelEdit">cancel</button>
       </div>
       <div v-else>
-        <div v-if="action.actionType === 'change'">
-          <button @click="deleteItem(action.actionName)">delete action</button>
-        </div>
-        <div v-else>
+        <div>
           <button @click="editItem">edit</button>
           <button @click="deleteItem(action.actionName)">delete</button>
         </div>
-
       </div>
     </div>
 
     <!-- GOTO ACTION EDIT FORM -->
-    <div v-if="itemForm.actionType === 'goTo'">
+    <div v-if="action.actionType === 'goTo'">
       <div v-if="editing === true">
         <!-- removed until can cleanly change action type -->
         <!-- <select v-model="action.actionType">
@@ -61,7 +64,7 @@
           <select v-model="itemForm.target">
             <option value="">-- select agent --</option>
             <option
-              v-for="agent in store.agentItems[actionData.agentType]"
+              v-for="agent in store.agentItems[itemForm.agentType]"
               :value="agent"
             >
               {{ agent.name }}
@@ -77,7 +80,7 @@
     </div>
 
     <!-- (ACTION) PROPERTY CHANGE ITEM EDIT FORM -->
-    <div v-if="itemForm.actionType === 'change'">
+    <div v-if="action.actionType === 'change'">
       <div v-for="(propertyChange, index) in itemForm.propertyChanges">
         <MenuActionPropertyChange
           :action="action"
@@ -89,12 +92,12 @@
     </div>
 
     <!-- INTERVAL EDIT FORM -->
-    <div v-if="itemForm.actionType === 'interval'">
+    <div v-if="action.actionType === 'interval'">
       <div v-if="editing === true">
         <div>interval (frames): <input v-model="itemForm.duration" type="number" /></div>
       </div>
       <div v-else>
-        <div>action type: {{ itemForm.actionType }}</div>
+        <div>action type: {{ action.actionType }}</div>
         <div>interval (frames): <input :value="itemForm.duration" type="number" disabled /></div>
       </div>
     </div>

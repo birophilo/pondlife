@@ -65,7 +65,7 @@
           <select v-model="itemForm.target">
             <option value="">-- select agent --</option>
             <option
-              v-for="agent in store.agentItems[itemForm.pointYagentType]"
+              v-for="agent in store.agentItems[itemForm.agentType]"
               :value="agent"
             >
               {{ agent.name }}
@@ -252,18 +252,17 @@ export default {
       let newAction = new actionClass(null, args)
       this.store.actions.push(newAction)
 
-      this.resetActionForms()
+      this.resetForm()
 
     },
-    resetActionForms: function () {
-      // reset common form data/settings
+    resetForm: function () {
       this.adding = false
       this.itemForm.actionName = ''
       this.itemForm.actionType = DEFAULT_ACTION_TYPE
       this.itemForm.target = ''
     },
     cancelAddAction: function () {
-      this.resetActionForms()
+      this.resetForm()
     },
   }
 }

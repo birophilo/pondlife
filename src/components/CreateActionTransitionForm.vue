@@ -1,12 +1,12 @@
 <template>
   <div>
-    <div v-if="actionTransitionForm.adding === true && actionTransitionForm.action === action">
-      <select v-model="actionTransitionForm.condition">
+    <div v-if="adding === true && itemForm.action === action">
+      <select v-model="itemForm.condition">
         <option v-for="condition in store.conditions" :value="condition">
           {{ condition.conditionName }}
         </option>
       </select>
-      <select v-model="actionTransitionForm.nextAction">
+      <select v-model="itemForm.nextAction">
         <option v-for="action in store.actions" :value="action">
           {{ action.actionName }}
         </option>
@@ -14,7 +14,7 @@
       <button @click="createTransition(action)">add</button> |
       <button @click="cancelAddTransition(action)">cancel</button>
     </div>
-    <button @click="actionTransitionForm.adding = true; actionTransitionForm.action = action">add transition</button>
+    <button @click="adding = true; itemForm.action = action">add transition</button>
   </div>
   
 </template>
@@ -34,8 +34,8 @@ export default {
   },
   data: function () {
     return {
-      actionTransitionForm: {
-        adding: false,
+      adding: false,
+      itemForm: {
         action: null,
         condition: null,
         nextAction: null
@@ -44,20 +44,20 @@ export default {
   },
   methods: {
     createTransition: function (action) {
-      const condition = this.actionTransitionForm.condition
-      const nextAction = this.actionTransitionForm.nextAction
+      const condition = this.itemForm.condition
+      const nextAction = this.itemForm.nextAction
 
       const transition = new ActionTransition(condition, nextAction)
       action.transitions.push(transition)
 
-      this.actionTransitionForm.condition = null
-      this.actionTransitionForm.nextAction = null
-      this.actionTransitionForm.adding = false
+      this.itemForm.condition = null
+      this.itemForm.nextAction = null
+      this.adding = false
     },
     cancelAddTransition: function () {
-      this.actionTransitionForm.condition = null
-      this.actionTransitionForm.nextAction = null
-      this.actionTransitionForm.adding = false
+      this.itemForm.condition = null
+      this.itemForm.nextAction = null
+      this.adding = false
     }
   }
 }

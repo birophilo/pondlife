@@ -10,7 +10,6 @@ export const useStore = defineStore({
       animationFrameId: 1
     },
 
-    myData: 'hello',
     dayNumber: 1,
     // agent detail to display in UI
     selectedAgent: null,

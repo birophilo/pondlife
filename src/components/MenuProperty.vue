@@ -1,7 +1,6 @@
 <template>
   <div>
     <div v-for="property in Object.keys(agentProperties)">
-      hello<br/>
       <div v-if="editFlags[property] === true">
         <input type="text" placeholder="name" :value="property" disabled />
         <input v-model="propertiesForm[property]" type="number" />
@@ -10,7 +9,6 @@
         <br/>
       </div>
       <div v-else>
-        something here<br/>
         <input type="text" placeholder="name" :value="property" disabled />:
         <input type="text" placeholder="value" :value="agentProperties[property]" disabled /> -
         <button @click="editItem(property)">edit</button> |
@@ -40,7 +38,7 @@ export default {
   methods: {
     populatePropertiesForm: function () {
       this.propertiesForm = {...this.agentProperties}
-      this.propertyKeys = Object.keys(this.propertiesData)
+      this.propertyKeys = Object.keys(this.propertiesForm)
       this.propertyKeys.forEach(key => this.editFlags[key] = false)
     },
     deleteProperty: function (property) {

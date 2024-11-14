@@ -336,13 +336,8 @@ export default {
       agentTypeNames.forEach(agentTypeName => {
         this.store.agentItems[agentTypeName].forEach(agent => {
           const emissions = agent.update(c, {}, this.store.GlobalSettings)
-          if (agent.name === 'customer 1') {
-            console.log(emissions)
-          }
 
           if (emissions && emissions.agentsToDelete.length > 0) {
-
-            console.log("IN REMOVE CODE")
             emissions.agentsToDelete.forEach(agent => {
               const agentType = agent.agentType
               const items = this.store.agentItems[agentType]

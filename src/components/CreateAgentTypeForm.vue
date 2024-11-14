@@ -1,21 +1,21 @@
 <template>
   <div>
-    <div v-if="agentTypeForm.adding === true">
-      name: <input v-model="agentTypeForm.name" type="text" placeholder="name" /><br />
-      width: <input v-model="agentTypeForm.width" type="number" placeholder="width" /><br />
-      height: <input v-model="agentTypeForm.height" type="number" placeholder="height" /><br />
-      movement speed: <input v-model="agentTypeForm.nominalSpeed" type="number" placeholder="1" /><br />
+    <div v-if="adding === true">
+      name: <input v-model="itemForm.name" type="text" placeholder="name" /><br />
+      width: <input v-model="itemForm.width" type="number" placeholder="width" /><br />
+      height: <input v-model="itemForm.height" type="number" placeholder="height" /><br />
+      movement speed: <input v-model="itemForm.nominalSpeed" type="number" placeholder="1" /><br />
       animationSet:
-      <select v-model="agentTypeForm.animationSet">
+      <select v-model="itemForm.animationSet">
         <option value="">-- select sprite map --</option>
         <option :value="animationSet" v-for="animationSet in store.animationSets">{{ animationSet.name }}</option>
       </select><br />
-      thumbnail: {{ agentTypeForm.thumbnail }}<br />
-      <input type="file" placeholder="thumbnail" @change="updateThumbnailFileInput($event, agentTypeForm)" /><br />
+      thumbnail: {{ itemForm.thumbnail }}<br />
+      <input type="file" placeholder="thumbnail" @change="updateThumbnailFileInput($event)" /><br />
       <button @click="createAgentType()">create agent type</button>
-      <button @click="agentTypeForm.adding = false">cancel</button>
+      <button @click="adding = false">cancel</button>
     </div>
-    <div v-else><button @click="agentTypeForm.adding = true">new agent type</button></div>
+    <div v-else><button @click="adding = true">new agent type</button></div>
   </div>
 </template>
 
@@ -34,8 +34,8 @@ export default {
   },
   data: function () {
     return {
-      agentTypeForm: {
-        adding: false,
+      adding: false,
+      itemForm: {
         name: '',
         height: 50,
         width: 50,
@@ -50,22 +50,22 @@ export default {
   methods: {
     createAgentType: function () {
 
-      const agentTypeName = this.agentTypeForm.name
+      const agentTypeName = this.itemForm.name
 
       const agentData = {
         agentClass: Agent,
         agentItems: [],
         config: {
           name: agentTypeName,
-          width: Number(this.agentTypeForm.width),
-          height: Number(this.agentTypeForm.height),
+          width: Number(this.itemForm.width),
+          height: Number(this.itemForm.height),
           frames: {max: 9, columns: 4, rows: 3, hold: 3},
           offset: {x: 96, y: 46},
           scale: 1,
-          nominalSpeed: Number(this.agentTypeForm.nominalSpeed),
+          nominalSpeed: Number(this.itemForm.nominalSpeed),
           previewImage: '/img/sprites/GirlSample_Walk_Down.png',
-          animationSet: this.agentTypeForm.animationSet,
-          thumbnail: this.agentTypeForm.thumbnail,
+          animationSet: this.itemForm.animationSet,
+          thumbnail: this.itemForm.thumbnail,
           defaultSpriteSheet: 'idle'
         }
       }
@@ -83,11 +83,11 @@ export default {
       })
       this.store.agentMenuButtons.push(newIcon)
 
-      this.agentTypeForm.adding = false
+      this.adding = false
     },
-    updateThumbnailFileInput: function (event, agentTypeForm) {
+    updateThumbnailFileInput: function (event) {
       const fileName = "/img/thumbnails/" + event.target.files[0].name
-      agentTypeForm.thumbnail = fileName
+      this.itemForm.thumbnail = fileName
     },
   }
 }

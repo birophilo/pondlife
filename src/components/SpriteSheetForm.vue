@@ -1,16 +1,16 @@
 <template>
-  <div v-if="spriteSheetForm.adding === true">
-    name: <input v-model="spriteSheetForm.name" type="text" placeholder="name" /><br />
-    src: <input type="file" placeholder="src" @change="updateSpritesheetFileInput($event, spriteSheetForm)" /><br />
-    rows: <input v-model="spriteSheetForm.rows" type="number" placeholder="rows" /><br />
-    columns: <input v-model="spriteSheetForm.columns" type="number" placeholder="columns" /><br />
-    numImages: <input v-model="spriteSheetForm.numImages" type="number" placeholder="number of images" /><br />
-    refreshInterval: <input v-model="spriteSheetForm.refreshInterval" type="number" placeholder="refresh interval" /><br />
+  <div v-if="adding === true">
+    name: <input v-model="itemForm.name" type="text" placeholder="name" /><br />
+    src: <input type="file" placeholder="src" @change="updateSpritesheetFileInput($event, itemForm)" /><br />
+    rows: <input v-model="itemForm.rows" type="number" placeholder="rows" /><br />
+    columns: <input v-model="itemForm.columns" type="number" placeholder="columns" /><br />
+    numImages: <input v-model="itemForm.numImages" type="number" placeholder="number of images" /><br />
+    refreshInterval: <input v-model="itemForm.refreshInterval" type="number" placeholder="refresh interval" /><br />
     <button @click="createSpriteSheet()">create sprite sheet</button>
-    <button @click="spriteSheetForm.adding = false">cancel</button>
+    <button @click="adding = false">cancel</button>
   </div>
   <div v-else>
-    <button @click="spriteSheetForm.adding = true">new sprite sheet</button>
+    <button @click="adding = true">new sprite sheet</button>
   </div>
 </template>
 
@@ -26,8 +26,8 @@ export default {
   },
   data: function () {
     return {
-      spriteSheetForm: {
-        adding: false,
+      adding: false,
+      itemForm: {
         name: '',
         src: '',
         columns: 1,
@@ -40,21 +40,21 @@ export default {
   methods: {
     createSpriteSheet: function () {
       const args = {
-        adding: this.spriteSheetForm.adding,
-        name: this.spriteSheetForm.name,
-        src: this.spriteSheetForm.src,
-        columns: Number(this.spriteSheetForm.columns),
-        rows: Number(this.spriteSheetForm.rows),
-        numImages: Number(this.spriteSheetForm.numImages),
-        refreshInterval: Number(this.spriteSheetForm.refreshInterval)
+        name: this.itemForm.name,
+        src: this.itemForm.src,
+        columns: Number(this.itemForm.columns),
+        rows: Number(this.itemForm.rows),
+        numImages: Number(this.itemForm.numImages),
+        refreshInterval: Number(this.itemForm.refreshInterval)
       }
       this.store.spriteSheets.push(new SpriteSheet(args))
 
       // 'save' to avoid inputting all after each page refresh
       localStorage.setItem('pondlifeSpriteSheets', JSON.stringify(this.store.spriteSheets))
 
-      this.spriteSheetForm = {
-        adding: false,
+      this.adding = false
+
+      this.itemForm = {
         name: '',
         src: '',
         columns: 1,
@@ -63,9 +63,9 @@ export default {
         refreshInterval: 1
       }
     },
-    updateSpritesheetFileInput: function (event, spriteSheetForm) {
+    updateSpritesheetFileInput: function (event, itemForm) {
       const fileName = "/img/sprites/" + event.target.files[0].name
-      spriteSheetForm.src = fileName
+      itemForm.src = fileName
       localStorage.setItem('pondlifeSpriteSheets', JSON.stringify(this.store.spriteSheets))
       localStorage.setItem('pondlifeSpriteMaps', JSON.stringify(this.store.animationSets))
     },

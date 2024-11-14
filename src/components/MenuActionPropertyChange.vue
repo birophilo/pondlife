@@ -1,9 +1,9 @@
 <template>
   <div>
     <div v-if="editing === true">
-      <select v-model="itemForm.agent">
+      <select v-model="itemForm.agentType">
         <option value="self">self</option>
-        <option v-for="agent in store.agentTypes" :value="agent.config.name">{{ agent.config.name }}</option>
+        <option v-for="agentType in store.agentTypes" :value="agentType.name">{{ agentType.name }}</option>
       </select>
 
       <form name="agentPropChangeRadioSelect">
@@ -48,9 +48,9 @@
     </div>
     <div v-else>
       <div>change {{ index + 1 }}:</div>
-      <input type="text" placeholder="property" :value="propertyChangeData.propertyName" disabled />
-      <input type="text" placeholder="change" :value="propertyChangeData.changeType" disabled />
-      <input type="number" placeholder="value" :value="propertyChangeData.propertyValue" disabled />
+      <input type="text" placeholder="property" :value="propertyChange.propertyName" disabled />
+      <input type="text" placeholder="change" :value="propertyChange.changeType" disabled />
+      <input type="number" placeholder="value" :value="propertyChange.propertyValue" disabled />
       <button @click="editItem">edit item</button>
       <button @click="deleteItem">delete item</button>
     </div>

@@ -1,17 +1,20 @@
 <template>
   <div>
     <!-- (ACTION) PROPERTY CHANGE ITEM CREATE FORM -->
-    <div v-if="propertyChangeForm.adding === true">
-      <select v-model="propertyChangeForm.agentType">
+    <div v-if="adding === true">
+      <select v-model="itemForm.agentType">
         <option value="">-- agent --</option>
         <option value="self">self</option>
-        <option v-for="agent in store.agentTypes" :value="agent.name">{{ agent.name }}</option>
+        <option
+          v-for="agent in store.agentTypes"
+          :value="agent.name">{{ agent.name }}
+        </option>
       </select>
 
       <form name="agentPropChangeRadioCreate">
         <input
           type="radio"
-          v-model="propertyChangeForm.agentChoiceMethod"
+          v-model="itemForm.agentChoiceMethod"
           name="agentChoiceMethod"
           value="nearest"
           checked="true"
@@ -19,25 +22,25 @@
         <label for="nearest">nearest</label>
         <input
           type="radio"
-          v-model="propertyChangeForm.agentChoiceMethod"
+          v-model="itemForm.agentChoiceMethod"
           name="agentChoiceMethod"
           value="specific"
         />
         <label for="specific">specific</label>
         <input
           type="radio"
-          v-model="propertyChangeForm.agentChoiceMethod"
+          v-model="itemForm.agentChoiceMethod"
           name="agentChoiceMethod"
           value="all"
         />
         <label for="all">all</label>
       </form>
 
-      <div v-if="propertyChangeForm.agentChoiceMethod === 'specific'">
-        <select v-model="propertyChangeForm.target">
+      <div v-if="itemForm.agentChoiceMethod === 'specific'">
+        <select v-model="itemForm.target">
           <option value="">-- select agent --</option>
           <option
-            v-for="agent in store.agentItems[propertyChangeForm.agentType]"
+            v-for="agent in store.agentItems[itemForm.agentType]"
             :value="agent"
           >
             {{ agent.name }}
@@ -45,25 +48,28 @@
         </select>
       </div>
 
-      <select v-model="propertyChangeForm.property">
+      <select v-model="itemForm.property">
         <option value="">--  property --</option>
-        <option v-for="property in Object.keys(store.selectedAgent.stateData)" :value="property">{{ property }}</option>
+        <option
+          v-for="property in Object.keys(store.selectedAgent.stateData)"
+          :value="property">{{ property }}
+        </option>
       </select>
-      <select v-model="propertyChangeForm.change">
+      <select v-model="itemForm.change">
         <option value="">-- change --</option>
         <option value="increase">increase</option>
         <option value="decrease">decrease</option>
       </select>
       <input
-        v-model="propertyChangeForm.value"
+        v-model="itemForm.value"
         type="number"
         placeholder="value"
       />
-      <button @click="createPropertyChangeItem(action)">save</button>
-      <button @click="propertyChangeForm.adding = false">cancel</button>
+      <button @click="createItem">save</button>
+      <button @click="adding = false">cancel</button>
     </div>
     <div v-else>
-      <button @click="propertyChangeForm.adding = true">new property change</button>
+      <button @click="adding = true">new property change</button>
     </div>
   </div>
 </template>
@@ -84,8 +90,8 @@ export default {
   },
   data: function () {
     return {
-      propertyChangeForm: {
-        adding: false,
+      adding: false,
+      itemForm: {
         agent: '',
         agentType: '',
         agentChoiceMethod: 'nearest',
@@ -97,27 +103,23 @@ export default {
     }
   },
   methods: {
-    createPropertyChangeItem: function (action) {
-
-      const property = this.propertyChangeForm.property
-      const change = this.propertyChangeForm.change
-      const value = this.propertyChangeForm.value
-
+    createItem: function () {
       const args = {
-        agentType: this.propertyChangeForm.agentType,
-        agentChoiceMethod: this.propertyChangeForm.agentChoiceMethod,
-        target: this.propertyChangeForm.target
+        agentType: this.itemForm.agentType,
+        agentChoiceMethod: this.itemForm.agentChoiceMethod,
+        target: this.itemForm.target
       }
       const propChange = new PropertyChange(
         null,
-        property,
-        change,
-        value,
+        this.itemForm.property,
+        this.itemForm.change,
+        this.itemForm.value,
         args
       )
-      action.propertyChanges.push(propChange)
-      this.propertyChangeForm.adding = false
-    },
+      const act = this.store.actions.find(a => a.name === this.action.name)
+      act.propertyChanges.push(propChange)
+      this.adding = false
+    }
   }
 }
 
