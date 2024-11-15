@@ -47,10 +47,7 @@
       <button @click="cancelEdit">cancel</button>
     </div>
     <div v-else>
-      <div>change {{ index + 1 }}:</div>
-      <input type="text" placeholder="property" :value="propertyChange.propertyName" disabled />
-      <input type="text" placeholder="change" :value="propertyChange.changeType" disabled />
-      <input type="number" placeholder="value" :value="propertyChange.propertyValue" disabled />
+      <div>change {{ index + 1 }}: {{ propertyChange.description() }}</div>
       <button @click="editItem">edit item</button>
       <button @click="deleteItem">delete item</button>
     </div>
@@ -95,7 +92,7 @@ export default {
       this.editing = false
       const keys = Object.keys(this.itemForm)
       var action = this.store.actions.find(act => act.name === this.action.name)
-      var propChange = action.propertyChanges[this.i]
+      var propChange = action.propertyChanges[this.index]
       keys.forEach(key => {
           if (key === 'args') {
             propChange.args = {...this.itemForm.args}

@@ -255,4 +255,8 @@ export class PropertyChange {
   defaultCompletionCheckPasses() {
     return this.agent.atDestination()
   }
+
+  description() {
+    return `${this.propertyName} ${this.changeType} ${this.propertyValue}`
+  }
 }

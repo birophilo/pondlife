@@ -116,7 +116,7 @@ export default {
         this.itemForm.value,
         args
       )
-      const act = this.store.actions.find(a => a.name === this.action.name)
+      const act = this.store.actions.find(a => a.actionName === this.action.actionName)
       act.propertyChanges.push(propChange)
       this.adding = false
     }
