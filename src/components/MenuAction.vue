@@ -37,42 +37,70 @@
           <option value="point">point</option>
         </select>
 
-        <select v-model="itemForm.agentType">
-          <option value="">-- agent type --</option>
-          <option v-for="agentType in store.agentTypes" :value="agentType.name">{{ agentType.name }}</option>
-        </select>
-
-        <form name="agentRadioSelect">
-          <input
-            type="radio"
-            v-model="itemForm.agentChoiceMethod"
-            name="agentChoiceMethod"
-            value="nearest"
-            checked="true"
-          />
-          <label for="nearest">nearest</label>
-          <input
-            type="radio"
-            v-model="itemForm.agentChoiceMethod"
-            name="agentChoiceMethod"
-            value="specific"
-          />
-          <label for="nearest">specific</label>
-        </form>
-
-        <div v-if="itemForm.agentChoiceMethod === 'specific'">
-          <select v-model="itemForm.target">
-            <option value="">-- select agent --</option>
-            <option
-              v-for="agent in store.agentItems[itemForm.agentType]"
-              :value="agent"
-            >
-              {{ agent.name }}
-            </option>
-          </select>
+        <div v-if="itemForm.destinationType === 'point'">
+          <div>Select point:
+            <button
+              class="selection-mode-button"
+              @click="store.selectionMode = !store.selectionMode"
+              :style="{backgroundColor: store.selectionMode ? 'grey' : 'white'}"
+            >x</button>
+            <span v-if="store.selectionMode === true">x: {{ store.mouse.x }}, y: {{ store.mouse.y }}</span><br/>
+            x: <input
+              v-model="itemPointX"
+              type="text"
+              :placeholder="store.mouse.x"
+            />
+            <br />
+            y:
+            <input
+              v-model="itemPointY"
+              type="text"
+              :placeholder="store.mouse.y"
+              value=""
+            />
+            <br />
+          </div>
         </div>
 
+        <div v-else>
+
+          <select v-model="itemForm.agentType">
+            <option value="">-- agent type --</option>
+            <option v-for="agentType in store.agentTypes" :value="agentType.name">{{ agentType.name }}</option>
+          </select>
+
+          <form name="agentRadioSelect">
+            <input
+              type="radio"
+              v-model="itemForm.agentChoiceMethod"
+              name="agentChoiceMethod"
+              value="nearest"
+              checked="true"
+            />
+            <label for="nearest">nearest</label>
+            <input
+              type="radio"
+              v-model="itemForm.agentChoiceMethod"
+              name="agentChoiceMethod"
+              value="specific"
+            />
+            <label for="nearest">specific</label>
+          </form>
+
+          <div v-if="itemForm.agentChoiceMethod === 'specific'">
+            <select v-model="itemForm.target">
+              <option value="">-- select agent --</option>
+              <option
+                v-for="agent in store.agentItems[itemForm.agentType]"
+                :value="agent"
+              >
+                {{ agent.name }}
+              </option>
+            </select>
+          </div>
+        </div>
       </div>
+
       <div v-else>
         <div>action type: {{ action.actionType }}</div>
         <div>{{ action.agentType }}</div>
@@ -150,7 +178,9 @@ export default {
         propertyChanges: this.action.propertyChanges,
         transitions: this.action.transitions,
         duration: this.action.duration,
-        target: this.action.args.target
+        target: this.action.args.target,
+        pointX: null,
+        pointY: null
       }
     },
     saveItem: function () {
@@ -167,7 +197,6 @@ export default {
       act.args.agentType = this.itemForm.agentType
       act.args.target = this.itemForm.target
       act.agentChoiceMethod = this.itemForm.agentChoiceMethod
-
     },
     deleteItem: function (itemName) {
       this.store.actions = this.store.actions.filter(item => item.actionName !== itemName)
@@ -177,8 +206,17 @@ export default {
       this.editing = true
     },
     cancelEdit: function () {
+      this.store.selectedPoint = {x: null, y: null}
       this.editing = false
       this.itemForm = {}
+    }
+  },
+  computed : {
+    itemPointX: function () {
+      return this.store.selectedPoint.x !== null ? this.store.selectedPoint.x : this.itemForm.target.position.x
+    },
+    itemPointY: function () {
+      return this.store.selectedPoint.y !== null ? this.store.selectedPoint.y : this.itemForm.target.position.y
     }
   }
 }

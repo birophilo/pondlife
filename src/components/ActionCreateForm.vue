@@ -20,6 +20,7 @@
       <option value="goTo">go to</option>
       <option value="change">change</option>
       <option value="interval">wait</option>
+      <option value="spawnAgent">spawn agent</option>
       <option value="removeAgent">remove agent</option>
     </select>
     <br />
@@ -85,14 +86,14 @@
           <br />
           x:
           <input
-            v-model="itemForm.pointX"
+            v-model="store.selectedPoint.x"
             type="text"
             :placeholder="store.mouse.x"
           />
           <br />
           y:
           <input
-            v-model="itemForm.pointY"
+            v-model="store.selectedPoint.y"
             type="text"
             :placeholder="store.mouse.y"
             value=""
@@ -111,7 +112,7 @@
       />
     </div>
 
-    <div v-if="itemForm.type === 'removeAgent'">
+    <div v-if="itemForm.actionType === 'removeAgent'">
 
       <select v-model="itemForm.agentType">
         <option value="">-- agent type --</option>
@@ -153,6 +154,39 @@
             {{ agent.name }}
           </option>
         </select>
+      </div>
+
+    </div>
+
+    <div v-if="itemForm.actionType === 'spawnAgent'">
+
+      <select v-model="itemForm.agentType">
+        <option value="">-- agent type --</option>
+        <option v-for="agentType in store.agentTypes" :value="agentType.name">{{ agentType.name }}</option>
+      </select>
+
+      <div>Select point:
+        <button
+          class="selection-mode-button"
+          @click="store.selectionMode = !store.selectionMode"
+          :style="{backgroundColor: store.selectionMode ? 'grey' : 'white'}"
+        >x</button>
+        <br />
+        x:
+        <input
+          v-model="itemForm.pointX"
+          type="text"
+          :placeholder="store.mouse.x"
+        />
+        <br />
+        y:
+        <input
+          v-model="itemForm.pointY"
+          type="text"
+          :placeholder="store.mouse.y"
+          value=""
+        />
+        <br />
       </div>
 
     </div>
@@ -200,8 +234,6 @@ export default {
         agentType: '',
         agentChoiceMethod: 'nearest',
         target: '',
-        pointX: '',
-        pointY: '',
         duration: 0,
         destinationType: '',
         spriteSheet: '',
@@ -240,8 +272,8 @@ export default {
             width: 10,
             height: 10,
             position: {
-              x: this.itemForm.pointX,
-              y: this.itemForm.pointY
+              x: this.store.selectedPoint.x,
+              y: this.store.selectedPoint.y
             }
           }
         }

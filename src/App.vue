@@ -244,8 +244,10 @@ export default {
 
       // POINT/AGENT SELECTION MODE
       if (this.store.selectionMode === true) {
-        this.actionsSection.adding.forms.goTo.pointX = this.store.mouse.x
-        this.actionsSection.adding.forms.goTo.pointY = this.store.mouse.y
+        this.store.selectedPoint = {
+          x: this.store.mouse.x,
+          y: this.store.mouse.y
+        }
       }
 
     })

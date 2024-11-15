@@ -20,6 +20,7 @@ export const useStore = defineStore({
     deleteMode: false,
     // mode to select target agent
     selectionMode: false,
+    selectedPoint: {x: null, y: null},
     // set by click on board in selection mode
     deleteButton: null,
     itemMenu: null,
