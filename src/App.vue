@@ -339,15 +339,30 @@ export default {
         this.store.agentItems[agentTypeName].forEach(agent => {
           const emissions = agent.update(c, {}, this.store.GlobalSettings)
 
-          if (emissions && emissions.agentsToDelete.length > 0) {
-            emissions.agentsToDelete.forEach(agent => {
-              const agentType = agent.agentType
-              const items = this.store.agentItems[agentType]
-              const item = items.find(ag => ag.name === agent.name)
-              item.labelElement.remove()
-              items.splice(items.indexOf(item), 1)
-            })
+          if (emissions) {
+            if (emissions.agentsToDelete?.length > 0) {
+              emissions.agentsToDelete.forEach(agent => {
+                const agentType = agent.agentType
+                const items = this.store.agentItems[agentType]
+                const item = items.find(ag => ag.name === agent.name)
+                item.labelElement.remove()
+                items.splice(items.indexOf(item), 1)
+              })
+            }
+            if (emissions.agentsToSpawn?.length > 0) {
+              emissions.agentsToSpawn.forEach(args => {
+                const agentType = args.agentType
+                this.store.agentItems[agentType].push( new Agent({
+                  agentTypeName: agentType,
+                  position: args.position,
+                  num: this.store.agentItems[agentType].length + 1,
+                  globals: this.store.GlobalSettings,
+                  config: this.store.agentTypes[agentType].config
+                }))
+              })
+            }
           }
+
           const isInArea = pointIsInArea(this.store.mouse, agent.collisionArea)
           if (isInArea) this.store.hover = true
         })

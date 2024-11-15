@@ -171,17 +171,17 @@
           @click="store.selectionMode = !store.selectionMode"
           :style="{backgroundColor: store.selectionMode ? 'grey' : 'white'}"
         >x</button>
-        <br />
+        <span v-if="store.selectionMode === true">x: {{ store.mouse.x }}, y: {{ store.mouse.y }}</span><br />
         x:
         <input
-          v-model="itemForm.pointX"
+          v-model="store.selectedPoint.x"
           type="text"
           :placeholder="store.mouse.x"
         />
         <br />
         y:
         <input
-          v-model="itemForm.pointY"
+          v-model="store.selectedPoint.y"
           type="text"
           :placeholder="store.mouse.y"
           value=""
@@ -205,6 +205,7 @@ import {
   ActionGoTo,
   ActionPropertyChanges,
   ActionInterval,
+  ActionSpawnAgent,
   ActionRemoveAgent
 } from "../classes/Action.js"
 
@@ -216,6 +217,7 @@ const ACTION_TYPES = {
   'goTo': ActionGoTo,
   'change': ActionPropertyChanges,
   'interval': ActionInterval,
+  'spawnAgent': ActionSpawnAgent,
   'removeAgent': ActionRemoveAgent
 }
 
@@ -243,6 +245,7 @@ export default {
         goTo: ['destinationType', 'agentType', 'agentChoiceMethod', 'target'],
         change: ['propertyChanges'],
         interval: ['duration'],
+        spawnAgent: ['agentType', 'target'],
         removeAgent: ['agentType', 'agentChoiceMethod', 'target']
       }
     }
@@ -267,17 +270,22 @@ export default {
 
       if (actionType === 'goTo') {
         if (this.itemForm.destinationType === 'point') {
+          const pointX = Number(this.store.selectedPoint.x)
+          const pointY = Number(this.store.selectedPoint.y)
           args.target = {
-            name: `point: {x: ${this.itemForm.pointX}, y: ${this.itemForm.pointY}}`,
+            name: `point: {x: ${pointX}, y: ${pointY}}`,
             width: 10,
             height: 10,
-            position: {
-              x: this.store.selectedPoint.x,
-              y: this.store.selectedPoint.y
-            }
+            position: {x: pointX, y: pointY}
           }
         }
         if (this.itemForm.target === 'home') args.destination = this.store.selectedAgent.home
+      }
+
+      if (actionType === 'spawnAgent') {
+        const pointX = Number(this.store.selectedPoint.x)
+        const pointY = Number(this.store.selectedPoint.y)
+        args.position = {x: pointX, y: pointY}
       }
 
       let actionClass = ACTION_TYPES[actionType]
@@ -294,6 +302,7 @@ export default {
       this.itemForm.target = ''
     },
     cancelAddAction: function () {
+      this.store.selectedPoint = {x: null, y: null}
       this.resetForm()
     },
   }

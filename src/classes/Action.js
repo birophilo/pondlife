@@ -181,6 +181,31 @@ export class ActionInterval extends Action {
 }
 
 
+export class ActionSpawnAgent extends Action {
+  constructor(agent = null, args, conditions = [], transitions = []) {
+    super(agent, args, conditions, transitions)
+
+    this.agentType = args.agentType
+    this.position = args.position
+    this.useRandomPosition = args.useRandomPosition
+  }
+
+  // eslint-disable-next-line
+  start(globals) {
+    this.isComplete = true
+    const spawnArgs = {
+      agentType: this.agentType,
+      position: this.position
+    }
+    return {agentsToSpawn: [spawnArgs]}
+  }
+
+  defaultCompletionCheckPasses() {
+    return this.isComplete
+  }
+}
+
+
 export class ActionRemoveAgent extends Action {
   constructor(agent = null, args, conditions = [], transitions = []) {
     super(agent, args, conditions, transitions)
@@ -193,7 +218,7 @@ export class ActionRemoveAgent extends Action {
   }
 
   defaultCompletionCheckPasses() {
-    return this.agent.atDestination()
+    return this.isComplete
   }
 
 }

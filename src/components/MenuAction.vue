@@ -46,14 +46,14 @@
             >x</button>
             <span v-if="store.selectionMode === true">x: {{ store.mouse.x }}, y: {{ store.mouse.y }}</span><br/>
             x: <input
-              v-model="itemPointX"
+              v-model="targetPointX"
               type="text"
               :placeholder="store.mouse.x"
             />
             <br />
             y:
             <input
-              v-model="itemPointY"
+              v-model="targetPointY"
               type="text"
               :placeholder="store.mouse.y"
               value=""
@@ -130,6 +130,31 @@
       </div>
     </div>
 
+    <div v-if="action.actionType === 'spawnAgent'">
+      <div>Select point:
+        <button
+          class="selection-mode-button"
+          @click="store.selectionMode = !store.selectionMode"
+          :style="{backgroundColor: store.selectionMode ? 'grey' : 'white'}"
+        >x</button>
+        <span v-if="store.selectionMode === true">x: {{ store.mouse.x }}, y: {{ store.mouse.y }}</span><br/>
+        x: <input
+          v-model="positionPointX"
+          type="text"
+          :placeholder="store.mouse.x"
+        />
+        <br />
+        y:
+        <input
+          v-model="positionPointY"
+          type="text"
+          :placeholder="store.mouse.y"
+          value=""
+        />
+        <br />
+      </div>
+    </div>
+
     <h4>Action transitions</h4>
     <CreateActionTransitionForm :action="action" />
     <!-- ACTION TRANSITIONS -->
@@ -179,8 +204,10 @@ export default {
         transitions: this.action.transitions,
         duration: this.action.duration,
         target: this.action.args.target,
-        pointX: null,
-        pointY: null
+      }
+
+      if (this.action.actionType === 'spawnAgent') {
+        this.itemForm.position = this.action.position
       }
     },
     saveItem: function () {
@@ -197,6 +224,13 @@ export default {
       act.args.agentType = this.itemForm.agentType
       act.args.target = this.itemForm.target
       act.agentChoiceMethod = this.itemForm.agentChoiceMethod
+
+      if (this.action.actionType === 'spawnAgent') {
+        act.args.position = {x: Number(this.store.selectedPoint.x), y: Number(this.store.selectedPoint.y)}
+      } else if (this.action.actionType === 'goTo') {
+        act.args.target.position = {x: Number(this.store.selectedPoint.x), y: Number(this.store.selectedPoint.y)}
+      }
+      this.store.selectedPoint = {x: null, y: null}
     },
     deleteItem: function (itemName) {
       this.store.actions = this.store.actions.filter(item => item.actionName !== itemName)
@@ -212,11 +246,17 @@ export default {
     }
   },
   computed : {
-    itemPointX: function () {
+    targetPointX: function () {
       return this.store.selectedPoint.x !== null ? this.store.selectedPoint.x : this.itemForm.target.position.x
     },
-    itemPointY: function () {
+    targetPointY: function () {
       return this.store.selectedPoint.y !== null ? this.store.selectedPoint.y : this.itemForm.target.position.y
+    },
+    positionPointX: function () {
+      return this.store.selectedPoint.x !== null ? this.store.selectedPoint.x : this.itemForm.position.x
+    },
+    positionPointY: function () {
+      return this.store.selectedPoint.y !== null ? this.store.selectedPoint.y : this.itemForm.position.y
     }
   }
 }

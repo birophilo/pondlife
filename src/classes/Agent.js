@@ -156,7 +156,7 @@ export default class Agent extends Sprite {
 
   update(c, newData, globals) {
 
-    let emissions = {agentsToDelete: []}
+    let emissions = {agentsToDelete: [], agentsToSpawn: []}
 
     super.update(globals)
 
@@ -188,8 +188,13 @@ export default class Agent extends Sprite {
         if (meetsConditions) {
           this.currentAction.inProgress = true
           const emissionsFromAction = this.currentAction.start(globals)
-          if (emissionsFromAction && emissionsFromAction.agentsToDelete) {
-            emissions.agentsToDelete = emissions.agentsToDelete.concat(emissionsFromAction.agentsToDelete)
+          if (emissionsFromAction) {
+            if (emissionsFromAction.agentsToDelete) {
+              emissions.agentsToDelete = emissions.agentsToDelete.concat(emissionsFromAction.agentsToDelete)
+            }
+            if (emissionsFromAction.agentsToSpawn) {
+              emissions.agentsToSpawn = emissions.agentsToSpawn.concat(emissionsFromAction.agentsToSpawn)
+            }
           }
         }
       }
