@@ -116,8 +116,6 @@ export default class Agent extends Sprite {
       this.center.y > destinationTopExtent &&
       this.center.y < destinationBottomExtent
     )
-    console.log("AT DESTINATION")
-    console.log(atDestination)
     return atDestination
   }
 
@@ -171,23 +169,26 @@ export default class Agent extends Sprite {
     this.draw(c)
     this.travel()
 
-    // // remove action if complete
-    // if (this.currentAction && this.currentAction.defaultCompletionCheckPasses() === true) {
-    //   this.currentAction = null
-    // }
+    if (this.currentAction) {
 
-    // go into 'idle' mode if no more actions
-    if (this.currentAction === null) {
-      this.idle()
-      return emissions
-    }
+      // check for state transitions and set next action if complete
+      if (this.currentAction.defaultCompletionCheckPasses() === true) {
+        for (let i = 0; i < this.currentAction.transitions.length; i++) {
+          const result = this.currentAction.transitions[i].condition.evaluate()
+          if (result === true) {
+            this.currentAction = this.currentAction.transitions[i].nextAction.clone(this)
+            console.log(this.currentAction)
+            break
+          }
+        }
+      }
 
-    // if unstarted Action in action list, start it; if already doing action, check if complete
-    if (this.currentAction.isComplete === false) {
-      if (this.currentAction.inProgress === false) {
-        const meetsConditions = this.currentAction.meetsConditions()
-        console.log('meets conditions', meetsConditions)
-        if (meetsConditions) {
+      // if unstarted Action in action list, start it; if already doing action, check if complete
+      if (this.currentAction.isComplete === false) {
+        if (this.currentAction.inProgress === true) {
+          // console.log('checking')
+          this.currentAction.check(this.stateData, globals)
+        } else {
           this.currentAction.inProgress = true
           const emissionsFromAction = this.currentAction.start(globals)
           if (emissionsFromAction) {
@@ -200,31 +201,16 @@ export default class Agent extends Sprite {
           }
         }
       }
-    }
 
-    if (this.currentAction.inProgress === true) {
-      // console.log('checking')
-      this.currentAction.check(this.stateData, globals)
-    }
-
-    // remove action if complete
-    if (this.currentAction && this.currentAction.defaultCompletionCheckPasses() === true) {
-      for (let i = 0; i < this.currentAction.transitions.length; i++) {
-        const result = this.currentAction.transitions[i].condition.evaluate()
-        console.log('1111')
-        console.log('result', result)
-        if (result === true) {
-          this.isComplete = true
-          this.currentAction = this.currentAction.transitions[i].nextAction.clone(this.agent)
-          console.log('222222')
-        }
+      // remove action if complete
+      if (this.currentAction.defaultCompletionCheckPasses() === true) {
+        this.currentAction = null
       }
     }
 
     // go into 'idle' mode if no more actions
-    if (this.currentAction === null) {
+    if (this.currentAction === null && this.currentStateName !== 'idle') {
       this.idle()
-      return emissions
     }
 
     return emissions
@@ -257,10 +243,10 @@ export default class Agent extends Sprite {
 
   idle() {
     this.destination = null
+    this.currentStateName = 'idle'
 
-    if (this.animationSet !== null && this.currentStateName !== 'idle') {
+    if (this.animationSet !== null) {
       this.useSpriteSheet('idle')
-      this.currentStateName = 'idle'
     }
   }
 }

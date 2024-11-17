@@ -39,17 +39,8 @@ export class Action {
   // eslint-disable-next-line
   check(stateData, globals) {
     console.log(this.actionName)
-    for (let i = 0; i < this.transitions.length; i++) {
-      const result = this.transitions[i].condition.evaluate()
-      if (result === true) {
-        this.isComplete = true
-        this.agent.currentAction = this.transitions[i].nextAction.clone(this.agent)
-      }
-    }
-
     if (this.defaultCompletionCheckPasses()) {
       this.isComplete = true
-
     }
   }
 
@@ -94,6 +85,7 @@ export class ActionGoTo extends Action {
   }
 
   defaultCompletionCheckPasses() {
+    // console.log('at destination', this.agent.atDestination())
     return this.agent.atDestination()
   }
 
@@ -157,7 +149,7 @@ export class ActionInterval extends Action {
   }
 
   start(globals) {
-    if (this.actionSpriteSheet !== null) {
+    if (this.actionSpriteSheet) {
       this.agent.useSpriteSheet(this.actionSpriteSheet)
     }
     const currentFrame = globals.animationFrameId
