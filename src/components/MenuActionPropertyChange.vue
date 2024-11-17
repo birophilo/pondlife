@@ -91,7 +91,7 @@ export default {
     saveItem: function () {
       this.editing = false
       const keys = Object.keys(this.itemForm)
-      var action = this.store.actions.find(act => act.name === this.action.name)
+      var action = this.store.actions.find(act => act.name === this.action.actionName)
       var propChange = action.propertyChanges[this.index]
       keys.forEach(key => {
           if (key === 'args') {

@@ -64,8 +64,16 @@ export class PresetCondition {
   }
 
   evaluate() {
+    console.log("EVALUATING")
+    console.log(this)
     const agentValue = this.agent[this.classMethod]()
+    console.log(this.agent)
+    console.log(this.classMethod)
+    console.log(agentValue)
     const evalFunc = COMPARISONS[this.comparison]
+    console.log(this.comparison)
+    console.log(COMPARISONS[this.comparison])
+    console.log(this.conditionValue)
     const result = evalFunc(agentValue, this.conditionValue)
 
     return result

@@ -390,7 +390,7 @@ export default {
 
       if (this.store.GlobalSettings.animationFrameId % 32 === 0) {
         const customerActions = this.store.agentItems['customer'].map(cust =>
-          `${cust.name}, action: ${cust.currentAction ? cust.currentAction.name : 'none'}`
+          `${cust.name}, action: ${cust.currentAction ? cust.currentAction.actionName : 'none'}`
         )
         console.log(JSON.stringify(customerActions, null, 2))
       }
@@ -431,7 +431,7 @@ export default {
       Note: this may not be generalisable enough - to re-organise?
       */
 
-      if (action.args.agentChoiceMethod === 'nearest') {
+      if (action.args.agentChoiceMethod === 'nearest' && action.args.destinationType === 'agent') {
         const agentTypeName = action.args.agentType
         const agentItems = this.store.agentItems[agentTypeName]
         const targetAgent = this.store.selectedAgent.getClosestAgent(agentItems)

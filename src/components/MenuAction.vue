@@ -213,7 +213,7 @@ export default {
     saveItem: function () {
       this.editing = false
 
-      const act = this.store.actions.find(a => a.name === this.action.name)
+      const act = this.store.actions.find(a => a.actionName === this.action.actionName)
 
       act.actionName = this.itemForm.actionName
       act.actionType = this.itemForm.actionType
@@ -258,6 +258,9 @@ export default {
     positionPointY: function () {
       return this.store.selectedPoint.y !== null ? this.store.selectedPoint.y : this.itemForm.position.y
     }
+    // computedTarget: function () {
+    //   return this.store.selectedTargetAgent !== null ? this.store.selectedTargetAgent : this.itemForm.target
+    // }
   }
 }
 

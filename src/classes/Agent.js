@@ -116,6 +116,8 @@ export default class Agent extends Sprite {
       this.center.y > destinationTopExtent &&
       this.center.y < destinationBottomExtent
     )
+    console.log("AT DESTINATION")
+    console.log(atDestination)
     return atDestination
   }
 
@@ -169,10 +171,10 @@ export default class Agent extends Sprite {
     this.draw(c)
     this.travel()
 
-    // remove action if complete
-    if (this.currentAction && this.currentAction.defaultCompletionCheckPasses() === true) {
-      this.currentAction = null
-    }
+    // // remove action if complete
+    // if (this.currentAction && this.currentAction.defaultCompletionCheckPasses() === true) {
+    //   this.currentAction = null
+    // }
 
     // go into 'idle' mode if no more actions
     if (this.currentAction === null) {
@@ -203,6 +205,26 @@ export default class Agent extends Sprite {
     if (this.currentAction.inProgress === true) {
       // console.log('checking')
       this.currentAction.check(this.stateData, globals)
+    }
+
+    // remove action if complete
+    if (this.currentAction && this.currentAction.defaultCompletionCheckPasses() === true) {
+      for (let i = 0; i < this.currentAction.transitions.length; i++) {
+        const result = this.currentAction.transitions[i].condition.evaluate()
+        console.log('1111')
+        console.log('result', result)
+        if (result === true) {
+          this.isComplete = true
+          this.currentAction = this.currentAction.transitions[i].nextAction.clone(this.agent)
+          console.log('222222')
+        }
+      }
+    }
+
+    // go into 'idle' mode if no more actions
+    if (this.currentAction === null) {
+      this.idle()
+      return emissions
     }
 
     return emissions

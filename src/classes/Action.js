@@ -49,6 +49,7 @@ export class Action {
 
     if (this.defaultCompletionCheckPasses()) {
       this.isComplete = true
+
     }
   }
 
@@ -253,7 +254,7 @@ export class PropertyChange {
   }
 
   defaultCompletionCheckPasses() {
-    return this.agent.atDestination()
+    return this.agent.actionIsComplete()
   }
 
   description() {

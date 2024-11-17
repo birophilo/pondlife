@@ -63,11 +63,11 @@ export default {
     },
     saveItem: function (action, transitionIndex) {
       this.editing = false
-      const selectedAction = this.store.actions.find(a => a.name === action.name)
+      const selectedAction = this.store.actions.find(a => a.actionName === action.actionName)
       selectedAction.transitions[transitionIndex] = {...this.itemForm}
     },
     deleteItem: function (action, transitionIndex) {
-      const selectedAction = this.store.actions.find(a => a.name === action.name)
+      const selectedAction = this.store.actions.find(a => a.actionName === action.actionName)
       selectedAction.transitions.splice(transitionIndex, 1)
     },
     editItem: function () {
