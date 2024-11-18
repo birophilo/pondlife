@@ -126,7 +126,7 @@
       </div>
       <div v-else>
         <div>action type: {{ action.actionType }}</div>
-        <div>interval (frames): <input :value="itemForm.duration" type="number" disabled /></div>
+        <div>interval (frames): <input :value="action.duration" type="number" disabled /></div>
       </div>
     </div>
 

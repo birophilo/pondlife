@@ -12,6 +12,5 @@ export default class AgentType {
       animationSet: args.animationSet,
       thumbnail: args.thumbnail
     }
-    this.editing = false
   }
 }

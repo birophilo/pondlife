@@ -100,8 +100,6 @@ export class SpriteSheet {
     this.rows = args.rows
     this.numImages = args.numImages
     this.refreshInterval = args.refreshInterval
-
-    this.editing = false
   }
 }
 
@@ -110,10 +108,7 @@ export class AnimationSet {
   constructor(args) {
     this.name = args.name
     this.sheets = args.sheets
-
     this.offset = {x: args.offsetX, y: args.offsetY}
     this.scale = args.scale
-
-    this.editing = false
   }
 }

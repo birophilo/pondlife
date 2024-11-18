@@ -3,8 +3,6 @@ export class Action {
     this.id = args.id  // incrementing PK
     this.agent = agent
     this.args = args
-    // temporary?
-    this.editing = false
 
     this.actionName = args.actionName
     this.actionType = args.actionType
@@ -77,7 +75,9 @@ export class ActionGoTo extends Action {
 
     if (this.agent !== null) {
       if (this.args.destinationType === 'agent') {
-        this.stateName = `goingTo: ${this.destination.name}`
+        this.stateName = `going to: ${this.destination.name}`
+      } else if (this.args.destinationType === 'point') {
+        this.stateName = `going to: (x: ${this.args.target.position.x}, y: ${this.args.target.position.y})`
       }
     }
 
@@ -109,6 +109,7 @@ export class ActionPropertyChanges extends Action {
 
   // eslint-disable-next-line
   start(globals) {
+    console.log
     this.propertyChanges.forEach(change => {
 
       const value = change.propertyValue
@@ -121,9 +122,9 @@ export class ActionPropertyChanges extends Action {
       } else {
 
           if (change.args.agentChoiceMethod === 'all') {
-            change.args.target.forEach(agentItem => agentItem.stateData[change.propertyName] += changeValue)
+            change.target.forEach(agentItem => agentItem.stateData[change.propertyName] += changeValue)
           } else {
-            change.args.target.stateData[change.propertyName] += changeValue
+            change.target.stateData[change.propertyName] += changeValue
           }
 
       }
@@ -158,7 +159,7 @@ export class ActionInterval extends Action {
   }
 
   defaultCompletionCheckPasses() {
-    return this.isComplete === true
+    return this.isComplete
   }
 
   check(stateData, globals) {
@@ -221,21 +222,19 @@ export class ActionTransition {
   constructor(condition, nextAction) {
     this.condition = condition
     this.nextAction = nextAction
-    this.editing = false
   }
 }
 
 
 export class PropertyChange {
-  constructor(agent, propertyName, changeType, propertyValue, args) {
+  constructor(agent, target, propertyName, changeType, propertyValue, args) {
     this.agent = agent
+    this.target = target
     this.propertyName = propertyName
     this.changeType = changeType
     // only handling numbers for now, not strings, boolean etc.
     this.propertyValue = propertyValue
     this.args = args
-
-    this.editing = false
   }
 
   start(globals) {

@@ -106,10 +106,11 @@
 <script>
 import { useStore } from './store/mainStore.js'
 
-import { pointIsInArea } from "./utils.js"
-import AgentType from "./classes/AgentType.js"
-import Agent from "./classes/Agent.js"
-import { AgentMenu, AgentMenuIcon, DeleteButton, AgentPreview } from "./classes/SelectionMenu.js"
+import { pointIsInArea } from './utils.js'
+import AgentType from './classes/AgentType.js'
+import Agent from './classes/Agent.js'
+import { Condition, PresetCondition } from './classes/Condition.js'
+import { AgentMenu, AgentMenuIcon, DeleteButton, AgentPreview } from './classes/SelectionMenu.js'
 
 import CreateAgentTypeForm from './components/CreateAgentTypeForm.vue'
 import MenuAgentType from './components/MenuAgentType.vue'
@@ -124,7 +125,12 @@ import MenuSpriteSheet from './components/MenuSpriteSheet.vue'
 import AnimationSetForm from './components/AnimationSetForm.vue'
 import MenuAnimationSet from './components/MenuAnimationSet.vue'
 
-import { initialAgentInstances, initialAgentTypes, initialAgentMenuButtons } from './initialData.js'
+import {
+  initialAgentInstances,
+  initialAgentTypes,
+  initialAgentMenuButtons,
+  initialConditions
+} from './initialData.js'
 
 
 let canvas;
@@ -263,6 +269,32 @@ export default {
   methods: {
 
     loadAgentsAndFixtures: function () {
+
+      initialConditions.forEach(condition => {
+
+        let newCondition
+
+        if (condition.conditionType === 'property') {
+          newCondition = new Condition(
+            null,
+            condition.name,
+            condition.property,
+            condition.comparison,
+            condition.conditionValue
+          )
+        } else {
+          newCondition = new PresetCondition(
+            null,
+            condition.name,
+            condition.classMethod,
+            condition.comparison,
+            condition.conditionValue
+          )
+        }
+        this.store.conditions.push(newCondition)
+      })
+
+      console.log(this.store.conditions)
 
       // load from localStorage (temporary solution while frontend-only)
       this.store.animationSets = this.animationSetsData !== null ? this.animationSetsData : []

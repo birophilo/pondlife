@@ -111,6 +111,7 @@ export default {
       }
       const propChange = new PropertyChange(
         null,
+        this.itemForm.target,
         this.itemForm.property,
         this.itemForm.change,
         this.itemForm.value,

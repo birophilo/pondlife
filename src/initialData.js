@@ -58,3 +58,20 @@ export const initialAgentMenuButtons = [
   'lemonadeStall',
   'supplyVan'
 ]
+
+export const initialConditions = [
+  {
+    'conditionType': 'preset',
+    'name': 'is complete',
+    'classMethod': 'actionIsComplete',
+    'comparison': 'isIdentical',
+    'conditionValue': true
+  },
+  {
+    'conditionType': 'preset',
+    'name': 'at destination',
+    'classMethod': 'atDestination',
+    'comparison': 'isIdentical',
+    'conditionValue': true
+  }
+]
