@@ -165,7 +165,9 @@ export default class Agent extends Sprite {
     this.updateLabel()
 
     this.draw(c)
-    this.travel()
+    if (this.currentAction?.actionType === 'goTo') {
+      this.travel()
+    }
 
   }
 

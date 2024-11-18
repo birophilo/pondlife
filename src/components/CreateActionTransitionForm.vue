@@ -2,11 +2,13 @@
   <div>
     <div v-if="adding === true && itemForm.action === action">
       <select v-model="itemForm.condition">
+        <option value=null>-- select condition -- </option>
         <option v-for="condition in store.conditions" :value="condition">
           {{ condition.conditionName }}
         </option>
       </select>
       <select v-model="itemForm.nextAction">
+        <option value=null>-- select next action -- </option>
         <option v-for="action in store.actions" :value="action">
           {{ action.actionName }}
         </option>
@@ -36,7 +38,6 @@ export default {
     return {
       adding: false,
       itemForm: {
-        action: null,
         condition: null,
         nextAction: null
       }

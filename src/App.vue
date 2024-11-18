@@ -393,7 +393,7 @@ export default {
                 agent.currentAction.check(agent.stateData, this.store.GlobalSettings)
               } else {
                 agent.currentAction.inProgress = true
-                const emissionsFromAction = agent.currentAction.start({}) // globals = {}?
+                const emissionsFromAction = agent.currentAction.start(this.store.GlobalSettings) // globals = {}?
                 if (emissionsFromAction) {
                   if (emissionsFromAction.agentsToDelete) {
                     emissions.agentsToDelete = emissions.agentsToDelete.concat(emissionsFromAction.agentsToDelete)

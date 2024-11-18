@@ -1,17 +1,19 @@
 <template>
   <div>
     <div v-if="editing === true">
-      <select :value="itemForm.condition">
-        <option v-for="condition in store.conditions" :value="itemForm.condition">
+      <select v-model="itemForm.condition">
+        <option value="">-- select condition --</option>
+        <option v-for="condition in store.conditions" :value="condition">
           {{ condition.conditionName }}
         </option>
       </select>
-      <select :value="itemForm.nextAction">
-        <option v-for="action in store.actions" :value="itemForm.nextAction">
+      <select v-model="itemForm.nextAction">
+        <option value="">-- select next action --</option>
+        <option v-for="action in store.actions" :value="action">
           {{ action.actionName }}
         </option>
       </select>
-      <button @click="saveItem(this.action, this.index)">save</button>
+      <button @click="saveItem(this.action)">save</button>
       <button @click="cancelEdit">cancel</button>
     </div>
     <div v-else>
@@ -27,7 +29,7 @@
       </table>
       <br />
       <button @click="editItem">edit</button>
-      <button @click="deleteItem(this.action, this.index)">delete</button>
+      <button @click="deleteItem(this.action)">delete</button>
     </div>
   </div>
 </template>
@@ -54,21 +56,23 @@ export default {
   },
   methods: {
     populateItemForm: function () {
+      this.editing = false
       this.itemForm = {
-        editing: this.transition.editing,
-        action: this.transition.action,
         condition: this.transition.condition,
         nextAction: this.transition.nextAction
       }
     },
-    saveItem: function (action, transitionIndex) {
+    saveItem: function (action) {
       this.editing = false
       const selectedAction = this.store.actions.find(a => a.actionName === action.actionName)
-      selectedAction.transitions[transitionIndex] = {...this.itemForm}
+      selectedAction.transitions[this.index] = {
+        condition: this.itemForm.condition,
+        nextAction: this.itemForm.nextAction
+      }
     },
-    deleteItem: function (action, transitionIndex) {
+    deleteItem: function (action) {
       const selectedAction = this.store.actions.find(a => a.actionName === action.actionName)
-      selectedAction.transitions.splice(transitionIndex, 1)
+      selectedAction.transitions.splice(this.index, 1)
     },
     editItem: function () {
       this.populateItemForm()
@@ -76,7 +80,6 @@ export default {
     },
     cancelEdit: function () {
       this.editing = false
-      this.itemForm = {}
     }
   }
 }
