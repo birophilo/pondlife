@@ -109,7 +109,6 @@ export class ActionPropertyChanges extends Action {
 
   // eslint-disable-next-line
   start(globals) {
-    console.log
     this.propertyChanges.forEach(change => {
 
       const value = change.propertyValue

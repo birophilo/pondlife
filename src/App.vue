@@ -294,8 +294,6 @@ export default {
         this.store.conditions.push(newCondition)
       })
 
-      console.log(this.store.conditions)
-
       // load from localStorage (temporary solution while frontend-only)
       this.store.animationSets = this.animationSetsData !== null ? this.animationSetsData : []
       this.store.spriteSheets = this.spriteSheetsData !== null ? this.spriteSheetsData : []
@@ -369,7 +367,55 @@ export default {
       // update each agent of each agent type
       agentTypeNames.forEach(agentTypeName => {
         this.store.agentItems[agentTypeName].forEach(agent => {
-          const emissions = agent.update(c, {}, this.store.GlobalSettings)
+          agent.update(c, {}, this.store.GlobalSettings)
+
+          let emissions = {agentsToDelete: [], agentsToSpawn: []}
+
+          if (agent.currentAction) {
+
+            // check for state transitions and set next action if complete
+            if (agent.currentAction.defaultCompletionCheckPasses() === true) {
+              for (let i = 0; i < agent.currentAction.transitions.length; i++) {
+                const result = agent.currentAction.transitions[i].condition.evaluate()
+                if (result === true) {
+                  const nextAction = agent.currentAction.transitions[i].nextAction
+                  this.setDynamicActionTargetAgents(nextAction)
+                  agent.currentAction = nextAction.clone(agent)
+                  break
+                }
+              }
+            }
+
+            // if unstarted Action in action list, start it; if already doing action, check if complete
+            if (agent.currentAction.isComplete === false) {
+              if (agent.currentAction.inProgress === true) {
+                // console.log('checking')
+                agent.currentAction.check(agent.stateData, this.store.GlobalSettings)
+              } else {
+                agent.currentAction.inProgress = true
+                const emissionsFromAction = agent.currentAction.start({}) // globals = {}?
+                if (emissionsFromAction) {
+                  if (emissionsFromAction.agentsToDelete) {
+                    emissions.agentsToDelete = emissions.agentsToDelete.concat(emissionsFromAction.agentsToDelete)
+                  }
+                  if (emissionsFromAction.agentsToSpawn) {
+                    emissions.agentsToSpawn = emissions.agentsToSpawn.concat(emissionsFromAction.agentsToSpawn)
+                  }
+                }
+              }
+            }
+
+            // remove action if complete
+            if (agent.currentAction.defaultCompletionCheckPasses() === true) {
+              agent.currentAction = null
+            }
+          }
+
+          // go into 'idle' mode if no more actions
+          if (agent.currentAction === null && agent.currentStateName !== 'idle') {
+            agent.idle()
+          }
+
 
           if (emissions) {
             if (emissions.agentsToDelete?.length > 0) {
@@ -452,6 +498,7 @@ export default {
         }
       })
     },
+
     setDynamicActionTargetAgents: function (action) {
       /*
       Some target agent/s need to be set dynamically according to criteria that can
@@ -483,11 +530,11 @@ export default {
               const agentTypeName = change.args.agentType
               const agentItems = this.store.agentItems[agentTypeName]
               const targetAgent = this.store.selectedAgent.getClosestAgent(agentItems)
-              change.args = {...change.args, target: targetAgent}
+              change.target = targetAgent
             } else if (change.args.agentChoiceMethod === 'all') {
               const agentTypeName = change.args.agentType
               const agentItems = this.store.agentItems[agentTypeName]
-              change.args = {...change.args, target: agentItems}
+              change.target = agentItems
             }
           }
         })

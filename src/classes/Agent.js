@@ -156,8 +156,6 @@ export default class Agent extends Sprite {
 
   update(c, newData, globals) {
 
-    let emissions = {agentsToDelete: [], agentsToSpawn: []}
-
     super.update(globals)
 
     this.stateData = {...this.stateData, ...newData}
@@ -169,51 +167,6 @@ export default class Agent extends Sprite {
     this.draw(c)
     this.travel()
 
-    if (this.currentAction) {
-
-      // check for state transitions and set next action if complete
-      if (this.currentAction.defaultCompletionCheckPasses() === true) {
-        for (let i = 0; i < this.currentAction.transitions.length; i++) {
-          const result = this.currentAction.transitions[i].condition.evaluate()
-          if (result === true) {
-            this.currentAction = this.currentAction.transitions[i].nextAction.clone(this)
-            console.log(this.currentAction)
-            break
-          }
-        }
-      }
-
-      // if unstarted Action in action list, start it; if already doing action, check if complete
-      if (this.currentAction.isComplete === false) {
-        if (this.currentAction.inProgress === true) {
-          // console.log('checking')
-          this.currentAction.check(this.stateData, globals)
-        } else {
-          this.currentAction.inProgress = true
-          const emissionsFromAction = this.currentAction.start(globals)
-          if (emissionsFromAction) {
-            if (emissionsFromAction.agentsToDelete) {
-              emissions.agentsToDelete = emissions.agentsToDelete.concat(emissionsFromAction.agentsToDelete)
-            }
-            if (emissionsFromAction.agentsToSpawn) {
-              emissions.agentsToSpawn = emissions.agentsToSpawn.concat(emissionsFromAction.agentsToSpawn)
-            }
-          }
-        }
-      }
-
-      // remove action if complete
-      if (this.currentAction.defaultCompletionCheckPasses() === true) {
-        this.currentAction = null
-      }
-    }
-
-    // go into 'idle' mode if no more actions
-    if (this.currentAction === null && this.currentStateName !== 'idle') {
-      this.idle()
-    }
-
-    return emissions
   }
 
   endDay() {
