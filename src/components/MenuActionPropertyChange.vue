@@ -91,7 +91,7 @@ export default {
     saveItem: function () {
       this.editing = false
       const keys = Object.keys(this.itemForm)
-      var action = this.store.actions.find(act => act.name === this.action.actionName)
+      var action = this.store.actions.find(act => act.actionName === this.action.actionName)
       var propChange = action.propertyChanges[this.index]
       keys.forEach(key => {
           if (key === 'args') {
@@ -103,7 +103,7 @@ export default {
       )
     },
     deleteItem: function (actionToDelete) {
-      const action = this.store.actions.find(action => action.name === actionToDelete.name)
+      const action = this.store.actions.find(action => action.actionName === actionToDelete.actionName)
       action.propertyChanges.splice(this.index, 1)
     },
     editItem: function () {

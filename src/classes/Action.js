@@ -40,16 +40,20 @@ export class Action {
     if (this.defaultCompletionCheckPasses()) {
       this.isComplete = true
     }
+    if (this.changesApplied === true) {
+      this.isComplete = true
+    }
   }
 
   clone(agent, args) {
-    return new this.constructor(
+    const action =  new this.constructor(
       agent,
       this.args = {...this.args, ...args},
       this.conditions,
       this.transitions,
       this.propertyChanges
     )
+    return action
   }
 
 }
@@ -97,7 +101,6 @@ export class ActionPropertyChanges extends Action {
     super(agent, args, conditions, transitions)
 
     this.propertyChanges = propertyChanges ? propertyChanges : []
-    this.changesApplied = false  // temporary duplicate 'complete' flag - find different approach
 
     if (this.agent !== null) {
       this.propertyChanges.forEach(change => {
@@ -115,25 +118,20 @@ export class ActionPropertyChanges extends Action {
       const changeValue = change.changeType === 'increase' ? Number(value) : 0 - Number(value)
 
       if (change.args.agentType === 'self') {
-
         this.agent.stateData[change.propertyName] += changeValue
-
       } else {
-
-          if (change.args.agentChoiceMethod === 'all') {
-            change.target.forEach(agentItem => agentItem.stateData[change.propertyName] += changeValue)
-          } else {
-            change.target.stateData[change.propertyName] += changeValue
-          }
-
+        if (change.args.agentChoiceMethod === 'all') {
+          change.target.forEach(agentItem => agentItem.stateData[change.propertyName] += changeValue)
+        } else {
+          change.target.stateData[change.propertyName] += changeValue
+        }
       }
-
     })
     this.changesApplied = true
   }
 
   defaultCompletionCheckPasses() {
-    return this.changesApplied === true
+    return this.isComplete
   }
 }
 

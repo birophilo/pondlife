@@ -349,6 +349,20 @@ export default {
       const fileName = "/img/thumbnails/" + event.target.files[0].name
       agentTypeForm.thumbnail = fileName
     },
+    setNextActionOrNull: function (agent) {
+      // check for state transitions and set next action if complete
+      for (let i = 0; i < agent.currentAction.transitions.length; i++) {
+        const result = agent.currentAction.transitions[i].condition.evaluate()
+        if (result === true) {
+          const nextAction = agent.currentAction.transitions[i].nextAction
+          this.setDynamicActionTargetAgents(nextAction)
+          agent.currentAction = nextAction.clone(agent)
+          return
+        }
+      }
+      // no further action if no transitions
+      agent.currentAction = null
+    },
 
     /* ANIMATE */
 
@@ -372,42 +386,29 @@ export default {
           let emissions = {agentsToDelete: [], agentsToSpawn: []}
 
           if (agent.currentAction) {
-
-            // check for state transitions and set next action if complete
             if (agent.currentAction.defaultCompletionCheckPasses() === true) {
-              for (let i = 0; i < agent.currentAction.transitions.length; i++) {
-                const result = agent.currentAction.transitions[i].condition.evaluate()
-                if (result === true) {
-                  const nextAction = agent.currentAction.transitions[i].nextAction
-                  this.setDynamicActionTargetAgents(nextAction)
-                  agent.currentAction = nextAction.clone(agent)
-                  break
-                }
-              }
+              this.setNextActionOrNull(agent)
             }
 
             // if unstarted Action in action list, start it; if already doing action, check if complete
-            if (agent.currentAction.isComplete === false) {
-              if (agent.currentAction.inProgress === true) {
-                // console.log('checking')
-                agent.currentAction.check(agent.stateData, this.store.GlobalSettings)
-              } else {
-                agent.currentAction.inProgress = true
-                const emissionsFromAction = agent.currentAction.start(this.store.GlobalSettings) // globals = {}?
-                if (emissionsFromAction) {
-                  if (emissionsFromAction.agentsToDelete) {
-                    emissions.agentsToDelete = emissions.agentsToDelete.concat(emissionsFromAction.agentsToDelete)
-                  }
-                  if (emissionsFromAction.agentsToSpawn) {
-                    emissions.agentsToSpawn = emissions.agentsToSpawn.concat(emissionsFromAction.agentsToSpawn)
+            if (agent.currentAction) {
+              if (agent.currentAction.isComplete === false) {
+                if (agent.currentAction.inProgress === true) {
+                  // console.log('checking')
+                  agent.currentAction.check(agent.stateData, this.store.GlobalSettings)
+                } else {
+                  agent.currentAction.inProgress = true
+                  const emissionsFromAction = agent.currentAction.start(this.store.GlobalSettings) // globals = {}?
+                  if (emissionsFromAction) {
+                    if (emissionsFromAction.agentsToDelete) {
+                      emissions.agentsToDelete = emissions.agentsToDelete.concat(emissionsFromAction.agentsToDelete)
+                    }
+                    if (emissionsFromAction.agentsToSpawn) {
+                      emissions.agentsToSpawn = emissions.agentsToSpawn.concat(emissionsFromAction.agentsToSpawn)
+                    }
                   }
                 }
               }
-            }
-
-            // remove action if complete
-            if (agent.currentAction.defaultCompletionCheckPasses() === true) {
-              agent.currentAction = null
             }
           }
 
@@ -415,7 +416,6 @@ export default {
           if (agent.currentAction === null && agent.currentStateName !== 'idle') {
             agent.idle()
           }
-
 
           if (emissions) {
             if (emissions.agentsToDelete?.length > 0) {
