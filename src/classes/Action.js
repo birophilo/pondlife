@@ -13,7 +13,7 @@ export class Action {
     this.conditions = conditions ? conditions : []
     this.transitions = transitions ? transitions : []
 
-    this.actionSpriteSheet = args.spriteSheet
+    this.spriteSheet = args.spriteSheet
 
     if (this.transitions.length > 0 && this.agent !== null) {
       this.transitions.forEach(transition => {
@@ -142,17 +142,15 @@ export class ActionInterval extends Action {
   */
   constructor(agent = null, args, conditions = [], transitions = []) {
     super(agent, args, conditions, transitions)
-
-    this.duration = Number(args.duration)
   }
 
   start(globals) {
-    if (this.actionSpriteSheet) {
-      this.agent.useSpriteSheet(this.actionSpriteSheet)
+    if (this.args.spriteSheet) {
+      this.agent.useSpriteSheet(this.args.spriteSheet)
     }
     const currentFrame = globals.animationFrameId
     this.startFrame = currentFrame
-    this.agent.currentStateName = `waiting for ${this.duration} frames`
+    this.agent.currentStateName = `waiting for ${this.args.duration} frames`
   }
 
   defaultCompletionCheckPasses() {
@@ -161,7 +159,7 @@ export class ActionInterval extends Action {
 
   check(stateData, globals) {
     const currentFrame = globals.animationFrameId
-    const timerExpired = currentFrame - (this.startFrame + this.duration) >= 0
+    const timerExpired = currentFrame - (this.startFrame + this.args.duration) >= 0
 
     if (timerExpired) {
       this.isComplete = true
@@ -235,7 +233,6 @@ export class PropertyChange {
   }
 
   start(globals) {
-    this.agent.useSpriteSheet(this.actionSpriteSheet)
     const currentFrame = globals.animationFrameId
     this.startFrame = currentFrame
     this.agent.currentStateName = `waiting for ${this.duration} frames`

@@ -110,6 +110,7 @@
         v-model="itemForm.duration"
         placeholder="0"
       />
+      <input type="text" v-model="itemForm.spriteSheet" placeholder="sprite sheet" />
     </div>
 
     <div v-if="itemForm.actionType === 'removeAgent'">
@@ -191,8 +192,6 @@
 
     </div>
 
-    <input type="text" v-model="itemForm.spriteSheet" placeholder="sprite sheet" />
-
     <button @click="createAction">save action</button> |
     <button @click="cancelAddAction">cancel</button>
 
@@ -244,7 +243,7 @@ export default {
       forms: {
         goTo: ['destinationType', 'agentType', 'agentChoiceMethod', 'target'],
         change: ['propertyChanges'],
-        interval: ['duration'],
+        interval: ['duration', 'spriteSheet'],
         spawnAgent: ['agentType', 'target'],
         removeAgent: ['agentType', 'agentChoiceMethod', 'target']
       }
@@ -266,7 +265,7 @@ export default {
         args[key] = this.itemForm[key]
       })
 
-      if (this.itemForm.spriteSheet !== null) args.spriteSheet = this.itemForm.spriteSheet
+      if (this.itemForm.spriteSheet !== '') args.spriteSheet = this.itemForm.spriteSheet
 
       if (actionType === 'goTo') {
         if (this.itemForm.destinationType === 'point') {
@@ -300,6 +299,7 @@ export default {
       this.itemForm.actionName = ''
       this.itemForm.actionType = DEFAULT_ACTION_TYPE
       this.itemForm.target = ''
+      this.itemForm.spriteSheet = ''
     },
     cancelAddAction: function () {
       this.store.selectedPoint = {x: null, y: null}

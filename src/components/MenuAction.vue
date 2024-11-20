@@ -123,10 +123,11 @@
     <div v-if="action.actionType === 'interval'">
       <div v-if="editing === true">
         <div>interval (frames): <input v-model="itemForm.duration" type="number" /></div>
+        <div>spritesheet: <input v-model="itemForm.spriteSheet" type="text" /></div>
       </div>
       <div v-else>
         <div>action type: {{ action.actionType }}</div>
-        <div>interval (frames): <input :value="action.duration" type="number" disabled /></div>
+        <div>interval (frames): <input :value="action.args.duration" type="number" disabled /></div>
       </div>
     </div>
 
@@ -202,12 +203,17 @@ export default {
         agentChoiceMethod: this.action.args.agentChoiceMethod,
         propertyChanges: this.action.propertyChanges,
         transitions: this.action.transitions,
-        duration: this.action.duration,
+        duration: this.action.args.duration,
         target: this.action.args.target,
+        spriteSheet: this.action.args.spriteSheet
       }
 
       if (this.action.actionType === 'spawnAgent') {
         this.itemForm.position = this.action.position
+      }
+
+      if (this.action.actionType === 'interval') {
+        this.itemForm.spriteSheet = this.action.args.spriteSheet
       }
     },
     saveItem: function () {
@@ -219,16 +225,19 @@ export default {
       act.actionType = this.itemForm.actionType
       act.propertyChanges = this.itemForm.propertyChanges
       act.transitions = this.itemForm.transitions
-      act.duration = this.itemForm.duration
+      act.args.duration = this.itemForm.duration
       act.args.destinationType = this.itemForm.destinationType
       act.args.agentType = this.itemForm.agentType
       act.args.target = this.itemForm.target
       act.agentChoiceMethod = this.itemForm.agentChoiceMethod
+      act.args.spriteSheet = this.itemForm.spriteSheet
 
       if (this.action.actionType === 'spawnAgent') {
         act.args.position = {x: Number(this.store.selectedPoint.x), y: Number(this.store.selectedPoint.y)}
       } else if (this.action.actionType === 'goTo') {
         act.args.target.position = {x: Number(this.store.selectedPoint.x), y: Number(this.store.selectedPoint.y)}
+      } else if (this.action.actionType === 'interval') {
+        act.args.spriteSheet = this.itemForm.spriteSheet
       }
       this.store.selectedPoint = {x: null, y: null}
     },
