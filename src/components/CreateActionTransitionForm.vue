@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div v-if="adding === true && itemForm.action === action">
+    <div v-if="isAdding === true && itemForm.action === action">
       <select v-model="itemForm.condition">
         <option value=null>-- select condition -- </option>
         <option v-for="condition in store.conditions" :value="condition">
@@ -16,50 +16,50 @@
       <button @click="createTransition(action)">add</button> |
       <button @click="cancelAddTransition(action)">cancel</button>
     </div>
-    <button @click="adding = true; itemForm.action = action">add transition</button>
+    <button @click="isAdding = true; itemForm.action = action">add transition</button>
   </div>
   
 </template>
 
 <script>
+import { ref } from 'vue'
 import { ActionTransition } from '../classes/Action.js'
 import { useStore } from '../store/mainStore.js'
 
 export default {
   name: 'CreateActionTransitionForm',
-  setup: function () {
-    const store = useStore()
-    return { store }
-  },
   props: {
     action: Object
   },
-  data: function () {
-    return {
-      adding: false,
-      itemForm: {
-        condition: null,
-        nextAction: null
-      }
-    }
-  },
-  methods: {
-    createTransition: function (action) {
-      const condition = this.itemForm.condition
-      const nextAction = this.itemForm.nextAction
+  setup: function () {
+    const store = useStore()
+
+    const isAdding = ref(false)
+
+    const itemForm = ref({
+      condition: null,
+      nextAction: null
+    })
+
+    const createTransition = (action) => {
+      const condition = itemForm.value.condition
+      const nextAction = itemForm.value.nextAction
 
       const transition = new ActionTransition(condition, nextAction)
       action.transitions.push(transition)
 
-      this.itemForm.condition = null
-      this.itemForm.nextAction = null
-      this.adding = false
-    },
-    cancelAddTransition: function () {
-      this.itemForm.condition = null
-      this.itemForm.nextAction = null
-      this.adding = false
+      itemForm.value.condition = null
+      itemForm.value.nextAction = null
+      isAdding.value = false
     }
+
+    const cancelAddTransition = () => {
+      itemForm.value.condition = null
+      itemForm.value.nextAction = null
+      isAdding.value = false
+    }
+
+    return { store, isAdding, itemForm, createTransition, cancelAddTransition }
   }
 }
 

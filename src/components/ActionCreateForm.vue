@@ -1,7 +1,7 @@
 <template>
   <!-- ACTIONS CREATE -->
-  <div v-if="adding === false" class="add-container">
-    <button @click="adding = true">new action</button>
+  <div v-if="isAdding === false" class="add-container">
+    <button @click="isAdding = true">new action</button>
   </div>
   <div v-else>
     <input v-model="itemForm.actionName" type="text" placeholder="name" />
@@ -199,6 +199,7 @@
 </template>
 
 <script>
+import { ref } from 'vue'
 import { useStore } from '../store/mainStore.js'
 import {
   ActionGoTo,
@@ -224,53 +225,48 @@ export default {
   name: 'ActionCreateForm',
   setup() {
     const store = useStore()
-    return { store }
-  },
-  data() {
-    return {
-      adding: false,
-      itemForm: {
-        actionType: '',
-        actionName: '',
-        agentType: '',
-        agentChoiceMethod: 'nearest',
-        target: '',
-        duration: 0,
-        destinationType: '',
-        spriteSheet: '',
-        propertyChanges: []
-      },
-      forms: {
-        goTo: ['destinationType', 'agentType', 'agentChoiceMethod', 'target'],
-        change: ['propertyChanges'],
-        interval: ['duration', 'spriteSheet'],
-        spawnAgent: ['agentType', 'target'],
-        removeAgent: ['agentType', 'agentChoiceMethod', 'target']
-      }
-    }
-  },
-  methods: {
-    createAction: function () {
-      const actionType = this.itemForm.actionType
+
+    const isAdding = ref(false)
+
+    const itemForm = ref({
+      actionType: '',
+      actionName: '',
+      agentType: '',
+      agentChoiceMethod: 'nearest',
+      target: '',
+      duration: 0,
+      destinationType: '',
+      spriteSheet: '',
+      propertyChanges: []
+    })
+
+    const forms = ref({
+      goTo: ['destinationType', 'agentType', 'agentChoiceMethod', 'target'],
+      change: ['propertyChanges'],
+      interval: ['duration', 'spriteSheet'],
+      spawnAgent: ['agentType', 'target'],
+      removeAgent: ['agentType', 'agentChoiceMethod', 'target']
+    })
+
+    const createAction = () => {
+      const actionType = itemForm.value.actionType
 
       const args = {
-        id: this.store.actions.length + 1,
-        actionName: this.itemForm.actionName,
+        id: store.actions.length + 1,
+        actionName: itemForm.value.actionName,
         actionType: actionType,
       }
 
       // use config arguments specific to each action type
-      const formArgs = this.forms[actionType]
-      formArgs.forEach(key => {
-        args[key] = this.itemForm[key]
-      })
+      const formArgs = forms[actionType]
+      formArgs.forEach(key => {args[key] = itemForm.value[key]})
 
-      if (this.itemForm.spriteSheet !== '') args.spriteSheet = this.itemForm.spriteSheet
+      if (itemForm.value.spriteSheet !== '') args.spriteSheet = itemForm.value.spriteSheet
 
       if (actionType === 'goTo') {
-        if (this.itemForm.destinationType === 'point') {
-          const pointX = Number(this.store.selectedPoint.x)
-          const pointY = Number(this.store.selectedPoint.y)
+        if (itemForm.value.destinationType === 'point') {
+          const pointX = Number(store.selectedPoint.x)
+          const pointY = Number(store.selectedPoint.y)
           args.target = {
             name: `point: {x: ${pointX}, y: ${pointY}}`,
             width: 10,
@@ -278,33 +274,44 @@ export default {
             position: {x: pointX, y: pointY}
           }
         }
-        if (this.itemForm.target === 'home') args.destination = this.store.selectedAgent.home
+        if (itemForm.value.target === 'home') args.destination = store.selectedAgent.home
       }
 
       if (actionType === 'spawnAgent') {
-        const pointX = Number(this.store.selectedPoint.x)
-        const pointY = Number(this.store.selectedPoint.y)
+        const pointX = Number(store.selectedPoint.x)
+        const pointY = Number(store.selectedPoint.y)
         args.position = {x: pointX, y: pointY}
       }
 
       let actionClass = ACTION_TYPES[actionType]
       let newAction = new actionClass(null, args)
-      this.store.actions.push(newAction)
+      store.actions.push(newAction)
 
-      this.resetForm()
+      resetForm()
+    }
 
-    },
-    resetForm: function () {
-      this.adding = false
-      this.itemForm.actionName = ''
-      this.itemForm.actionType = DEFAULT_ACTION_TYPE
-      this.itemForm.target = ''
-      this.itemForm.spriteSheet = ''
-    },
-    cancelAddAction: function () {
-      this.store.selectedPoint = {x: null, y: null}
-      this.resetForm()
-    },
+    const resetForm = () => {
+      isAdding.value = false
+      itemForm.value.actionName = ''
+      itemForm.value.actionType = DEFAULT_ACTION_TYPE
+      itemForm.value.target = ''
+      itemForm.value.spriteSheet = ''
+    }
+
+    const cancelAddAction = () => {
+      store.selectedPoint = {x: null, y: null}
+      resetForm()
+    }
+
+    return {
+      store,
+      isAdding,
+      itemForm,
+      forms,
+      createAction,
+      resetForm,
+      cancelAddAction
+    }
   }
 }
 

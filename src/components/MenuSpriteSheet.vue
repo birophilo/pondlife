@@ -1,5 +1,5 @@
 <template>
-  <div v-if="editing === true">
+  <div v-if="isEditing === true">
     name: <input v-model="itemForm.name" type="text" placeholder="name" /><br />
     src: {{ itemForm.src }}<br />
     <input type="file" placeholder="src" @change="updateSpritesheetFileInput($event)" /><br />
@@ -21,61 +21,74 @@
 </template>
 
 <script>
+import { ref } from 'vue'
 import { useStore } from '../store/mainStore.js'
 
 
 export default {
   name: 'MenuSpriteSheet',
-  setup() {
-    const store = useStore()
-    return { store }
-  },
-  data: function () {
-    return {
-      editing: false,
-      itemForm: {}
-    }
-  },
   props: { 
     spriteSheet: Object,
     i: Number
   },
-  methods: {
-    populateItemForm: function () {
-      this.itemForm = {
-        name: this.spriteSheet.name,
-        src: this.spriteSheet.src,
-        columns: Number(this.spriteSheet.columns),
-        rows: Number(this.spriteSheet.rows),
-        numImages: Number(this.spriteSheet.numImages),
-        refreshInterval: Number(this.spriteSheet.refreshInterval)
+  setup(props) {
+    const store = useStore()
+
+    const isEditing = ref(false)
+    const itemForm = ref({})
+
+    const populateItemForm = () => {
+      itemForm.value = {
+        name: props.spriteSheet.name,
+        src: props.spriteSheet.src,
+        columns: Number(props.spriteSheet.columns),
+        rows: Number(props.spriteSheet.rows),
+        numImages: Number(props.spriteSheet.numImages),
+        refreshInterval: Number(props.spriteSheet.refreshInterval)
       }
-    },
-    saveItem: function () {
-      this.editing = false
-      const keys = Object.keys(this.spriteSheet)
-      keys.forEach(key => this.store.spriteSheets[this.i][key] = this.itemForm[key])
-      localStorage.setItem('pondlifeSpriteSheets', JSON.stringify(this.store.spriteSheets))
-    },
-    deleteItem: function () {
-      this.store.spriteSheets.splice(this.i, 1)
+    }
+
+    const saveItem = () => {
+      isEditing.value = false
+      const keys = Object.keys(props.spriteSheet)
+      keys.forEach(key => store.spriteSheets[props.i][key] = itemForm[key])
+      localStorage.setItem('pondlifeSpriteSheets', JSON.stringify(store.spriteSheets))
+    }
+
+    const deleteItem = () => {
+      store.spriteSheets.splice(props.i, 1)
       // 'save' to avoid inputting all after each page refresh
-      localStorage.setItem('pondlifeSpriteSheets', JSON.stringify(this.store.spriteSheets))
-    },
-    updateSpritesheetFileInput: function (event) {
+      localStorage.setItem('pondlifeSpriteSheets', JSON.stringify(store.spriteSheets))
+    }
+
+    const updateSpritesheetFileInput = (event) => {
       const fileName = "/img/sprites/" + event.target.files[0].name
-      this.itemForm.src = fileName
-      this.store.spriteSheets[this.i].src = fileName
-      localStorage.setItem('pondlifeSpriteSheets', JSON.stringify(this.store.spriteSheets))
-      localStorage.setItem('pondlifeSpriteMaps', JSON.stringify(this.store.animationSets))
-    },
-    editItem: function () {
-      this.populateItemForm()
-      this.editing = true
-    },
-    cancelEdit: function () {
-      this.editing = false
-      this.itemForm = {}
+      itemForm.value.src = fileName
+      store.spriteSheets[this.i].src = fileName
+      localStorage.setItem('pondlifeSpriteSheets', JSON.stringify(store.spriteSheets))
+      localStorage.setItem('pondlifeSpriteMaps', JSON.stringify(store.animationSets))
+    }
+
+    const editItem = () => {
+      populateItemForm()
+      isEditing.value = true
+    }
+
+    const cancelEdit = () => {
+      isEditing.value = false
+      itemForm.value = {}
+    }
+
+    return {
+      store,
+      isEditing,
+      itemForm,
+      populateItemForm,
+      saveItem,
+      deleteItem,
+      updateSpritesheetFileInput,
+      editItem,
+      cancelEdit
     }
   }
 }

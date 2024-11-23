@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- (ACTION) PROPERTY CHANGE ITEM CREATE FORM -->
-    <div v-if="adding === true">
+    <div v-if="isAdding === true">
       <select v-model="itemForm.agentType">
         <option value="">-- agent --</option>
         <option value="self">self</option>
@@ -66,61 +66,60 @@
         placeholder="value"
       />
       <button @click="createItem">save</button>
-      <button @click="adding = false">cancel</button>
+      <button @click="isAdding = false">cancel</button>
     </div>
     <div v-else>
-      <button @click="adding = true">new property change</button>
+      <button @click="isAdding = true">new property change</button>
     </div>
   </div>
 </template>
 
 
 <script>
+import { ref } from 'vue'
 import { PropertyChange } from '../classes/Action.js'
 import { useStore } from '../store/mainStore.js'
 
 export default {
   name: 'ActionPropertyChangeForm',
-  setup: function () {
-    const store = useStore()
-    return { store }
-  },
   props: {
     action: Object
   },
-  data: function () {
-    return {
-      adding: false,
-      itemForm: {
-        agent: '',
-        agentType: '',
-        agentChoiceMethod: 'nearest',
-        target: '',
-        property: '',
-        change: '',
-        value: ''
-      }
-    }
-  },
-  methods: {
-    createItem: function () {
+  setup: function () {
+    const store = useStore()
+
+    const isAdding = ref(false)
+
+    const itemForm = ref({
+      agent: '',
+      agentType: '',
+      agentChoiceMethod: 'nearest',
+      target: '',
+      property: '',
+      change: '',
+      value: ''
+    })
+
+    const createItem = () => {
       const args = {
-        agentType: this.itemForm.agentType,
-        agentChoiceMethod: this.itemForm.agentChoiceMethod,
-        target: this.itemForm.target
+        agentType: itemForm.value.agentType,
+        agentChoiceMethod: itemForm.value.agentChoiceMethod,
+        target: itemForm.value.target
       }
       const propChange = new PropertyChange(
         null,
-        this.itemForm.target,
-        this.itemForm.property,
-        this.itemForm.change,
-        this.itemForm.value,
+        itemForm.value.target,
+        itemForm.value.property,
+        itemForm.value.change,
+        itemForm.value.value,
         args
       )
-      const act = this.store.actions.find(a => a.actionName === this.action.actionName)
+      const act = store.actions.find(a => a.actionName === this.action.actionName)
       act.propertyChanges.push(propChange)
-      this.adding = false
+      isAdding.value = false
     }
+
+    return { store, isAdding, itemForm, createItem }
   }
 }
 

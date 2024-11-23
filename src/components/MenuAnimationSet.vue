@@ -1,5 +1,5 @@
 <template>
-  <div v-if="editing === true">
+  <div v-if="isEditing === true">
     name: <input v-model="itemForm.name" type="text" placeholder="name" /><br />
     scale: <input v-model="itemForm.scale" type="number" placeholder="scale" /><br />
     offset X: <input v-model="itemForm.offset.x" type="number" placeholder="offset X" /><br />
@@ -32,73 +32,65 @@
 </template>
 
 <script>
+import { ref } from 'vue'
 import { useStore } from '../store/mainStore.js'
 
 
 export default {
   name: 'MenuAnimationSet',
-  setup() {
+  setup(props) {
     const store = useStore()
-    return { store }
+
+    const isEditing = ref(false)
+    const itemForm = ref({})
+
+    const saveItem = () => {
+      isEditing.value = false
+      localStorage.setItem('pondlifeSpriteMaps', JSON.stringify(store.animationSets))
+    }
+
+    const deleteItem = (index) => {
+      store.animationSets.splice(index, 1)
+      // 'save' to avoid inputting each page refresh
+      localStorage.setItem('pondlifeSpriteMaps', JSON.stringify(store.animationSets))
+    }
+
+    const editItem = () => {
+      populateItemForm()
+      isEditing.value = true
+    }
+
+    const cancelEdit = () => {
+      isEditing.value = false
+      itemForm.value = {}
+    }
+
+    const populateItemForm = () => {
+      itemForm.value = {
+        name: props.animationSet.name,
+        scale: props.animationSet.scale,
+        offset: {
+          x: props.animationSet.offsetX,
+          y: props.animationSet.offsetY,
+        },
+        sheets: props.animationSet.sheets,
+      }
+    }
+
+    return {
+      store,
+      isEditing,
+      itemForm,
+      saveItem,
+      deleteItem,
+      editItem,
+      cancelEdit,
+      populateItemForm
+    }
   },
-  props: { 
+  props: {
     animationSet: Object,
     i: Number
-  },
-  data: function () {
-    return {
-      defaultItemForm: {
-        name: '',
-        scale: 0,
-        offset: {
-          x: 0,
-          y: 0
-        },
-        sheets: {
-          idle: '',
-          up: '',
-          upRight: '',
-          right: '',
-          downRight: '',
-          down: '',
-          downLeft: '',
-          left: '',
-          upLeft: ''
-        }
-      },
-      editing: false,
-      itemForm: {}
-    }
-  },
-  methods: {
-    populateItemForm: function () {
-      this.itemForm = {
-        name: this.animationSet.name,
-        scale: this.animationSet.scale,
-        offset: {
-          x: this.animationSet.offsetX,
-          y: this.animationSet.offsetY,
-        },
-        sheets: this.animationSet.sheets,
-      }
-    },
-    saveItem: function () {
-      this.editing = false
-      localStorage.setItem('pondlifeSpriteMaps', JSON.stringify(this.store.animationSets))
-    },
-    deleteItem: function (index) {
-      this.store.animationSets.splice(index, 1)
-      // 'save' to avoid inputting each page refresh
-      localStorage.setItem('pondlifeSpriteMaps', JSON.stringify(this.store.animationSets))
-    },
-    editItem: function () {
-      this.populateItemForm()
-      this.editing = true
-    },
-    cancelEdit: function () {
-      this.editing = false
-      this.itemForm = {}
-    }
   }
 }
 </script>

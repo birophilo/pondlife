@@ -1,7 +1,7 @@
 <template>
   <div>
     <div v-if="itemForm.name !== 'world'">
-      <div v-if="editing === true">
+      <div v-if="isEditing === true">
         name: <input v-model="itemForm.name" type="text" placeholder="name" /><br />
         width: <input v-model="itemForm.width" type="number" placeholder="width" /><br />
         height: <input v-model="itemForm.height" type="number" placeholder="height" /><br />
@@ -20,75 +20,100 @@
       <div v-else>
         {{ agentType.name }}
         <button @click="editItem">edit</button>
-        <button @click="deleteItem(agentType.name)">delete</button>
+        <button @click="deleteItem">delete</button>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import { ref } from 'vue'
 import { useStore } from '../store/mainStore.js'
 
 export default {
   name: 'MenuAgentType',
-  setup: function () {
-    const store = useStore()
-    return { store }
-  },
   props: {
     agentType: Object
   },
-  data: function () {
-    return {
-      editing: false,
-      itemForm: {}
+  setup: function (props) {
+    const store = useStore()
+
+    const isEditing = ref(false)
+
+    const itemFormData = {
+      name: props.agentType.name,
+      height: props.agentType.config.height,
+      width: props.agentType.config.width,
+      animationSet: props.agentType.config.animationSet,
+      thumbnail: props.agentType.config.thumbnail,
+      nominalSpeed: props.agentType.config.nominalSpeed,
+      positionX: 100,
+      positionY: 100
     }
-  },
-  methods: {
-    populateItemForm: function () {
-      this.itemForm = {
-        name: this.agentType.name,
-        height: this.agentType.config.height,
-        width: this.agentType.config.width,
-        animationSet: this.agentType.config.animationSet,
-        thumbnail: this.agentType.config.thumbnail,
-        nominalSpeed: this.agentType.config.nominalSpeed,
+
+    const itemForm = ref(itemFormData)
+
+    const deleteItem = () => {
+      delete store.agentTypes[props.agentType.name]
+      delete store.agentItems[props.agentType.name]
+    }
+
+    const editItem = () => {
+      populateItemForm()
+      isEditing.value = true
+    }
+
+    const cancelEdit = () => {
+      isEditing.value = false
+      itemForm.value = {}
+    }
+
+    const populateItemForm = () => {
+      itemForm.value = {
+        name: props.agentType.name,
+        height: props.agentType.config.height,
+        width: props.agentType.config.width,
+        animationSet: props.agentType.config.animationSet,
+        thumbnail: props.agentType.config.thumbnail,
+        nominalSpeed: props.agentType.config.nominalSpeed,
         positionX: 100,
         positionY: 100
       }
-    },
-    saveItem: function (agentTypeName) {
-      this.editing = false
+    }
+
+    const saveItem = () => {
+      isEditing.value = false
       const data = {
-        editing: this.itemForm.editing,
-        name: this.itemForm.name,
+        isEditing: itemForm.value.isEditing,
+        name: itemForm.value.name,
         config: {
-          height: this.itemForm.height,
-          width: this.itemForm.width,
-          animationSet: this.itemForm.animationSet,
-          thumbnail: this.itemForm.thumbnail,
-          nominalSpeed: this.itemForm.nominalSpeed,
+          height: itemForm.value.height,
+          width: itemForm.value.width,
+          animationSet: itemForm.value.animationSet,
+          thumbnail: itemForm.value.thumbnail,
+          nominalSpeed: itemForm.value.nominalSpeed,
         },
-        positionX: this.itemForm.positionX,
-        positionY: this.itemForm.positionY
+        positionX: itemForm.value.positionX,
+        positionY: itemForm.value.positionY
       }
-      this.store.agentTypes[agentTypeName] = data
-    },
-    updateThumbnailFileInput: function (event) {
+      store.agentTypes[props.agentType.name] = data
+    }
+
+    const updateThumbnailFileInput = (event) => {
       const fileName = "/img/thumbnails/" + event.target.files[0].name
-      this.itemForm.thumbnail = fileName
-    },
-    deleteItem: function (agentType) {
-      delete this.store.agentTypes[agentType]
-      delete this.store.agentItems[agentType]
-    },
-    editItem: function () {
-      this.populateItemForm()
-      this.editing = true
-    },
-    cancelEdit: function () {
-      this.editing = false
-      this.itemForm = {}
+      itemForm.value.thumbnail = fileName
+    }
+
+    return {
+      store,
+      isEditing,
+      itemForm,
+      editItem,
+      saveItem,
+      deleteItem,
+      cancelEdit,
+      populateItemForm,
+      updateThumbnailFileInput
     }
   }
 }

@@ -166,14 +166,6 @@ export default {
       animationSetsData: JSON.parse(localStorage.getItem('pondlifeSpriteMaps')),
       spriteSheetsData: JSON.parse(localStorage.getItem('pondlifeSpriteSheets')),
 
-      propertiesSection: {
-        items: [{name: 'money', value: 200, editing: false}],
-        adding: {
-          status: false,
-          newPropertyName: '',
-          newPropertyValue: 0
-        }
-      }
     }
   },
 

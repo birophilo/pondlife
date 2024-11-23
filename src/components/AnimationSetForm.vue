@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div v-if="adding === true">
+    <div v-if="isAdding === true">
       name: <input v-model="itemForm.name" type="text" placeholder="name" /><br />
       scale: <input v-model="itemForm.scale" type="number" placeholder="scale" /><br />
       offset X: <input v-model="itemForm.offset.x" type="number" placeholder="offset X" /><br />
@@ -22,12 +22,13 @@
       <button @click="createItem">create sprite map</button>
     </div>
     <div v-else>
-      <button @click="adding = true">new sprite map</button>
+      <button @click="isAdding = true">new sprite map</button>
     </div>
   </div>
 </template>
 
 <script>
+import { ref } from 'vue'
 import { useStore } from '../store/mainStore.js'
 import { AnimationSet } from "../classes/Sprite.js"
 
@@ -35,12 +36,47 @@ export default {
   name: 'AnimationSetForm',
   setup: function () {
     const store = useStore()
-    return { store }
-  },
-  data: function () {
-    return {
-      adding: false,
-      itemForm: {
+
+    const isAdding = ref(false)
+
+    const itemForm = ref({
+      name: '',
+      scale: 1,
+      offset: {
+        x: 0,
+        y: 0
+      },
+      sheets: {
+        idle: '',
+        up: '',
+        upRight: '',
+        right: '',
+        downRight: '',
+        down: '',
+        downLeft: '',
+        left: '',
+        upLeft: ''
+      }
+    })
+
+    const createItem = () => {
+      const data = {
+        name: itemForm.value.name,
+        scale: Number(itemForm.value.scale),
+        offset: {
+          x: Number(itemForm.value.offset.x),
+          y: Number(itemForm.value.offset.y)
+        },
+        sheets: itemForm.value.sheets
+      }
+      store.animationSets.push(new AnimationSet(data))
+
+      // 'save' to avoid inputting all after each page refresh
+      localStorage.setItem('pondlifeSpriteMaps', JSON.stringify(store.animationSets))
+
+      isAdding.value = false
+
+      itemForm.value = {
         name: '',
         scale: 1,
         offset: {
@@ -60,44 +96,8 @@ export default {
         }
       }
     }
-  },
-  methods: {
-    createItem: function () {
-      const data = {
-        name: this.itemForm.name,
-        scale: Number(this.itemForm.scale),
-        offset: {
-          x: Number(this.itemForm.offset.x),
-          y: Number(this.itemForm.offset.y)
-        },
-        sheets: this.itemForm.sheets
-      }
-      this.store.animationSets.push(new AnimationSet(data))
 
-      // 'save' to avoid inputting all after each page refresh
-      localStorage.setItem('pondlifeSpriteMaps', JSON.stringify(this.store.animationSets))
-
-      this.adding = false
-      this.itemForm = {
-        name: '',
-        scale: 1,
-        offset: {
-          x: 0,
-          y: 0
-        },
-        sheets: {
-          idle: '',
-          up: '',
-          upRight: '',
-          right: '',
-          downRight: '',
-          down: '',
-          downLeft: '',
-          left: '',
-          upLeft: ''
-        }
-      }
-    },
+    return { store, isAdding, itemForm, createItem }
   }
 }
 </script>

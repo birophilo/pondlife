@@ -12,53 +12,65 @@
         <input type="text" placeholder="name" :value="property" disabled />:
         <input type="text" placeholder="value" :value="agentProperties[property]" disabled /> -
         <button @click="editItem(property)">edit</button> |
-        <button @click="deleteProperty(item.name)">delete</button>
+        <button @click="deleteProperty(property)">delete</button>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import { ref } from 'vue'
 import { useStore } from '../store/mainStore.js'
 
 export default {
-  setup: function () {
-    const store = useStore()
-    return { store }
-  },
   props: {
     agentProperties: Object
   },
-  data: function () {
-    return {
-      propertiesForm: {},
-      editFlags: {}
+  setup: function (props) {
+    const store = useStore()
+
+    const propertiesForm = ref({})
+    const editFlags = ref({})
+
+    const setProperty = (property) => {
+      store.selectedAgent.stateData[property] = propertiesForm.value[property]
+      editFlags.value[property] = false
     }
-  },
-  methods: {
-    populatePropertiesForm: function () {
-      this.propertiesForm = {...this.agentProperties}
-      this.propertyKeys = Object.keys(this.propertiesForm)
-      this.propertyKeys.forEach(key => this.editFlags[key] = false)
-    },
-    deleteProperty: function (property) {
-      delete this.store.selectedAgent.stateData[property]
-    },
-    setProperty: function (property) {
-      this.store.selectedAgent.stateData[property] = this.propertiesForm[property]
-      this.editFlags[property] = false
-    },
-    cancelSetProperty: function (property) {
-       this.propertiesForm[property] = this.store.selectedAgent.stateData[property]
-       this.editFlags[property] = false
-    },
-    editItem: function (property) {
-      this.populatePropertiesForm()
-      this.editFlags[property] = true
-    },
-    cancelEdit: function (property) {
-      this.editFlags[property] = false
-      this.itemForm = {}
+
+    const cancelSetProperty = (property) => {
+       propertiesForm.value[property] = store.selectedAgent.stateData[property]
+       editFlags.value[property] = false
+    }
+
+    const editItem = (property) => {
+      populatePropertiesForm()
+      editFlags.value[property] = true
+    }
+
+    const cancelEdit = (property) => {
+      editFlags.value[property] = false
+      propertiesForm.value = {}
+    }
+
+    const deleteProperty = (property) => {
+      delete store.selectedAgent.stateData[property]
+    }
+
+    const populatePropertiesForm = () => {
+      propertiesForm.value = {...props.agentProperties}
+      const propertyKeys = Object.keys(propertiesForm)
+      propertyKeys.forEach(key => editFlags.value[key] = false)
+    }
+
+    return {
+      store,
+      propertiesForm,
+      editFlags,
+      setProperty,
+      cancelSetProperty,
+      editItem,
+      cancelEdit,
+      deleteProperty
     }
   }
 }

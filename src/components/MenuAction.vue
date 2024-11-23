@@ -2,14 +2,14 @@
   <div>
     <div class="created-item-header">
       <div class="menu-action-name">
-        <div v-if="editing === true">
+        <div v-if="isEditing === true">
           <input v-model="itemForm.actionName" type="text" />
         </div>
         <div v-else>
           {{ action.actionName }}
         </div>
       </div>
-      <div v-if="editing === true">
+      <div v-if="isEditing === true">
         <button @click="saveItem">save</button>
         <button @click="cancelEdit">cancel</button>
       </div>
@@ -23,7 +23,7 @@
 
     <!-- GOTO ACTION EDIT FORM -->
     <div v-if="action.actionType === 'goTo'">
-      <div v-if="editing === true">
+      <div v-if="isEditing === true">
         <!-- removed until can cleanly change action type -->
         <!-- <select v-model="action.actionType">
           <option value="goTo">go to</option>
@@ -121,7 +121,7 @@
 
     <!-- INTERVAL EDIT FORM -->
     <div v-if="action.actionType === 'interval'">
-      <div v-if="editing === true">
+      <div v-if="isEditing === true">
         <div>interval (frames): <input v-model="itemForm.duration" type="number" /></div>
         <div>spritesheet: <input v-model="itemForm.spriteSheet" type="text" /></div>
       </div>
@@ -166,6 +166,7 @@
 </template>
 
 <script>
+import { ref } from 'vue'
 import { useStore } from '../store/mainStore.js'
 import ActionPropertyChangeForm from './ActionPropertyChangeForm.vue'
 import MenuActionPropertyChange from './MenuActionPropertyChange.vue'
@@ -174,10 +175,6 @@ import CreateActionTransitionForm from './CreateActionTransitionForm.vue'
 
 export default {
   name: 'MenuAction',
-  setup: function () {
-    const store = useStore()
-    return { store }
-  },
   components: {    
     ActionPropertyChangeForm,
     MenuActionPropertyChange,
@@ -187,71 +184,85 @@ export default {
   props: {
     action: Object
   },
-  data: function () {
-    return {
-      editing: false,
-      itemForm: {}
+  setup: function (props) {
+    const store = useStore()
+
+    const isEditing = ref(false)
+    const itemForm = ref({})
+
+    const populateItemForm = () => {
+      itemForm.value = {
+        actionName: props.action.actionName,
+        actionType: props.action.actionType,
+        destinationType: props.action.args.destinationType,
+        agentType: props.action.args.agentType,
+        agentChoiceMethod: props.action.args.agentChoiceMethod,
+        propertyChanges: props.action.propertyChanges,
+        transitions: props.action.transitions,
+        duration: props.action.args.duration,
+        target: props.action.args.target,
+        spriteSheet: props.action.args.spriteSheet
+      }
+
+      if (props.action.actionType === 'spawnAgent') {
+        itemForm.value.position = props.action.position
+      }
+
+      if (props.action.actionType === 'interval') {
+        itemForm.value.spriteSheet = props.action.args.spriteSheet
+      }
     }
-  },
-  methods: {
-    populateItemForm: function () {
-      this.itemForm = {
-        actionName: this.action.actionName,
-        actionType: this.action.actionType,
-        destinationType: this.action.args.destinationType,
-        agentType: this.action.args.agentType,
-        agentChoiceMethod: this.action.args.agentChoiceMethod,
-        propertyChanges: this.action.propertyChanges,
-        transitions: this.action.transitions,
-        duration: this.action.args.duration,
-        target: this.action.args.target,
-        spriteSheet: this.action.args.spriteSheet
+
+    const saveItem = () => {
+      isEditing.value = false
+
+      const act = store.actions.find(a => a.actionName === props.action.actionName)
+
+      act.actionName = itemForm.value.actionName
+      act.actionType = itemForm.value.actionType
+      act.propertyChanges = itemForm.value.propertyChanges
+      act.transitions = itemForm.value.transitions
+      act.args.duration = itemForm.value.duration
+      act.args.destinationType = itemForm.value.destinationType
+      act.args.agentType = itemForm.value.agentType
+      act.args.target = itemForm.value.target
+      act.agentChoiceMethod = itemForm.value.agentChoiceMethod
+      act.args.spriteSheet = itemForm.value.spriteSheet
+
+      if (props.action.actionType === 'spawnAgent') {
+        act.args.position = {x: Number(store.selectedPoint.x), y: Number(store.selectedPoint.y)}
+      } else if (props.action.actionType === 'goTo') {
+        act.args.target.position = {x: Number(store.selectedPoint.x), y: Number(store.selectedPoint.y)}
+      } else if (props.action.actionType === 'interval') {
+        act.args.spriteSheet = itemForm.value.spriteSheet
       }
+      store.selectedPoint = {x: null, y: null}
+    }
 
-      if (this.action.actionType === 'spawnAgent') {
-        this.itemForm.position = this.action.position
-      }
+    const deleteItem = (itemName) => {
+      store.actions = store.actions.filter(item => item.actionName !== itemName)
+    }
 
-      if (this.action.actionType === 'interval') {
-        this.itemForm.spriteSheet = this.action.args.spriteSheet
-      }
-    },
-    saveItem: function () {
-      this.editing = false
+    const editItem = () => {
+      populateItemForm()
+      isEditing.value = true
+    }
 
-      const act = this.store.actions.find(a => a.actionName === this.action.actionName)
+    const cancelEdit = () => {
+      store.selectedPoint = {x: null, y: null}
+      isEditing.value = false
+      itemForm.value = {}
+    }
 
-      act.actionName = this.itemForm.actionName
-      act.actionType = this.itemForm.actionType
-      act.propertyChanges = this.itemForm.propertyChanges
-      act.transitions = this.itemForm.transitions
-      act.args.duration = this.itemForm.duration
-      act.args.destinationType = this.itemForm.destinationType
-      act.args.agentType = this.itemForm.agentType
-      act.args.target = this.itemForm.target
-      act.agentChoiceMethod = this.itemForm.agentChoiceMethod
-      act.args.spriteSheet = this.itemForm.spriteSheet
-
-      if (this.action.actionType === 'spawnAgent') {
-        act.args.position = {x: Number(this.store.selectedPoint.x), y: Number(this.store.selectedPoint.y)}
-      } else if (this.action.actionType === 'goTo') {
-        act.args.target.position = {x: Number(this.store.selectedPoint.x), y: Number(this.store.selectedPoint.y)}
-      } else if (this.action.actionType === 'interval') {
-        act.args.spriteSheet = this.itemForm.spriteSheet
-      }
-      this.store.selectedPoint = {x: null, y: null}
-    },
-    deleteItem: function (itemName) {
-      this.store.actions = this.store.actions.filter(item => item.actionName !== itemName)
-    },
-    editItem: function () {
-      this.populateItemForm()
-      this.editing = true
-    },
-    cancelEdit: function () {
-      this.store.selectedPoint = {x: null, y: null}
-      this.editing = false
-      this.itemForm = {}
+    return {
+      store,
+      isEditing,
+      itemForm,
+      populateItemForm,
+      saveItem,
+      deleteItem,
+      editItem,
+      cancelEdit
     }
   },
   computed : {
@@ -267,9 +278,6 @@ export default {
     positionPointY: function () {
       return this.store.selectedPoint.y !== null ? this.store.selectedPoint.y : this.itemForm.position.y
     }
-    // computedTarget: function () {
-    //   return this.store.selectedTargetAgent !== null ? this.store.selectedTargetAgent : this.itemForm.target
-    // }
   }
 }
 

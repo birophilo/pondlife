@@ -1,8 +1,6 @@
 <template>
-  <!-- CREATE CONDITION -->
-
-  <div v-if="adding === false" class="add-container">
-    <button @click="adding = true">new condition</button>
+  <div v-if="isAdding === false" class="add-container">
+    <button @click="isAdding = true">new condition</button>
   </div>
   <div v-else>
     <input v-model="itemForm.name" type="text" placeholder="name" />
@@ -62,6 +60,7 @@
 </template>
 
 <script>
+import { ref } from 'vue'
 import { Condition, PresetCondition } from '../classes/Condition.js'
 import { useStore } from '../store/mainStore.js'
 
@@ -73,34 +72,30 @@ export default {
   name: 'ConditionCreateForm',
   setup: function () {
     const store = useStore()
-    return { store }
-  },
-  data: function () {
-    return {
-      adding: false,
-      itemForm: {
-        type: 'property',
-        name: '',
-        forms: {
-          property: {
-            property: '',
-            comparison: '',
-            value: 0
-          },
-          preset: {
-            preset: '',
-            comparison: '',
-            value: true
-          }
+
+    const isAdding = ref(false)
+
+    const itemForm = ref({
+      type: 'property',
+      name: '',
+      forms: {
+        property: {
+          property: '',
+          comparison: '',
+          value: 0
+        },
+        preset: {
+          preset: '',
+          comparison: '',
+          value: true
         }
       }
-    }
-  },
-  methods: {
-    createCondition: function () {
-      const conditionType = this.itemForm.type
-      const conditionName = this.itemForm.name
-      const data = this.itemForm.forms[conditionType]
+    })
+
+    const createCondition = () => {
+      const conditionType = itemForm.value.type
+      const conditionName = itemForm.value.name
+      const data = itemForm.value.forms[conditionType]
 
       var newCondition
 
@@ -112,12 +107,12 @@ export default {
         const conditionValue = data.value
 
         newCondition = new Condition(
-          this.store.selectedAgent,
+          store.selectedAgent,
           conditionName,
           conditionProperty,
           conditionComparison,
           Number(conditionValue),
-          this.store.conditions.length + 1  // id
+          store.conditions.length + 1  // id
         )
       } else {
 
@@ -127,33 +122,44 @@ export default {
         const conditionValue = data.value
 
         newCondition = new PresetCondition(
-          this.store.selectedAgent,
+          store.selectedAgent,
           conditionName,
           conditionPreset,
           conditionComparison,
           conditionValue,
-          this.store.conditions.length + 1  // id
+          store.conditions.length + 1  // id
         )
       }
-      this.store.conditions.push(newCondition)
-      this.resetConditionForms()
-    },
-    resetConditionForms: function () {
+      store.conditions.push(newCondition)
+      resetConditionForms()
+    }
+
+    const resetConditionForms = () => {
       // reset common form data/settings
-      this.itemForm.name = ''
-      this.itemForm.type = DEFAULT_CONDITION_TYPE
-      this.adding = false
+      itemForm.value.name = ''
+      itemForm.value.type = DEFAULT_CONDITION_TYPE
+      isAdding.value = false
 
       // reset specific settings (hard-coded keys for now)
-      this.itemForm.forms.property.property = ''
-      this.itemForm.forms.property.comparison = ''
-      this.itemForm.forms.property.value = ''
-      this.itemForm.forms.preset.preset = ''
-      this.itemForm.forms.preset.comparison = ''
-      this.itemForm.forms.preset.value = ''
-    },
-    cancelAddCondition: function () {
-      this.resetConditionForms()
+      itemForm.value.forms.property.property = ''
+      itemForm.value.forms.property.comparison = ''
+      itemForm.value.forms.property.value = ''
+      itemForm.value.forms.preset.preset = ''
+      itemForm.value.forms.preset.comparison = ''
+      itemForm.value.forms.preset.value = ''
+    }
+
+    const cancelAddCondition = () => {
+      resetConditionForms()
+    }
+
+    return {
+      store,
+      isAdding,
+      itemForm,
+      createCondition,
+      resetConditionForms,
+      cancelAddCondition
     }
   }
 }

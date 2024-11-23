@@ -2,7 +2,7 @@
   <div>
     <div>
       <div class="created-item-header">
-      <div v-if="editing">
+      <div v-if="isEditing">
         <input v-model="itemForm.conditionName" type="text" placeholder="name" />
         <button @click="saveItem">save</button>
         <button @click="cancelEdit">cancel</button>
@@ -15,7 +15,7 @@
     </div>
 
     <!-- CONDITION FORM -->    
-    <div v-if="editing === true">
+    <div v-if="isEditing === true">
       <select v-model="itemForm.conditionType">
         <option value="property">property</option>
         <option value="preset">preset</option>
@@ -63,65 +63,67 @@
 </template>
 
 <script>
+import { ref } from 'vue'
 import { useStore } from '../store/mainStore.js'
 
 export default {
   name: 'MenuCondition',
-  setup: function () {
-    const store = useStore()
-    return { store }
-  },
   props: {
     item: Object,
     index: Number
   },
-  data: function () {
-    return {
-      defaultCondition: {
-        adding: false,
-        type: 'property',
-        name: '',
-        comparison: '',
-        value: 0,
-        property: '',
-        classMethod: ''
-      },
-      editing: false,
-      itemForm: {}
-    }
-  },
-  methods: {
-    populateItemForm: function () {
+  setup: function (props) {
+    const store = useStore()
+
+    const itemForm = ref({})
+    const isEditing = ref(false)
+
+    const populateItemForm = () => {
 
       const data = {
-        conditionType: this.item.conditionType,
-        conditionName: this.item.conditionName,
-        conditionValue: this.item.conditionValue,
-        comparison: this.item.comparison
+        conditionType: props.item.conditionType,
+        conditionName: props.item.conditionName,
+        conditionValue: props.item.conditionValue,
+        comparison: props.item.comparison
       }
 
       if (data.conditionType === 'preset') {
-        data.property = this.item.property
+        data.property = props.item.property
       } else {
-        data.classMethod = this.item.classMethod
+        data.classMethod = props.item.classMethod
       }
-      this.itemForm = {...data}
-    },
-    saveItem: function () {
-      this.editing = false
-      const keys = Object.keys(this.itemForm)
-      keys.forEach(key => this.store.conditions[this.index][key] = this.itemForm[key])
-    },
-    deleteItem: function () {
-      this.store.conditions.splice(this.index, 1)
-    },
-    editItem: function () {
-      this.populateItemForm()
-      this.editing = true
-    },
-    cancelEdit: function () {
-      this.editing = false
-      this.itemForm = {}
+      itemForm.value = {...data}
+    }
+
+    const saveItem = () => {
+      isEditing.value = false
+      const keys = Object.keys(itemForm.value)
+      keys.forEach(key => store.conditions[props.index][key] = itemForm.value[key])
+    }
+
+    const deleteItem = () => {
+      store.conditions.splice(props.index, 1)
+    }
+
+    const editItem = () => {
+      populateItemForm()
+      isEditing.value = true
+    }
+
+    const cancelEdit = () => {
+      isEditing.value = false
+      itemForm.value = {}
+    }
+
+    return {
+      store,
+      itemForm,
+      isEditing,
+      populateItemForm,
+      saveItem,
+      deleteItem,
+      editItem,
+      cancelEdit
     }
   }
 }

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div v-if="editing === true">
+    <div v-if="isEditing === true">
       <select v-model="itemForm.agentType">
         <option value="self">self</option>
         <option v-for="agentType in store.agentTypes" :value="agentType.name">{{ agentType.name }}</option>
@@ -55,64 +55,75 @@
 </template>
 
 <script>
+import { ref } from 'vue'
 import { useStore } from '../store/mainStore.js'
 
 export default {
   name: 'MenuActionPropertyChange',
-  setup: function () {
-    const store = useStore()
-    return { store }
-  },
   props: {
     action: Object,
     propertyChange: Object,
     index: Number
   },
-  data: function () {
-    return {
-      editing: false,
-      itemForm: {}
-    }
-  },
-  methods: {
-    populateItemForm: function () {
-      this.itemForm = {
-        agent: this.propertyChange.agent,
-        agentType: this.propertyChange.agentType,
+  setup: function (props) {
+    const store = useStore()
+
+    const isEditing = ref(false)
+    const itemForm = ref({})
+
+    const populateItemForm = () => {
+      itemForm.value = {
+        agent: props.propertyChange.agent,
+        agentType: props.propertyChange.agentType,
         args: {
-          agentChoiceMethod: this.propertyChange.args.agentChoiceMethod
+          agentChoiceMethod: props.propertyChange.args.agentChoiceMethod
         },
-        target: this.propertyChange.target,
-        propertyName: this.propertyChange.propertyName,
-        changeType: this.propertyChange.changeType,
-        propertyValue: this.propertyChange.propertyValue
+        target: props.propertyChange.target,
+        propertyName: props.propertyChange.propertyName,
+        changeType: props.propertyChange.changeType,
+        propertyValue: props.propertyChange.propertyValue
       }
-    },
-    saveItem: function () {
-      this.editing = false
-      const keys = Object.keys(this.itemForm)
-      var action = this.store.actions.find(act => act.actionName === this.action.actionName)
-      var propChange = action.propertyChanges[this.index]
+    }
+
+    const saveItem = () => {
+      isEditing.value = false
+      const keys = Object.keys(itemForm.value)
+      var action = store.actions.find(act => act.actionName === props.action.actionName)
+      var propChange = action.propertyChanges[props.index]
       keys.forEach(key => {
           if (key === 'args') {
-            propChange.args = {...this.itemForm.args}
+            propChange.args = {...itemForm.value.args}
           } else {
-            propChange[key] = this.itemForm[key]
+            propChange[key] = itemForm.value[key]
           }
         }
       )
-    },
-    deleteItem: function (actionToDelete) {
-      const action = this.store.actions.find(action => action.actionName === actionToDelete.actionName)
-      action.propertyChanges.splice(this.index, 1)
-    },
-    editItem: function () {
-      this.populateItemForm()
-      this.editing = true
-    },
-    cancelEdit: function () {
-      this.editing = false
-      this.itemForm = {}
+    }
+
+    const deleteItem = (actionToDelete) => {
+      const action = store.actions.find(action => action.actionName === actionToDelete.actionName)
+      action.propertyChanges.splice(props.index, 1)
+    }
+
+    const editItem = () => {
+      populateItemForm()
+      isEditing.value = true
+    }
+
+    const cancelEdit = () => {
+      isEditing.value = false
+      itemForm.value = {}
+    }
+
+    return {
+      store,
+      isEditing,
+      itemForm,
+      populateItemForm,
+      saveItem,
+      deleteItem,
+      editItem,
+      cancelEdit
     }
   }
 }

@@ -1,11 +1,11 @@
 <template>
   <div>
-    <div v-if="propertyForm.adding === false" class="add-container">
-      <button @click="propertyForm.adding = true">new property +</button>
+    <div v-if="isAdding === false" class="add-container">
+      <button @click="isAdding = true">new property +</button>
     </div>
     <div v-else>
-      <input v-model="propertyForm.newPropertyName" type="text" placeholder="name" />
-      <input v-model="propertyForm.newPropertyValue" type="number" placeholder="0" />
+      <input v-model="propertyForm.propertyName" type="text" placeholder="name" />
+      <input v-model="propertyForm.propertyValue" type="number" placeholder="0" />
       <button @click="setAgentProperty">add</button> |
       <button @click="cancelSetAgentProperty">cancel</button>
     </div>
@@ -13,39 +13,38 @@
 </template>
 
 <script>
+import { ref } from 'vue'
 import { useStore } from '../store/mainStore.js'
 
 export default {
   name: 'SetPropertyForm',
   setup: function () {
     const store = useStore()
-    return { store }
-  },
-  data: function () {
-    return {
-      propertyForm: {
-        adding: false,
-        newPropertyName: '',
-        newPropertyValue: ''
-      }
+
+    const isAdding = ref(false)
+
+    const propertyForm = ref({
+        propertyName: '',
+        propertyValue: 0
+      })
+
+    const setAgentProperty = () => {
+      const propName = propertyForm.value.propertyName
+      const propValue = Number(propertyForm.value.propertyValue)
+      store.selectedAgent.setProperty(propName, propValue)
+      propertyForm.value.propertyName = ''
+      propertyForm.value.propertyValue = 0
+      isAdding.value = false
     }
-  },
-  methods: {
-    setAgentProperty: function () {
-      const propName = this.propertyForm.newPropertyName
-      const propValue = Number(this.propertyForm.newPropertyValue)
-      this.store.selectedAgent.setProperty(propName, propValue)
-      this.propertyForm.newPropertyName = ''
-      this.propertyForm.newPropertyValue = 0
-      this.propertyForm.adding = false
-      this.$forceUpdate()
-    },
-    cancelSetAgentProperty: function () {
-      this.propertyForm.adding = false
-      this.propertyForm.newPropertyName = ''
-      this.propertyForm.newPropertyValue = 0
+
+    const cancelSetAgentProperty = () => {
+      propertyForm.value.propertyName = ''
+      propertyForm.value.propertyValue = 0
+      isAdding.value = false
     }
+
+    return { store, isAdding, propertyForm, setAgentProperty, cancelSetAgentProperty }
   }
 }
 
-</script>
+</script>9
