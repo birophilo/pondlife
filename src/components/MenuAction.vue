@@ -166,7 +166,7 @@
 </template>
 
 <script>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { useStore } from '../store/mainStore.js'
 import ActionPropertyChangeForm from './ActionPropertyChangeForm.vue'
 import MenuActionPropertyChange from './MenuActionPropertyChange.vue'
@@ -254,6 +254,22 @@ export default {
       itemForm.value = {}
     }
 
+    const targetPointX = computed(() => {
+      return store.selectedPoint.x !== null ? store.selectedPoint.x : itemForm.value.target.position.x
+    })
+
+    const targetPointY = computed(() => {
+      return store.selectedPoint.y !== null ? store.selectedPoint.y : itemForm.value.target.position.y
+    })
+
+    const positionPointX = computed(() => {
+      return store.selectedPoint.x !== null ? store.selectedPoint.x : itemForm.value.position.x
+    })
+
+    const positionPointY = computed(() => {
+      return store.selectedPoint.y !== null ? store.selectedPoint.y : itemForm.value.position.y
+    })
+
     return {
       store,
       isEditing,
@@ -262,21 +278,11 @@ export default {
       saveItem,
       deleteItem,
       editItem,
-      cancelEdit
-    }
-  },
-  computed : {
-    targetPointX: function () {
-      return this.store.selectedPoint.x !== null ? this.store.selectedPoint.x : this.itemForm.target.position.x
-    },
-    targetPointY: function () {
-      return this.store.selectedPoint.y !== null ? this.store.selectedPoint.y : this.itemForm.target.position.y
-    },
-    positionPointX: function () {
-      return this.store.selectedPoint.x !== null ? this.store.selectedPoint.x : this.itemForm.position.x
-    },
-    positionPointY: function () {
-      return this.store.selectedPoint.y !== null ? this.store.selectedPoint.y : this.itemForm.position.y
+      cancelEdit,
+      targetPointX,
+      targetPointY,
+      positionPointX,
+      positionPointY
     }
   }
 }

@@ -85,7 +85,7 @@ export default {
   props: {
     action: Object
   },
-  setup: function () {
+  setup: function (props) {
     const store = useStore()
 
     const isAdding = ref(false)
@@ -114,7 +114,7 @@ export default {
         itemForm.value.value,
         args
       )
-      const act = store.actions.find(a => a.actionName === this.action.actionName)
+      const act = store.actions.find(a => a.actionName === props.action.actionName)
       act.propertyChanges.push(propChange)
       isAdding.value = false
     }

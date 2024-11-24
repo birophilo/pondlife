@@ -251,6 +251,9 @@ export default {
     const createAction = () => {
       const actionType = itemForm.value.actionType
 
+      console.log("ACTION TYPE")
+      console.log(actionType)
+
       const args = {
         id: store.actions.length + 1,
         actionName: itemForm.value.actionName,
@@ -258,7 +261,7 @@ export default {
       }
 
       // use config arguments specific to each action type
-      const formArgs = forms[actionType]
+      const formArgs = forms.value[actionType]
       formArgs.forEach(key => {args[key] = itemForm.value[key]})
 
       if (itemForm.value.spriteSheet !== '') args.spriteSheet = itemForm.value.spriteSheet

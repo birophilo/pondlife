@@ -104,6 +104,7 @@
 
 
 <script>
+import { onMounted } from 'vue'
 import { useStore } from './store/mainStore.js'
 
 import { pointIsInArea } from './utils.js'
@@ -142,10 +143,6 @@ const backgroundColor = 'rgb(220, 220, 220)'
 
 export default {
   name: 'App',
-  setup() {
-    const store = useStore()
-    return { store }
-  },
   components: {
     CreateAgentTypeForm,
     MenuAgentType,
@@ -160,107 +157,13 @@ export default {
     MenuAnimationSet,
     AnimationSetForm
   },
-  data: function () {
-    return {
+  setup() {
+    const store = useStore()
 
-      animationSetsData: JSON.parse(localStorage.getItem('pondlifeSpriteMaps')),
-      spriteSheetsData: JSON.parse(localStorage.getItem('pondlifeSpriteSheets')),
+    const animationSetsData = JSON.parse(localStorage.getItem('pondlifeSpriteMaps'))
+    const spriteSheetsData = JSON.parse(localStorage.getItem('pondlifeSpriteSheets'))
 
-    }
-  },
-
-  mounted: function () {
-
-    canvas = document.querySelector('canvas')
-    c = canvas.getContext('2d')
-
-    canvas.width = 1000
-    canvas.height = 600
-
-    c.fillStyle = backgroundColor
-    c.fillRect(0, 0, canvas.width, canvas.height)
-
-    this.loadAgentsAndFixtures()
-
-    this.animate()
-
-    /* --- CLICK ACTIONS / EVENT LISTENERS --- */
-
-    canvas.addEventListener('mousemove', (event) => {
-      this.store.mouse.x = event.pageX
-      this.store.mouse.y = event.pageY
-    })
-
-    canvas.addEventListener('click', (event) => {
-      const point = {x: event.x, y: event.y}
-
-      // PLACE NEW AGENT ON
-      if (this.store.placingAgent) {
-        const isInMenuArea = pointIsInArea(point, this.store.itemMenu.area)
-
-        if (isInMenuArea === false) {
-          const agentClassName = this.store.agentPreview.agentType.name
-          this.addAgent(agentClassName)
-          this.store.placingAgent = false
-          this.store.agentPreview = null
-        } else {
-          this.store.hover = true
-        }
-      }
-
-      const agentTypeNames = Object.keys(this.store.agentTypes)
-
-      agentTypeNames.forEach(agentTypeName => this.selectOrDeleteAgent(agentTypeName, point))
-
-      // SELECT AGENT BUTTON TO CREATE CURSOR PREVIEW (to place new agent on board)
-      for (let i = 0; i < this.store.agentMenuButtons.length; i++) {
-
-        const isInArea = pointIsInArea(point, this.store.agentMenuButtons[i].area)
-
-        if (isInArea) this.store.hover = 'true'
-
-        if (isInArea && !this.store.agentPreview) {
-          const agentTypeName = this.store.agentMenuButtons[i].name
-          this.store.agentPreview = new AgentPreview(this.store.agentTypes[agentTypeName])
-          this.store.placingAgent = true
-          break
-
-        } else if (isInArea && this.store.agentPreview) {
-          // if have active agent preview (tracking cursor), clicking on the agent menu again cancels the selection
-          this.store.placingAgent = false
-          this.store.agentPreview = null
-        }
-      }
-
-      // TOGGLE DELETE MODE
-      const isInArea = pointIsInArea(point, this.store.deleteButton.area)
-
-      if (isInArea) {
-        this.store.hover = true
-        this.store.deleteMode = !this.store.deleteMode
-      }
-
-      // POINT/AGENT SELECTION MODE
-      if (this.store.selectionMode === true) {
-        this.store.selectedPoint = {
-          x: this.store.mouse.x,
-          y: this.store.mouse.y
-        }
-      }
-
-    })
-
-    document.addEventListener('keydown', (e) => {
-      if (e.code === 'Escape' && this.store.placingAgent === true) {
-        this.store.placingAgent = false
-        this.store.agentPreview = null
-      }
-    })
-  },
-
-  methods: {
-
-    loadAgentsAndFixtures: function () {
+    const loadAgentsAndFixtures = () => {
 
       initialConditions.forEach(condition => {
 
@@ -283,103 +186,107 @@ export default {
             condition.conditionValue
           )
         }
-        this.store.conditions.push(newCondition)
+        store.conditions.push(newCondition)
       })
 
       // load from localStorage (temporary solution while frontend-only)
-      this.store.animationSets = this.animationSetsData !== null ? this.animationSetsData : []
-      this.store.spriteSheets = this.spriteSheetsData !== null ? this.spriteSheetsData : []
+      store.animationSets = animationSetsData !== null ? animationSetsData : []
+      store.spriteSheets = spriteSheetsData !== null ? spriteSheetsData : []
 
       initialAgentTypes.forEach(agentType => {
-        this.store.agentTypes[agentType.name] = new AgentType(agentType)
+        store.agentTypes[agentType.name] = new AgentType(agentType)
       })
 
-      const agentTypeNames = Object.keys(this.store.agentTypes)
+      const agentTypeNames = Object.keys(store.agentTypes)
 
       // hard-coding for the moment
-      this.store.agentTypes.customer.config.animationSet = this.store.animationSets[0]
+      store.agentTypes.customer.config.animationSet = store.animationSets[0]
 
       // populate agents from initial data
       agentTypeNames.forEach(agentTypeName => {
-        this.store.agentItems[agentTypeName] = []
+        store.agentItems[agentTypeName] = []
         initialAgentInstances[agentTypeName].forEach((item, i) => {
-          this.store.agentItems[agentTypeName].push( new Agent({
+          store.agentItems[agentTypeName].push( new Agent({
             agentTypeName: agentTypeName,
             position: {x: item.x, y: item.y},
             num: i + 1,
-            globals: this.store.GlobalSettings,
-            config: this.store.agentTypes[agentTypeName].config
+            globals: store.GlobalSettings,
+            config: store.agentTypes[agentTypeName].config
           }))
         })
       })
 
-      this.store.itemMenu = new AgentMenu()
+      store.itemMenu = new AgentMenu()
       initialAgentMenuButtons.forEach((agentName, i) => {
-        this.store.agentMenuButtons.push(
+        store.agentMenuButtons.push(
           new AgentMenuIcon({
-            menu: this.store.itemMenu,
+            menu: store.itemMenu,
             i: i,
             name: agentName,
             agent: Agent,
-            config: this.store.agentTypes[agentName].config
+            config: store.agentTypes[agentName].config
           })
         )
       })
-      this.store.deleteButton = new DeleteButton({
-        menu: this.store.itemMenu,
-        i: this.store.agentMenuButtons.length
+      store.deleteButton = new DeleteButton({
+        menu: store.itemMenu,
+        i: store.agentMenuButtons.length
       })
-    },
-    deleteCondition: function (index) {
-      this.store.conditions.splice(index, 1)
-    },
-    conditionReadableFormat: function (condition) {
+    }
+
+    const deleteCondition = (index) => {
+      store.conditions.splice(index, 1)
+    }
+
+    const conditionReadableFormat = (condition) => {
       const readable = `${ condition.property } ${ condition.comparison } ${ condition.value }`
       return readable
-    },
-    updateThumbnailFileInput: function (event, agentTypeForm) {
+    }
+
+    const updateThumbnailFileInput = (event, agentTypeForm) => {
       const fileName = "/img/thumbnails/" + event.target.files[0].name
       agentTypeForm.thumbnail = fileName
-    },
-    setNextActionOrNull: function (agent) {
+    }
+
+    const setNextActionOrNull = (agent) => {
       // check for state transitions and set next action if complete
       for (let i = 0; i < agent.currentAction.transitions.length; i++) {
         const result = agent.currentAction.transitions[i].condition.evaluate()
         if (result === true) {
           const nextAction = agent.currentAction.transitions[i].nextAction
-          this.setDynamicActionTargetAgents(nextAction)
+          setDynamicActionTargetAgents(nextAction)
           agent.currentAction = nextAction.clone(agent)
           return
         }
       }
       // no further action if no transitions
       agent.currentAction = null
-    },
+    }
 
     /* ANIMATE */
 
-    animate: function () {
+    const animate = () => {
 
-      this.store.hover = null
+      store.hover = null
 
       c.fillStyle = backgroundColor
       c.fillRect(0, 0, canvas.width, canvas.height)
 
-      const animationId = requestAnimationFrame(this.animate)
-      this.store.GlobalSettings.animationFrameId = animationId
+      const animationId = requestAnimationFrame(animate)
+      store.GlobalSettings.animationFrameId = animationId
 
-      const agentTypeNames = Object.keys(this.store.agentItems)
+      const agentTypeNames = Object.keys(store.agentItems)
 
       // update each agent of each agent type
       agentTypeNames.forEach(agentTypeName => {
-        this.store.agentItems[agentTypeName].forEach(agent => {
-          agent.update(c, {}, this.store.GlobalSettings)
+        store.agentItems[agentTypeName].forEach(agent => {
+          agent.update(c, {}, store.GlobalSettings)
 
           let emissions = {agentsToDelete: [], agentsToSpawn: []}
 
           if (agent.currentAction) {
             if (agent.currentAction.defaultCompletionCheckPasses() === true) {
-              this.setNextActionOrNull(agent)
+              setNextActionOrNull(agent)
             }
 
             // if unstarted Action in action list, start it; if already doing action, check if complete
@@ -387,10 +294,10 @@ export default {
               if (agent.currentAction.isComplete === false) {
                 if (agent.currentAction.inProgress === true) {
                   // console.log('checking')
-                  agent.currentAction.check(agent.stateData, this.store.GlobalSettings)
+                  agent.currentAction.check(agent.stateData, store.GlobalSettings)
                 } else {
                   agent.currentAction.inProgress = true
-                  const emissionsFromAction = agent.currentAction.start(this.store.GlobalSettings) // globals = {}?
+                  const emissionsFromAction = agent.currentAction.start(store.GlobalSettings) // globals = {}?
                   if (emissionsFromAction) {
                     if (emissionsFromAction.agentsToDelete) {
                       emissions.agentsToDelete = emissions.agentsToDelete.concat(emissionsFromAction.agentsToDelete)
@@ -413,7 +320,7 @@ export default {
             if (emissions.agentsToDelete?.length > 0) {
               emissions.agentsToDelete.forEach(agent => {
                 const agentType = agent.agentType
-                const items = this.store.agentItems[agentType]
+                const items = store.agentItems[agentType]
                 const item = items.find(ag => ag.name === agent.name)
                 item.labelElement.remove()
                 items.splice(items.indexOf(item), 1)
@@ -422,76 +329,76 @@ export default {
             if (emissions.agentsToSpawn?.length > 0) {
               emissions.agentsToSpawn.forEach(args => {
                 const agentType = args.agentType
-                this.store.agentItems[agentType].push( new Agent({
+                store.agentItems[agentType].push( new Agent({
                   agentTypeName: agentType,
                   position: args.position,
-                  num: this.store.agentItems[agentType].length + 1,
-                  globals: this.store.GlobalSettings,
-                  config: this.store.agentTypes[agentType].config
+                  num: store.agentItems[agentType].length + 1,
+                  globals: store.GlobalSettings,
+                  config: store.agentTypes[agentType].config
                 }))
               })
             }
           }
 
-          const isInArea = pointIsInArea(this.store.mouse, agent.collisionArea)
-          if (isInArea) this.store.hover = true
+          const isInArea = pointIsInArea(store.mouse, agent.collisionArea)
+          if (isInArea) store.hover = true
         })
       })
       
-      this.store.itemMenu.update(c, this.store.agentMenuButtons.length + 1)
+      store.itemMenu.update(c, store.agentMenuButtons.length + 1)
 
-      this.store.agentMenuButtons.forEach((button, i) => {
+      store.agentMenuButtons.forEach((button, i) => {
         button.update(c, i)
-        const isInArea = pointIsInArea(this.store.mouse, button.area)
-        if (isInArea) this.store.hover = true
+        const isInArea = pointIsInArea(store.mouse, button.area)
+        if (isInArea) store.hover = true
       })
 
-      if (this.store.agentPreview) this.store.agentPreview.update(c, this.store.mouse)
+      if (store.agentPreview) store.agentPreview.update(c, store.mouse)
 
-      if (pointIsInArea(this.store.mouse, this.store.deleteButton.area)) this.store.hover = true
+      if (pointIsInArea(store.mouse, store.deleteButton.area)) store.hover = true
 
-      if (this.store.selectionMode === true) this.store.hover = true
+      if (store.selectionMode === true) store.hover = true
 
-      this.store.deleteButton.update(c, this.store.agentMenuButtons.length, this.store.deleteMode)
+      store.deleteButton.update(c, store.agentMenuButtons.length, store.deleteMode)
 
-      canvas.style.cursor = this.store.hover ? 'pointer' : 'auto'
+      canvas.style.cursor = store.hover ? 'pointer' : 'auto'
 
-      if (animationId % dayLength === 0) this.endDay()
+      if (animationId % dayLength === 0) endDay()
 
-      if (this.store.GlobalSettings.animationFrameId % 32 === 0) {
-        const customerActions = this.store.agentItems['customer'].map(cust =>
+      if (store.GlobalSettings.animationFrameId % 32 === 0) {
+        const customerActions = store.agentItems['customer'].map(cust =>
           `${cust.name}, action: ${cust.currentAction ? cust.currentAction.actionName : 'none'}`
         )
         console.log(JSON.stringify(customerActions, null, 2))
       }
+    }
 
-    },
-
-    selectOrDeleteAgent: function (agentTypeName, point) {
-      const agentItems = this.store.agentItems[agentTypeName]
+    const selectOrDeleteAgent = (agentTypeName, point) => {
+      const agentItems = store.agentItems[agentTypeName]
       agentItems.forEach((agent, i) => {
         const isInArea = pointIsInArea(point, agent.collisionArea)
 
         // SELECT AGENT
         if (isInArea) {
-          this.store.selectedAgent = agent
-          this.store.hover = true
+          store.selectedAgent = agent
+          store.hover = true
 
-          if (this.store.selectionMode === true) {
-            this.store.selectedTargetAgent = agent
-            this.actionsSection.adding.forms.goTo.target = this.store.selectedTargetAgent
+          if (store.selectionMode === true) {
+            store.selectedTargetAgent = agent
+            // to fix/update
+            // actionsSection.adding.forms.goTo.target = store.selectedTargetAgent
           }
         }
         // DELETE AGENT (in delete mode)
-        if (isInArea && this.store.deleteMode === true) {
+        if (isInArea && store.deleteMode === true) {
           const agent = agentItems[i]
           agent.labelElement.remove()
           agentItems.splice(i, 1)
         }
       })
-    },
+    }
 
-    setDynamicActionTargetAgents: function (action) {
+    const setDynamicActionTargetAgents = (action) => {
       /*
       Some target agent/s need to be set dynamically according to criteria that can
       only be determined when the action starts:
@@ -504,12 +411,12 @@ export default {
 
       if (action.args.agentChoiceMethod === 'nearest' && action.args.destinationType === 'agent') {
         const agentTypeName = action.args.agentType
-        const agentItems = this.store.agentItems[agentTypeName]
-        const targetAgent = this.store.selectedAgent.getClosestAgent(agentItems)
+        const agentItems = store.agentItems[agentTypeName]
+        const targetAgent = store.selectedAgent.getClosestAgent(agentItems)
         action.args.target = targetAgent
       } else if (action.args.agentChoiceMethod === 'all') {
         const agentTypeName = action.args.agentType
-        const agentItems = this.store.agentItems[agentTypeName]
+        const agentItems = store.agentItems[agentTypeName]
         action.args.target = agentItems
       }
 
@@ -520,42 +427,143 @@ export default {
           if (change.args.agentType !== 'self') {
             if (change.args.agentChoiceMethod === 'nearest') {
               const agentTypeName = change.args.agentType
-              const agentItems = this.store.agentItems[agentTypeName]
-              const targetAgent = this.store.selectedAgent.getClosestAgent(agentItems)
+              const agentItems = store.agentItems[agentTypeName]
+              const targetAgent = store.selectedAgent.getClosestAgent(agentItems)
               change.target = targetAgent
             } else if (change.args.agentChoiceMethod === 'all') {
               const agentTypeName = change.args.agentType
-              const agentItems = this.store.agentItems[agentTypeName]
+              const agentItems = store.agentItems[agentTypeName]
               change.target = agentItems
             }
           }
         })
       }
-    },
-    cloneAction: function (action) {
-      this.setDynamicActionTargetAgents(action)
-      this.store.selectedAgent.currentAction = action.clone(this.store.selectedAgent)
-    },
-    addAgent: function (agentTypeName) {
-      const agentItems = this.store.agentItems[agentTypeName]
+    }
+
+    const cloneAction = (action) => {
+      setDynamicActionTargetAgents(action)
+      store.selectedAgent.currentAction = action.clone(store.selectedAgent)
+    }
+
+    const addAgent = (agentTypeName) => {
+      const agentItems = store.agentItems[agentTypeName]
       const num = agentItems.length + 1
       agentItems.push( new Agent({
         agentTypeName: agentTypeName,
         position: {
-          x: this.store.mouse.x - this.store.agentTypes[agentTypeName].config.width / 2,
-          y: this.store.mouse.y - this.store.agentTypes[agentTypeName].config.height / 2
+          x: store.mouse.x - store.agentTypes[agentTypeName].config.width / 2,
+          y: store.mouse.y - store.agentTypes[agentTypeName].config.height / 2
         },
         num: num,
-        globals: this.store.GlobalSettings,
-        offset: this.store.agentTypes[agentTypeName].config.offset,
-        scale: this.store.agentTypes[agentTypeName].config.scale,
-        config: this.store.agentTypes[agentTypeName].config
+        globals: store.GlobalSettings,
+        offset: store.agentTypes[agentTypeName].config.offset,
+        scale: store.agentTypes[agentTypeName].config.scale,
+        config: store.agentTypes[agentTypeName].config
       }))
-    },
-    endDay: function() {
-      this.store.dayNumber += 1
     }
-  }
+
+    const endDay = () => {
+      store.dayNumber += 1
+    }
+
+    onMounted(() => {
+
+      canvas = document.querySelector('canvas')
+      c = canvas.getContext('2d')
+
+      canvas.width = 1000
+      canvas.height = 600
+
+      c.fillStyle = backgroundColor
+      c.fillRect(0, 0, canvas.width, canvas.height)
+
+      loadAgentsAndFixtures()
+
+      animate()
+
+      /* --- CLICK ACTIONS / EVENT LISTENERS --- */
+
+      canvas.addEventListener('mousemove', (event) => {
+        store.mouse.x = event.pageX
+        store.mouse.y = event.pageY
+      })
+
+      canvas.addEventListener('click', (event) => {
+        const point = {x: event.x, y: event.y}
+
+        // PLACE NEW AGENT ON
+        if (store.placingAgent) {
+          const isInMenuArea = pointIsInArea(point, store.itemMenu.area)
+
+          if (isInMenuArea === false) {
+            const agentClassName = store.agentPreview.agentType.name
+            addAgent(agentClassName)
+            store.placingAgent = false
+            store.agentPreview = null
+          } else {
+            store.hover = true
+          }
+        }
+
+        const agentTypeNames = Object.keys(store.agentTypes)
+
+        agentTypeNames.forEach(agentTypeName => selectOrDeleteAgent(agentTypeName, point))
+
+        // SELECT AGENT BUTTON TO CREATE CURSOR PREVIEW (to place new agent on board)
+        for (let i = 0; i < store.agentMenuButtons.length; i++) {
+
+          const isInArea = pointIsInArea(point, store.agentMenuButtons[i].area)
+
+          if (isInArea) store.hover = 'true'
+
+          if (isInArea && !store.agentPreview) {
+            const agentTypeName = store.agentMenuButtons[i].name
+            store.agentPreview = new AgentPreview(store.agentTypes[agentTypeName])
+            store.placingAgent = true
+            break
+
+          } else if (isInArea && store.agentPreview) {
+            // if have active agent preview (tracking cursor), clicking on the agent menu again cancels the selection
+            store.placingAgent = false
+            store.agentPreview = null
+          }
+        }
+
+        // TOGGLE DELETE MODE
+        const isInArea = pointIsInArea(point, store.deleteButton.area)
+
+        if (isInArea) {
+          store.hover = true
+          store.deleteMode = !store.deleteMode
+        }
+
+        // POINT/AGENT SELECTION MODE
+        if (store.selectionMode === true) {
+          store.selectedPoint = {
+            x: store.mouse.x,
+            y: store.mouse.y
+          }
+        }
+
+      })
+
+      document.addEventListener('keydown', (e) => {
+        if (e.code === 'Escape' && store.placingAgent === true) {
+          store.placingAgent = false
+          store.agentPreview = null
+        }
+      })
+    })
+
+    return {
+      store,
+      deleteCondition,
+      conditionReadableFormat,
+      updateThumbnailFileInput,
+      cloneAction
+    }
+  },
+
 }
 
 </script>
