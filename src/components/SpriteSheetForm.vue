@@ -17,7 +17,7 @@
 <script>
 import { ref } from 'vue'
 import { useStore } from '../store/mainStore.js'
-import { SpriteSheet } from "../classes/Sprite.js"
+import { createSpriteSheetObject } from "../classes/Sprite.js"
 
 export default {
   name: 'SpriteSheetForm',
@@ -44,7 +44,8 @@ export default {
         numImages: Number(itemForm.value.numImages),
         refreshInterval: Number(itemForm.value.refreshInterval)
       }
-      store.spriteSheets.push(new SpriteSheet(args))
+      const spriteSheetObject = createSpriteSheetObject(args)
+      store.spriteSheets.push(spriteSheetObject)
 
       // 'save' to avoid inputting all after each page refresh
       localStorage.setItem('pondlifeSpriteSheets', JSON.stringify(store.spriteSheets))

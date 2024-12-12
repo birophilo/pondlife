@@ -1,35 +1,7 @@
-export class Condition {
-  constructor(
-    agent,
-    conditionName,
-    property,
-    comparison,
-    conditionValue
-  ) {
-    this.agent = agent
-    this.property = property
-    this.comparison = comparison
-    this.conditionType = 'property'
-    this.conditionName = conditionName
-    this.conditionValue = conditionValue
-  }
-
-  evaluate() {
-    const agentValue = this.agent.stateData[this.property]
-    const evalFunc = COMPARISONS[this.condition]
-    const result = evalFunc(agentValue, this.conditionValue)
-    return result
-  }
-
-  conditionLongformName() {
-    return `${this.property} ${this.comparison} ${this.conditionValue}`
-  }
-}
-
-
 function isGreaterThan(comparisonValue, refValue) {
   return comparisonValue > refValue
 }
+
 
 function isIdentical(comparisonValue, refValue) {
   return comparisonValue === refValue
@@ -42,33 +14,63 @@ const COMPARISONS = {
 }
 
 
-export class PresetCondition {
-  // not sure how to incorporate checks like agent.atDestination() yet - this is temporary design
-  constructor(
-    agent,
-    conditionName,
-    classMethod,
-    comparison,
-    conditionValue,
-    id
-  ) {
-    this.id = id
-    this.classMethod = classMethod
-    this.agent = agent
-    this.comparison = comparison
-    this.conditionType = 'preset'
-    this.conditionName = conditionName
-    this.conditionValue = conditionValue
+export function createConditionObject(
+  agent,
+  conditionName,
+  property,
+  comparison,
+  conditionValue
+) {
+  const item = {
+    agent: agent,
+    property: property,
+    comparison: comparison,
+    conditionType: 'property',
+    conditionName: conditionName,
+    conditionValue: conditionValue
   }
+  return item
+}
 
-  evaluate() {
-    const agentValue = this.agent[this.classMethod]()
-    const evalFunc = COMPARISONS[this.comparison]
-    const result = evalFunc(agentValue, this.conditionValue)
+
+export function createPresetConditionObject(
+  agent,
+  conditionName,
+  classMethod,
+  comparison,
+  conditionValue,
+  id
+) {
+  const item = {
+    id: id,
+    classMethod: classMethod,
+    agent: agent,
+    comparison: comparison,
+    conditionType: 'preset',
+    conditionName: conditionName,
+    conditionValue: conditionValue
+  }
+  return item
+}
+
+
+export class ConditionHandler {
+
+  evaluateCondition(item) {
+    const agentValue = item.agent.stateData[item.property]
+    const evalFunc = COMPARISONS[item.comparison]
+    const result = evalFunc(agentValue, item.conditionValue)
     return result
   }
 
-  conditionLongformName() {
-    return `${this.classMethod} ${this.comparison} ${this.conditionValue}`
+  evaluatePresetCondition(item) {
+    const agentValue = item.agent[item.classMethod]()
+    const evalFunc = COMPARISONS[item.comparison]
+    const result = evalFunc(agentValue, item.conditionValue)
+    return result
+  }
+
+  conditionLongformName(item) {
+    return `${item.classMethod} ${item.comparison} ${item.conditionValue}`
   }
 }

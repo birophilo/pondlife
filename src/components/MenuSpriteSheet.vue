@@ -32,6 +32,7 @@ export default {
     i: Number
   },
   setup(props) {
+
     const store = useStore()
 
     const isEditing = ref(false)
@@ -51,7 +52,7 @@ export default {
     const saveItem = () => {
       isEditing.value = false
       const keys = Object.keys(props.spriteSheet)
-      keys.forEach(key => store.spriteSheets[props.i][key] = itemForm[key])
+      keys.forEach(key => store.spriteSheets[props.i][key] = itemForm.value[key])
       localStorage.setItem('pondlifeSpriteSheets', JSON.stringify(store.spriteSheets))
     }
 

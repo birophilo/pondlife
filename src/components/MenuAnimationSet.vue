@@ -46,6 +46,8 @@ export default {
 
     const saveItem = () => {
       isEditing.value = false
+      const keys = Object.keys(props.animationSet)
+      keys.forEach(key => store.animationSets[props.i][key] = itemForm.value[key])
       localStorage.setItem('pondlifeSpriteMaps', JSON.stringify(store.animationSets))
     }
 
@@ -70,8 +72,8 @@ export default {
         name: props.animationSet.name,
         scale: props.animationSet.scale,
         offset: {
-          x: props.animationSet.offsetX,
-          y: props.animationSet.offsetY,
+          x: props.animationSet.offset.x,
+          y: props.animationSet.offset.y,
         },
         sheets: props.animationSet.sheets,
       }

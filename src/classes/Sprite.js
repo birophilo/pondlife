@@ -92,15 +92,16 @@ export class Sprite {
 }
 
 
-export class SpriteSheet {
-  constructor(args) {
-    this.name = args.name
-    this.src = args.src
-    this.columns = args.columns
-    this.rows = args.rows
-    this.numImages = args.numImages
-    this.refreshInterval = args.refreshInterval
+export function createSpriteSheetObject(args) {
+  const item = {
+    name: args.name,
+    src: args.src,
+    columns: args.columns,
+    rows: args.rows,
+    numImages: args.numImages,
+    refreshInterval: args.refreshInterval
   }
+  return item
 }
 
 

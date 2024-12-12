@@ -61,7 +61,7 @@
 
 <script>
 import { ref } from 'vue'
-import { Condition, PresetCondition } from '../classes/Condition.js'
+import { createConditionObject, createPresetConditionObject } from '../classes/Condition.js'
 import { useStore } from '../store/mainStore.js'
 
 
@@ -106,7 +106,7 @@ export default {
         const conditionComparison = data.comparison
         const conditionValue = data.value
 
-        newCondition = new Condition(
+        newCondition = createConditionObject(
           store.selectedAgent,
           conditionName,
           conditionProperty,
@@ -121,7 +121,7 @@ export default {
         const conditionComparison = data.comparison
         const conditionValue = data.value
 
-        newCondition = new PresetCondition(
+        newCondition = createPresetConditionObject(
           store.selectedAgent,
           conditionName,
           conditionPreset,

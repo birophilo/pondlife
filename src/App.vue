@@ -110,7 +110,7 @@ import { useStore } from './store/mainStore.js'
 import { pointIsInArea } from './utils.js'
 import AgentType from './classes/AgentType.js'
 import Agent from './classes/Agent.js'
-import { Condition, PresetCondition } from './classes/Condition.js'
+import { createConditionObject, createPresetConditionObject } from './classes/Condition.js'
 import { AgentMenu, AgentMenuIcon, DeleteButton, AgentPreview } from './classes/SelectionMenu.js'
 
 import CreateAgentTypeForm from './components/CreateAgentTypeForm.vue'
@@ -160,6 +160,9 @@ export default {
   setup() {
     const store = useStore()
 
+    // localStorage.setItem('pondlifeSpriteSheets', JSON.stringify([]))
+    // localStorage.setItem('pondlifeSpriteMaps', JSON.stringify([]))
+
     const animationSetsData = JSON.parse(localStorage.getItem('pondlifeSpriteMaps'))
     const spriteSheetsData = JSON.parse(localStorage.getItem('pondlifeSpriteSheets'))
 
@@ -170,7 +173,7 @@ export default {
         let newCondition
 
         if (condition.conditionType === 'property') {
-          newCondition = new Condition(
+          newCondition = createConditionObject(
             null,
             condition.name,
             condition.property,
@@ -178,7 +181,7 @@ export default {
             condition.conditionValue
           )
         } else {
-          newCondition = new PresetCondition(
+          newCondition = createPresetConditionObject(
             null,
             condition.name,
             condition.classMethod,

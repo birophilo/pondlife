@@ -251,9 +251,6 @@ export default {
     const createAction = () => {
       const actionType = itemForm.value.actionType
 
-      console.log("ACTION TYPE")
-      console.log(actionType)
-
       const args = {
         id: store.actions.length + 1,
         actionName: itemForm.value.actionName,
