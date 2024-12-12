@@ -202,11 +202,11 @@
 import { ref } from 'vue'
 import { useStore } from '../store/mainStore.js'
 import {
-  ActionGoTo,
-  ActionPropertyChanges,
-  ActionInterval,
-  ActionSpawnAgent,
-  ActionRemoveAgent
+  createActionGoTo,
+  createActionPropertyChanges,
+  createActionInterval,
+  createActionSpawnAgent,
+  createActionRemoveAgent
 } from "../classes/Action.js"
 
 
@@ -214,11 +214,11 @@ const DEFAULT_ACTION_TYPE = 'goTo'
 
 
 const ACTION_TYPES = {
-  'goTo': ActionGoTo,
-  'change': ActionPropertyChanges,
-  'interval': ActionInterval,
-  'spawnAgent': ActionSpawnAgent,
-  'removeAgent': ActionRemoveAgent
+  'goTo': createActionGoTo,
+  'change': createActionPropertyChanges,
+  'interval': createActionInterval,
+  'spawnAgent': createActionSpawnAgent,
+  'removeAgent': createActionRemoveAgent
 }
 
 export default {

@@ -47,7 +47,7 @@
       <button @click="cancelEdit">cancel</button>
     </div>
     <div v-else>
-      <div>change {{ index + 1 }}: {{ propertyChange.description() }}</div>
+      <div>change {{ index + 1 }}: {{ propertyChangeHandler.description(propertyChange) }}</div>
       <button @click="editItem">edit item</button>
       <button @click="deleteItem">delete item</button>
     </div>
@@ -56,6 +56,7 @@
 
 <script>
 import { ref } from 'vue'
+import { PropertyChangeHandler } from '../classes/Action.js'
 import { useStore } from '../store/mainStore.js'
 
 export default {
@@ -115,6 +116,8 @@ export default {
       itemForm.value = {}
     }
 
+    const propertyChangeHandler = PropertyChangeHandler
+
     return {
       store,
       isEditing,
@@ -123,7 +126,8 @@ export default {
       saveItem,
       deleteItem,
       editItem,
-      cancelEdit
+      cancelEdit,
+      propertyChangeHandler
     }
   }
 }

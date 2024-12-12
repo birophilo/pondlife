@@ -108,11 +108,11 @@ import { onMounted } from 'vue'
 import { useStore } from './store/mainStore.js'
 
 import { pointIsInArea } from './utils.js'
-import AgentType from './classes/AgentType.js'
+import { createAgentTypeObject } from './classes/AgentType.js'
 import Agent from './classes/Agent.js'
 import { createConditionObject, createPresetConditionObject } from './classes/Condition.js'
 import { AgentMenu, AgentMenuIcon, DeleteButton, AgentPreview } from './classes/SelectionMenu.js'
-
+import { ActionHandler } from './classes/Action.js'
 import CreateAgentTypeForm from './components/CreateAgentTypeForm.vue'
 import MenuAgentType from './components/MenuAgentType.vue'
 import SetPropertyForm from './components/SetPropertyForm.vue'
@@ -197,7 +197,7 @@ export default {
       store.spriteSheets = spriteSheetsData !== null ? spriteSheetsData : []
 
       initialAgentTypes.forEach(agentType => {
-        store.agentTypes[agentType.name] = new AgentType(agentType)
+        store.agentTypes[agentType.name] = createAgentTypeObject(agentType)
       })
 
       const agentTypeNames = Object.keys(store.agentTypes)
@@ -258,7 +258,7 @@ export default {
         if (result === true) {
           const nextAction = agent.currentAction.transitions[i].nextAction
           setDynamicActionTargetAgents(nextAction)
-          agent.currentAction = nextAction.clone(agent)
+          agent.currentAction = ActionHandler.clone(nextAction, agent)
           return
         }
       }
@@ -288,7 +288,9 @@ export default {
           let emissions = {agentsToDelete: [], agentsToSpawn: []}
 
           if (agent.currentAction) {
-            if (agent.currentAction.defaultCompletionCheckPasses() === true) {
+            /* CHANGE TO SPECIFIC ACTION HANDLER, USE DICT */
+            const handler = ActionHandler
+            if (handler.defaultCompletionCheckPasses(agent.currentAction) === true) {
               setNextActionOrNull(agent)
             }
 
@@ -297,10 +299,14 @@ export default {
               if (agent.currentAction.isComplete === false) {
                 if (agent.currentAction.inProgress === true) {
                   // console.log('checking')
-                  agent.currentAction.check(agent.stateData, store.GlobalSettings)
+                  /* CHANGE TO SPECIFIC ACTION HANDLER, USE DICT */
+                  const handler = ActionHandler
+                  handler.check(agent.currentAction, agent.stateData, store.GlobalSettings)
                 } else {
                   agent.currentAction.inProgress = true
-                  const emissionsFromAction = agent.currentAction.start(store.GlobalSettings) // globals = {}?
+                  /* CHANGE TO SPECIFIC ACTION HANDLER, USE DICT */
+                  const handler = ActionHandler
+                  const emissionsFromAction = handler.start(agent.currentAction, store.GlobalSettings) // globals = {}?
                   if (emissionsFromAction) {
                     if (emissionsFromAction.agentsToDelete) {
                       emissions.agentsToDelete = emissions.agentsToDelete.concat(emissionsFromAction.agentsToDelete)
@@ -445,7 +451,7 @@ export default {
 
     const cloneAction = (action) => {
       setDynamicActionTargetAgents(action)
-      store.selectedAgent.currentAction = action.clone(store.selectedAgent)
+      store.selectedAgent.currentAction = ActionHandler.clone(action, store.selectedAgent)
     }
 
     const addAgent = (agentTypeName) => {

@@ -1,8 +1,7 @@
-export default class AgentType {
-  constructor(args) {
-    this.name = args.name
-    this.agentItems = []
-    this.config = {
+export function createAgentTypeObject (args) {
+  const item = {
+    name: args.name,
+    config: {
       width: args.width,
       height: args.height,
       offset: args.offset,
@@ -13,4 +12,5 @@ export default class AgentType {
       thumbnail: args.thumbnail
     }
   }
+  return item
 }

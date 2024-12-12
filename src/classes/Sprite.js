@@ -105,11 +105,12 @@ export function createSpriteSheetObject(args) {
 }
 
 
-export class AnimationSet {
-  constructor(args) {
-    this.name = args.name
-    this.sheets = args.sheets
-    this.offset = {x: args.offsetX, y: args.offsetY}
-    this.scale = args.scale
+export function createAnimationSetObject (args) {
+  const item = {
+    name: args.name,
+    sheets: args.sheets,
+    offset: {x: args.offsetX, y: args.offsetY},
+    scale: args.scale
   }
+  return item
 }

@@ -55,7 +55,6 @@ export class Action {
     )
     return action
   }
-
 }
 
 
@@ -92,7 +91,6 @@ export class ActionGoTo extends Action {
     // console.log('at destination', this.agent.atDestination())
     return this.agent.atDestination()
   }
-
 }
 
 
@@ -134,6 +132,7 @@ export class ActionPropertyChanges extends Action {
     return this.isComplete
   }
 }
+
 
 
 export class ActionInterval extends Action {
@@ -209,7 +208,6 @@ export class ActionRemoveAgent extends Action {
   defaultCompletionCheckPasses() {
     return this.isComplete
   }
-
 }
 
 
@@ -244,5 +242,278 @@ export class PropertyChange {
 
   description() {
     return `${this.propertyName} ${this.changeType} ${this.propertyValue}`
+  }
+}
+
+
+/* FUNCTIONS TO CREATE OBJECTS */
+
+
+export function createActionObject (agent = null, args, conditions = [], transitions = []) {
+
+  const item = {
+    id: args.id,
+    agent: agent,
+    args: args,
+    actionName: args.actionName,
+    actionType: args.actionType,
+    inProgress: false,
+    isComplete: false,
+    conditions: conditions ? conditions : [],
+    transitions: transitions ? transitions : [],
+    spriteSheet: args.spriteSheet
+  }
+
+  if (item.transitions.length > 0 && item.agent !== null) {
+    item.transitions.forEach(transition => {
+      // broadly applicable enough?
+      transition.condition.agent = this.agent
+    })
+  }
+
+  return item
+}
+
+
+export function createActionGoTo (agent = null, args, conditions = [], transitions = []) {
+  let item = createActionObject(agent, args, conditions, transitions)
+  if (args.agentChoiceMethod === 'specific') {
+    item.destination = args.target
+  }
+  if (args.destinationType === 'point') {
+      item.destination = args.target
+  }
+  return item
+}
+
+
+export function createActionPropertyChanges (
+  agent = null, args, conditions = [], transitions = [], propertyChanges = []
+) {
+  let item = createActionObject(agent, args, conditions, transitions, propertyChanges)
+  item.propertyChanges = propertyChanges ? propertyChanges : []
+  if (item.agent !== null) {
+    item.propertyChanges.forEach(change => {
+      // this is currently hard-coded just to apply to self agent, not e.g. target agent
+      change.agent = this.agent
+    })
+  }
+}
+
+
+export function createActionInterval (agent = null, args, conditions = [], transitions = []) {
+  let item = createActionObject(agent, args, conditions, transitions)
+  return item
+}
+
+
+export function createActionSpawnAgent (agent = null, args, conditions = [], transitions = []) {
+  let item = createActionObject(agent, args, conditions, transitions)
+  item.agentType = args.agentType
+  item.position = args.position
+  item.useRandomPosition = args.useRandomPosition
+}
+
+
+export function createActionRemoveAgent (agent = null, args, conditions = [], transitions = []) {
+  const item = createActionObject(agent, args, conditions, transitions)
+  return item
+}
+
+
+export function createActionTransitionObject (condition, nextAction) {
+  const item = {
+    condition: condition,
+    nextAction: nextAction
+  }
+  return item
+}
+
+
+export function createPropertyChange (agent, target, propertyName, changeType, propertyValue, args) {
+  const item = {
+    agent: agent,
+    target: target,
+    propertyName: propertyName,
+    changeType: changeType,
+    // only handling numbers for now, not strings, boolean etc.
+    propertyValue: propertyValue,
+    args: args
+  }
+  return item
+}
+
+
+/* HANDLER CLASSES */
+
+
+export class ActionHandler {
+
+  meetsConditions(item) {
+    for (let i = 0; i < item.conditions.length; i++) {
+      const qualifies = item.conditions[i].evaluate()
+      if (qualifies === false) {
+        console.log('did not meet condition')
+        return
+      }
+    }
+    return true
+  }
+
+  // eslint-disable-next-line
+  check(item, stateData, globals) {
+    console.log(item.actionName)
+    if (this.defaultCompletionCheckPasses()) {
+      item.isComplete = true
+    }
+    if (item.changesApplied === true) {
+      item.isComplete = true
+    }
+  }
+
+  clone(item, agent, args) {
+    const action =  createActionObject(
+      agent,
+      item.args = {...item.args, ...args},
+      item.conditions,
+      item.transitions,
+      item.propertyChanges
+    )
+    return action
+  }
+}
+
+
+export class ActionGoToHandler extends ActionHandler {
+
+  // eslint-disable-next-line
+  start(item, globals) {
+    item.destination = item.args.target
+    item.agent.destination = item.args.target
+
+    if (item.agent !== null) {
+      if (item.args.destinationType === 'agent') {
+        item.stateName = `going to: ${item.destination.name}`
+      } else if (item.args.destinationType === 'point') {
+        item.stateName = `going to: (x: ${item.args.target.position.x}, y: ${item.args.target.position.y})`
+      }
+    }
+
+    item.agent.currentStateName = item.stateName
+  }
+
+  defaultCompletionCheckPasses(item) {
+    // console.log('at destination', this.agent.atDestination())
+    return item.agent.atDestination()
+  }
+}
+
+
+export class ActionPropertyChangesHandler extends ActionHandler {
+
+  // eslint-disable-next-line
+  start(item, globals) {
+    item.propertyChanges.forEach(change => {
+
+      const value = change.propertyValue
+      const changeValue = change.changeType === 'increase' ? Number(value) : 0 - Number(value)
+
+      if (change.args.agentType === 'self') {
+        item.agent.stateData[change.propertyName] += changeValue
+      } else {
+        if (change.args.agentChoiceMethod === 'all') {
+          change.target.forEach(agentItem => agentItem.stateData[change.propertyName] += changeValue)
+        } else {
+          change.target.stateData[change.propertyName] += changeValue
+        }
+      }
+    })
+    item.changesApplied = true
+  }
+
+  defaultCompletionCheckPasses(item) {
+    return item.isComplete
+  }
+}
+
+
+export class ActionIntervalHandler extends ActionHandler {
+  /*
+    A timer object; an 'action' that just waits for a specified frame duration.
+  */
+
+  start(item, globals) {
+    if (item.args.spriteSheet) {
+      item.agent.useSpriteSheet(item.args.spriteSheet)
+    }
+    const currentFrame = globals.animationFrameId
+    item.startFrame = currentFrame
+    item.agent.currentStateName = `waiting for ${item.args.duration} frames`
+  }
+
+  defaultCompletionCheckPasses(item) {
+    return item.isComplete
+  }
+
+  check(item, stateData, globals) {
+    const currentFrame = globals.animationFrameId
+    const timerExpired = currentFrame - (item.startFrame + item.args.duration) >= 0
+
+    if (timerExpired) {
+      item.isComplete = true
+    }
+
+    super.check(item, stateData, globals)
+  }
+}
+
+
+export class ActionSpawnAgentHandler extends ActionHandler {
+
+  // eslint-disable-next-line
+  start(item, globals) {
+    item.isComplete = true
+    const spawnArgs = {
+      agentType: item.agentType,
+      position: item.position
+    }
+    return {agentsToSpawn: [spawnArgs]}
+  }
+
+  defaultCompletionCheckPasses(item) {
+    return item.isComplete
+  }
+}
+
+
+export class ActionRemoveAgentHandler extends ActionHandler {
+
+  // eslint-disable-next-line
+  start(item, globals) {
+    item.isComplete = true
+    return {agentsToDelete: [item.agent]}
+  }
+
+  defaultCompletionCheckPasses(item) {
+    return item.isComplete
+  }
+
+}
+
+
+export class PropertyChangeHandler {
+
+  start(item, globals) {
+    const currentFrame = globals.animationFrameId
+    item.startFrame = currentFrame
+    item.agent.currentStateName = `waiting for ${item.duration} frames`
+  }
+
+  defaultCompletionCheckPasses(item) {
+    return item.agent.actionIsComplete()
+  }
+
+  description(item) {
+    return `${item.propertyName} ${item.changeType} ${item.propertyValue}`
   }
 }

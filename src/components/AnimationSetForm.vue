@@ -30,7 +30,7 @@
 <script>
 import { ref } from 'vue'
 import { useStore } from '../store/mainStore.js'
-import { AnimationSet } from "../classes/Sprite.js"
+import { createAnimationSetObject } from "../classes/Sprite.js"
 
 export default {
   name: 'AnimationSetForm',
@@ -69,7 +69,7 @@ export default {
         },
         sheets: itemForm.value.sheets
       }
-      store.animationSets.push(new AnimationSet(data))
+      store.animationSets.push(createAnimationSetObject(data))
 
       // 'save' to avoid inputting all after each page refresh
       localStorage.setItem('pondlifeSpriteMaps', JSON.stringify(store.animationSets))

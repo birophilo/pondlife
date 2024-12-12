@@ -1,5 +1,6 @@
-import { Sprite } from "./Sprite.js" 
-import { get8WayDirection } from "../utils.js"
+import { Sprite } from './Sprite.js'
+import { ActionHandler } from './Action.js'
+import { get8WayDirection } from '../utils.js'
 
 export default class Agent extends Sprite {
 
@@ -128,7 +129,9 @@ export default class Agent extends Sprite {
 
   actionIsComplete() {
     if (this.currentAction) {
-      return this.currentAction.defaultCompletionCheckPasses()
+      /* SELECT CORRECT ACTION HANDLER */
+      const handler = ActionHandler
+      return handler.defaultCompletionCheckPasses(this.currentAction)
     }
   }
 

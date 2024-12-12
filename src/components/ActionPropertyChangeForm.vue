@@ -77,7 +77,7 @@
 
 <script>
 import { ref } from 'vue'
-import { PropertyChange } from '../classes/Action.js'
+import { createPropertyChange } from '../classes/Action.js'
 import { useStore } from '../store/mainStore.js'
 
 export default {
@@ -106,7 +106,7 @@ export default {
         agentChoiceMethod: itemForm.value.agentChoiceMethod,
         target: itemForm.value.target
       }
-      const propChange = new PropertyChange(
+      const propChange = createPropertyChange(
         null,
         itemForm.value.target,
         itemForm.value.property,

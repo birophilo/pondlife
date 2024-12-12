@@ -23,7 +23,7 @@
 <script>
 import { ref } from 'vue'
 import Agent from '../classes/Agent.js'
-import AgentType from '../classes/AgentType.js'
+import { createAgentTypeObject } from '../classes/AgentType.js'
 import { AgentMenuIcon } from '../classes/SelectionMenu.js'
 import { useStore } from '../store/mainStore.js'
 
@@ -67,7 +67,7 @@ export default {
         }
       }
 
-      store.agentTypes[agentTypeName] = new AgentType(agentData.config)
+      store.agentTypes[agentTypeName] = createAgentTypeObject(agentData.config)
 
       store.agentItems[agentTypeName] = []
 
