@@ -145,7 +145,7 @@ export class ActionInterval extends Action {
 
   start(globals) {
     if (this.args.spriteSheet) {
-      this.agent.useSpriteSheet(this.args.spriteSheet)
+      this.agent.useSpriteSheet(this.args.spriteSheet,)
     }
     const currentFrame = globals.animationFrameId
     this.startFrame = currentFrame
@@ -361,9 +361,9 @@ export class ActionHandler {
   }
 
   // eslint-disable-next-line
-  check(item, stateData, globals) {
+  check(item, stateData, globals, agentHandler) {
     console.log(item.actionName)
-    if (this.defaultCompletionCheckPasses(item)) {
+    if (this.defaultCompletionCheckPasses(item, agentHandler)) {
       item.isComplete = true
     }
     if (item.changesApplied === true) {
@@ -402,9 +402,9 @@ export class ActionGoToHandler extends ActionHandler {
     item.agent.currentStateName = item.stateName
   }
 
-  defaultCompletionCheckPasses(item) {
+  defaultCompletionCheckPasses(item, agentHandler) {
     // console.log('at destination', this.agent.atDestination())
-    return item.agent.atDestination()
+    return agentHandler.atDestination(item.agent)
   }
 }
 
@@ -442,9 +442,9 @@ export class ActionIntervalHandler extends ActionHandler {
     A timer object; an 'action' that just waits for a specified frame duration.
   */
 
-  start(item, globals) {
+  start(item, globals, agentHandler) {
     if (item.args.spriteSheet) {
-      item.agent.useSpriteSheet(item.args.spriteSheet)
+      agentHandler.useSpriteSheet(item.args.spriteSheet, item.agent)
     }
     const currentFrame = globals.animationFrameId
     item.startFrame = currentFrame
@@ -455,7 +455,7 @@ export class ActionIntervalHandler extends ActionHandler {
     return item.isComplete
   }
 
-  check(item, stateData, globals) {
+  check(item, stateData, globals, agentHandler) {
     const currentFrame = globals.animationFrameId
     const timerExpired = currentFrame - (item.startFrame + item.args.duration) >= 0
 
@@ -463,7 +463,7 @@ export class ActionIntervalHandler extends ActionHandler {
       item.isComplete = true
     }
 
-    super.check(item, stateData, globals)
+    super.check(item, stateData, globals, agentHandler)
   }
 }
 
@@ -509,11 +509,20 @@ export class PropertyChangeHandler {
     item.agent.currentStateName = `waiting for ${item.duration} frames`
   }
 
-  defaultCompletionCheckPasses(item) {
-    return item.agent.actionIsComplete()
+  defaultCompletionCheckPasses(item, agentHandler) {
+    return agentHandler.actionIsComplete(item.agent)
   }
 
   description(item) {
     return `${item.propertyName} ${item.changeType} ${item.propertyValue}`
   }
+}
+
+
+export const ACTION_HANDLERS = {
+  'goTo': ActionGoToHandler,
+  'change': ActionPropertyChangesHandler,
+  'interval': ActionIntervalHandler,
+  'spawnAgent': ActionSpawnAgentHandler,
+  'removeAgent': ActionRemoveAgentHandler
 }

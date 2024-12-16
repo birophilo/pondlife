@@ -15,6 +15,7 @@
 <script>
 import { ref } from 'vue'
 import { useStore } from '../store/mainStore.js'
+import { AgentHandler } from '../classes/Agent'
 
 export default {
   name: 'SetPropertyForm',
@@ -28,10 +29,12 @@ export default {
         propertyValue: 0
       })
 
+    const agentHandler = new AgentHandler()
+
     const setAgentProperty = () => {
       const propName = propertyForm.value.propertyName
       const propValue = Number(propertyForm.value.propertyValue)
-      store.selectedAgent.setProperty(propName, propValue)
+      agentHandler.setProperty(propName, propValue, store.selectedAgent)
       propertyForm.value.propertyName = ''
       propertyForm.value.propertyValue = 0
       isAdding.value = false

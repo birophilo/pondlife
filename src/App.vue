@@ -112,14 +112,7 @@ import { createAgentTypeObject } from './classes/AgentType.js'
 import { createAgentObject, AgentHandler, Agent } from './classes/Agent.js' // delete Agent
 import { createConditionObject, createPresetConditionObject } from './classes/Condition.js'
 import { AgentMenu, AgentMenuIcon, DeleteButton, AgentPreview } from './classes/SelectionMenu.js'
-import { 
-  ActionHandler,
-  ActionGoToHandler,
-  ActionPropertyChangesHandler,
-  ActionIntervalHandler,
-  ActionSpawnAgentHandler,
-  ActionRemoveAgentHandler
-} from './classes/Action.js'
+import { ActionHandler, ACTION_HANDLERS } from './classes/Action.js'
 import CreateAgentTypeForm from './components/CreateAgentTypeForm.vue'
 import MenuAgentType from './components/MenuAgentType.vue'
 import SetPropertyForm from './components/SetPropertyForm.vue'
@@ -141,20 +134,11 @@ import {
 } from './initialData.js'
 
 
-const ACTION_HANDLERS = {
-  'goTo': ActionGoToHandler,
-  'change': ActionPropertyChangesHandler,
-  'interval': ActionIntervalHandler,
-  'spawnAgent': ActionSpawnAgentHandler,
-  'removeAgent': ActionRemoveAgentHandler
-}
-
 let canvas;
 let c;  // canvas context
 
 let dayLength = 1000 // frames
 const backgroundColor = 'rgb(220, 220, 220)'
-
 
 export default {
   name: 'App',
@@ -233,7 +217,7 @@ export default {
             store.agentTypes[agentTypeName].config  // config
           )
           const handler = new AgentHandler()
-          handler.useSpritesheet(newAgent)
+          handler.useSpriteSheet('idle', newAgent)
 
           store.agentItems[agentTypeName].push(newAgent)
         })
@@ -286,6 +270,8 @@ export default {
       agent.currentAction = null
     }
 
+    const agentHandler = new AgentHandler()
+
     /* ANIMATE */
 
     const animate = () => {
@@ -303,14 +289,14 @@ export default {
       // update each agent of each agent type
       agentTypeNames.forEach(agentTypeName => {
         store.agentItems[agentTypeName].forEach(agent => {
-          agent.update(c, {}, store.GlobalSettings)
+          agentHandler.update(c, {}, store.GlobalSettings, agent)
 
           let emissions = {agentsToDelete: [], agentsToSpawn: []}
 
           if (agent.currentAction) {
             const handlerClass = ACTION_HANDLERS[agent.currentAction.actionType]
             const handler = new handlerClass()
-            if (handler.defaultCompletionCheckPasses(agent.currentAction) === true) {
+            if (handler.defaultCompletionCheckPasses(agent.currentAction, agentHandler) === true) {
               setNextActionOrNull(agent)
             }
 
@@ -321,12 +307,21 @@ export default {
                   // console.log('checking')
                   const handlerClass = ACTION_HANDLERS[agent.currentAction.actionType]
                   const handler = new handlerClass()
-                  handler.check(agent.currentAction, agent.stateData, store.GlobalSettings)
+                  handler.check(
+                    agent.currentAction,
+                    agent.stateData,
+                    store.GlobalSettings,
+                    agentHandler
+                  )
                 } else {
                   agent.currentAction.inProgress = true
                   const handlerClass = ACTION_HANDLERS[agent.currentAction.actionType]
                   const handler = new handlerClass()
-                  const emissionsFromAction = handler.start(agent.currentAction, store.GlobalSettings) // globals = {}?
+                  const emissionsFromAction = handler.start(
+                    agent.currentAction,
+                    store.GlobalSettings,
+                    agentHandler
+                  ) // globals = {}?
                   if (emissionsFromAction) {
                     if (emissionsFromAction.agentsToDelete) {
                       emissions.agentsToDelete = emissions.agentsToDelete.concat(emissionsFromAction.agentsToDelete)
@@ -342,7 +337,7 @@ export default {
 
           // go into 'idle' mode if no more actions
           if (agent.currentAction === null && agent.currentStateName !== 'idle') {
-            agent.idle()
+            agentHandler.idle(agent)
           }
 
           if (emissions) {
@@ -367,7 +362,7 @@ export default {
                   store.agentTypes[agentType].config  // config
                 )
                 const handler = new AgentHandler()
-                handler.useSpritesheet(newAgent)
+                handler.useSpriteSheet('idle', newAgent)
 
                 store.agentItems[agentType].push(newAgent)
               })
@@ -446,7 +441,7 @@ export default {
       if (action.args.agentChoiceMethod === 'nearest' && action.args.destinationType === 'agent') {
         const agentTypeName = action.args.agentType
         const agentItems = store.agentItems[agentTypeName]
-        const targetAgent = store.selectedAgent.getClosestAgent(agentItems)
+        const targetAgent = agentHandler.getClosestAgent(agentItems)
         action.args.target = targetAgent
       } else if (action.args.agentChoiceMethod === 'all') {
         const agentTypeName = action.args.agentType
@@ -462,7 +457,7 @@ export default {
             if (change.args.agentChoiceMethod === 'nearest') {
               const agentTypeName = change.args.agentType
               const agentItems = store.agentItems[agentTypeName]
-              const targetAgent = store.selectedAgent.getClosestAgent(agentItems)
+              const targetAgent = agentHandler.getClosestAgent(agentItems)
               change.target = targetAgent
             } else if (change.args.agentChoiceMethod === 'all') {
               const agentTypeName = change.args.agentType
@@ -496,7 +491,7 @@ export default {
         store.agentTypes[agentTypeName].config
       )
       const handler = new AgentHandler()
-      handler.useSpritesheet(newAgent)
+      handler.useSpriteSheet('idle', newAgent)
       agentItems.push(newAgent)
     }
 

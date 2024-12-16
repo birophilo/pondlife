@@ -1,5 +1,5 @@
 import { Sprite, createSpriteObject, SpriteHandler } from './Sprite.js'
-import { ActionHandler } from './Action.js'
+import { ACTION_HANDLERS } from './Action.js'
 import { get8WayDirection } from '../utils.js'
 
 export default class Agent extends Sprite {
@@ -129,9 +129,7 @@ export default class Agent extends Sprite {
 
   actionIsComplete() {
     if (this.currentAction) {
-      /* SELECT CORRECT ACTION HANDLER */
-      const handler = ActionHandler
-      return handler.defaultCompletionCheckPasses(this.currentAction)
+      return this.currentAction.defaultCompletionCheckPasses(this.currentAction)
     }
   }
 
@@ -275,10 +273,6 @@ export function createAgentObject (
 
 export class AgentHandler extends SpriteHandler {
 
-  constructor() {
-    super()
-  }
-
   travel(item) {
     if (item.destination) {
       const xDistance = item.destination.position.x - item.position.x
@@ -293,7 +287,7 @@ export class AgentHandler extends SpriteHandler {
 
       if (item.config.animationSet !== null) {
         const direction = get8WayDirection(xVelocity, yVelocity)
-        if (item.currentDirection !== direction) item.useSpriteSheet(direction)
+        if (item.currentDirection !== direction) this.useSpriteSheet(direction, item)
         item.currentDirection = direction
       }
     }
@@ -328,18 +322,12 @@ export class AgentHandler extends SpriteHandler {
     return atDestination
   }
 
-  actionChangesApplied(item) {
-    if (item.currentAction) {
-      return item.currentAction.changesApplied
-    }
-    return false
-  }
-
   actionIsComplete(item) {
     if (item.currentAction) {
       /* SELECT CORRECT ACTION HANDLER */
-      const handler = ActionHandler
-      return handler.defaultCompletionCheckPasses(item.currentAction)
+      const actionName = item.currentAction.actionName
+      const handler = new ACTION_HANDLERS[actionName]()
+      return handler.defaultCompletionCheckPasses(item.currentAction, item)
     }
   }
 
@@ -362,7 +350,7 @@ export class AgentHandler extends SpriteHandler {
 
   draw(c, item) {
     super.draw(c, item)
-    this.updateLabel()
+    this.updateLabel(item)
   }
 
   update(c, newData, globals, item) {
@@ -412,7 +400,7 @@ export class AgentHandler extends SpriteHandler {
     item.currentStateName = 'idle'
 
     if (item.animationSet !== null) {
-      this.useSpriteSheet('idle')
+      this.useSpriteSheet('idle', item)
     }
   }
 }
