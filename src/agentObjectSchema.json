@@ -1,0 +1,54 @@
+{
+  "position": "PositionXYObject",
+  "image": {},
+  "defaultImage": "/img/thumbnails/customer-thumbnail.png",
+  "defaultFrames": "FramesObject",
+  "frames": "FramesObject",
+  "animationSet": "AnimationSetObject",
+  "num": 1,
+  "name": "customer 1",
+  "agentType": "customer",
+  "width": 30,
+  "height": 40,
+  "config": {
+    "width": 30,
+    "height": 40,
+    "offset": "PositionXYObject",
+    "scale": 0.7,
+    "nominalSpeed": 0.02,
+    "previewImage": "/img/thumbnails/customer-thumbnail.png",
+    "animationSet": "AnimationSetObject",
+    "thumbnail": "/img/thumbnails/customer-thumbnail.png"
+  },
+  "collisionArea": {
+    "x": 900,
+    "y": 400,
+    "width": 30,
+    "height": 40
+  },
+  "center": "PositionXYObject",
+  "destination": null,
+  "nominalSpeed": 0.02,
+  "homePosition": "PositionXYObject",
+  "home": {
+    "position": "PositionXYObject",
+    "width": 80,
+    "height": 80,
+    "name": "home",
+    "id": 1
+  },
+  "speed": 2,
+  "reachedDestination": false,
+  "stateData": {},
+  "currentAction": null,
+  "currentActionName": "",
+  "currentStateName": "idle",
+  "currentDirection": null,
+  "labelElement": {},
+  "globals": {
+    "globalSpeed": 100,
+    "animationFrameId": 2252
+  },
+  "labelTextProperties": "",
+  "labelText": "idle"
+}

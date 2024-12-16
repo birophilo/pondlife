@@ -109,7 +109,7 @@ import { useStore } from './store/mainStore.js'
 
 import { pointIsInArea } from './utils.js'
 import { createAgentTypeObject } from './classes/AgentType.js'
-import Agent from './classes/Agent.js'
+import { createAgentObject, AgentHandler, Agent } from './classes/Agent.js' // delete Agent
 import { createConditionObject, createPresetConditionObject } from './classes/Condition.js'
 import { AgentMenu, AgentMenuIcon, DeleteButton, AgentPreview } from './classes/SelectionMenu.js'
 import { 
@@ -224,13 +224,18 @@ export default {
       agentTypeNames.forEach(agentTypeName => {
         store.agentItems[agentTypeName] = []
         initialAgentInstances[agentTypeName].forEach((item, i) => {
-          store.agentItems[agentTypeName].push( new Agent({
-            agentTypeName: agentTypeName,
-            position: {x: item.x, y: item.y},
-            num: i + 1,
-            globals: store.GlobalSettings,
-            config: store.agentTypes[agentTypeName].config
-          }))
+
+          let newAgent = createAgentObject(
+            agentTypeName, // agentTypeName
+            {x: item.x, y: item.y},  // position
+            i + 1,  // num
+            store.GlobalSettings, // globals
+            store.agentTypes[agentTypeName].config  // config
+          )
+          const handler = new AgentHandler()
+          handler.useSpritesheet(newAgent)
+
+          store.agentItems[agentTypeName].push(newAgent)
         })
       })
 
@@ -319,7 +324,6 @@ export default {
                   handler.check(agent.currentAction, agent.stateData, store.GlobalSettings)
                 } else {
                   agent.currentAction.inProgress = true
-                  /* CHANGE TO SPECIFIC ACTION HANDLER, USE DICT */
                   const handlerClass = ACTION_HANDLERS[agent.currentAction.actionType]
                   const handler = new handlerClass()
                   const emissionsFromAction = handler.start(agent.currentAction, store.GlobalSettings) // globals = {}?
@@ -354,13 +358,18 @@ export default {
             if (emissions.agentsToSpawn?.length > 0) {
               emissions.agentsToSpawn.forEach(args => {
                 const agentType = args.agentType
-                store.agentItems[agentType].push( new Agent({
-                  agentTypeName: agentType,
-                  position: args.position,
-                  num: store.agentItems[agentType].length + 1,
-                  globals: store.GlobalSettings,
-                  config: store.agentTypes[agentType].config
-                }))
+
+                let newAgent = createAgentObject(
+                  agentType,  // agentTypeName
+                  args.position,  // position
+                  store.agentItems[agentType].length + 1,  // num
+                  store.GlobalSettings,  // globals
+                  store.agentTypes[agentType].config  // config
+                )
+                const handler = new AgentHandler()
+                handler.useSpritesheet(newAgent)
+
+                store.agentItems[agentType].push(newAgent)
               })
             }
           }
@@ -474,18 +483,21 @@ export default {
     const addAgent = (agentTypeName) => {
       const agentItems = store.agentItems[agentTypeName]
       const num = agentItems.length + 1
-      agentItems.push( new Agent({
-        agentTypeName: agentTypeName,
-        position: {
+      let newAgent = createAgentObject(
+        agentTypeName,
+        {
           x: store.mouse.x - store.agentTypes[agentTypeName].config.width / 2,
           y: store.mouse.y - store.agentTypes[agentTypeName].config.height / 2
         },
-        num: num,
-        globals: store.GlobalSettings,
-        offset: store.agentTypes[agentTypeName].config.offset,
-        scale: store.agentTypes[agentTypeName].config.scale,
-        config: store.agentTypes[agentTypeName].config
-      }))
+        num,
+        store.GlobalSettings,
+        store.agentTypes[agentTypeName].config.offset,
+        store.agentTypes[agentTypeName].config.scale,
+        store.agentTypes[agentTypeName].config
+      )
+      const handler = new AgentHandler()
+      handler.useSpritesheet(newAgent)
+      agentItems.push(newAgent)
     }
 
     const endDay = () => {

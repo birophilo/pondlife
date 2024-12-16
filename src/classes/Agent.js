@@ -1,4 +1,4 @@
-import { Sprite } from './Sprite.js'
+import { Sprite, createSpriteObject, SpriteHandler } from './Sprite.js'
 import { ActionHandler } from './Action.js'
 import { get8WayDirection } from '../utils.js'
 
@@ -204,6 +204,214 @@ export default class Agent extends Sprite {
     this.currentStateName = 'idle'
 
     if (this.animationSet !== null) {
+      this.useSpriteSheet('idle')
+    }
+  }
+}
+
+
+export function createAgentObject (
+    agentTypeName,
+    position = { x: 0, y: 0 },
+    num = 0,
+    globals,
+    config
+  ) {
+
+    let spriteObject = createSpriteObject(
+      position,
+      config.previewImage,
+      config.animationSet,
+      config.initialSpriteSheet
+    )
+
+    let agentObject = {
+      num: num,
+      name: `${agentTypeName} ${num}`,
+      agentType: agentTypeName,
+      width: config.width,
+      height: config.height,
+      position: position,
+      config: config,
+      destination: null,
+      reachedDestination: false,
+      nominalSpeed: config.nominalSpeed,
+      speed: config.nominalSpeed * globals.globalSpeed,
+      stateData: {},  // stateful configurable properties/parameters/variables, e.g. money: 100
+      currentAction: null,
+      currentActionName: '',
+      currentStateName: '',
+      currentDirection: null  // temporary approach?
+    }
+
+    let item = {...agentObject, ...spriteObject}
+
+    item.collisionArea = {
+      ...position,
+      width: config.width,
+      height: config.height
+    }
+
+    item.center = {...position}
+    item.homePosition = {...position}
+
+    item.home = {
+      position: {...position},
+      width: 80,
+      height: 80,
+      name: 'home',
+      id: 1
+    }
+
+    item.labelElement = document.createElement('div')
+    item.labelElement.classList.add('canvas-agent-label')
+    const canvasContainer = document.getElementsByClassName('canvas-container')[0]
+    canvasContainer.appendChild(item.labelElement)
+
+    return item
+}
+
+
+
+export class AgentHandler extends SpriteHandler {
+
+  constructor() {
+    super()
+  }
+
+  travel(item) {
+    if (item.destination) {
+      const xDistance = item.destination.position.x - item.position.x
+      const yDistance = item.destination.position.y - item.position.y
+      const angle = Math.atan2(yDistance, xDistance)
+
+      const xVelocity = Math.cos(angle) * item.speed
+      const yVelocity = Math.sin(angle) * item.speed
+
+      item.position.x += xVelocity
+      item.position.y += yVelocity
+
+      if (item.config.animationSet !== null) {
+        const direction = get8WayDirection(xVelocity, yVelocity)
+        if (item.currentDirection !== direction) item.useSpriteSheet(direction)
+        item.currentDirection = direction
+      }
+    }
+
+    item.center = {
+      x: item.position.x + item.width / 2,
+      y: item.position.y + item.height / 2
+    }
+
+    item.collisionArea = {
+      x: item.position.x,
+      y: item.position.y,
+      width: item.width,
+      height: item.height
+    }
+  }
+
+  atDestination(item) {
+    if (!item.destination) {
+      return false
+    }
+    const destinationLeftExtent = item.destination.position.x - 20
+    const destinationRightExtent = item.destination.position.x + item.destination.width + 20
+    const destinationTopExtent = item.destination.position.y - 20
+    const destinationBottomExtent = item.destination.position.y + item.destination.height + 20
+    const atDestination = (
+      item.center.x > destinationLeftExtent &&
+      item.center.x < destinationRightExtent &&
+      item.center.y > destinationTopExtent &&
+      item.center.y < destinationBottomExtent
+    )
+    return atDestination
+  }
+
+  actionChangesApplied(item) {
+    if (item.currentAction) {
+      return item.currentAction.changesApplied
+    }
+    return false
+  }
+
+  actionIsComplete(item) {
+    if (item.currentAction) {
+      /* SELECT CORRECT ACTION HANDLER */
+      const handler = ActionHandler
+      return handler.defaultCompletionCheckPasses(item.currentAction)
+    }
+  }
+
+  updateLabel(item) {
+    /* Update the display text placed just above the agent */
+    const properties = Object.keys(item.stateData)
+    const propertiesText = properties.map(key => `${key}: ${item.stateData[key]}`)
+    item.labelTextProperties = propertiesText.join('<br />')
+    item.labelText = properties.length
+      ? `${item.labelTextProperties}<br />${item.currentStateName}`
+      : `${item.currentStateName}`
+
+    const lineHeight = 12
+    const yOffset = 12 + (lineHeight * properties.length)
+
+    item.labelElement.style.top = `${item.position.y - yOffset}px`
+    item.labelElement.style.left = `${item.position.x}px`
+    item.labelElement.innerHTML = item.labelText
+  }
+
+  draw(c, item) {
+    super.draw(c, item)
+    this.updateLabel()
+  }
+
+  update(c, newData, globals, item) {
+
+    super.update(globals, item)
+
+    item.stateData = {...item.stateData, ...newData}
+    item.globals = globals
+    item.speed = item.nominalSpeed * item.globals.globalSpeed
+
+    this.updateLabel(item)
+
+    this.draw(c, item)
+    if (item.currentAction?.actionType === 'goTo') {
+      this.travel(item)
+    }
+
+  }
+
+  endDay(item) {
+    item.stateData.money = 100
+  }
+
+  getDistanceToAgent(item) {
+    const xDiff = item.center.x - item.center.x
+    const yDiff = item.center.y - item.center.y
+    return Math.hypot(xDiff, yDiff)
+  }
+
+  getClosestAgent(agentItems) {
+    let closestDistance = this.getDistanceToAgent(agentItems[0])
+    let closestAgent = agentItems[0]
+    for (let i = 1; i < agentItems.length; i++) {
+      if (this.getDistanceToAgent(agentItems[i]) < closestDistance) {
+        closestAgent = agentItems[i]
+      }
+    }
+    return closestAgent
+  }
+
+  setProperty(property, value, item) {
+    item.stateData[property] = value
+  }
+
+  idle(item) {
+    item.destination = null
+    item.currentStateName = 'idle'
+
+    if (item.animationSet !== null) {
       this.useSpriteSheet('idle')
     }
   }
