@@ -112,7 +112,14 @@ import { createAgentTypeObject } from './classes/AgentType.js'
 import Agent from './classes/Agent.js'
 import { createConditionObject, createPresetConditionObject } from './classes/Condition.js'
 import { AgentMenu, AgentMenuIcon, DeleteButton, AgentPreview } from './classes/SelectionMenu.js'
-import { ActionHandler } from './classes/Action.js'
+import { 
+  ActionHandler,
+  ActionGoToHandler,
+  ActionPropertyChangesHandler,
+  ActionIntervalHandler,
+  ActionSpawnAgentHandler,
+  ActionRemoveAgentHandler
+} from './classes/Action.js'
 import CreateAgentTypeForm from './components/CreateAgentTypeForm.vue'
 import MenuAgentType from './components/MenuAgentType.vue'
 import SetPropertyForm from './components/SetPropertyForm.vue'
@@ -133,6 +140,14 @@ import {
   initialConditions
 } from './initialData.js'
 
+
+const ACTION_HANDLERS = {
+  'goTo': ActionGoToHandler,
+  'change': ActionPropertyChangesHandler,
+  'interval': ActionIntervalHandler,
+  'spawnAgent': ActionSpawnAgentHandler,
+  'removeAgent': ActionRemoveAgentHandler
+}
 
 let canvas;
 let c;  // canvas context
@@ -288,8 +303,8 @@ export default {
           let emissions = {agentsToDelete: [], agentsToSpawn: []}
 
           if (agent.currentAction) {
-            /* CHANGE TO SPECIFIC ACTION HANDLER, USE DICT */
-            const handler = ActionHandler
+            const handlerClass = ACTION_HANDLERS[agent.currentAction.actionType]
+            const handler = new handlerClass()
             if (handler.defaultCompletionCheckPasses(agent.currentAction) === true) {
               setNextActionOrNull(agent)
             }
@@ -299,13 +314,14 @@ export default {
               if (agent.currentAction.isComplete === false) {
                 if (agent.currentAction.inProgress === true) {
                   // console.log('checking')
-                  /* CHANGE TO SPECIFIC ACTION HANDLER, USE DICT */
-                  const handler = ActionHandler
+                  const handlerClass = ACTION_HANDLERS[agent.currentAction.actionType]
+                  const handler = new handlerClass()
                   handler.check(agent.currentAction, agent.stateData, store.GlobalSettings)
                 } else {
                   agent.currentAction.inProgress = true
                   /* CHANGE TO SPECIFIC ACTION HANDLER, USE DICT */
-                  const handler = ActionHandler
+                  const handlerClass = ACTION_HANDLERS[agent.currentAction.actionType]
+                  const handler = new handlerClass()
                   const emissionsFromAction = handler.start(agent.currentAction, store.GlobalSettings) // globals = {}?
                   if (emissionsFromAction) {
                     if (emissionsFromAction.agentsToDelete) {
@@ -451,7 +467,8 @@ export default {
 
     const cloneAction = (action) => {
       setDynamicActionTargetAgents(action)
-      store.selectedAgent.currentAction = ActionHandler.clone(action, store.selectedAgent)
+      let actionHandler = new ActionHandler()
+      store.selectedAgent.currentAction = actionHandler.clone(action, store.selectedAgent)
     }
 
     const addAgent = (agentTypeName) => {

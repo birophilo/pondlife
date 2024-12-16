@@ -363,7 +363,7 @@ export class ActionHandler {
   // eslint-disable-next-line
   check(item, stateData, globals) {
     console.log(item.actionName)
-    if (this.defaultCompletionCheckPasses()) {
+    if (this.defaultCompletionCheckPasses(item)) {
       item.isComplete = true
     }
     if (item.changesApplied === true) {
