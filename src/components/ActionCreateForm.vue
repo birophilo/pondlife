@@ -213,7 +213,7 @@ import {
 const DEFAULT_ACTION_TYPE = 'goTo'
 
 
-const ACTION_TYPES = {
+const CREATE_ACTION_FUNCTIONS = {
   'goTo': createActionGoTo,
   'change': createActionPropertyChanges,
   'interval': createActionInterval,
@@ -283,8 +283,15 @@ export default {
         args.position = {x: pointX, y: pointY}
       }
 
-      let actionClass = ACTION_TYPES[actionType]
-      let newAction = new actionClass(null, args)
+      let actionFunction = CREATE_ACTION_FUNCTIONS[actionType]
+
+      console.log("ACTION FUNCTION")
+      console.log(actionFunction)
+      let newAction = actionFunction(null, args)
+
+      console.log("NEW ACTION")
+      console.log(newAction)
+
       store.actions.push(newAction)
 
       resetForm()

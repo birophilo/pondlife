@@ -262,7 +262,8 @@ export default {
         if (result === true) {
           const nextAction = agent.currentAction.transitions[i].nextAction
           setDynamicActionTargetAgents(nextAction)
-          agent.currentAction = ActionHandler.clone(nextAction, agent)
+          let actionHandler = new ActionHandler()
+          agent.currentAction = actionHandler.clone(nextAction, agent)
           return
         }
       }
@@ -471,8 +472,10 @@ export default {
 
     const cloneAction = (action) => {
       setDynamicActionTargetAgents(action)
+      console.log("ACTION IN CLONE")
+      console.log(action)
       let actionHandler = new ActionHandler()
-      store.selectedAgent.currentAction = actionHandler.clone(action, store.selectedAgent)
+      store.selectedAgent.currentAction = actionHandler.clone(action, store.selectedAgent, action.args)
     }
 
     const addAgent = (agentTypeName) => {

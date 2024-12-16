@@ -249,7 +249,7 @@ export class PropertyChange {
 /* FUNCTIONS TO CREATE OBJECTS */
 
 
-export function createActionObject (agent = null, args, conditions = [], transitions = []) {
+export function createActionObject (agent = null, args, conditions = [], transitions = [], propertyChanges = []) {
 
   const item = {
     id: args.id,
@@ -270,6 +270,8 @@ export function createActionObject (agent = null, args, conditions = [], transit
       transition.condition.agent = this.agent
     })
   }
+
+  if (item.propertyChanges) item.propertyChanges = propertyChanges
 
   return item
 }
@@ -298,6 +300,7 @@ export function createActionPropertyChanges (
       change.agent = this.agent
     })
   }
+  return item
 }
 
 
@@ -372,7 +375,7 @@ export class ActionHandler {
   }
 
   clone(item, agent, args) {
-    const action =  createActionObject(
+    const action = createActionObject(
       agent,
       item.args = {...item.args, ...args},
       item.conditions,
@@ -413,6 +416,8 @@ export class ActionPropertyChangesHandler extends ActionHandler {
 
   // eslint-disable-next-line
   start(item, globals) {
+    console.log("ITEM")
+    console.log(item)
     item.propertyChanges.forEach(change => {
 
       const value = change.propertyValue

@@ -116,7 +116,7 @@ export default {
       itemForm.value = {}
     }
 
-    const propertyChangeHandler = PropertyChangeHandler
+    const propertyChangeHandler = new PropertyChangeHandler()
 
     return {
       store,
