@@ -249,7 +249,13 @@ export class PropertyChange {
 /* FUNCTIONS TO CREATE OBJECTS */
 
 
-export function createActionObject (agent = null, args, conditions = [], transitions = [], propertyChanges = []) {
+export function createActionObject (
+  agent = null,
+  args,
+  conditions = [],
+  transitions = [],
+  propertyChanges = []
+) {
 
   const item = {
     id: args.id,
@@ -271,7 +277,7 @@ export function createActionObject (agent = null, args, conditions = [], transit
     })
   }
 
-  if (item.propertyChanges) item.propertyChanges = propertyChanges
+  if (propertyChanges) item.propertyChanges = propertyChanges
 
   return item
 }

@@ -472,10 +472,9 @@ export default {
 
     const cloneAction = (action) => {
       setDynamicActionTargetAgents(action)
-      console.log("ACTION IN CLONE")
-      console.log(action)
-      let actionHandler = new ActionHandler()
-      store.selectedAgent.currentAction = actionHandler.clone(action, store.selectedAgent, action.args)
+      const handlerClass = ACTION_HANDLERS[action.actionType]
+      const handler = new handlerClass()
+      store.selectedAgent.currentAction = handler.clone(action, store.selectedAgent, action.args)
     }
 
     const addAgent = (agentTypeName) => {
