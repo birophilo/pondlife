@@ -48,7 +48,22 @@ export const useStore = defineStore({
       ['upLeft', 'up', 'upRight'],
       ['left', 'idle', 'right'],
       ['downLeft', 'down', 'downRight']
-    ]
+    ],
 
-  })
+    sceneData: {}
+
+  }),
+  actions: {
+    async fetchScene1() {
+      this.loading = true
+      this.error = null
+      try {
+        const response = await fetch('http://localhost:8000/scene-1')
+        const data = await response.json()
+        this.sceneData = data
+      } catch (error) {
+        this.error = error.message
+      }
+    }
+  }
 })

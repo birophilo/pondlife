@@ -10,6 +10,8 @@
     <div class="menu-section">
       <div class="day-container">
         Day: <span id="day-number">{{ store.dayNumber }}</span>
+
+        {{ JSON.stringify(store.sceneData) }}
       </div>
       <div class="speed-slide-container">
         <div>
@@ -158,6 +160,12 @@ export default {
   },
   setup() {
     const store = useStore()
+
+    const fetchScene1Data = async () => {
+      await store.fetchScene1()
+    }
+
+    onMounted(fetchScene1Data)
 
     // localStorage.setItem('pondlifeSpriteSheets', JSON.stringify([]))
     // localStorage.setItem('pondlifeSpriteMaps', JSON.stringify([]))
