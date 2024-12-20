@@ -60,7 +60,8 @@ export const useStore = defineStore({
       try {
         const response = await fetch('http://localhost:8000/scene-1')
         const data = await response.json()
-        this.sceneData = data
+        this.sceneData = data.data
+        this.sceneId = data.id
       } catch (error) {
         this.error = error.message
       }

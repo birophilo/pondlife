@@ -115,10 +115,7 @@ export default {
         args
       )
       const act = store.actions.find(a => a.actionName === props.action.actionName)
-      console.log("ACT")
-      console.log(act)
       act.propertyChanges.push(propChange)
-      console.log(act)
       isAdding.value = false
     }
 

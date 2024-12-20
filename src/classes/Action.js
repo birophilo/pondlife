@@ -422,8 +422,6 @@ export class ActionPropertyChangesHandler extends ActionHandler {
 
   // eslint-disable-next-line
   start(item, globals) {
-    console.log("ITEM")
-    console.log(item)
     item.propertyChanges.forEach(change => {
 
       const value = change.propertyValue

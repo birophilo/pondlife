@@ -128,13 +128,6 @@ import MenuSpriteSheet from './components/MenuSpriteSheet.vue'
 import AnimationSetForm from './components/AnimationSetForm.vue'
 import MenuAnimationSet from './components/MenuAnimationSet.vue'
 
-import {
-  initialAgentInstances,
-  initialAgentTypes,
-  initialAgentMenuButtons,
-  initialConditions
-} from './initialData.js'
-
 
 let canvas;
 let c;  // canvas context
@@ -163,9 +156,9 @@ export default {
 
     const fetchScene1Data = async () => {
       await store.fetchScene1()
+      loadAgentsAndFixtures()
+      animate()
     }
-
-    onMounted(fetchScene1Data)
 
     // localStorage.setItem('pondlifeSpriteSheets', JSON.stringify([]))
     // localStorage.setItem('pondlifeSpriteMaps', JSON.stringify([]))
@@ -175,7 +168,7 @@ export default {
 
     const loadAgentsAndFixtures = () => {
 
-      initialConditions.forEach(condition => {
+      store.sceneData.conditions.forEach(condition => {
 
         let newCondition
 
@@ -203,7 +196,7 @@ export default {
       store.animationSets = animationSetsData !== null ? animationSetsData : []
       store.spriteSheets = spriteSheetsData !== null ? spriteSheetsData : []
 
-      initialAgentTypes.forEach(agentType => {
+      store.sceneData.agentTypes.forEach(agentType => {
         store.agentTypes[agentType.name] = createAgentTypeObject(agentType)
       })
 
@@ -215,7 +208,7 @@ export default {
       // populate agents from initial data
       agentTypeNames.forEach(agentTypeName => {
         store.agentItems[agentTypeName] = []
-        initialAgentInstances[agentTypeName].forEach((item, i) => {
+        store.sceneData.agentInstances[agentTypeName].forEach((item, i) => {
 
           let newAgent = createAgentObject(
             agentTypeName, // agentTypeName
@@ -232,7 +225,9 @@ export default {
       })
 
       store.itemMenu = new AgentMenu()
-      initialAgentMenuButtons.forEach((agentName, i) => {
+
+      const agentTypeButtonNames = agentTypeNames.filter(name => name !== 'world')
+      agentTypeButtonNames.forEach((agentName, i) => {
         store.agentMenuButtons.push(
           new AgentMenuIcon({
             menu: store.itemMenu,
@@ -520,9 +515,14 @@ export default {
       c.fillStyle = backgroundColor
       c.fillRect(0, 0, canvas.width, canvas.height)
 
-      loadAgentsAndFixtures()
+      fetchScene1Data()
+        // .then(() => loadAgentsAndFixtures())
 
-      animate()
+      // console.log(store.sceneData)
+
+      // loadAgentsAndFixtures()
+
+      // animate()
 
       /* --- CLICK ACTIONS / EVENT LISTENERS --- */
 

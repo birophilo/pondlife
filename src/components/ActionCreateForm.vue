@@ -284,14 +284,7 @@ export default {
       }
 
       let actionFunction = CREATE_ACTION_FUNCTIONS[actionType]
-
-      console.log("ACTION FUNCTION")
-      console.log(actionFunction)
       let newAction = actionFunction(null, args)
-
-      console.log("NEW ACTION")
-      console.log(newAction)
-
       store.actions.push(newAction)
 
       resetForm()
