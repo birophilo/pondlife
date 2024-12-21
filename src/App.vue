@@ -2,7 +2,13 @@
 <div id="container">
 
   <div class="canvas-container">
+
     <canvas></canvas>
+
+    <div class="scene-button-container">
+      <button @click="loadScene(1)">load scene 1</button>
+      <button @click="loadScene(2)">load scene 2</button>
+    </div>
   </div>
 
   <div class="info-container">
@@ -154,8 +160,9 @@ export default {
   setup() {
     const store = useStore()
 
-    const fetchScene1Data = async () => {
-      await store.fetchScene1()
+    const loadScene = async (sceneId) => {
+      store.clearAllData()
+      await store.fetchSceneData(sceneId)
       loadAgentsAndFixtures()
       animate()
     }
@@ -515,15 +522,6 @@ export default {
       c.fillStyle = backgroundColor
       c.fillRect(0, 0, canvas.width, canvas.height)
 
-      fetchScene1Data()
-        // .then(() => loadAgentsAndFixtures())
-
-      // console.log(store.sceneData)
-
-      // loadAgentsAndFixtures()
-
-      // animate()
-
       /* --- CLICK ACTIONS / EVENT LISTENERS --- */
 
       canvas.addEventListener('mousemove', (event) => {
@@ -603,7 +601,8 @@ export default {
       deleteCondition,
       conditionReadableFormat,
       updateThumbnailFileInput,
-      cloneAction
+      cloneAction,
+      loadScene
     }
   },
 

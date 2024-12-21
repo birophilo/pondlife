@@ -5,14 +5,14 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from routers import (
     hello,
-    scene1
+    get_scene
 )
 
 
 def create_application() -> FastAPI:
     application = FastAPI()
     application.include_router(hello.router)
-    application.include_router(scene1.router)
+    application.include_router(get_scene.router)
     return application
 
 

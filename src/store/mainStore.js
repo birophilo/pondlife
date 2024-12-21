@@ -54,17 +54,24 @@ export const useStore = defineStore({
 
   }),
   actions: {
-    async fetchScene1() {
+    async fetchSceneData (sceneId) {
       this.loading = true
       this.error = null
       try {
-        const response = await fetch('http://localhost:8000/scene-1')
+        const response = await fetch(`http://localhost:8000/scene/${sceneId}`)
         const data = await response.json()
         this.sceneData = data.data
         this.sceneId = data.id
       } catch (error) {
         this.error = error.message
       }
+    },
+    clearAllData () {
+      this.conditions = []
+      this.actions = []
+      this.agentItems = []
+      this.agentTypes = []
+      this.agentMenuButtons = []
     }
   }
 })

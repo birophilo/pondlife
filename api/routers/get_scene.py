@@ -9,12 +9,15 @@ root_dir = os.path.dirname(os.path.dirname(__file__))
 data_dir = os.path.join(root_dir, "data")
 
 scene1_path = os.path.join(data_dir, "scene1.json")
+scene2_path = os.path.join(data_dir, "scene2.json")
 
 
-@router.get("/scene-1", status_code=200)
-async def scene1():
+@router.get("/scene/{scene_id}", status_code=200)
+async def getSceneData(scene_id):
 
-    with open(scene1_path) as f:
+    scene_path = os.path.join(data_dir, f"scene{scene_id}.json")
+
+    with open(scene_path) as f:
         data = json.load(f)
 
     return data
