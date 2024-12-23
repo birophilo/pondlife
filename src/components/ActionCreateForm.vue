@@ -6,12 +6,6 @@
   <div v-else>
     <input v-model="itemForm.actionName" type="text" placeholder="name" />
     <br />
-    <!-- <div>
-      <select v-model="itemForm.agentType">
-        <option value="">-- agent type --</option>
-        <option v-for="agentType in store.agentTypes" :value="agentType.name">{{ agentType.name }}</option>
-      </select>
-    </div> -->
 
     <select v-model="itemForm.actionType">
       <!-- World agent cannot travel, only change properties and pause for intervals -->
@@ -36,7 +30,10 @@
       <div v-if="itemForm.destinationType === 'agent'">
         <select v-model="itemForm.agentType">
           <option value="">-- agent type --</option>
-          <option v-for="agentType in store.agentTypes" :value="agentType.name">{{ agentType.name }}</option>
+          <option
+            v-for="[agentType, obj] in Object.entries(store.agentTypes)"
+            :value="obj">{{ agentType }}
+          </option>
         </select>
 
         <form name="agentRadioSelect">
@@ -117,7 +114,10 @@
 
       <select v-model="itemForm.agentType">
         <option value="">-- agent type --</option>
-        <option v-for="agentType in store.agentTypes" :value="agentType.name">{{ agentType.name }}</option>
+        <option
+            v-for="[agentType, obj] in Object.entries(store.agentTypes)"
+            :value="obj">{{ agentType }}
+        </option>
       </select>
 
       <form name="agentRadioSelect">
@@ -163,7 +163,10 @@
 
       <select v-model="itemForm.agentType">
         <option value="">-- agent type --</option>
-        <option v-for="agentType in store.agentTypes" :value="agentType.name">{{ agentType.name }}</option>
+        <option
+            v-for="[agentType, obj] in Object.entries(store.agentTypes)"
+            :value="obj">{{ agentType }}
+        </option>
       </select>
 
       <div>Select point:

@@ -3,7 +3,10 @@
     <div v-if="isEditing === true">
       <select v-model="itemForm.agentType">
         <option value="self">self</option>
-        <option v-for="agentType in store.agentTypes" :value="agentType.name">{{ agentType.name }}</option>
+        <option
+            v-for="[agentType, obj] in Object.entries(store.agentTypes)"
+            :value="obj">{{ agentType }}
+        </option>
       </select>
 
       <form name="agentPropChangeRadioSelect">

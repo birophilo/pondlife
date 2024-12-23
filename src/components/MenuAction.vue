@@ -66,7 +66,10 @@
 
           <select v-model="itemForm.agentType">
             <option value="">-- agent type --</option>
-            <option v-for="agentType in store.agentTypes" :value="agentType.name">{{ agentType.name }}</option>
+            <option
+              v-for="[agentType, obj] in Object.entries(store.agentTypes)"
+              :value="obj">{{ agentType }}
+            </option>
           </select>
 
           <form name="agentRadioSelect">

@@ -16,8 +16,6 @@
     <div class="menu-section">
       <div class="day-container">
         Day: <span id="day-number">{{ store.dayNumber }}</span>
-
-        {{ JSON.stringify(store.sceneData) }}
       </div>
       <div class="speed-slide-container">
         <div>
@@ -162,6 +160,8 @@ export default {
 
     const loadScene = async (sceneId) => {
       store.clearAllData()
+      const agentLabels = document.getElementsByClassName('canvas-agent-label')
+      Array.from(agentLabels).forEach(label => label.remove())
       await store.fetchSceneData(sceneId)
       loadAgentsAndFixtures()
       animate()
@@ -450,12 +450,12 @@ export default {
       */
 
       if (action.args.agentChoiceMethod === 'nearest' && action.args.destinationType === 'agent') {
-        const agentTypeName = action.args.agentType
+        const agentTypeName = action.args.agentType.name
         const agentItems = store.agentItems[agentTypeName]
-        const targetAgent = agentHandler.getClosestAgent(agentItems)
+        const targetAgent = agentHandler.getClosestAgent(store.selectedAgent, agentItems)
         action.args.target = targetAgent
       } else if (action.args.agentChoiceMethod === 'all') {
-        const agentTypeName = action.args.agentType
+        const agentTypeName = action.args.agentType.name
         const agentItems = store.agentItems[agentTypeName]
         action.args.target = agentItems
       }
@@ -467,8 +467,8 @@ export default {
           if (change.args.agentType !== 'self') {
             if (change.args.agentChoiceMethod === 'nearest') {
               const agentTypeName = change.args.agentType
-              const agentItems = store.agentItems[agentTypeName]
-              const targetAgent = agentHandler.getClosestAgent(agentItems)
+              const targetAgents = store.agentItems[agentTypeName]
+              const targetAgent = agentHandler.getClosestAgent(store.selectedAgent, targetAgents)
               change.target = targetAgent
             } else if (change.args.agentChoiceMethod === 'all') {
               const agentTypeName = change.args.agentType

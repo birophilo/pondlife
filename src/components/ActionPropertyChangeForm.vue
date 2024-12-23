@@ -6,8 +6,8 @@
         <option value="">-- agent --</option>
         <option value="self">self</option>
         <option
-          v-for="agent in store.agentTypes"
-          :value="agent.name">{{ agent.name }}
+            v-for="[agentType, obj] in Object.entries(store.agentTypes)"
+            :value="obj">{{ agentType }}
         </option>
       </select>
 

@@ -176,9 +176,10 @@ export default class Agent extends Sprite {
     this.stateData.money = 100
   }
 
-  getDistanceToAgent(agent) {
-    const xDiff = agent.center.x - this.center.x
-    const yDiff = agent.center.y - this.center.y
+
+  getDistanceToAgent(item) {
+    const xDiff = item.center.x - item.center.x
+    const yDiff = item.center.y - item.center.y
     return Math.hypot(xDiff, yDiff)
   }
 
@@ -374,18 +375,18 @@ export class AgentHandler extends SpriteHandler {
     item.stateData.money = 100
   }
 
-  getDistanceToAgent(item) {
-    const xDiff = item.center.x - item.center.x
-    const yDiff = item.center.y - item.center.y
+  getDistanceToAgent(agent, targetAgent) {
+    const xDiff = targetAgent.center.x - agent.center.x
+    const yDiff = targetAgent.center.y - agent.center.y
     return Math.hypot(xDiff, yDiff)
   }
 
-  getClosestAgent(agentItems) {
-    let closestDistance = this.getDistanceToAgent(agentItems[0])
-    let closestAgent = agentItems[0]
-    for (let i = 1; i < agentItems.length; i++) {
-      if (this.getDistanceToAgent(agentItems[i]) < closestDistance) {
-        closestAgent = agentItems[i]
+  getClosestAgent(agent, targetAgents) {
+    let closestDistance = this.getDistanceToAgent(agent, targetAgents[0])
+    let closestAgent = targetAgents[0]
+    for (let i = 1; i < targetAgents.length; i++) {
+      if (this.getDistanceToAgent(agent, targetAgents[i]) < closestDistance) {
+        closestAgent = targetAgents[i]
       }
     }
     return closestAgent

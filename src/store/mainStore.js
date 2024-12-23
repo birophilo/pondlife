@@ -69,8 +69,8 @@ export const useStore = defineStore({
     clearAllData () {
       this.conditions = []
       this.actions = []
-      this.agentItems = []
-      this.agentTypes = []
+      this.agentItems = {}
+      this.agentTypes = {}
       this.agentMenuButtons = []
     }
   }
