@@ -326,8 +326,8 @@ export class AgentHandler extends SpriteHandler {
   actionIsComplete(item) {
     if (item.currentAction) {
       /* SELECT CORRECT ACTION HANDLER */
-      const actionName = item.currentAction.actionName
-      const handler = new ACTION_HANDLERS[actionName]()
+      const actionType = item.currentAction.actionType
+      const handler = new ACTION_HANDLERS[actionType]()
       return handler.defaultCompletionCheckPasses(item.currentAction, item)
     }
   }

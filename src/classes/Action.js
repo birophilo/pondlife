@@ -273,7 +273,7 @@ export function createActionObject (
   if (item.transitions.length > 0 && item.agent !== null) {
     item.transitions.forEach(transition => {
       // broadly applicable enough?
-      transition.condition.agent = this.agent
+      transition.condition.agent = item.agent
     })
   }
 
@@ -452,9 +452,10 @@ export class ActionIntervalHandler extends ActionHandler {
   */
 
   start(item, globals, agentHandler) {
-    if (item.args.spriteSheet) {
-      agentHandler.useSpriteSheet(item.args.spriteSheet, item.agent)
-    }
+    // if (item.args.spriteSheet) {
+    //   agentHandler.useSpriteSheet(item.args.spriteSheet, item.agent)
+    // }
+    agentHandler.useSpriteSheet('idle', item.agent)
     const currentFrame = globals.animationFrameId
     item.startFrame = currentFrame
     item.agent.currentStateName = `waiting for ${item.args.duration} frames`

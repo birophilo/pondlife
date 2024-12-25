@@ -116,7 +116,7 @@ import { useStore } from './store/mainStore.js'
 import { pointIsInArea } from './utils.js'
 import { createAgentTypeObject } from './classes/AgentType.js'
 import { createAgentObject, AgentHandler, Agent } from './classes/Agent.js' // delete Agent
-import { createConditionObject, createPresetConditionObject } from './classes/Condition.js'
+import { createConditionObject, ConditionHandler, createPresetConditionObject } from './classes/Condition.js'
 import { AgentMenu, AgentMenuIcon, DeleteButton, AgentPreview } from './classes/SelectionMenu.js'
 import { ActionHandler, ACTION_HANDLERS } from './classes/Action.js'
 import CreateAgentTypeForm from './components/CreateAgentTypeForm.vue'
@@ -268,7 +268,9 @@ export default {
     const setNextActionOrNull = (agent) => {
       // check for state transitions and set next action if complete
       for (let i = 0; i < agent.currentAction.transitions.length; i++) {
-        const result = agent.currentAction.transitions[i].condition.evaluate()
+        const condition = agent.currentAction.transitions[i].condition
+        const conditionHandler = new ConditionHandler()
+        const result = conditionHandler.evaluateCondition(condition)
         if (result === true) {
           const nextAction = agent.currentAction.transitions[i].nextAction
           setDynamicActionTargetAgents(nextAction)
@@ -466,7 +468,7 @@ export default {
         action.propertyChanges.forEach(change => {
           if (change.args.agentType !== 'self') {
             if (change.args.agentChoiceMethod === 'nearest') {
-              const agentTypeName = change.args.agentType
+              const agentTypeName = change.args.agentType.name
               const targetAgents = store.agentItems[agentTypeName]
               const targetAgent = agentHandler.getClosestAgent(store.selectedAgent, targetAgents)
               change.target = targetAgent

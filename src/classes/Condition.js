@@ -1,3 +1,5 @@
+import { AgentHandler } from "./Agent"
+
 function isGreaterThan(comparisonValue, refValue) {
   return comparisonValue > refValue
 }
@@ -57,14 +59,13 @@ export function createPresetConditionObject(
 export class ConditionHandler {
 
   evaluateCondition(item) {
-    const agentValue = item.agent.stateData[item.property]
-    const evalFunc = COMPARISONS[item.comparison]
-    const result = evalFunc(agentValue, item.conditionValue)
-    return result
-  }
-
-  evaluatePresetCondition(item) {
-    const agentValue = item.agent[item.classMethod]()
+    var agentValue
+    if (item.conditionType === 'preset') {
+      const agentHandler = new AgentHandler()
+      agentValue = agentHandler[item.classMethod](item.agent)
+    } else {
+      agentValue = item.agent.stateData[item.property]
+    }
     const evalFunc = COMPARISONS[item.comparison]
     const result = evalFunc(agentValue, item.conditionValue)
     return result
