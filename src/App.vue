@@ -8,6 +8,7 @@
     <div class="scene-button-container">
       <button @click="loadScene(1)">load scene 1</button>
       <button @click="loadScene(2)">load scene 2</button>
+      <button @click="saveScene(3)">save scene</button>
     </div>
   </div>
 
@@ -165,6 +166,10 @@ export default {
       await store.fetchSceneData(sceneId)
       loadAgentsAndFixtures()
       animate()
+    }
+
+    const saveScene = async (sceneId) => {
+      await store.saveScene(sceneId)
     }
 
     const loadAgentsAndFixtures = () => {
@@ -608,7 +613,8 @@ export default {
       conditionReadableFormat,
       updateThumbnailFileInput,
       cloneAction,
-      loadScene
+      loadScene,
+      saveScene
     }
   },
 

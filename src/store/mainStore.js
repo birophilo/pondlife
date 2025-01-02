@@ -1,5 +1,7 @@
 import { defineStore } from 'pinia'
 
+const BASE_URL = 'http://localhost:8000'
+
 
 export const useStore = defineStore({
   id: 'storeState',
@@ -58,7 +60,7 @@ export const useStore = defineStore({
       this.loading = true
       this.error = null
       try {
-        const response = await fetch(`http://localhost:8000/scene/${sceneId}`)
+        const response = await fetch(`${BASE_URL}/scene/${sceneId}`)
         const data = await response.json()
         this.sceneData = data.data
         this.sceneId = data.id
@@ -72,6 +74,24 @@ export const useStore = defineStore({
       this.agentItems = {}
       this.agentTypes = {}
       this.agentMenuButtons = []
+    },
+    async saveScene (sceneId) {
+      try {
+        const response = await fetch(
+          `${BASE_URL}/scene/${sceneId}`, {
+            method: 'POST',
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json;charset=UTF-8",
+            },
+            body: JSON.stringify(this.sceneData)
+          }
+        )
+        const resp = await response.json()
+        console.log("RESPONSE", resp)
+      } catch (error) {
+        this.error = error.message
+      }
     }
   }
 })
