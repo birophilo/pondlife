@@ -167,12 +167,6 @@ export default {
       animate()
     }
 
-    // localStorage.setItem('pondlifeSpriteSheets', JSON.stringify([]))
-    // localStorage.setItem('pondlifeSpriteMaps', JSON.stringify([]))
-
-    const animationSetsData = JSON.parse(localStorage.getItem('pondlifeSpriteMaps'))
-    const spriteSheetsData = JSON.parse(localStorage.getItem('pondlifeSpriteSheets'))
-
     const loadAgentsAndFixtures = () => {
 
       store.sceneData.conditions.forEach(condition => {
@@ -199,9 +193,19 @@ export default {
         store.conditions.push(newCondition)
       })
 
-      // load from localStorage (temporary solution while frontend-only)
-      store.animationSets = animationSetsData !== null ? animationSetsData : []
-      store.spriteSheets = spriteSheetsData !== null ? spriteSheetsData : []
+
+      // populate spriteSheets and animationSets
+      store.animationSets = store.sceneData.animationSets
+      store.spriteSheets = store.sceneData.spriteSheets
+
+      // replace animationSet spriteSheet ID references with spriteSheet objects
+      store.animationSets.forEach(animSet => {
+        const sheetNames = Object.keys(animSet.sheets)
+        sheetNames.forEach(sheet => {
+          const spriteSheet = store.spriteSheets.find(sh => sh.id === animSet.sheets[sheet])
+          animSet.sheets[sheet] = spriteSheet
+        })
+      })
 
       store.sceneData.agentTypes.forEach(agentType => {
         store.agentTypes[agentType.name] = createAgentTypeObject(agentType)

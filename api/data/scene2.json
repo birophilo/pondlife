@@ -75,6 +75,108 @@
       ],
       "supplyVan": [],
       "world": [{ "x": 20, "y": 20 }]
-    }
+    },
+    "spriteSheets": [
+      {
+        "id": 1,
+        "name": "CustomerWalkUp",
+        "src": "/img/sprites/GirlSample_Walk_Up.png",
+        "columns": 4,
+        "rows": 3,
+        "numImages": 9,
+        "refreshInterval": 3
+      },
+      {
+        "id": 2,
+        "name": "CustomerWalkUpLeft",
+        "src": "/img/sprites/GirlSample_Walk_UpLeft.png",
+        "columns": 4,
+        "rows": 3,
+        "numImages": 9,
+        "refreshInterval": 3
+      },
+      {
+        "id": 3,
+        "name": "CustomerWalkUpRight",
+        "src": "/img/sprites/GirlSample_Walk_UpRight.png",
+        "columns": 4,
+        "rows": 3,
+        "numImages": 9,
+        "refreshInterval": 3
+      },
+      {
+        "id": 4,
+        "name": "CustomerWalkLeft",
+        "src": "/img/sprites/GirlSample_Walk_Left.png",
+        "columns": 4,
+        "rows": 3,
+        "numImages": 9,
+        "refreshInterval": 3
+      },
+      {
+        "id": 5,
+        "name": "CustomerWalkRight",
+        "src": "",
+        "columns": 4,
+        "rows": 3,
+        "numImages": 9,
+        "refreshInterval": 3
+      },
+      {
+        "id": 6,
+        "name": "CustomerWalkDownLeft",
+        "src": "/img/sprites/GirlSample_Walk_DownLeft.png",
+        "columns": 4,
+        "rows": 3,
+        "numImages": 9,
+        "refreshInterval": 3
+      },
+      {
+        "id": 7,
+        "name": "CustomerWalkDown",
+        "src": "/img/sprites/GirlSample_Walk_Down.png",
+        "columns": 4,
+        "rows": 3,
+        "numImages": 9,
+        "refreshInterval": 3
+      },
+      {
+        "id": 8,
+        "name": "CustomerWalkDownRight",
+        "src": "/img/sprites/GirlSample_Walk_DownRight.png",
+        "columns": 4,
+        "rows": 3,
+        "numImages": 9,
+        "refreshInterval": 3
+      },
+      {
+        "id": 9,
+        "name": "CustomerIdle",
+        "src": "/img/sprites/GirlSample_Walk_Down.png",
+        "columns": 4,
+        "rows": 3,
+        "numImages": 1,
+        "refreshInterval": 3
+      }
+    ],
+    "animationSets": [
+      {
+        "id": 1,
+        "name": "Customer",
+        "sheets": {
+          "idle": 9,
+          "up": 1,
+          "upRight": 3,
+          "right": 5,
+          "downRight": 8,
+          "down": 7,
+          "downLeft": 6,
+          "left": 4,
+          "upLeft": 2
+        },
+        "offset": { "x": 96, "y": 46 },
+        "scale": 0.7
+      }
+    ]
   }
 }
