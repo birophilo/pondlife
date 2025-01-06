@@ -92,6 +92,44 @@ export const useStore = defineStore({
       } catch (error) {
         this.error = error.message
       }
+    },
+    async updateCondition (conditionData) {
+      try {
+        console.log(conditionData)
+        const response = await fetch(
+          `${BASE_URL}/condition/${conditionData._id}`, {
+            method: 'POST',
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json;charset=UTF-8",
+            },
+            body: JSON.stringify(conditionData)
+          }
+        )
+        const resp = await response.json()
+        console.log("RESPONSE", resp)
+      } catch (error) {
+        this.error = error.message
+      }
+    },
+    async createCondition (conditionData) {
+      try {
+        console.log(conditionData)
+        const response = await fetch(
+          `${BASE_URL}/conditions/`, {
+            method: 'POST',
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json;charset=UTF-8",
+            },
+            body: JSON.stringify(conditionData)
+          }
+        )
+        const resp = await response.json()
+        console.log("RESPONSE", resp)
+      } catch (error) {
+        this.error = error.message
+      }
     }
   }
 })

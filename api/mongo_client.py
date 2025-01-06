@@ -39,8 +39,11 @@ class MongoCRUDClient:
 
     def delete_document(self, collection: str, id: str):
         delete_result = self.client.pondlife_db[collection].delete_one({"_id": ObjectId(id)})
-        return f"DELETED {delete_result.deleted_count}"
+        return delete_result.deleted_count
 
-    def update_document(self, collection: str, id: str):
-        update_result = self.client.pondlife_db[collection].update_one({"_id": ObjectId(id)})
+    def update_document(self, collection: str, item):
+        update_result = self.client.pondlife_db[collection].update_one(
+            {"_id": ObjectId(item["id"])},
+            {"$set": item}
+        )
         return update_result

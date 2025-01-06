@@ -6,7 +6,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from routers import (
     hello,
     get_scene,
-    save_scene
+    save_scene,
+    conditions
 )
 
 
@@ -15,6 +16,7 @@ def create_application() -> FastAPI:
     application.include_router(hello.router)
     application.include_router(get_scene.router)
     application.include_router(save_scene.router)
+    application.include_router(conditions.router)
     return application
 
 

@@ -130,6 +130,11 @@ export default {
           store.conditions.length + 1  // id
         )
       }
+
+      const payload = {...newCondition}
+      delete payload.agent
+      store.createCondition(payload)
+
       store.conditions.push(newCondition)
       resetConditionForms()
     }
