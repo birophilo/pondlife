@@ -1,7 +1,10 @@
-import json
+
 import os
 
 from fastapi import APIRouter
+
+from mongo_client import MongoCRUDClient
+
 
 router = APIRouter()
 
@@ -13,11 +16,38 @@ scene2_path = os.path.join(data_dir, "scene2.json")
 
 
 @router.get("/scene/{scene_id}", status_code=200)
-async def getSceneData(scene_id):
+async def get_scene_data(scene_id):
 
-    scene_path = os.path.join(data_dir, f"scene{scene_id}.json")
+    mongo_client = MongoCRUDClient()
 
-    with open(scene_path) as f:
-        data = json.load(f)
+    scene = mongo_client.get_document("scenes", scene_id)
+
+    scene_data = scene["data"]
+
+    data = {
+        "_id": scene["_id"],
+        "id": scene["id"],
+        "name": scene["name"],
+        "conditions": [],
+        "agentTypes": [],
+        "agentInstances": [],
+        "spriteSheets": [],
+        "animationSets": []
+    }
+
+    agent_instances = {}
+    agent_documents = mongo_client.get_documents_from_ids("agent_instances", scene_data["agentInstances"])
+
+    for instance in agent_documents:
+        if instance["agentType"] in agent_instances:
+            agent_instances[instance["agentType"]].append(instance)
+        else:
+            agent_instances[instance["agentType"]] = [instance]
+
+    data["conditions"] = mongo_client.get_documents_from_ids("conditions", scene_data["conditions"])
+    data["agentTypes"] = mongo_client.get_documents_from_ids("agent_types", scene_data["agentTypes"])
+    data["spritesheets"] = mongo_client.get_documents_from_ids("sprite_sheets", scene_data["spriteSheets"])
+    data["animationSets"] = mongo_client.get_documents_from_ids("animation_sets", scene_data["animationSets"])
+    data["agentInstances"] = agent_instances
 
     return data

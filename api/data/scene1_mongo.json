@@ -1,0 +1,34 @@
+{
+  "id": 1,
+  "name": 1,
+  "data": {
+    "conditions": [
+      "677990e1024c92f6b532efd5",
+      "67799101024c92f6b532efd7"
+    ],
+    "agentTypes": [
+      "677b319a024c92f6b532efde",
+      "677b31b1024c92f6b532efe0",
+      "677b31cf024c92f6b532efe2",
+      "677b31dc024c92f6b532efe4"
+    ],
+    "agentInstances": [
+      "677b5890024c92f6b532f003",
+      "677b58d1024c92f6b532f005",
+      "677b58f2024c92f6b532f007",
+      "677b5963024c92f6b532f009"
+    ],
+    "spriteSheets": [
+      "677b3299024c92f6b532efe8",
+      "677b32ad024c92f6b532efea",
+      "677b32c1024c92f6b532efec",
+      "677b32d3024c92f6b532efee",
+      "677b32e9024c92f6b532eff0",
+      "677b3347024c92f6b532eff2",
+      "677b335e024c92f6b532eff4",
+      "677b3370024c92f6b532eff6",
+      "677b3381024c92f6b532eff8"
+    ],
+    "animationSets": ["677b343c024c92f6b532effc"]
+  }
+}

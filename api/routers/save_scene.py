@@ -10,7 +10,7 @@ data_dir = os.path.join(root_dir, "data")
 
 
 @router.post("/scene/{scene_id}", status_code=200)
-async def postSceneData(scene_id: str, request: Request):
+async def post_scene_data(scene_id: str, request: Request):
 
     data = json.loads(await request.body())
 

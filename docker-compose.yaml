@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  pondlife-mongodb:
+    image: mongo:latest  # Use the official MongoDB image
+    container_name: mongodb_container
+    ports:
+      - 27017:27017  # Map host port to container port
+    volumes:
+      - mongodb_data:/data/db  # Persistent storage
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin  # Admin username
+      MONGO_INITDB_ROOT_PASSWORD: password  # Admin password
+    command: ["--bind_ip_all"]  # Ensure MongoDB binds to all network interfaces
+
+volumes:
+  mongodb_data:
+    driver: local
