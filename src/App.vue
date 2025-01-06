@@ -6,7 +6,7 @@
     <canvas></canvas>
 
     <div class="scene-button-container">
-      <button @click="loadScene(1)">load scene 1</button>
+      <button @click="loadScene('677b5d2f024c92f6b532f00d')">load scene 1</button>
       <button @click="loadScene(2)">load scene 2</button>
       <button @click="saveScene(3)">save scene</button>
     </div>
@@ -223,21 +223,25 @@ export default {
 
       // populate agents from initial data
       agentTypeNames.forEach(agentTypeName => {
+        console.log(agentTypeName)
         store.agentItems[agentTypeName] = []
-        store.sceneData.agentInstances[agentTypeName].forEach((item, i) => {
+        if (store.sceneData.agentInstances[agentTypeName] !== undefined) {
+          store.sceneData.agentInstances[agentTypeName].forEach((item, i) => {
 
-          let newAgent = createAgentObject(
-            agentTypeName, // agentTypeName
-            {x: item.x, y: item.y},  // position
-            i + 1,  // num
-            store.GlobalSettings, // globals
-            store.agentTypes[agentTypeName].config  // config
-          )
-          const handler = new AgentHandler()
-          handler.useSpriteSheet('idle', newAgent)
+            let newAgent = createAgentObject(
+              agentTypeName, // agentTypeName
+              {x: item.x, y: item.y},  // position
+              i + 1,  // num
+              store.GlobalSettings, // globals
+              store.agentTypes[agentTypeName].config  // config
+            )
+            const handler = new AgentHandler()
+            handler.useSpriteSheet('idle', newAgent)
 
-          store.agentItems[agentTypeName].push(newAgent)
-        })
+            store.agentItems[agentTypeName].push(newAgent)
+          })
+        }
+
       })
 
       store.itemMenu = new AgentMenu()

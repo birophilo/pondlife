@@ -24,15 +24,17 @@ async def get_scene_data(scene_id):
 
     scene_data = scene["data"]
 
-    data = {
+    payload = {
         "_id": scene["_id"],
         "id": scene["id"],
         "name": scene["name"],
-        "conditions": [],
-        "agentTypes": [],
-        "agentInstances": [],
-        "spriteSheets": [],
-        "animationSets": []
+        "data": {
+            "conditions": [],
+            "agentTypes": [],
+            "agentInstances": [],
+            "spriteSheets": [],
+            "animationSets": []
+        }
     }
 
     agent_instances = {}
@@ -44,10 +46,10 @@ async def get_scene_data(scene_id):
         else:
             agent_instances[instance["agentType"]] = [instance]
 
-    data["conditions"] = mongo_client.get_documents_from_ids("conditions", scene_data["conditions"])
-    data["agentTypes"] = mongo_client.get_documents_from_ids("agent_types", scene_data["agentTypes"])
-    data["spritesheets"] = mongo_client.get_documents_from_ids("sprite_sheets", scene_data["spriteSheets"])
-    data["animationSets"] = mongo_client.get_documents_from_ids("animation_sets", scene_data["animationSets"])
-    data["agentInstances"] = agent_instances
+    payload["data"]["conditions"] = mongo_client.get_documents_from_ids("conditions", scene_data["conditions"])
+    payload["data"]["agentTypes"] = mongo_client.get_documents_from_ids("agent_types", scene_data["agentTypes"])
+    payload["data"]["spriteSheets"] = mongo_client.get_documents_from_ids("sprite_sheets", scene_data["spriteSheets"])
+    payload["data"]["animationSets"] = mongo_client.get_documents_from_ids("animation_sets", scene_data["animationSets"])
+    payload["data"]["agentInstances"] = agent_instances
 
-    return data
+    return payload
