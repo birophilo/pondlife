@@ -18,17 +18,19 @@ const COMPARISONS = {
 
 export function createConditionObject(
   agent,
-  conditionName,
+  name,
   property,
   comparison,
-  conditionValue
+  conditionValue,
+  id
 ) {
   const item = {
+    id: id,
     agent: agent,
     property: property,
     comparison: comparison,
     conditionType: 'property',
-    conditionName: conditionName,
+    name: name,
     conditionValue: conditionValue
   }
   return item
@@ -37,7 +39,7 @@ export function createConditionObject(
 
 export function createPresetConditionObject(
   agent,
-  conditionName,
+  name,
   classMethod,
   comparison,
   conditionValue,
@@ -49,7 +51,7 @@ export function createPresetConditionObject(
     agent: agent,
     comparison: comparison,
     conditionType: 'preset',
-    conditionName: conditionName,
+    name: name,
     conditionValue: conditionValue
   }
   return item

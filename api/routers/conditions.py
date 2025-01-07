@@ -38,9 +38,10 @@ async def create_condition(request: Request):
 @router.put("/condition/{id}")
 async def update_condition(id: str, request: Request):
 
-    condition_data = json.loads(await request.body())
+    condition = json.loads(await request.body())
+    condition_id = condition["_id"]["$oid"]
 
-    condition = {k: v for k, v in condition_data.dict().items() if v is not None}
+    # condition = {k: v for k, v in condition_data.dict().items() if v is not None}
 
     if len(condition) >= 1:
         mongo_client = MongoCRUDClient()
@@ -49,19 +50,20 @@ async def update_condition(id: str, request: Request):
         if update_result.modified_count == 0:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Book with ID {id} not found")
 
-    item = mongo_client.get_document("conditions", id)
+    item = mongo_client.get_document("conditions", id=condition_id)
     if item is not None:
         return item
 
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Book with ID {id} not found")
 
 
-# @router.delete("/{id}", response_description="Delete a book")
-# def delete_book(id: str, request: Request, response: Response):
-#     delete_result = request.app.database["books"].delete_one({"_id": id})
+@router.delete("/condition/{id}")
+def delete_condition(id: str, request: Request, response: Response):
+    mongo_client = MongoCRUDClient()
+    delete_result = mongo_client.delete_document("conditions", id)
 
-#     if delete_result.deleted_count == 1:
-#         response.status_code = status.HTTP_204_NO_CONTENT
-#         return response
+    if delete_result.deleted_count == 1:
+        response.status_code = status.HTTP_204_NO_CONTENT
+        return response
 
-#     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Book with ID {id} not found")
+    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Book with ID {id} not found")

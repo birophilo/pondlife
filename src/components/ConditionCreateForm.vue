@@ -61,7 +61,6 @@
 
 <script>
 import { ref } from 'vue'
-import { createConditionObject, createPresetConditionObject } from '../classes/Condition.js'
 import { useStore } from '../store/mainStore.js'
 
 
@@ -94,47 +93,24 @@ export default {
 
     const createCondition = () => {
       const conditionType = itemForm.value.type
-      const conditionName = itemForm.value.name
       const data = itemForm.value.forms[conditionType]
 
-      var newCondition
-
-      if (conditionType === 'property') {
-
-        console.log('creating condition')
-        const conditionProperty = data.property
-        const conditionComparison = data.comparison
-        const conditionValue = data.value
-
-        newCondition = createConditionObject(
-          store.selectedAgent,
-          conditionName,
-          conditionProperty,
-          conditionComparison,
-          Number(conditionValue),
-          store.conditions.length + 1  // id
-        )
-      } else {
-
-        console.log('creating preset condition')
-        const conditionPreset = data.preset
-        const conditionComparison = data.comparison
-        const conditionValue = data.value
-
-        newCondition = createPresetConditionObject(
-          store.selectedAgent,
-          conditionName,
-          conditionPreset,
-          conditionComparison,
-          conditionValue,
-          store.conditions.length + 1  // id
-        )
+      let newCondition = {
+        name: itemForm.value.name,
+        comparison: data.comparison,
+        conditionValue: Number(data.value),
+        conditionType: itemForm.value.type
       }
 
-      const payload = {...newCondition}
-      delete payload.agent
-      store.createCondition(payload)
+      if (conditionType === 'property') {
+        newCondition.property = data.property
+      } else {
+        newCondition.classMethod = data.preset
+      }
 
+      store.createCondition(newCondition)
+
+      newCondition.agent = store.selectedAgent
       store.conditions.push(newCondition)
       resetConditionForms()
     }

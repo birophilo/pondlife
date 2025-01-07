@@ -93,11 +93,11 @@ export const useStore = defineStore({
         this.error = error.message
       }
     },
-    async updateCondition (conditionData) {
+    async createCondition (conditionData) {
       try {
         console.log(conditionData)
         const response = await fetch(
-          `${BASE_URL}/condition/${conditionData._id}`, {
+          `${BASE_URL}/conditions/`, {
             method: 'POST',
             headers: {
               Accept: "application/json",
@@ -112,12 +112,29 @@ export const useStore = defineStore({
         this.error = error.message
       }
     },
-    async createCondition (conditionData) {
+    async deleteCondition (conditionData) {
       try {
         console.log(conditionData)
         const response = await fetch(
-          `${BASE_URL}/conditions/`, {
-            method: 'POST',
+          `${BASE_URL}/condition/${conditionData['_id']['$oid']}`, {
+            method: 'DELETE',
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json;charset=UTF-8",
+            },
+          }
+        )
+        const resp = await response.json()
+        console.log("RESPONSE", resp)
+      } catch (error) {
+        this.error = error.message
+      }
+    },
+    async updateCondition (conditionData) {
+      try {
+        const response = await fetch(
+          `${BASE_URL}/condition/${conditionData['_id']['$oid']}`, {
+            method: 'PUT',
             headers: {
               Accept: "application/json",
               "Content-Type": "application/json;charset=UTF-8",

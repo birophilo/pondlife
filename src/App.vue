@@ -117,7 +117,7 @@ import { useStore } from './store/mainStore.js'
 import { pointIsInArea } from './utils.js'
 import { createAgentTypeObject } from './classes/AgentType.js'
 import { createAgentObject, AgentHandler, Agent } from './classes/Agent.js' // delete Agent
-import { createConditionObject, ConditionHandler, createPresetConditionObject } from './classes/Condition.js'
+import { ConditionHandler } from './classes/Condition.js'
 import { AgentMenu, AgentMenuIcon, DeleteButton, AgentPreview } from './classes/SelectionMenu.js'
 import { ActionHandler, ACTION_HANDLERS } from './classes/Action.js'
 import CreateAgentTypeForm from './components/CreateAgentTypeForm.vue'
@@ -175,26 +175,8 @@ export default {
     const loadAgentsAndFixtures = () => {
 
       store.sceneData.conditions.forEach(condition => {
-
-        let newCondition
-
-        if (condition.conditionType === 'property') {
-          newCondition = createConditionObject(
-            null,
-            condition.name,
-            condition.property,
-            condition.comparison,
-            condition.conditionValue
-          )
-        } else {
-          newCondition = createPresetConditionObject(
-            null,
-            condition.name,
-            condition.classMethod,
-            condition.comparison,
-            condition.conditionValue
-          )
-        }
+        let newCondition = {...condition}
+        newCondition.agent = null
         store.conditions.push(newCondition)
       })
 

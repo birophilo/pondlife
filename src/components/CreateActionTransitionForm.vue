@@ -4,7 +4,7 @@
       <select v-model="itemForm.condition">
         <option value=null>-- select condition -- </option>
         <option v-for="condition in store.conditions" :value="condition">
-          {{ condition.conditionName }}
+          {{ condition.name }}
         </option>
       </select>
       <select v-model="itemForm.nextAction">

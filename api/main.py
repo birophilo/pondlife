@@ -23,7 +23,7 @@ def create_application() -> FastAPI:
 app = create_application()
 
 origins = [
-    "http://localhost",
+    "http://localhost:8000",
     "http://localhost:8080",
 ]
 

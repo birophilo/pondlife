@@ -3,12 +3,12 @@
     <div>
       <div class="created-item-header">
       <div v-if="isEditing">
-        <input v-model="itemForm.conditionName" type="text" placeholder="name" />
+        <input v-model="itemForm.name" type="text" placeholder="name" />
         <button @click="saveItem">save</button>
         <button @click="cancelEdit">cancel</button>
       </div>
       <div v-else>
-        <div class="menu-action-name">{{ item.conditionName }}</div>
+        <div class="menu-action-name">{{ item.name }}</div>
         <button @click="editItem">edit</button>
         <button @click="deleteItem(index)">delete</button>
       </div>
@@ -79,29 +79,18 @@ export default {
     const isEditing = ref(false)
 
     const populateItemForm = () => {
-
-      const data = {
-        conditionType: props.item.conditionType,
-        conditionName: props.item.conditionName,
-        conditionValue: props.item.conditionValue,
-        comparison: props.item.comparison
-      }
-
-      if (data.conditionType === 'preset') {
-        data.property = props.item.property
-      } else {
-        data.classMethod = props.item.classMethod
-      }
-      itemForm.value = {...data}
+      itemForm.value = {...props.item}
     }
 
     const saveItem = () => {
       isEditing.value = false
       const keys = Object.keys(itemForm.value)
+      store.updateCondition(itemForm.value)
       keys.forEach(key => store.conditions[props.index][key] = itemForm.value[key])
     }
 
     const deleteItem = () => {
+      store.deleteCondition(props.item)
       store.conditions.splice(props.index, 1)
     }
 

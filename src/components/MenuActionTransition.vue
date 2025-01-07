@@ -4,7 +4,7 @@
       <select v-model="itemForm.condition">
         <option value="">-- select condition --</option>
         <option v-for="condition in store.conditions" :value="condition">
-          {{ condition.conditionName }}
+          {{ condition.name }}
         </option>
       </select>
       <select v-model="itemForm.nextAction">
@@ -24,7 +24,7 @@
             <th>transition to</th>
           </tr>
           <tr v-for="(transition) in action.transitions">
-            <td>{{ transition.condition.conditionName }}</td>
+            <td>{{ transition.condition.name }}</td>
             <td>{{ transition.nextAction.actionName }}</td>
           </tr>
         </tbody>
