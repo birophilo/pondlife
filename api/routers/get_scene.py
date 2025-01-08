@@ -4,6 +4,7 @@ import os
 from fastapi import APIRouter
 
 from mongo_client import MongoCRUDClient
+from utils import transform_doc_id
 
 
 router = APIRouter()
@@ -46,7 +47,8 @@ async def get_scene_data(scene_id):
         else:
             agent_instances[instance["agentType"]] = [instance]
 
-    payload["data"]["conditions"] = mongo_client.list_documents("conditions")
+    conditions = mongo_client.list_documents("conditions")
+    payload["data"]["conditions"] = [transform_doc_id(condition) for condition in conditions]
     payload["data"]["agentTypes"] = mongo_client.get_documents_from_ids("agent_types", scene_data["agentTypes"])
     payload["data"]["spriteSheets"] = mongo_client.get_documents_from_ids("sprite_sheets", scene_data["spriteSheets"])
     payload["data"]["animationSets"] = mongo_client.get_documents_from_ids("animation_sets", scene_data["animationSets"])

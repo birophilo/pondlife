@@ -91,7 +91,7 @@ export default {
       }
     })
 
-    const createCondition = () => {
+    const createCondition = async () => {
       const conditionType = itemForm.value.type
       const data = itemForm.value.forms[conditionType]
 
@@ -108,8 +108,8 @@ export default {
         newCondition.classMethod = data.preset
       }
 
-      store.createCondition(newCondition)
-
+      const createdId = await store.createCondition(newCondition)
+      newCondition.id = createdId
       newCondition.agent = store.selectedAgent
       store.conditions.push(newCondition)
       resetConditionForms()

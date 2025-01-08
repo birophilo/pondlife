@@ -107,7 +107,7 @@ export const useStore = defineStore({
           }
         )
         const resp = await response.json()
-        console.log("RESPONSE", resp)
+        return resp.id
       } catch (error) {
         this.error = error.message
       }
@@ -116,7 +116,7 @@ export const useStore = defineStore({
       try {
         console.log(conditionData)
         const response = await fetch(
-          `${BASE_URL}/condition/${conditionData['_id']['$oid']}`, {
+          `${BASE_URL}/condition/${conditionData.id}`, {
             method: 'DELETE',
             headers: {
               Accept: "application/json",
@@ -133,7 +133,7 @@ export const useStore = defineStore({
     async updateCondition (conditionData) {
       try {
         const response = await fetch(
-          `${BASE_URL}/condition/${conditionData['_id']['$oid']}`, {
+          `${BASE_URL}/condition/${conditionData.id}`, {
             method: 'PUT',
             headers: {
               Accept: "application/json",

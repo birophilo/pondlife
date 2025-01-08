@@ -5,7 +5,10 @@ from fastapi import APIRouter, Body, Request, Response, HTTPException, status
 from fastapi.encoders import jsonable_encoder
 from mongo_client import MongoCRUDClient
 
-# from models import Condition, ConditionUpdate
+from schemas import Condition
+from utils import transform_doc_id
+
+# https://github.com/mongodb-developer/pymongo-fastapi-crud/blob/main/routes.py
 
 router = APIRouter()
 
@@ -18,28 +21,33 @@ async def create_condition(request: Request):
     condition = jsonable_encoder(condition_data)
     mongo_client = MongoCRUDClient()
     created_condition = mongo_client.create_document("conditions", condition)
-    return created_condition
+    condition = transform_doc_id(created_condition)
+    return condition
 
 
-# @router.get("/", response_description="List all books", response_model=List[Book])
-# def list_books(request: Request):
-#     books = list(request.app.database["books"].find(limit=100))
-#     return books
+@router.get("/conditions")
+def list_conditions(request: Request):
+    mongo_client = MongoCRUDClient()
+    conditions = mongo_client.list_documents("conditions")
+    payload = [transform_doc_id(condition) for condition in conditions]
+    return payload
 
 
-# @router.get("/{id}", response_description="Get a single book by id", response_model=Book)
-# def find_book(id: str, request: Request):
-#     if (book := request.app.database["books"].find_one({"_id": id})) is not None:
-#         return book
+@router.get("condition/{id}")
+def find_conditions(id: str, request: Request):
+    mongo_client = MongoCRUDClient()
+    condition = mongo_client.list_documents("conditions", id)
+    if condition is not None:
+        return condition
 
-#     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Book with ID {id} not found")
+    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Condition with ID {id} not found")
 
 
-@router.put("/condition/{id}")
+@router.put("/condition/{id}", response_model=Condition)
 async def update_condition(id: str, request: Request):
 
     condition = json.loads(await request.body())
-    condition_id = condition["_id"]["$oid"]
+    condition_id = condition["id"]
 
     # condition = {k: v for k, v in condition_data.dict().items() if v is not None}
 
@@ -48,13 +56,14 @@ async def update_condition(id: str, request: Request):
         update_result = mongo_client.update_document("conditions", condition)
 
         if update_result.modified_count == 0:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Book with ID {id} not found")
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Condition with ID {id} not found")
 
     item = mongo_client.get_document("conditions", id=condition_id)
+    item = transform_doc_id(item)
     if item is not None:
         return item
 
-    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Book with ID {id} not found")
+    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Condition with ID {id} not found")
 
 
 @router.delete("/condition/{id}")
@@ -66,4 +75,4 @@ def delete_condition(id: str, request: Request, response: Response):
         response.status_code = status.HTTP_204_NO_CONTENT
         return response
 
-    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Book with ID {id} not found")
+    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Condition with ID {id} not found")
