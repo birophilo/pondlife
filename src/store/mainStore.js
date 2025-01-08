@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia'
+import baseApiClient from '../baseApiClient'
 
 const BASE_URL = 'http://localhost:8000'
 
@@ -93,60 +94,17 @@ export const useStore = defineStore({
         this.error = error.message
       }
     },
-    async createCondition (conditionData) {
-      try {
-        console.log(conditionData)
-        const response = await fetch(
-          `${BASE_URL}/conditions/`, {
-            method: 'POST',
-            headers: {
-              Accept: "application/json",
-              "Content-Type": "application/json;charset=UTF-8",
-            },
-            body: JSON.stringify(conditionData)
-          }
-        )
-        const resp = await response.json()
-        return resp.id
-      } catch (error) {
-        this.error = error.message
-      }
+    createCondition (data) {
+      baseApiClient.createItem('conditions', data)
     },
-    async deleteCondition (conditionData) {
-      try {
-        console.log(conditionData)
-        const response = await fetch(
-          `${BASE_URL}/condition/${conditionData.id}`, {
-            method: 'DELETE',
-            headers: {
-              Accept: "application/json",
-              "Content-Type": "application/json;charset=UTF-8",
-            },
-          }
-        )
-        const resp = await response.json()
-        console.log("RESPONSE", resp)
-      } catch (error) {
-        this.error = error.message
-      }
+    getCondition (id) {
+      baseApiClient.getItem('condition', id)
     },
-    async updateCondition (conditionData) {
-      try {
-        const response = await fetch(
-          `${BASE_URL}/condition/${conditionData.id}`, {
-            method: 'PUT',
-            headers: {
-              Accept: "application/json",
-              "Content-Type": "application/json;charset=UTF-8",
-            },
-            body: JSON.stringify(conditionData)
-          }
-        )
-        const resp = await response.json()
-        console.log("RESPONSE", resp)
-      } catch (error) {
-        this.error = error.message
-      }
+    updateCondition (data) {
+      baseApiClient.updateItem('condition', data)
+    },
+    deleteCondition (id) {
+      baseApiClient.deleteItem('condition', id)
     }
   }
 })
