@@ -128,17 +128,6 @@ export function createSpriteObject (
 }
 
 
-export function createAnimationSetObject (args) {
-  const item = {
-    name: args.name,
-    sheets: args.sheets,
-    offset: {x: args.offsetX, y: args.offsetY},
-    scale: args.scale
-  }
-  return item
-}
-
-
 export class SpriteHandler {
 
   draw(c, item) {

@@ -30,7 +30,6 @@
 <script>
 import { ref } from 'vue'
 import { useStore } from '../store/mainStore.js'
-import { createAnimationSetObject } from "../classes/Sprite.js"
 
 export default {
   name: 'AnimationSetForm',
@@ -60,7 +59,7 @@ export default {
     })
 
     const createItem = () => {
-      const data = {
+      const newAnimationSet = {
         name: itemForm.value.name,
         scale: Number(itemForm.value.scale),
         offset: {
@@ -69,7 +68,14 @@ export default {
         },
         sheets: itemForm.value.sheets
       }
-      store.animationSets.push(createAnimationSetObject(data))
+      // replace Spritesheet objects with just IDs for payload
+      const sheetNames = Object.keys(newAnimationSet.sheets)
+      sheetNames.forEach(sheetName => {
+        newAnimationSet.sheets[sheetName] = newAnimationSet.sheets[sheetName].id
+      })
+      const createdId = store.createAnimationSet(newAnimationSet)
+      newAnimationSet.id = createdId
+      store.animationSets.push(newAnimationSet)
 
       // 'save' to avoid inputting all after each page refresh
       localStorage.setItem('pondlifeSpriteMaps', JSON.stringify(store.animationSets))

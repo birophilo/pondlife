@@ -58,7 +58,7 @@ async def get_scene_data(scene_id):
     spritesheets = mongo_client.list_documents("spritesheets")  # return all items for now
     payload["data"]["spriteSheets"] = [transform_doc_id(spritesheet) for spritesheet in spritesheets]
 
-    animation_sets = mongo_client.get_documents_from_ids("animation_sets", scene_data["animationSets"])
+    animation_sets = mongo_client.list_documents("animation_sets")  # return all items for now
     payload["data"]["animationSets"] = [transform_doc_id(anim_set) for anim_set in animation_sets]
 
     payload["data"]["agentInstances"] = agent_instances

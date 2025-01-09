@@ -180,7 +180,6 @@ export default {
         store.conditions.push(newCondition)
       })
 
-
       // populate spriteSheets and animationSets
       store.animationSets = store.sceneData.animationSets
       store.spriteSheets = store.sceneData.spriteSheets

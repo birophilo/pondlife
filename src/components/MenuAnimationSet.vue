@@ -47,14 +47,19 @@ export default {
     const saveItem = () => {
       isEditing.value = false
       const keys = Object.keys(props.animationSet)
+      const payload = {...itemForm.value}
+      // replace Spritesheet objects with just IDs for payload
+      const sheetNames = Object.keys(payload.sheets)
+      sheetNames.forEach(sheetName => {
+        payload.sheets[sheetName] = payload.sheets[sheetName].id
+      })
+      store.updateAnimationSet(payload)
       keys.forEach(key => store.animationSets[props.i][key] = itemForm.value[key])
-      localStorage.setItem('pondlifeSpriteMaps', JSON.stringify(store.animationSets))
     }
 
     const deleteItem = (index) => {
+      store.deleteAnimationSet(props.animationSet.id)
       store.animationSets.splice(index, 1)
-      // 'save' to avoid inputting each page refresh
-      localStorage.setItem('pondlifeSpriteMaps', JSON.stringify(store.animationSets))
     }
 
     const editItem = () => {
@@ -68,15 +73,7 @@ export default {
     }
 
     const populateItemForm = () => {
-      itemForm.value = {
-        name: props.animationSet.name,
-        scale: props.animationSet.scale,
-        offset: {
-          x: props.animationSet.offset.x,
-          y: props.animationSet.offset.y,
-        },
-        sheets: props.animationSet.sheets,
-      }
+      itemForm.value = {...props.animationSet}
     }
 
     return {

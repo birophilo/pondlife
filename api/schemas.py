@@ -1,5 +1,12 @@
+from typing import Any, List
+
 from pydantic import BaseModel, ConfigDict
 from pydantic.alias_generators import to_camel
+
+
+class XY(BaseModel):
+    x: float
+    y: float
 
 
 class Condition(BaseModel):
@@ -22,6 +29,85 @@ class Spritesheet(BaseModel):
     columns: int
     rows: int
     num_images: int
-    refresh_interval: int
+    refresh_interval: float
 
     model_config = ConfigDict(alias_generator=to_camel)
+
+
+class AnimationSet(BaseModel):
+    id: str
+    name: str
+    sheets: dict
+    offset: XY
+    scale: float
+
+
+class AgentType(BaseModel):
+    id: str
+    name: str
+    width: float
+    height: float
+    offset: float
+    scale: float
+    nominal_speed: float
+    preview_image: str
+    animation_set: str  # ID
+    thumbnail: str
+
+    model_config = ConfigDict(alias_generator=to_camel)
+
+
+class Agent(BaseModel):
+    pass
+
+
+class Property(BaseModel):
+    pass
+
+
+# ACTIONS
+
+
+class BaseAction(BaseModel):
+    id: str
+    agent: Agent
+    args: dict
+    action_name: str
+    action_type: str
+    in_progress: bool
+    is_complete: bool
+    conditions: List[Any]
+    transitions: List[Any]
+    sprite_sheet: Spritesheet
+    property_changes: List[Any]
+
+    model_config = ConfigDict(alias_generator=to_camel)
+
+
+class ActionGoTo(BaseAction):
+    destination: dict
+
+
+class ActionPropertyChangeSet(BaseAction):
+    pass
+
+
+class ActionInterval(BaseAction):
+    start_frame: int
+
+
+class ActionSpawnAgent(BaseModel):
+    pass
+
+
+class ActionRemoveAgent(BaseModel):
+    pass
+
+
+class ActionTransition(BaseModel):
+    pass
+
+
+class PropertyChange(BaseModel):
+    # NOTE: these are items that comprise the ActionPropertyChangeSet
+    pass

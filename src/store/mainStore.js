@@ -117,6 +117,18 @@ export const useStore = defineStore({
     },
     deleteSpriteSheet (id) {
       return baseApiClient.deleteItem('spritesheet', id)
+    },
+    createAnimationSet (data) {
+      return baseApiClient.createItem('animationSets', data)
+    },
+    getAnimationSet (id) {
+      return baseApiClient.getItem('animationSet', id)
+    },
+    updateAnimationSet (data) {
+      return baseApiClient.updateItem('animationSet', data)
+    },
+    deleteAnimationSet (id) {
+      return baseApiClient.deleteItem('animationSet', id)
     }
   }
 })

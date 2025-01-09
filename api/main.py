@@ -8,7 +8,8 @@ from routers import (
     get_scene,
     save_scene,
     conditions,
-    spritesheets
+    spritesheets,
+    animation_sets
 )
 
 
@@ -19,6 +20,7 @@ def create_application() -> FastAPI:
     application.include_router(save_scene.router)
     application.include_router(conditions.router)
     application.include_router(spritesheets.router)
+    application.include_router(animation_sets.router)
     return application
 
 
