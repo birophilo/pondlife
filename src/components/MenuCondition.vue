@@ -90,7 +90,7 @@ export default {
     }
 
     const deleteItem = () => {
-      store.deleteCondition(props.item)
+      store.deleteCondition(props.item.id)
       store.conditions.splice(props.index, 1)
     }
 

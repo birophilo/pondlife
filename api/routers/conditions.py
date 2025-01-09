@@ -13,7 +13,7 @@ from utils import transform_doc_id
 router = APIRouter()
 
 
-@router.post("/conditions", status_code=status.HTTP_201_CREATED)
+@router.post("/conditions", status_code=status.HTTP_201_CREATED, response_model=Condition)
 async def create_condition(request: Request):
 
     condition_data = json.loads(await request.body())
@@ -25,7 +25,7 @@ async def create_condition(request: Request):
     return condition
 
 
-@router.get("/conditions")
+@router.get("/conditions", response_model=List[Condition])
 def list_conditions(request: Request):
     mongo_client = MongoCRUDClient()
     conditions = mongo_client.list_documents("conditions")
@@ -33,12 +33,12 @@ def list_conditions(request: Request):
     return payload
 
 
-@router.get("condition/{id}")
-def find_conditions(id: str, request: Request):
+@router.get("/condition/{id}", response_model=Condition)
+def get_condition(id: str, request: Request):
     mongo_client = MongoCRUDClient()
-    condition = mongo_client.list_documents("conditions", id)
+    condition = mongo_client.get_document("conditions", id)
     if condition is not None:
-        return condition
+        return transform_doc_id(condition)
 
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Condition with ID {id} not found")
 
@@ -56,7 +56,7 @@ async def update_condition(id: str, request: Request):
         update_result = mongo_client.update_document("conditions", condition)
 
         if update_result.modified_count == 0:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Condition with ID {id} not found")
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Data for ID: {id} already matches saved document")
 
     item = mongo_client.get_document("conditions", id=condition_id)
     item = transform_doc_id(item)

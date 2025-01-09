@@ -13,3 +13,15 @@ class Condition(BaseModel):
     condition_value: str | bool | int | float
 
     model_config = ConfigDict(alias_generator=to_camel)
+
+
+class Spritesheet(BaseModel):
+    id: str
+    name: str
+    src: str
+    columns: int
+    rows: int
+    num_images: int
+    refresh_interval: int
+
+    model_config = ConfigDict(alias_generator=to_camel)

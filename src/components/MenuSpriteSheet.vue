@@ -39,34 +39,24 @@ export default {
     const itemForm = ref({})
 
     const populateItemForm = () => {
-      itemForm.value = {
-        name: props.spriteSheet.name,
-        src: props.spriteSheet.src,
-        columns: Number(props.spriteSheet.columns),
-        rows: Number(props.spriteSheet.rows),
-        numImages: Number(props.spriteSheet.numImages),
-        refreshInterval: Number(props.spriteSheet.refreshInterval)
-      }
+      itemForm.value = {...props.spriteSheet}
     }
 
     const saveItem = () => {
       isEditing.value = false
       const keys = Object.keys(props.spriteSheet)
+      store.updateSpriteSheet(itemForm.value)
       keys.forEach(key => store.spriteSheets[props.i][key] = itemForm.value[key])
-      localStorage.setItem('pondlifeSpriteSheets', JSON.stringify(store.spriteSheets))
     }
 
     const deleteItem = () => {
       store.spriteSheets.splice(props.i, 1)
-      // 'save' to avoid inputting all after each page refresh
-      localStorage.setItem('pondlifeSpriteSheets', JSON.stringify(store.spriteSheets))
+      store.deleteSpriteSheet(props.spriteSheet.id)
     }
 
     const updateSpritesheetFileInput = (event) => {
       const fileName = "/img/sprites/" + event.target.files[0].name
       itemForm.value.src = fileName
-      store.spriteSheets[this.i].src = fileName
-      localStorage.setItem('pondlifeSpriteSheets', JSON.stringify(store.spriteSheets))
       localStorage.setItem('pondlifeSpriteMaps', JSON.stringify(store.animationSets))
     }
 

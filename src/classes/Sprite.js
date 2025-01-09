@@ -128,19 +128,6 @@ export function createSpriteObject (
 }
 
 
-export function createSpriteSheetObject(args) {
-  const item = {
-    name: args.name,
-    src: args.src,
-    columns: args.columns,
-    rows: args.rows,
-    numImages: args.numImages,
-    refreshInterval: args.refreshInterval
-  }
-  return item
-}
-
-
 export function createAnimationSetObject (args) {
   const item = {
     name: args.name,

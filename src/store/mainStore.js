@@ -95,16 +95,28 @@ export const useStore = defineStore({
       }
     },
     createCondition (data) {
-      baseApiClient.createItem('conditions', data)
+      return baseApiClient.createItem('conditions', data)
     },
     getCondition (id) {
-      baseApiClient.getItem('condition', id)
+      return baseApiClient.getItem('condition', id)
     },
     updateCondition (data) {
-      baseApiClient.updateItem('condition', data)
+      return baseApiClient.updateItem('condition', data)
     },
     deleteCondition (id) {
-      baseApiClient.deleteItem('condition', id)
+      return baseApiClient.deleteItem('condition', id)
+    },
+    createSpriteSheet (data) {
+      return baseApiClient.createItem('spritesheets', data)
+    },
+    getSpriteSheet (id) {
+      return baseApiClient.getItem('spritesheet', id)
+    },
+    updateSpriteSheet (data) {
+      return baseApiClient.updateItem('spritesheet', data)
+    },
+    deleteSpriteSheet (id) {
+      return baseApiClient.deleteItem('spritesheet', id)
     }
   }
 })

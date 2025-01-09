@@ -23,10 +23,11 @@ async def get_scene_data(scene_id):
 
     scene = mongo_client.get_document("scenes", scene_id)
 
+    scene = transform_doc_id(scene)
+
     scene_data = scene["data"]
 
     payload = {
-        "_id": scene["_id"],
         "id": scene["id"],
         "name": scene["name"],
         "data": {
@@ -42,16 +43,26 @@ async def get_scene_data(scene_id):
     agent_documents = mongo_client.get_documents_from_ids("agent_instances", scene_data["agentInstances"])
 
     for instance in agent_documents:
+        instance = transform_doc_id(instance)
         if instance["agentType"] in agent_instances:
             agent_instances[instance["agentType"]].append(instance)
         else:
             agent_instances[instance["agentType"]] = [instance]
 
-    conditions = mongo_client.list_documents("conditions")
+    conditions = mongo_client.list_documents("conditions")  # return all items for now
     payload["data"]["conditions"] = [transform_doc_id(condition) for condition in conditions]
-    payload["data"]["agentTypes"] = mongo_client.get_documents_from_ids("agent_types", scene_data["agentTypes"])
-    payload["data"]["spriteSheets"] = mongo_client.get_documents_from_ids("sprite_sheets", scene_data["spriteSheets"])
-    payload["data"]["animationSets"] = mongo_client.get_documents_from_ids("animation_sets", scene_data["animationSets"])
+
+    agent_types = mongo_client.get_documents_from_ids("agent_types", scene_data["agentTypes"])
+    payload["data"]["agentTypes"] = [transform_doc_id(agent_type) for agent_type in agent_types]
+
+    spritesheets = mongo_client.list_documents("spritesheets")  # return all items for now
+    payload["data"]["spriteSheets"] = [transform_doc_id(spritesheet) for spritesheet in spritesheets]
+
+    animation_sets = mongo_client.get_documents_from_ids("animation_sets", scene_data["animationSets"])
+    payload["data"]["animationSets"] = [transform_doc_id(anim_set) for anim_set in animation_sets]
+
     payload["data"]["agentInstances"] = agent_instances
+
+    print(payload["data"]["spriteSheets"])
 
     return payload

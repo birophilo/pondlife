@@ -17,7 +17,6 @@
 <script>
 import { ref } from 'vue'
 import { useStore } from '../store/mainStore.js'
-import { createSpriteSheetObject } from "../classes/Sprite.js"
 
 export default {
   name: 'SpriteSheetForm',
@@ -35,8 +34,8 @@ export default {
         refreshInterval: 1
       })
 
-    const createSpriteSheet = () => {
-      const args = {
+    const createSpriteSheet = async () => {
+      const newSpriteSheet = {
         name: itemForm.value.name,
         src: itemForm.value.src,
         columns: Number(itemForm.value.columns),
@@ -44,11 +43,10 @@ export default {
         numImages: Number(itemForm.value.numImages),
         refreshInterval: Number(itemForm.value.refreshInterval)
       }
-      const spriteSheetObject = createSpriteSheetObject(args)
-      store.spriteSheets.push(spriteSheetObject)
 
-      // 'save' to avoid inputting all after each page refresh
-      localStorage.setItem('pondlifeSpriteSheets', JSON.stringify(store.spriteSheets))
+      const createdId = await store.createSpriteSheet(newSpriteSheet)
+      newSpriteSheet.id = createdId
+      store.spriteSheets.push(newSpriteSheet)
 
       isAdding.value = false
 
@@ -65,7 +63,6 @@ export default {
     const updateSpritesheetFileInput = (event) => {
       const fileName = "/img/sprites/" + event.target.files[0].name
       itemForm.value.src = fileName
-      localStorage.setItem('pondlifeSpriteSheets', JSON.stringify(store.spriteSheets))
       localStorage.setItem('pondlifeSpriteMaps', JSON.stringify(store.animationSets))
     }
 
