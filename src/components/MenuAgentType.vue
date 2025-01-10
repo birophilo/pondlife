@@ -42,11 +42,11 @@ export default {
 
     const itemFormData = {
       name: props.agentType.name,
-      height: props.agentType.config.height,
-      width: props.agentType.config.width,
-      animationSet: props.agentType.config.animationSet,
-      thumbnail: props.agentType.config.thumbnail,
-      nominalSpeed: props.agentType.config.nominalSpeed,
+      height: props.agentType.height,
+      width: props.agentType.width,
+      animationSet: props.agentType.animationSet,
+      thumbnail: props.agentType.thumbnail,
+      nominalSpeed: props.agentType.nominalSpeed,
       positionX: 100,
       positionY: 100
     }
@@ -54,6 +54,7 @@ export default {
     const itemForm = ref(itemFormData)
 
     const deleteItem = () => {
+      store.deleteAgentType(props.agentType.id)
       delete store.agentTypes[props.agentType.name]
       delete store.agentItems[props.agentType.name]
     }
@@ -70,32 +71,35 @@ export default {
 
     const populateItemForm = () => {
       itemForm.value = {
+        id: props.agentType.id,
         name: props.agentType.name,
-        height: props.agentType.config.height,
-        width: props.agentType.config.width,
-        animationSet: props.agentType.config.animationSet,
-        thumbnail: props.agentType.config.thumbnail,
-        nominalSpeed: props.agentType.config.nominalSpeed,
-        positionX: 100,
-        positionY: 100
+        height: props.agentType.height,
+        width: props.agentType.width,
+        animationSet: props.agentType.animationSet,
+        thumbnail: props.agentType.thumbnail,
+        nominalSpeed: props.agentType.nominalSpeed,
+        positionX: props.agentType.offset.x,
+        positionY: props.agentType.offset.y
       }
     }
 
     const saveItem = () => {
       isEditing.value = false
       const data = {
-        isEditing: itemForm.value.isEditing,
+        id: itemForm.value.id,
         name: itemForm.value.name,
-        config: {
-          height: itemForm.value.height,
-          width: itemForm.value.width,
-          animationSet: itemForm.value.animationSet,
-          thumbnail: itemForm.value.thumbnail,
-          nominalSpeed: itemForm.value.nominalSpeed,
-        },
-        positionX: itemForm.value.positionX,
-        positionY: itemForm.value.positionY
+        height: itemForm.value.height,
+        width: itemForm.value.width,
+        animationSet: itemForm.value.animationSet,
+        thumbnail: itemForm.value.thumbnail,
+        nominalSpeed: itemForm.value.nominalSpeed,
+        offset: {
+          x: itemForm.value.positionX,
+          y: itemForm.value.positionY
+        }
       }
+
+      store.updateAgentType(data)
       store.agentTypes[props.agentType.name] = data
     }
 

@@ -152,6 +152,7 @@ export class SpriteHandler {
       width: cropWidth,
       height: cropHeight
     }
+
     c.drawImage(
       item.image,
       crop.position.x + offset.x,

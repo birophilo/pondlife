@@ -115,8 +115,7 @@ import { onMounted } from 'vue'
 import { useStore } from './store/mainStore.js'
 
 import { pointIsInArea } from './utils.js'
-import { createAgentTypeObject } from './classes/AgentType.js'
-import { createAgentObject, AgentHandler, Agent } from './classes/Agent.js' // delete Agent
+import { createAgentObject, AgentHandler } from './classes/Agent.js'
 import { ConditionHandler } from './classes/Condition.js'
 import { AgentMenu, AgentMenuIcon, DeleteButton, AgentPreview } from './classes/SelectionMenu.js'
 import { ActionHandler, ACTION_HANDLERS } from './classes/Action.js'
@@ -194,13 +193,13 @@ export default {
       })
 
       store.sceneData.agentTypes.forEach(agentType => {
-        store.agentTypes[agentType.name] = createAgentTypeObject(agentType)
+        store.agentTypes[agentType.name] = agentType
       })
 
       const agentTypeNames = Object.keys(store.agentTypes)
 
       // hard-coding for the moment
-      store.agentTypes.customer.config.animationSet = store.animationSets[0]
+      store.agentTypes.customer.animationSet = store.animationSets[0]
 
       // populate agents from initial data
       agentTypeNames.forEach(agentTypeName => {
@@ -214,7 +213,7 @@ export default {
               {x: item.x, y: item.y},  // position
               i + 1,  // num
               store.GlobalSettings, // globals
-              store.agentTypes[agentTypeName].config  // config
+              store.agentTypes[agentTypeName]
             )
             const handler = new AgentHandler()
             handler.useSpriteSheet('idle', newAgent)
@@ -234,8 +233,7 @@ export default {
             menu: store.itemMenu,
             i: i,
             name: agentName,
-            agent: Agent,
-            config: store.agentTypes[agentName].config
+            agentType: store.agentTypes[agentName]
           })
         )
       })
@@ -366,7 +364,7 @@ export default {
                   args.position,  // position
                   store.agentItems[agentType].length + 1,  // num
                   store.GlobalSettings,  // globals
-                  store.agentTypes[agentType].config  // config
+                  store.agentTypes[agentType]  // agentType
                 )
                 const handler = new AgentHandler()
                 handler.useSpriteSheet('idle', newAgent)
@@ -489,14 +487,12 @@ export default {
       let newAgent = createAgentObject(
         agentTypeName,
         {
-          x: store.mouse.x - store.agentTypes[agentTypeName].config.width / 2,
-          y: store.mouse.y - store.agentTypes[agentTypeName].config.height / 2
+          x: store.mouse.x - store.agentTypes[agentTypeName].width / 2,
+          y: store.mouse.y - store.agentTypes[agentTypeName].height / 2
         },
         num,
         store.GlobalSettings,
-        store.agentTypes[agentTypeName].config.offset,
-        store.agentTypes[agentTypeName].config.scale,
-        store.agentTypes[agentTypeName].config
+        store.agentTypes[agentTypeName]
       )
       const handler = new AgentHandler()
       handler.useSpriteSheet('idle', newAgent)

@@ -47,18 +47,21 @@ class AgentType(BaseModel):
     name: str
     width: float
     height: float
-    offset: float
+    offset: XY
     scale: float
     nominal_speed: float
     preview_image: str
-    animation_set: str  # ID
+    animation_set: dict | None  # ID
     thumbnail: str
 
     model_config = ConfigDict(alias_generator=to_camel)
 
 
 class Agent(BaseModel):
-    pass
+    id: str
+    state_data: dict
+
+    model_config = ConfigDict(alias_generator=to_camel)
 
 
 class Property(BaseModel):

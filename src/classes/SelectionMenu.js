@@ -1,3 +1,5 @@
+import { Agent } from './Agent.js'
+
 const menuWidth = 200
 const menuHeight = 50
 const menuBorder = 5
@@ -48,7 +50,7 @@ export class AgentMenu {
 }
 
 class AgentMenuButton {
-  constructor({ menu, i = 0, name, config }) {
+  constructor({ menu, i = 0, name }) {
     this.name = name
     this.width = menuButtonWidth
     this.height = menuButtonHeight
@@ -68,7 +70,6 @@ class AgentMenuButton {
       width: this.width,
       height: this.height
     }
-    this.agentConfig = config  // need this or not?
   }
 
   draw(c) {
@@ -104,13 +105,13 @@ class AgentMenuButton {
 
 export class AgentMenuIcon extends AgentMenuButton {
 
-  constructor({menu, i = 1, name, agent, config}) {
-    super({menu, i, name, config})
+  constructor({ menu, i = 1, name, agentType }) {
+    super({ menu, i, name })
     this.name = name
-    this.agent = agent
+    this.agent = Agent
     this.thumbnail = new Image()
-    this.thumbnail.src = config.thumbnail
-    this.config = config
+    this.thumbnail.src = agentType.thumbnail
+    this.agentType = agentType
   }
 
   draw(c) {
@@ -126,8 +127,8 @@ export class AgentMenuIcon extends AgentMenuButton {
   }
 
   update(c, i) {
-    if (this.thumbnail.src !== this.config.thumbnail) {
-      this.thumbnail.src = this.config.thumbnail
+    if (this.thumbnail.src !== this.agentType.thumbnail) {
+      this.thumbnail.src = this.agentType.thumbnail
     }
     this.draw(c)
     super.update(i)
@@ -166,11 +167,11 @@ export class AgentPreview {
   constructor(agentType) {
     this.agentType = agentType
     this.position = {x: 0, y: 0}
-    this.width = agentType.config.width,
-    this.height = agentType.config.height,
-    this.scale = agentType.config.scale,
+    this.width = agentType.width,
+    this.height = agentType.height,
+    this.scale = agentType.scale,
     this.image = new Image()
-    this.image.src = agentType.config.previewImage
+    this.image.src = agentType.previewImage
   }
 
   draw(c) {

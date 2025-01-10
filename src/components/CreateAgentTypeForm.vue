@@ -22,8 +22,6 @@
 
 <script>
 import { ref } from 'vue'
-import Agent from '../classes/Agent.js'
-import { createAgentTypeObject } from '../classes/AgentType.js'
 import { AgentMenuIcon } from '../classes/SelectionMenu.js'
 import { useStore } from '../store/mainStore.js'
 
@@ -45,38 +43,37 @@ export default {
       positionY: 100
     })
 
-    const createAgentType = () => {
+    const createAgentType = async () => {
 
       const agentTypeName = itemForm.value.name
 
-      const agentData = {
-        agentClass: Agent,
-        agentItems: [],
-        config: {
-          name: agentTypeName,
-          width: Number(itemForm.value.width),
-          height: Number(itemForm.value.height),
-          frames: {max: 9, columns: 4, rows: 3, hold: 3},
-          offset: {x: 96, y: 46},
-          scale: 1,
-          nominalSpeed: Number(itemForm.value.nominalSpeed),
-          previewImage: '/img/sprites/GirlSample_Walk_Down.png',
-          animationSet: itemForm.value.animationSet,
-          thumbnail: itemForm.value.thumbnail,
-          defaultSpriteSheet: 'idle'
-        }
+      const newAgentType = {
+        name: agentTypeName,
+        width: Number(itemForm.value.width),
+        height: Number(itemForm.value.height),
+        offset: {
+          x: itemForm.value.positionX,
+          y: itemForm.value.positionY
+        },
+        scale: 1,
+        nominalSpeed: Number(itemForm.value.nominalSpeed),
+        previewImage: '/img/sprites/GirlSample_Walk_Down.png',
+        animationSet: itemForm.value.animationSet,
+        thumbnail: itemForm.value.thumbnail
       }
 
-      store.agentTypes[agentTypeName] = createAgentTypeObject(agentData.config)
+      const createdId = await store.createAgentType(newAgentType)
+      newAgentType.id = createdId
+
+      store.agentTypes[agentTypeName] = newAgentType
 
       store.agentItems[agentTypeName] = []
 
       let newIcon = new AgentMenuIcon({
         menu: store.itemMenu,
         i: store.agentMenuButtons.length + 1,
-        name: agentData.config.name,
-        agent: Agent,
-        config: agentData.config
+        name: agentTypeName,
+        agentType: newAgentType
       })
       store.agentMenuButtons.push(newIcon)
 

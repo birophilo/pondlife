@@ -214,28 +214,28 @@ export function createAgentObject (
     position = { x: 0, y: 0 },
     num = 0,
     globals,
-    config
+    agentType
   ) {
 
     let spriteObject = createSpriteObject(
       position,
-      config.previewImage,
-      config.animationSet,
-      config.initialSpriteSheet
+      agentType.previewImage,
+      agentType.animationSet,
+      agentType.initialSpriteSheet  // not currently in object?
     )
 
     let agentObject = {
       num: num,
       name: `${agentTypeName} ${num}`,
       agentType: agentTypeName,
-      width: config.width,
-      height: config.height,
+      width: agentType.width,
+      height: agentType.height,
       position: position,
-      config: config,
+      config: agentType,
       destination: null,
       reachedDestination: false,
-      nominalSpeed: config.nominalSpeed,
-      speed: config.nominalSpeed * globals.globalSpeed,
+      nominalSpeed: agentType.nominalSpeed,
+      speed: agentType.nominalSpeed * globals.globalSpeed,
       stateData: {},  // stateful configurable properties/parameters/variables, e.g. money: 100
       currentAction: null,
       currentActionName: '',
@@ -247,8 +247,8 @@ export function createAgentObject (
 
     item.collisionArea = {
       ...position,
-      width: config.width,
-      height: config.height
+      width: agentType.width,
+      height: agentType.height
     }
 
     item.center = {...position}

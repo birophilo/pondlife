@@ -57,7 +57,7 @@ export default {
     const updateSpritesheetFileInput = (event) => {
       const fileName = "/img/sprites/" + event.target.files[0].name
       itemForm.value.src = fileName
-      localStorage.setItem('pondlifeSpriteMaps', JSON.stringify(store.animationSets))
+      // TODO: update AnimationSet here?
     }
 
     const editItem = () => {

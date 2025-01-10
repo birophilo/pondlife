@@ -9,7 +9,8 @@ from routers import (
     save_scene,
     conditions,
     spritesheets,
-    animation_sets
+    animation_sets,
+    agent_types
 )
 
 
@@ -21,6 +22,7 @@ def create_application() -> FastAPI:
     application.include_router(conditions.router)
     application.include_router(spritesheets.router)
     application.include_router(animation_sets.router)
+    application.include_router(agent_types.router)
     return application
 
 

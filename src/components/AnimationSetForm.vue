@@ -77,9 +77,6 @@ export default {
       newAnimationSet.id = createdId
       store.animationSets.push(newAnimationSet)
 
-      // 'save' to avoid inputting all after each page refresh
-      localStorage.setItem('pondlifeSpriteMaps', JSON.stringify(store.animationSets))
-
       isAdding.value = false
 
       itemForm.value = {
