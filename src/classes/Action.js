@@ -253,14 +253,14 @@ export function createActionObject (agent = null, data) {
 
   const item = {
     agent: agent,
-    args: data,
     actionName: data.actionName,
     actionType: data.actionType,
     inProgress: false,
     isComplete: false,
-    conditions: data.conditions,
+    conditions: data.conditions || [],
     transitions: data.transitions || [],
-    spriteSheet: data.spriteSheet
+    spriteSheet: data.spriteSheet,
+    agentType: data.agentType
   }
 
   if (item.transitions.length > 0 && item.agent !== null) {
@@ -278,6 +278,11 @@ export function createActionObject (agent = null, data) {
 
 export function createActionGoTo (agent = null, data) {
   let item = createActionObject(agent, data)
+
+  item.destinationType = data.destinationType,
+  item.agentChoiceMethod = data.agentChoiceMethod,
+  item.target = data.target
+
   if (data.agentChoiceMethod === 'specific') {
     item.destination = data.target
   }
@@ -372,9 +377,12 @@ export class ActionHandler {
     }
   }
 
-  clone(item, agent, args) {
-    item.args = {...item.args, ...args}
-    const action = createActionObject(agent, item)
+  clone(item, agent) {
+    const createActionFunction = ACTION_CONSTRUCTORS[item.actionType]
+    const action = createActionFunction(agent, item)
+
+    console.log("CLONED ACTION")
+    console.log(action)
     return action
   }
 }
@@ -384,14 +392,19 @@ export class ActionGoToHandler extends ActionHandler {
 
   // eslint-disable-next-line
   start(item, globals) {
-    item.destination = item.args.target
-    item.agent.destination = item.args.target
+
+    console.log("STARTING")
+    console.log(item)
+    console.log(item.destination)
+
+    item.destination = item.target
+    item.agent.destination = item.target
 
     if (item.agent !== null) {
-      if (item.args.destinationType === 'agent') {
+      if (item.destinationType === 'agent') {
         item.stateName = `going to: ${item.destination.name}`
-      } else if (item.args.destinationType === 'point') {
-        item.stateName = `going to: (x: ${item.args.target.position.x}, y: ${item.args.target.position.y})`
+      } else if (item.destinationType === 'point') {
+        item.stateName = `going to: (x: ${item.target.position.x}, y: ${item.target.position.y})`
       }
     }
 
@@ -522,4 +535,13 @@ export const ACTION_HANDLERS = {
   'interval': ActionIntervalHandler,
   'spawnAgent': ActionSpawnAgentHandler,
   'removeAgent': ActionRemoveAgentHandler
+}
+
+
+export const ACTION_CONSTRUCTORS = {
+  'goTo': createActionGoTo,
+  'change': createActionPropertyChanges,
+  'interval': createActionInterval,
+  'spawnAgent': createActionSpawnAgent,
+  'removeAgent': createActionRemoveAgent
 }

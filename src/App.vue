@@ -443,15 +443,16 @@ export default {
       Note: this may not be generalisable enough - to re-organise?
       */
 
-      if (action.args.agentChoiceMethod === 'nearest' && action.args.destinationType === 'agent') {
-        const agentTypeName = action.args.agentType.name
+      if (action.agentChoiceMethod === 'nearest' && action.destinationType === 'agent') {
+        const agentTypeName = action.agentType.name
         const agentItems = store.agentItems[agentTypeName]
         const targetAgent = agentHandler.getClosestAgent(store.selectedAgent, agentItems)
-        action.args.target = targetAgent
-      } else if (action.args.agentChoiceMethod === 'all') {
-        const agentTypeName = action.args.agentType.name
+        action.target = targetAgent
+        action.destination = targetAgent
+      } else if (action.agentChoiceMethod === 'all') {
+        const agentTypeName = action.agentType.name
         const agentItems = store.agentItems[agentTypeName]
-        action.args.target = agentItems
+        action.target = agentItems
       }
 
       // if action involves property changes, set target for each change based on
@@ -475,10 +476,14 @@ export default {
     }
 
     const cloneAction = (action) => {
+      console.log("START OF CLONE")
+      console.log(action)
       setDynamicActionTargetAgents(action)
       const handlerClass = ACTION_HANDLERS[action.actionType]
       const handler = new handlerClass()
       store.selectedAgent.currentAction = handler.clone(action, store.selectedAgent, action.args)
+      console.log("END OF CLONE")
+      console.log(store.selectedAgent.currentAction)
     }
 
     const addAgent = (agentTypeName) => {
