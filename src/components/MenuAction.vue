@@ -92,7 +92,7 @@
 
           <div v-if="itemForm.agentChoiceMethod === 'specific'">
             <select v-model="itemForm.target">
-              <option value="">-- select agent --</option>
+              <option :value="{}">-- select agent --</option>
               <option
                 v-for="agent in store.agentItems[itemForm.agentType]"
                 :value="agent"
@@ -223,14 +223,16 @@ export default {
 
       act.actionName = itemForm.value.actionName
       act.actionType = itemForm.value.actionType
-      act.propertyChanges = itemForm.value.propertyChanges
-      act.transitions = itemForm.value.transitions
+
       act.args.duration = itemForm.value.duration
       act.args.destinationType = itemForm.value.destinationType
       act.args.agentType = itemForm.value.agentType
       act.args.target = itemForm.value.target
-      act.agentChoiceMethod = itemForm.value.agentChoiceMethod
       act.args.spriteSheet = itemForm.value.spriteSheet
+
+      act.agentChoiceMethod = itemForm.value.agentChoiceMethod
+      act.propertyChanges = itemForm.value.propertyChanges
+      act.transitions = itemForm.value.transitions
 
       if (props.action.actionType === 'spawnAgent') {
         act.args.position = {x: Number(store.selectedPoint.x), y: Number(store.selectedPoint.y)}
@@ -240,6 +242,8 @@ export default {
         act.args.spriteSheet = itemForm.value.spriteSheet
       }
       store.selectedPoint = {x: null, y: null}
+
+      store.updateAction(act)
     }
 
     const deleteItem = (itemName) => {

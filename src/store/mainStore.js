@@ -141,6 +141,18 @@ export const useStore = defineStore({
     },
     deleteAgentType (id) {
       return baseApiClient.deleteItem('agentType', id)
+    },
+    createAction (data) {
+      return baseApiClient.createItem('actions', data)
+    },
+    getAction (id) {
+      return baseApiClient.getItem('action', id)
+    },
+    updateAction (data) {
+      return baseApiClient.updateItem('action', data)
+    },
+    deleteAction (id) {
+      return baseApiClient.deleteItem('action', id)
     }
   }
 })

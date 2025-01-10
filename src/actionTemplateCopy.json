@@ -1,0 +1,20 @@
+{
+  "id": "ID485697",
+  "agent": null,
+  "args": {
+    "id": 1,
+    "actionName": "go to shop",
+    "actionType": "goTo",
+    "destinationType": "agent",
+    "agentType": "ID123456",
+    "agentChoiceMethod": "nearest",
+    "target": ""
+  },
+  "name": "go to shop",
+  "type": "goTo",
+  "inProgress": false,
+  "isComplete": false,
+  "conditions": [],
+  "transitions": [],
+  "propertyChanges": []
+}

@@ -1,0 +1,31 @@
+{
+  "id": 1,
+  "agent": null,
+  "args": {
+    "id": 1,
+    "actionName": "go to shop",
+    "actionType": "goTo",
+    "destinationType": "agent",
+    "agentType": {
+      "name": "lemonadeStall",
+      "width": 130,
+      "height": 104,
+      "offset": { "x": 0, "y": 0 },
+      "scale": 1,
+      "nominalSpeed": 0.02,
+      "previewImage": "/img/sprites/stall-1.png",
+      "animationSet": null,
+      "thumbnail": "/img/thumbnails/lemonade-stall-thumbnail.png",
+      "id": "677b31b1024c92f6b532efe0"
+    },
+    "agentChoiceMethod": "nearest",
+    "target": ""
+  },
+  "actionName": "go to shop",
+  "actionType": "goTo",
+  "inProgress": false,
+  "isComplete": false,
+  "conditions": [],
+  "transitions": [],
+  "propertyChanges": []
+}

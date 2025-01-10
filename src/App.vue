@@ -198,7 +198,7 @@ export default {
 
       const agentTypeNames = Object.keys(store.agentTypes)
 
-      // hard-coding for the moment
+      // hard-coding for the moment - REMOVE NOW?
       store.agentTypes.customer.animationSet = store.animationSets[0]
 
       // populate agents from initial data
@@ -259,12 +259,12 @@ export default {
 
     const setNextActionOrNull = (agent) => {
       // check for state transitions and set next action if complete
-      for (let i = 0; i < agent.currentAction.transitions.length; i++) {
-        const condition = agent.currentAction.transitions[i].condition
+      for (let transition of agent.currentAction.transitions) {
+        const condition = transition.condition
         const conditionHandler = new ConditionHandler()
         const result = conditionHandler.evaluateCondition(condition)
         if (result === true) {
-          const nextAction = agent.currentAction.transitions[i].nextAction
+          const nextAction = transition.nextAction
           setDynamicActionTargetAgents(nextAction)
           let actionHandler = new ActionHandler()
           agent.currentAction = actionHandler.clone(nextAction, agent)

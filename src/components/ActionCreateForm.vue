@@ -147,7 +147,7 @@
 
       <div v-if="itemForm.agentChoiceMethod === 'specific'">
         <select v-model="itemForm.target">
-          <option value="">-- select agent --</option>
+          <option :value="{}">-- select agent --</option>
           <option
             v-for="agent in store.agentItems[itemForm.agentType]"
             :value="agent"
@@ -236,7 +236,7 @@ export default {
       actionName: '',
       agentType: '',
       agentChoiceMethod: 'nearest',
-      target: '',
+      target: {},
       duration: 0,
       destinationType: '',
       spriteSheet: '',
@@ -251,13 +251,12 @@ export default {
       removeAgent: ['agentType', 'agentChoiceMethod', 'target']
     })
 
-    const createAction = () => {
+    const createAction = async () => {
       const actionType = itemForm.value.actionType
 
       const args = {
-        id: store.actions.length + 1,
         actionName: itemForm.value.actionName,
-        actionType: actionType,
+        actionType: actionType
       }
 
       // use config arguments specific to each action type
@@ -288,6 +287,12 @@ export default {
 
       let actionFunction = CREATE_ACTION_FUNCTIONS[actionType]
       let newAction = actionFunction(null, args)
+
+      const newId = await store.createAction(newAction)
+      newAction.id = newId
+
+      console.log(newAction)
+
       store.actions.push(newAction)
 
       resetForm()
@@ -297,7 +302,7 @@ export default {
       isAdding.value = false
       itemForm.value.actionName = ''
       itemForm.value.actionType = DEFAULT_ACTION_TYPE
-      itemForm.value.target = ''
+      itemForm.value.target = {}
       itemForm.value.spriteSheet = ''
     }
 

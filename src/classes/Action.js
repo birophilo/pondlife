@@ -265,8 +265,8 @@ export function createActionObject (
     actionType: args.actionType,
     inProgress: false,
     isComplete: false,
-    conditions: conditions ? conditions : [],
-    transitions: transitions ? transitions : [],
+    conditions: conditions,
+    transitions: transitions,
     spriteSheet: args.spriteSheet
   }
 

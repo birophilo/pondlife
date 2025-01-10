@@ -10,7 +10,8 @@ from routers import (
     conditions,
     spritesheets,
     animation_sets,
-    agent_types
+    agent_types,
+    actions
 )
 
 
@@ -23,6 +24,7 @@ def create_application() -> FastAPI:
     application.include_router(spritesheets.router)
     application.include_router(animation_sets.router)
     application.include_router(agent_types.router)
+    application.include_router(actions.router)
     return application
 
 
