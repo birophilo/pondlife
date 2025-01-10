@@ -249,25 +249,18 @@ export class PropertyChange {
 /* FUNCTIONS TO CREATE OBJECTS */
 
 
-export function createActionObject (
-  agent = null,
-  args,
-  conditions = [],
-  transitions = [],
-  propertyChanges = []
-) {
+export function createActionObject (agent = null, data) {
 
   const item = {
-    id: args.id,
     agent: agent,
-    args: args,
-    actionName: args.actionName,
-    actionType: args.actionType,
+    args: data,
+    actionName: data.actionName,
+    actionType: data.actionType,
     inProgress: false,
     isComplete: false,
-    conditions: conditions,
-    transitions: transitions,
-    spriteSheet: args.spriteSheet
+    conditions: data.conditions,
+    transitions: data.transitions || [],
+    spriteSheet: data.spriteSheet
   }
 
   if (item.transitions.length > 0 && item.agent !== null) {
@@ -277,55 +270,54 @@ export function createActionObject (
     })
   }
 
-  if (propertyChanges) item.propertyChanges = propertyChanges
+  if (data.propertyChanges) item.propertyChanges = data.propertyChanges
 
   return item
 }
 
 
-export function createActionGoTo (agent = null, args, conditions = [], transitions = []) {
-  let item = createActionObject(agent, args, conditions, transitions)
-  if (args.agentChoiceMethod === 'specific') {
-    item.destination = args.target
+export function createActionGoTo (agent = null, data) {
+  let item = createActionObject(agent, data)
+  if (data.agentChoiceMethod === 'specific') {
+    item.destination = data.target
   }
-  if (args.destinationType === 'point') {
-      item.destination = args.target
+  if (data.destinationType === 'point') {
+      item.destination = data.target
   }
   return item
 }
 
 
-export function createActionPropertyChanges (
-  agent = null, args, conditions = [], transitions = [], propertyChanges = []
-) {
-  let item = createActionObject(agent, args, conditions, transitions, propertyChanges)
-  item.propertyChanges = propertyChanges ? propertyChanges : []
+export function createActionPropertyChanges (agent = null, data) {
+  let item = createActionObject(agent, data)
+  item.propertyChanges = data.propertyChanges ? data.propertyChanges : []
   if (item.agent !== null) {
     item.propertyChanges.forEach(change => {
       // this is currently hard-coded just to apply to self agent, not e.g. target agent
-      change.agent = this.agent
+      // change.agent = this.agent  -- WRONG?
+      change.agent = data.agent  // -- RIGHT?
     })
   }
   return item
 }
 
 
-export function createActionInterval (agent = null, args, conditions = [], transitions = []) {
-  let item = createActionObject(agent, args, conditions, transitions)
+export function createActionInterval (agent = null, data) {
+  let item = createActionObject(agent, data)
   return item
 }
 
 
-export function createActionSpawnAgent (agent = null, args, conditions = [], transitions = []) {
-  let item = createActionObject(agent, args, conditions, transitions)
-  item.agentType = args.agentType
-  item.position = args.position
-  item.useRandomPosition = args.useRandomPosition
+export function createActionSpawnAgent (agent = null, data) {
+  let item = createActionObject(agent, data)
+  item.agentType = data.args.agentType
+  item.position = data.args.position
+  item.useRandomPosition = data.args.useRandomPosition
 }
 
 
-export function createActionRemoveAgent (agent = null, args, conditions = [], transitions = []) {
-  const item = createActionObject(agent, args, conditions, transitions)
+export function createActionRemoveAgent (agent = null, data) {
+  const item = createActionObject(agent, data)
   return item
 }
 
@@ -381,13 +373,8 @@ export class ActionHandler {
   }
 
   clone(item, agent, args) {
-    const action = createActionObject(
-      agent,
-      item.args = {...item.args, ...args},
-      item.conditions,
-      item.transitions,
-      item.propertyChanges
-    )
+    item.args = {...item.args, ...args}
+    const action = createActionObject(agent, item)
     return action
   }
 }

@@ -254,39 +254,42 @@ export default {
     const createAction = async () => {
       const actionType = itemForm.value.actionType
 
-      const args = {
+      const data = {
         actionName: itemForm.value.actionName,
         actionType: actionType
       }
 
       // use config arguments specific to each action type
       const formArgs = forms.value[actionType]
-      formArgs.forEach(key => {args[key] = itemForm.value[key]})
+      formArgs.forEach(key => {data[key] = itemForm.value[key]})
 
-      if (itemForm.value.spriteSheet !== '') args.spriteSheet = itemForm.value.spriteSheet
+      if (itemForm.value.spriteSheet !== '') data.spriteSheet = itemForm.value.spriteSheet
 
       if (actionType === 'goTo') {
         if (itemForm.value.destinationType === 'point') {
           const pointX = Number(store.selectedPoint.x)
           const pointY = Number(store.selectedPoint.y)
-          args.target = {
+          data.target = {
             name: `point: {x: ${pointX}, y: ${pointY}}`,
             width: 10,
             height: 10,
             position: {x: pointX, y: pointY}
           }
         }
-        if (itemForm.value.target === 'home') args.destination = store.selectedAgent.home
+        if (itemForm.value.target === 'home') data.destination = store.selectedAgent.home
       }
 
       if (actionType === 'spawnAgent') {
         const pointX = Number(store.selectedPoint.x)
         const pointY = Number(store.selectedPoint.y)
-        args.position = {x: pointX, y: pointY}
+        data.position = {x: pointX, y: pointY}
       }
 
       let actionFunction = CREATE_ACTION_FUNCTIONS[actionType]
-      let newAction = actionFunction(null, args)
+
+      console.log(data)
+
+      let newAction = actionFunction(null, data)
 
       const newId = await store.createAction(newAction)
       newAction.id = newId
