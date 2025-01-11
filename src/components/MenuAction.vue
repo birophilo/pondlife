@@ -16,7 +16,7 @@
       <div v-else>
         <div>
           <button @click="editItem">edit</button>
-          <button @click="deleteItem(action.actionName)">delete</button>
+          <button @click="deleteItem(action.id)">delete</button>
         </div>
       </div>
     </div>
@@ -130,7 +130,7 @@
       </div>
       <div v-else>
         <div>action type: {{ action.actionType }}</div>
-        <div>interval (frames): <input :value="action.args.duration" type="number" disabled /></div>
+        <div>interval (frames): <input :value="action.duration" type="number" disabled /></div>
       </div>
     </div>
 
@@ -197,14 +197,14 @@ export default {
       itemForm.value = {
         actionName: props.action.actionName,
         actionType: props.action.actionType,
-        destinationType: props.action.args.destinationType,
-        agentType: props.action.args.agentType,
-        agentChoiceMethod: props.action.args.agentChoiceMethod,
+        destinationType: props.action.destinationType,
+        agentType: props.action.agentType,
+        agentChoiceMethod: props.action.agentChoiceMethod,
         propertyChanges: props.action.propertyChanges,
         transitions: props.action.transitions,
-        duration: props.action.args.duration,
-        target: props.action.args.target,
-        spriteSheet: props.action.args.spriteSheet
+        duration: props.action.duration,
+        target: props.action.target,
+        spriteSheet: props.action.spriteSheet
       }
 
       if (props.action.actionType === 'spawnAgent') {
@@ -212,7 +212,7 @@ export default {
       }
 
       if (props.action.actionType === 'interval') {
-        itemForm.value.spriteSheet = props.action.args.spriteSheet
+        itemForm.value.spriteSheet = props.action.spriteSheet
       }
     }
 
@@ -224,30 +224,31 @@ export default {
       act.actionName = itemForm.value.actionName
       act.actionType = itemForm.value.actionType
 
-      act.args.duration = itemForm.value.duration
-      act.args.destinationType = itemForm.value.destinationType
-      act.args.agentType = itemForm.value.agentType
-      act.args.target = itemForm.value.target
-      act.args.spriteSheet = itemForm.value.spriteSheet
+      act.duration = itemForm.value.duration
+      act.destinationType = itemForm.value.destinationType
+      act.agentType = itemForm.value.agentType
+      act.target = itemForm.value.target
+      act.spriteSheet = itemForm.value.spriteSheet
 
       act.agentChoiceMethod = itemForm.value.agentChoiceMethod
       act.propertyChanges = itemForm.value.propertyChanges
       act.transitions = itemForm.value.transitions
 
       if (props.action.actionType === 'spawnAgent') {
-        act.args.position = {x: Number(store.selectedPoint.x), y: Number(store.selectedPoint.y)}
+        act.position = {x: Number(store.selectedPoint.x), y: Number(store.selectedPoint.y)}
       } else if (props.action.actionType === 'goTo') {
-        act.args.target.position = {x: Number(store.selectedPoint.x), y: Number(store.selectedPoint.y)}
+        act.target.position = {x: Number(store.selectedPoint.x), y: Number(store.selectedPoint.y)}
       } else if (props.action.actionType === 'interval') {
-        act.args.spriteSheet = itemForm.value.spriteSheet
+        act.spriteSheet = itemForm.value.spriteSheet
       }
       store.selectedPoint = {x: null, y: null}
 
       store.updateAction(act)
     }
 
-    const deleteItem = (itemName) => {
-      store.actions = store.actions.filter(item => item.actionName !== itemName)
+    const deleteItem = (itemId) => {
+      store.deleteAction(itemId)
+      store.actions = store.actions.filter(item => item.id !== itemId)
     }
 
     const editItem = () => {

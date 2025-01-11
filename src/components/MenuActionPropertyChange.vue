@@ -12,7 +12,7 @@
       <form name="agentPropChangeRadioSelect">
         <input
           type="radio"
-          v-model="itemForm.args.agentChoiceMethod"
+          v-model="itemForm.agentChoiceMethod"
           name="agentChoiceMethod"
           value="nearest"
           checked="true"
@@ -20,14 +20,14 @@
         <label for="nearest">nearest</label>
         <input
           type="radio"
-          v-model="itemForm.args.agentChoiceMethod"
+          v-model="itemForm.agentChoiceMethod"
           name="agentChoiceMethod"
           value="specific"
         />
         <label for="specific">specific</label>
         <input
           type="radio"
-          v-model="itemForm.args.agentChoiceMethod"
+          v-model="itemForm.agentChoiceMethod"
           name="agentChoiceMethod"
           value="all"
         />
@@ -79,9 +79,7 @@ export default {
       itemForm.value = {
         agent: props.propertyChange.agent,
         agentType: props.propertyChange.agentType,
-        args: {
-          agentChoiceMethod: props.propertyChange.args.agentChoiceMethod
-        },
+        agentChoiceMethod: props.propertyChange.args.agentChoiceMethod,
         target: props.propertyChange.target,
         propertyName: props.propertyChange.propertyName,
         changeType: props.propertyChange.changeType,

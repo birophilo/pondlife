@@ -58,15 +58,16 @@ export function createActionPropertyChanges (agent = null, data) {
 
 export function createActionInterval (agent = null, data) {
   let item = createActionObject(agent, data)
+  item.duration = data.duration
   return item
 }
 
 
 export function createActionSpawnAgent (agent = null, data) {
   let item = createActionObject(agent, data)
-  item.agentType = data.args.agentType
-  item.position = data.args.position
-  item.useRandomPosition = data.args.useRandomPosition
+  item.agentType = data.agentType
+  item.position = data.position
+  item.useRandomPosition = data.useRandomPosition
 }
 
 
@@ -207,7 +208,7 @@ export class ActionIntervalHandler extends ActionHandler {
     agentHandler.useSpriteSheet('idle', item.agent)
     const currentFrame = globals.animationFrameId
     item.startFrame = currentFrame
-    item.agent.currentStateName = `waiting for ${item.args.duration} frames`
+    item.agent.currentStateName = `waiting for ${item.duration} frames`
   }
 
   defaultCompletionCheckPasses(item) {
@@ -216,7 +217,7 @@ export class ActionIntervalHandler extends ActionHandler {
 
   check(item, stateData, globals, agentHandler) {
     const currentFrame = globals.animationFrameId
-    const timerExpired = currentFrame - (item.startFrame + item.args.duration) >= 0
+    const timerExpired = currentFrame - (item.startFrame + item.duration) >= 0
 
     if (timerExpired) {
       item.isComplete = true

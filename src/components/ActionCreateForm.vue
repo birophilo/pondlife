@@ -294,8 +294,6 @@ export default {
       const newId = await store.createAction(newAction)
       newAction.id = newId
 
-      console.log(newAction)
-
       store.actions.push(newAction)
 
       resetForm()

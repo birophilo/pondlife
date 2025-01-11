@@ -224,6 +224,9 @@ export default {
 
       })
 
+      // populate actions
+      store.actions = [...store.sceneData.actions]
+
       store.itemMenu = new AgentMenu()
 
       const agentTypeButtonNames = agentTypeNames.filter(name => name !== 'world')
