@@ -11,7 +11,8 @@ from routers import (
     spritesheets,
     animation_sets,
     agent_types,
-    actions
+    actions,
+    property_changes
 )
 
 
@@ -25,6 +26,7 @@ def create_application() -> FastAPI:
     application.include_router(animation_sets.router)
     application.include_router(agent_types.router)
     application.include_router(actions.router)
+    application.include_router(property_changes.router)
     return application
 
 

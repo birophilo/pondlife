@@ -113,4 +113,11 @@ class ActionTransition(BaseModel):
 
 class PropertyChange(BaseModel):
     # NOTE: these are items that comprise the ActionPropertyChangeSet
-    pass
+    id: str
+    agent: str | None = None
+    property: str
+    change: str
+    value: str | bool | int | float
+    target: dict | str | None = None
+    agentType: str | None = None
+    agentChoiceMethod: str | None = None

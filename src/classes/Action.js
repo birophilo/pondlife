@@ -86,18 +86,18 @@ export function createActionTransitionObject (condition, nextAction) {
 }
 
 
-export function createPropertyChange (agent, target, propertyName, changeType, propertyValue, args) {
-  const item = {
-    agent: agent,
-    target: target,
-    propertyName: propertyName,
-    changeType: changeType,
-    // only handling numbers for now, not strings, boolean etc.
-    propertyValue: propertyValue,
-    args: args
-  }
-  return item
-}
+// export function createPropertyChange (agent, target, propertyName, changeType, propertyValue, args) {
+//   const item = {
+//     agent: agent,
+//     target: target,
+//     propertyName: propertyName,
+//     changeType: changeType,
+//     // only handling numbers for now, not strings, boolean etc.
+//     propertyValue: propertyValue,
+//     args: args
+//   }
+//   return item
+// }
 
 
 /* HANDLER CLASSES */
@@ -131,8 +131,6 @@ export class ActionHandler {
     const createActionFunction = ACTION_CONSTRUCTORS[item.actionType]
     const action = createActionFunction(agent, item)
 
-    console.log("CLONED ACTION")
-    console.log(action)
     return action
   }
 }
@@ -142,10 +140,6 @@ export class ActionGoToHandler extends ActionHandler {
 
   // eslint-disable-next-line
   start(item, globals) {
-
-    console.log("STARTING")
-    console.log(item)
-    console.log(item.destination)
 
     item.destination = item.target
     item.agent.destination = item.target
@@ -274,7 +268,7 @@ export class PropertyChangeHandler {
   }
 
   description(item) {
-    return `${item.propertyName} ${item.changeType} ${item.propertyValue}`
+    return `${item.property} ${item.change} ${item.value}`
   }
 }
 

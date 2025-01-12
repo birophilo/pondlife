@@ -77,7 +77,7 @@
 
 <script>
 import { ref } from 'vue'
-import { createPropertyChange } from '../classes/Action.js'
+// import { createPropertyChange } from '../classes/Action.js'
 import { useStore } from '../store/mainStore.js'
 
 export default {
@@ -92,29 +92,21 @@ export default {
 
     const itemForm = ref({
       agent: '',
-      agentType: '',
-      agentChoiceMethod: 'nearest',
-      target: '',
       property: '',
       change: '',
-      value: ''
+      value: '',
+      target: '',
+      agentType: '',
+      agentChoiceMethod: 'nearest'
     })
 
-    const createItem = () => {
-      const args = {
-        agentType: itemForm.value.agentType,
-        agentChoiceMethod: itemForm.value.agentChoiceMethod,
-        target: itemForm.value.target
-      }
-      const propChange = createPropertyChange(
-        null,
-        itemForm.value.target,
-        itemForm.value.property,
-        itemForm.value.change,
-        itemForm.value.value,
-        args
-      )
-      const act = store.actions.find(a => a.actionName === props.action.actionName)
+    const createItem = async () => {
+      const propChange = {...itemForm.value, agent: null} // does agent need to be null?
+
+      const act = store.actions.find(a => a.id === props.action.id)
+      // create PropertyChange and update the Action's ID field
+      const newId = await store.createPropertyChange(propChange)
+      propChange.id = newId
       act.propertyChanges.push(propChange)
       isAdding.value = false
     }

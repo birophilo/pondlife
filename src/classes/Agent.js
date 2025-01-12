@@ -170,9 +170,6 @@ export class AgentHandler extends SpriteHandler {
   }
 
   getDistanceToAgent(agent, targetAgent) {
-    console.log("AGENT", "TARGET AGENT")
-    console.log(agent)
-    console.log(targetAgent)
     const xDiff = targetAgent.center.x - agent.center.x
     const yDiff = targetAgent.center.y - agent.center.y
     return Math.hypot(xDiff, yDiff)

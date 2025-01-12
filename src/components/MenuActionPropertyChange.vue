@@ -34,15 +34,15 @@
         <label for="all">all</label>
       </form>
 
-      <select v-model="itemForm.propertyName">
+      <select v-model="itemForm.property">
         <option value="money">money</option>
       </select>
-      <select v-model="itemForm.changeType">
+      <select v-model="itemForm.change">
         <option value="increase">increase</option>
         <option value="decrease">decrease</option>
       </select>
       <input
-        v-model="itemForm.propertyValue"
+        v-model="itemForm.value"
         type="number"
         placeholder="value"
       />
@@ -76,34 +76,26 @@ export default {
     const itemForm = ref({})
 
     const populateItemForm = () => {
-      itemForm.value = {
-        agent: props.propertyChange.agent,
-        agentType: props.propertyChange.agentType,
-        agentChoiceMethod: props.propertyChange.args.agentChoiceMethod,
-        target: props.propertyChange.target,
-        propertyName: props.propertyChange.propertyName,
-        changeType: props.propertyChange.changeType,
-        propertyValue: props.propertyChange.propertyValue
-      }
+      itemForm.value = {...props.propertyChange}
     }
 
     const saveItem = () => {
       isEditing.value = false
-      const keys = Object.keys(itemForm.value)
-      var action = store.actions.find(act => act.actionName === props.action.actionName)
+      var action = store.actions.find(act => act.id === props.action.id)
       var propChange = action.propertyChanges[props.index]
+      // can do propChange = {...itemForm.value}?
+      store.updatePropertyChange(itemForm.value)
+      // TODO: update action here with propertyChanges: ["ID123"]
+      const keys = Object.keys(itemForm.value)
       keys.forEach(key => {
-          if (key === 'args') {
-            propChange.args = {...itemForm.value.args}
-          } else {
-            propChange[key] = itemForm.value[key]
-          }
-        }
-      )
+        propChange[key] = itemForm.value[key]
+      })
     }
 
-    const deleteItem = (actionToDelete) => {
-      const action = store.actions.find(action => action.actionName === actionToDelete.actionName)
+    const deleteItem = () => {
+      const action = store.actions.find(act => act.id === props.action.id)
+      store.deletePropertyChange(props.propertyChange.id)
+      // TODO: update action here with propertyChanges: [--> remove "ID123"]
       action.propertyChanges.splice(props.index, 1)
     }
 

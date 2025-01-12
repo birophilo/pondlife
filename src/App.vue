@@ -462,14 +462,14 @@ export default {
       // agentChoiceMethod ('nearest' etc)
       if (action.actionType === 'change') {
         action.propertyChanges.forEach(change => {
-          if (change.args.agentType !== 'self') {
-            if (change.args.agentChoiceMethod === 'nearest') {
-              const agentTypeName = change.args.agentType.name
+          if (change.agentType !== 'self') {
+            if (change.agentChoiceMethod === 'nearest') {
+              const agentTypeName = change.agentType.name
               const targetAgents = store.agentItems[agentTypeName]
               const targetAgent = agentHandler.getClosestAgent(store.selectedAgent, targetAgents)
               change.target = targetAgent
-            } else if (change.args.agentChoiceMethod === 'all') {
-              const agentTypeName = change.args.agentType
+            } else if (change.agentChoiceMethod === 'all') {
+              const agentTypeName = change.agentType
               const agentItems = store.agentItems[agentTypeName]
               change.target = agentItems
             }
@@ -484,7 +484,7 @@ export default {
       setDynamicActionTargetAgents(action)
       const handlerClass = ACTION_HANDLERS[action.actionType]
       const handler = new handlerClass()
-      store.selectedAgent.currentAction = handler.clone(action, store.selectedAgent, action.args)
+      store.selectedAgent.currentAction = handler.clone(action, store.selectedAgent)
       console.log("END OF CLONE")
       console.log(store.selectedAgent.currentAction)
     }
