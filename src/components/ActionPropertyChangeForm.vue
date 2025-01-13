@@ -97,7 +97,8 @@ export default {
       value: '',
       target: '',
       agentType: '',
-      agentChoiceMethod: 'nearest'
+      agentChoiceMethod: 'nearest',
+      actionId: props.action.id
     })
 
     const createItem = async () => {
@@ -105,8 +106,9 @@ export default {
 
       const act = store.actions.find(a => a.id === props.action.id)
       // create PropertyChange and update the Action's ID field
-      const newId = await store.createPropertyChange(propChange)
+      const newId = await store.createPropertyChange(propChange, act.id)
       propChange.id = newId
+      // TODO: change this to propChange ID to match document structure in database (or get from API)
       act.propertyChanges.push(propChange)
       isAdding.value = false
     }

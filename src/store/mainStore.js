@@ -154,7 +154,8 @@ export const useStore = defineStore({
     deleteAction (id) {
       return baseApiClient.deleteItem('action', id)
     },
-    createPropertyChange (data) {
+    createPropertyChange (propertyChange, actionId) {
+      const data = {propertyChange: propertyChange, actionId: actionId}
       return baseApiClient.createItem('propertyChanges', data)
     },
     getPropertyChange (id) {

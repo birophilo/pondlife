@@ -1,10 +1,13 @@
 import json
+from bson import ObjectId
 from typing import List
 
 from fastapi import APIRouter, Body, Request, Response, HTTPException, status
 from fastapi.encoders import jsonable_encoder
-from mongo_client import MongoCRUDClient
+from pydantic import BaseModel
+from pymongo.errors import PyMongoError
 
+from mongo_client import MongoCRUDClient
 from schemas import PropertyChange
 from utils import transform_doc_id
 
@@ -16,13 +19,38 @@ router = APIRouter()
 @router.post("/propertyChanges", status_code=status.HTTP_201_CREATED, response_model=PropertyChange)
 async def create_property_change(request: Request):
 
-    property_change_data = json.loads(await request.body())
+    request_body = json.loads(await request.body())
+    property_change_data = request_body["propertyChange"]
+    action_id = request_body["actionId"]
 
     property_change = jsonable_encoder(property_change_data)
     mongo_client = MongoCRUDClient()
-    created_property_change = mongo_client.create_document("property_changes", property_change)
-    property_change = transform_doc_id(created_property_change)
-    return property_change
+    # session = mongo_client.client.start_session()
+    # session.start_transaction()
+    session = None
+
+    try:
+        created_property_change = mongo_client.create_document("property_changes", property_change, session=session)
+        new_property_change = transform_doc_id(created_property_change)
+
+        action_collection = mongo_client.db.actions
+        action_collection.update_one(
+            {"_id": ObjectId(action_id)},
+            {"$push": {"propertyChanges": ObjectId(new_property_change["id"])}},
+            # session=session
+        )
+
+        # session.commit_transaction()
+        property_change = transform_doc_id(created_property_change)
+        return property_change
+
+    except PyMongoError as e:
+        # session.abort_transaction()
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR , detail=f"{e}")
+
+    finally:
+        # session.end_session()
+        pass
 
 
 @router.get("/propertyChanges", response_model=List[PropertyChange])
@@ -69,7 +97,29 @@ async def update_property_change(id: str, request: Request):
 @router.delete("/propertyChange/{id}")
 def delete_property_change(id: str, request: Request, response: Response):
     mongo_client = MongoCRUDClient()
-    delete_result = mongo_client.delete_document("property_changes", id)
+    property_change = mongo_client.get_document("property_changes", id)
+    action_id = property_change["actionId"]
+
+    try:
+        delete_result = mongo_client.delete_document("property_changes", id)
+
+        # session = mongo_client.client.start_session()
+        # session.start_transaction()
+
+        action_collection = mongo_client.db.actions
+        action_collection.update_one(
+            {"_id": ObjectId(action_id)},
+            {"$pull": {"propertyChanges": ObjectId(id)}},
+            # session=session
+        )
+
+    except PyMongoError as e:
+        # session.abort_transaction()
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR , detail=f"{e}")
+
+    finally:
+        # session.end_session()
+        pass
 
     if delete_result.deleted_count == 1:
         response.status_code = status.HTTP_204_NO_CONTENT

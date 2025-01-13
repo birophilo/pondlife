@@ -119,5 +119,8 @@ class PropertyChange(BaseModel):
     change: str
     value: str | bool | int | float
     target: dict | str | None = None
-    agentType: str | None = None
-    agentChoiceMethod: str | None = None
+    agent_type: str | None = None
+    agent_choice_method: str | None = None
+    action_id: str
+
+    model_config = ConfigDict(alias_generator=to_camel)

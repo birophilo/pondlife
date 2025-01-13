@@ -16,8 +16,9 @@ class MongoCRUDClient:
     def __init__(self):
         db_path = "mongodb://admin:password@localhost:27017/?authSource=admin"
         self.client = MongoClient(db_path)
+        self.db = self.client.pondlife_db
 
-    def create_document(self, collection: str, item):
+    def create_document(self, collection: str, item, session=None):
         new_item = self.client.pondlife_db[collection].insert_one(item)
         created_item = self.client.pondlife_db[collection].find_one(
             {"_id": ObjectId(new_item.inserted_id)}
