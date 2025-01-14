@@ -171,10 +171,10 @@ export class ActionPropertyChangesHandler extends ActionHandler {
       const value = change.propertyValue
       const changeValue = change.changeType === 'increase' ? Number(value) : 0 - Number(value)
 
-      if (change.args.agentType === 'self') {
+      if (change.agentType === 'self') {
         item.agent.stateData[change.propertyName] += changeValue
       } else {
-        if (change.args.agentChoiceMethod === 'all') {
+        if (change.agentChoiceMethod === 'all') {
           change.target.forEach(agentItem => agentItem.stateData[change.propertyName] += changeValue)
         } else {
           change.target.stateData[change.propertyName] += changeValue

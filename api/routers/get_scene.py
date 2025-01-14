@@ -36,7 +36,8 @@ async def get_scene_data(scene_id):
             "agentInstances": [],
             "spriteSheets": [],
             "animationSets": [],
-            "actions": []
+            "actions": [],
+            "agentProperties": []
         }
     }
 
@@ -64,6 +65,9 @@ async def get_scene_data(scene_id):
 
     actions = mongo_client.list_documents("actions")  # return all items for now
     payload["data"]["actions"] = [transform_doc_id(action) for action in actions]
+
+    agent_properties = mongo_client.list_documents("agent_properties")  # return all items for now
+    payload["data"]["agentProperties"] = [transform_doc_id(prop) for prop in agent_properties]
 
     payload["data"]["agentInstances"] = agent_instances
 

@@ -46,6 +46,8 @@ export const useStore = defineStore({
 
     conditions: [],
 
+    agentProperties: [],
+
     // hard-coded 8-way list (9 including 'idle') for basic 2D directional sprite movements
     directionList: [
       ['upLeft', 'up', 'upRight'],
@@ -178,6 +180,18 @@ export const useStore = defineStore({
     },
     deleteAgent (id) {
       return baseApiClient.deleteItem('agent', id)
+    },
+    createInitialAgentProperty (data) {
+      return baseApiClient.createItem('agentProperties', data)
+    },
+    getInitialAgentProperty (id) {
+      return baseApiClient.getItem('agentProperty', id)
+    },
+    updateInitialAgentProperty (data) {
+      return baseApiClient.updateItem('agentProperty', data)
+    },
+    deleteInitialAgentProperty (id) {
+      return baseApiClient.deleteItem('agentProperty', id)
     }
   }
 })

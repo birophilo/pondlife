@@ -13,7 +13,8 @@ from routers import (
     agent_types,
     agents,
     actions,
-    property_changes
+    property_changes,
+    agent_properties
 )
 
 
@@ -29,6 +30,7 @@ def create_application() -> FastAPI:
     application.include_router(agents.router)
     application.include_router(actions.router)
     application.include_router(property_changes.router)
+    application.include_router(agent_properties.router)
     return application
 
 

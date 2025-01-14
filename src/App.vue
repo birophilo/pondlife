@@ -69,6 +69,7 @@
       <summary class="menu-section-heading">Properties</summary>
       <div v-if="store.selectedAgent !== null" class="item-list">
         <MenuProperty :agentProperties="store.selectedAgent.stateData"/>
+        <MenuAgentInitialProperty />
         <SetPropertyForm />
       </div>
     </details>
@@ -222,6 +223,18 @@ export default {
           })
         }
 
+      })
+
+      store.agentProperties = [...store.sceneData.agentProperties]
+      // set initial agent properties
+      store.agentProperties.forEach(property => {
+        const agentTypes = property.agentTypes
+        agentTypes.forEach(agentType => {
+          const agentItems = store.agentItems[agentType]
+          agentItems.forEach(agent => {
+            agent.stateData[property.name] = property.initialValue
+          })
+        })
       })
 
       // populate actions
