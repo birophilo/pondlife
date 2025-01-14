@@ -57,9 +57,13 @@ class AgentType(BaseModel):
     model_config = ConfigDict(alias_generator=to_camel)
 
 
-class Agent(BaseModel):
+class AgentConstructor(BaseModel):
+    # note: this contains the bare minimum to construct an Agent instance
+    # i.e. carries no simulation state (to add later)
     id: str
-    state_data: dict
+    agentType: str
+    position: XY
+    # state_data: dict
 
     model_config = ConfigDict(alias_generator=to_camel)
 
@@ -73,7 +77,7 @@ class Property(BaseModel):
 
 class BaseAction(BaseModel):
     id: str
-    agent: Agent
+    agent: str | None = None  # Agent instance ID
     args: dict
     action_name: str
     action_type: str

@@ -10,16 +10,7 @@
   "agentType": "customer",
   "width": 30,
   "height": 40,
-  "config": {
-    "width": 30,
-    "height": 40,
-    "offset": "PositionXYObject",
-    "scale": 0.7,
-    "nominalSpeed": 0.02,
-    "previewImage": "/img/thumbnails/customer-thumbnail.png",
-    "animationSet": "AnimationSetObject",
-    "thumbnail": "/img/thumbnails/customer-thumbnail.png"
-  },
+  "config": "AgentType",
   "collisionArea": {
     "x": 900,
     "y": 400,

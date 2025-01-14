@@ -41,7 +41,7 @@ async def get_scene_data(scene_id):
     }
 
     agent_instances = {}
-    agent_documents = mongo_client.get_documents_from_ids("agent_instances", scene_data["agentInstances"])
+    agent_documents = mongo_client.list_documents("agents")
 
     for instance in agent_documents:
         instance = transform_doc_id(instance)

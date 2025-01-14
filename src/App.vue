@@ -209,11 +209,11 @@ export default {
           store.sceneData.agentInstances[agentTypeName].forEach((item, i) => {
 
             let newAgent = createAgentObject(
-              agentTypeName, // agentTypeName
-              {x: item.x, y: item.y},  // position
+              item.id,
+              store.agentTypes[agentTypeName],  // agentType object
+              {x: item.position.x, y: item.position.y},  // position
               i + 1,  // num
               store.GlobalSettings, // globals
-              store.agentTypes[agentTypeName]
             )
             const handler = new AgentHandler()
             handler.useSpriteSheet('idle', newAgent)
@@ -360,19 +360,21 @@ export default {
             }
             if (emissions.agentsToSpawn?.length > 0) {
               emissions.agentsToSpawn.forEach(args => {
-                const agentType = args.agentType
+                const agentTypeName = args.agentType
 
                 let newAgent = createAgentObject(
-                  agentType,  // agentTypeName
+                  null,
+                  store.agentTypes[agentTypeName],  // agentType
                   args.position,  // position
-                  store.agentItems[agentType].length + 1,  // num
-                  store.GlobalSettings,  // globals
-                  store.agentTypes[agentType]  // agentType
+                  store.agentItems[agentTypeName].length + 1,  // num
+                  store.GlobalSettings  // globals
                 )
+                addAgent(agentTypeName, args.position)
+
                 const handler = new AgentHandler()
                 handler.useSpriteSheet('idle', newAgent)
 
-                store.agentItems[agentType].push(newAgent)
+                store.agentItems[agentTypeName].push(newAgent)
               })
             }
           }
@@ -429,10 +431,16 @@ export default {
         // DELETE AGENT (in delete mode)
         if (isInArea && store.deleteMode === true) {
           const agent = agentItems[i]
-          agent.labelElement.remove()
-          agentItems.splice(i, 1)
+
+          deleteAgent(agent, agentItems, i)
         }
       })
+    }
+
+    const deleteAgent = async (agent, agentItems, i) => {
+      agent.labelElement.remove()
+      await store.deleteAgent(agent.id)
+      agentItems.splice(i, 1)
     }
 
     const setDynamicActionTargetAgents = (action) => {
@@ -489,21 +497,20 @@ export default {
       console.log(store.selectedAgent.currentAction)
     }
 
-    const addAgent = (agentTypeName) => {
+    const addAgent = async (agentTypeName, position) => {
       const agentItems = store.agentItems[agentTypeName]
       const num = agentItems.length + 1
       let newAgent = createAgentObject(
-        agentTypeName,
-        {
-          x: store.mouse.x - store.agentTypes[agentTypeName].width / 2,
-          y: store.mouse.y - store.agentTypes[agentTypeName].height / 2
-        },
+        null,
+        store.agentTypes[agentTypeName],
+        position,
         num,
-        store.GlobalSettings,
-        store.agentTypes[agentTypeName]
+        store.GlobalSettings
       )
       const handler = new AgentHandler()
       handler.useSpriteSheet('idle', newAgent)
+      const newId = await store.createAgent({agentType: agentTypeName, position: position})
+      newAgent.id = newId
       agentItems.push(newAgent)
     }
 
@@ -537,8 +544,13 @@ export default {
           const isInMenuArea = pointIsInArea(point, store.itemMenu.area)
 
           if (isInMenuArea === false) {
-            const agentClassName = store.agentPreview.agentType.name
-            addAgent(agentClassName)
+            const agentTypeName = store.agentPreview.agentType.name
+            const position = {
+              x: store.mouse.x - store.agentTypes[agentTypeName].width / 2,
+              y: store.mouse.y - store.agentTypes[agentTypeName].height / 2
+            }
+
+            addAgent(agentTypeName, position)
             store.placingAgent = false
             store.agentPreview = null
           } else {

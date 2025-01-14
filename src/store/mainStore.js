@@ -166,6 +166,18 @@ export const useStore = defineStore({
     },
     deletePropertyChange (id) {
       return baseApiClient.deleteItem('propertyChange', id)
+    },
+    createAgent (data) {
+      return baseApiClient.createItem('agents', data)
+    },
+    getAgent (id) {
+      return baseApiClient.getItem('agent', id)
+    },
+    updateAgent (data) {
+      return baseApiClient.updateItem('agent', data)
+    },
+    deleteAgent (id) {
+      return baseApiClient.deleteItem('agent', id)
     }
   }
 })

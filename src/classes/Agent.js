@@ -4,66 +4,69 @@ import { get8WayDirection } from '../utils.js'
 
 
 export function createAgentObject (
-    agentTypeName,
-    position = { x: 0, y: 0 },
-    num = 0,
-    globals,
-    agentType
-  ) {
+  id = null,
+  agentType,
+  position = { x: 0, y: 0 },
+  num = 0,
+  globals
+) {
 
-    let spriteObject = createSpriteObject(
-      position,
-      agentType.previewImage,
-      agentType.animationSet,
-      agentType.initialSpriteSheet  // not currently in object?
-    )
+  let spriteObject = createSpriteObject(
+    position,
+    agentType.previewImage,
+    agentType.animationSet,
+    agentType.initialSpriteSheet  // not currently in object?
+  )
 
-    let agentObject = {
-      num: num,
-      name: `${agentTypeName} ${num}`,
-      agentType: agentTypeName,
-      width: agentType.width,
-      height: agentType.height,
-      position: position,
-      config: agentType,
-      destination: null,
-      reachedDestination: false,
-      nominalSpeed: agentType.nominalSpeed,
-      speed: agentType.nominalSpeed * globals.globalSpeed,
-      stateData: {},  // stateful configurable properties/parameters/variables, e.g. money: 100
-      currentAction: null,
-      currentActionName: '',
-      currentStateName: '',
-      currentDirection: null  // temporary approach?
-    }
+  let agentObject = {
+    num: num,
+    name: `${agentType.name} ${num}`,
+    agentType: agentType.name,
+    width: agentType.width,
+    height: agentType.height,
+    position: position,
+    config: agentType,
+    destination: null,
+    reachedDestination: false,
+    nominalSpeed: agentType.nominalSpeed,
+    speed: agentType.nominalSpeed * globals.globalSpeed,
+    stateData: {},  // stateful configurable properties/parameters/variables, e.g. money: 100
+    currentAction: null,
+    currentActionName: '',
+    currentStateName: '',
+    currentDirection: null  // temporary approach?
+  }
 
-    let item = {...agentObject, ...spriteObject}
+  if (id !== null) {
+    agentObject.id = id
+  }
 
-    item.collisionArea = {
-      ...position,
-      width: agentType.width,
-      height: agentType.height
-    }
+  let item = {...agentObject, ...spriteObject}
 
-    item.center = {...position}
-    item.homePosition = {...position}
+  item.collisionArea = {
+    ...position,
+    width: agentType.width,
+    height: agentType.height
+  }
 
-    item.home = {
-      position: {...position},
-      width: 80,
-      height: 80,
-      name: 'home',
-      id: 1
-    }
+  item.center = {...position}
+  item.homePosition = {...position}
 
-    item.labelElement = document.createElement('div')
-    item.labelElement.classList.add('canvas-agent-label')
-    const canvasContainer = document.getElementsByClassName('canvas-container')[0]
-    canvasContainer.appendChild(item.labelElement)
+  item.home = {
+    position: {...position},
+    width: 80,
+    height: 80,
+    name: 'home',
+    id: 1
+  }
 
-    return item
+  item.labelElement = document.createElement('div')
+  item.labelElement.classList.add('canvas-agent-label')
+  const canvasContainer = document.getElementsByClassName('canvas-container')[0]
+  canvasContainer.appendChild(item.labelElement)
+
+  return item
 }
-
 
 
 export class AgentHandler extends SpriteHandler {
