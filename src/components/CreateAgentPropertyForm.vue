@@ -1,61 +1,80 @@
 <template>
-  <div v-if="isAdding === false" class="add-container">
-    <button @click="isAdding = true">new condition</button>
-  </div>
-  <div v-else>
-    <input v-model="itemForm.name" type="text" placeholder="name" />
-    <br />
-    <select v-model="itemForm.type">
-      <option value="property">property</option>
-      <option value="preset">preset</option>
-    </select>
-    <br />
+  <div>
+    <div v-if="isAdding">
+      <div>property: <input v-model="itemForm.name" type="text" /></div>
+      <div>description: <input v-model="itemForm.description" type="text" /></div>
 
-    <div v-if="itemForm.type === 'property'">
-      <select
-        v-model="itemForm.forms.property.property"
-        id="action-change-property-name"
-      >
-        <option value="">-- select property --</option>
-        <option value="money">money</option>
-      </select>
-      <select v-model="itemForm.forms.property.comparison" value="isGreaterThan">
-        <option value="">-- select comparison --</option>
-        <option value="isGreaterThan">is greater than</option>
-        <option value="isLessThan">is less than</option>
-      </select>
-      <input
-        number="text"
-        v-model="itemForm.forms.property.value"
-        id="action-change-property-value"
-        placeholder="conditions value"
-      />
+      <div>value type:
+        <select v-model="itemForm.valueType" @change="$forceUpdate()">
+            <option :value="{}">-- value type --</option>
+            <option
+              v-for="choice in valueTypeChoices"
+              :value="choice.value">{{ choice.description }}
+            </option>
+        </select>
+      </div>
+
+      <div v-if="itemForm.valueType === 'boolean'">
+        <div>initial value:
+          <input
+            v-model="itemForm.initialValue"
+            name="itemBooleanValue"
+            :value="true"
+            type="radio"
+          />
+          <label for="">true</label>
+          <input
+            v-model="itemForm.initialValue"
+            name="itemBooleanValue"
+            :value="false"
+            type="radio"
+          />
+          <label for="nearest">false</label>
+        </div>
+      </div>
+      <div v-else-if="itemForm.valueType === 'int'">
+        <div>initial value: <input v-model="itemForm.initialValue" type="number" /></div>
+      </div>
+      <div v-else-if="itemForm.valueType === 'float'">
+        <div>initial value: <input v-model="itemForm.initialValue" type="number" /></div>
+      </div>
+      <div v-else-if="itemForm.valueType === 'string'">
+        <div>initial value: <input v-model="itemForm.initialValue" type="text" /></div>
+      </div>
+
+      <div>applies to:
+        <select v-model="itemForm.applyTo">
+            <!-- <option :value="{}">-- applies to --</option> -->
+            <option
+              v-for="choice in applyToChoices"
+              :value="choice.value">{{ choice.description }}
+            </option>
+        </select>
+      </div>
+
+      <div v-if="itemForm.applyTo === 'agentType'">
+        <div>agent types:</div>
+        <div v-for="agentType in Object.keys(store.agentTypes)">
+          <input
+            class="agent-type-checkbox"
+            type="checkbox"
+            :id="agentType"
+            name="agentTypeForm"
+            :value="agentType"
+            :checked="itemForm.agentTypes.includes(agentType)"
+            @change="handleAgentTypesCheckbox"
+          >
+          <label :for="agentType" >{{ agentType }}</label><br>
+        </div>
+      </div>
+
+      <button @click="createInitialAgentProperty">create</button>
+      <button @click="cancelCreate">cancel</button>
     </div>
 
-    <div v-else-if="itemForm.type === 'preset'">
-      <select
-        v-model="itemForm.forms.preset.preset"
-        id="action-change-property-name"
-      >
-        <option value="">-- select preset --</option>
-        <option value="atDestination">at destination</option>
-        <option value="actionIsComplete">is complete</option>
-      </select>
-
-      <select v-model="itemForm.forms.preset.comparison" value="isIdentical">
-        <option value="">-- select comparison --</option>
-        <option value="isIdentical">is</option>
-      </select>
-
-      <select v-model="itemForm.forms.preset.value">
-        <option :value="true">true</option>
-        <option :value="false">false</option>
-      </select>
-
+    <div v-else>
+      <button @click="isAdding = true">new initial property</button>
     </div>
-
-    <button @click="createCondition">add</button> |
-    <button @click="cancelAddCondition">cancel</button>
   </div>
 </template>
 
@@ -64,11 +83,8 @@ import { ref } from 'vue'
 import { useStore } from '../store/mainStore.js'
 
 
-const DEFAULT_CONDITION_TYPE = 'property'
-
-
 export default {
-  name: 'AgentPropertyCreateForm',
+  name: 'CreateAgentPropertyForm',
   setup: function () {
     const store = useStore()
 
@@ -77,62 +93,47 @@ export default {
     const itemForm = ref({
       name: '',
       valueType: '',
-      value: '',
+      initialValue: '',
       applyTo: 'agentType',
       agentTypes: []
 
     })
 
-    const createCondition = async () => {
-      const conditionType = itemForm.value.type
-      const data = itemForm.value.forms[conditionType]
-
-      let newCondition = {
-        name: itemForm.value.name,
-        comparison: data.comparison,
-        conditionValue: Number(data.value),
-        conditionType: itemForm.value.type
-      }
-
-      if (conditionType === 'property') {
-        newCondition.property = data.property
-      } else {
-        newCondition.classMethod = data.preset
-      }
-
-      const createdId = await store.createCondition(newCondition)
-      newCondition.id = createdId
-      newCondition.agent = store.selectedAgent
-      store.conditions.push(newCondition)
-      resetConditionForms()
-    }
-
-    const resetConditionForms = () => {
-      // reset common form data/settings
-      itemForm.value.name = ''
-      itemForm.value.type = DEFAULT_CONDITION_TYPE
+    const createInitialAgentProperty = async () => {
+      const agentProperty = {...itemForm.value}
+      const createdId = await store.createInitialAgentProperty(agentProperty)
+      agentProperty.id = createdId
+      store.agentProperties.push(agentProperty)
       isAdding.value = false
-
-      // reset specific settings (hard-coded keys for now)
-      itemForm.value.forms.property.property = ''
-      itemForm.value.forms.property.comparison = ''
-      itemForm.value.forms.property.value = ''
-      itemForm.value.forms.preset.preset = ''
-      itemForm.value.forms.preset.comparison = ''
-      itemForm.value.forms.preset.value = ''
     }
 
-    const cancelAddCondition = () => {
-      resetConditionForms()
+    const applyToChoices = [
+      {value: "", description: "--- applies to ---"},
+      {value: "agentType", description: "all agents of given type"},
+      {value: "individual", description: "individual agents"}
+    ]
+
+    const valueTypeChoices = [
+      {value: "string", description: "text"},
+      {value: "int", description: "whole number"},
+      {value: "float", description: "decimal"},
+      {value: "boolean", description: "true or false"}
+    ]
+
+    const handleAgentTypesCheckbox = () => {
+      const checkboxes = document.querySelectorAll('.agent-type-checkbox:checked')
+      const selectedAgentTypes = [...checkboxes].map(e => e.value);
+      itemForm.value.agentTypes = selectedAgentTypes
     }
 
     return {
       store,
       isAdding,
       itemForm,
-      createCondition,
-      resetConditionForms,
-      cancelAddCondition
+      applyToChoices,
+      valueTypeChoices,
+      handleAgentTypesCheckbox,
+      createInitialAgentProperty
     }
   }
 }

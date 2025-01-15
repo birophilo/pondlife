@@ -5,7 +5,7 @@
       <div>description: <input v-model="itemForm.description" type="text" /></div>
 
       <div>value type:
-        <select v-model="itemForm.valueType" type="text">
+        <select v-model="itemForm.valueType" @change="$forceUpdate()">
             <option :value="{}">-- value type --</option>
             <option
               v-for="choice in valueTypeChoices"
@@ -14,11 +14,37 @@
         </select>
       </div>
 
-      <div>initial value: {{ agentProperty.initialValue }}</div>
+      <div v-if="itemForm.valueType === 'boolean'">
+        <div>initial value:
+          <input
+            v-model="itemForm.initialValue"
+            name="itemBooleanValue"
+            :value="true"
+            type="radio"
+          />
+          <label for="">true</label>
+          <input
+            v-model="itemForm.initialValue"
+            name="itemBooleanValue"
+            :value="false"
+            type="radio"
+          />
+          <label for="nearest">false</label>
+        </div>
+      </div>
+      <div v-else-if="itemForm.valueType === 'int'">
+        <div>initial value: <input v-model="itemForm.initialValue" type="number" /></div>
+      </div>
+      <div v-else-if="itemForm.valueType === 'float'">
+        <div>initial value: <input v-model="itemForm.initialValue" type="number" /></div>
+      </div>
+      <div v-else-if="itemForm.valueType === 'string'">
+        <div>initial value: <input v-model="itemForm.initialValue" type="text" /></div>
+      </div>
 
       <div>applies to:
-        <select v-model="itemForm.applyTo" type="text">
-            <option :value="{}">-- applies to --</option>
+        <select v-model="itemForm.applyTo">
+            <!-- <option :value="{}">-- applies to --</option> -->
             <option
               v-for="choice in applyToChoices"
               :value="choice.value">{{ choice.description }}
@@ -26,15 +52,17 @@
         </select>
       </div>
 
-      <div v-if="agentProperty.applyTo === 'agentType'">
+      <div v-if="itemForm.applyTo === 'agentType'">
         <div>agent types:</div>
         <div v-for="agentType in Object.keys(store.agentTypes)">
           <input
+            class="agent-type-checkbox"
             type="checkbox"
             :id="agentType"
             name="agentTypeForm"
             :value="agentType"
             :checked="itemForm.agentTypes.includes(agentType)"
+            @change="handleAgentTypesCheckbox"
           >
           <label :for="agentType" >{{ agentType }}</label><br>
         </div>
@@ -102,6 +130,7 @@ export default {
     }
 
     const applyToChoices = [
+      {value: "", description: "--- applies to ---"},
       {value: "agentType", description: "all agents of given type"},
       {value: "individual", description: "individual agents"}
     ]
@@ -113,6 +142,11 @@ export default {
       {value: "boolean", description: "true or false"}
     ]
 
+    const handleAgentTypesCheckbox = () => {
+      const selectedAgentTypes = [...document.querySelectorAll('.agent-type-checkbox:checked')].map(e => e.value);
+      itemForm.value.agentTypes = selectedAgentTypes
+    }
+
     return {
       store,
       itemForm,
@@ -122,7 +156,8 @@ export default {
       cancelEdit,
       deleteItem,
       applyToChoices,
-      valueTypeChoices
+      valueTypeChoices,
+      handleAgentTypesCheckbox
     }
   }
 }
