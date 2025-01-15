@@ -69,9 +69,16 @@
       <summary class="menu-section-heading">Properties</summary>
       <div v-if="store.selectedAgent !== null" class="item-list">
         <MenuProperty :agentProperties="store.selectedAgent.stateData"/>
-        <MenuAgentInitialProperty />
         <SetPropertyForm />
       </div>
+    </details>
+
+    <details class="menu-section" id="properties-section">
+      <summary class="menu-section-heading">Agent Properties</summary>
+      <div v-for="(agentProperty, i) in store.agentProperties" class="item-list">
+        <MenuAgentInitialProperty :agentProperty="agentProperty" :index="i" />
+      </div>
+      <CreateAgentPropertyForm />
     </details>
 
     <details class="menu-section" id="actions-section">
@@ -132,6 +139,8 @@ import SpriteSheetForm from './components/SpriteSheetForm.vue'
 import MenuSpriteSheet from './components/MenuSpriteSheet.vue'
 import AnimationSetForm from './components/AnimationSetForm.vue'
 import MenuAnimationSet from './components/MenuAnimationSet.vue'
+import CreateAgentPropertyForm from './components/CreateAgentPropertyForm.vue'
+import MenuAgentInitialProperty from './components/MenuAgentInitialProperty.vue'
 
 
 let canvas;
@@ -154,7 +163,9 @@ export default {
     MenuSpriteSheet,
     SpriteSheetForm,
     MenuAnimationSet,
-    AnimationSetForm
+    AnimationSetForm,
+    CreateAgentPropertyForm,
+    MenuAgentInitialProperty
   },
   setup() {
     const store = useStore()
@@ -226,7 +237,7 @@ export default {
       })
 
       store.agentProperties = [...store.sceneData.agentProperties]
-      // set initial agent properties
+      // set initial properties, for each agent, of each agent type, for each property
       store.agentProperties.forEach(property => {
         const agentTypes = property.agentTypes
         agentTypes.forEach(agentType => {
