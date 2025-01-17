@@ -288,8 +288,6 @@ export default {
 
       let actionFunction = CREATE_ACTION_FUNCTIONS[actionType]
 
-      console.log(data)
-
       let newAction = actionFunction(null, data)
 
       const newId = await api.createAction(newAction)

@@ -237,6 +237,8 @@ export default {
 
       })
 
+      store.propertyChanges = [...store.sceneData.propertyChanges]
+
       store.agentProperties = [...store.sceneData.agentProperties]
       // set initial properties, for each agent, of each agent type, for each property
       store.agentProperties.forEach(property => {
@@ -291,7 +293,7 @@ export default {
         const conditionId = transition.condition
         const condition = store.conditions.find(cond => cond.id === conditionId)
         const conditionHandler = new ConditionHandler()
-        const result = conditionHandler.evaluateCondition(condition)
+        const result = conditionHandler.evaluateCondition(condition, agent)
         if (result === true) {
           const nextActionId = transition.nextAction
           const nextAction = store.actions.find(action => action.id === nextActionId)
@@ -503,12 +505,16 @@ export default {
               const targetAgents = store.agentItems[agentTypeName]
               const targetAgent = agentHandler.getClosestAgent(store.selectedAgent, targetAgents)
               change.target = targetAgent
+              console.log(1)
+              console.log(targetAgent)
             } else if (change.agentChoiceMethod === 'all') {
               const agentTypeName = change.agentType
               const agentItems = store.agentItems[agentTypeName]
               change.target = agentItems
             }
           }
+          console.log(2)
+          console.log(change)
         })
       }
     }

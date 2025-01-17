@@ -12,12 +12,12 @@ export function createActionObject (agent = null, data) {
     agentType: data.agentType
   }
 
-  if (item.transitions.length > 0 && item.agent !== null) {
-    item.transitions.forEach(transition => {
-      // broadly applicable enough?
-      transition.condition.agent = item.agent
-    })
-  }
+  // if (item.transitions.length > 0 && item.agent !== null) {
+  //   item.transitions.forEach(transition => {
+  //     // broadly applicable enough?
+  //     transition.condition.agent = item.agent
+  //   })
+  // }
 
   if (data.propertyChanges) item.propertyChanges = data.propertyChanges
 
@@ -164,12 +164,10 @@ export class ActionPropertyChangesHandler extends ActionHandler {
 
       if (change.agentType === 'self') {
         item.agent.stateData[change.propertyName] += changeValue
+      } else if (change.agentChoiceMethod === 'all') {
+        change.target.forEach(agentItem => agentItem.stateData[change.propertyName] += changeValue)
       } else {
-        if (change.agentChoiceMethod === 'all') {
-          change.target.forEach(agentItem => agentItem.stateData[change.propertyName] += changeValue)
-        } else {
-          change.target.stateData[change.propertyName] += changeValue
-        }
+        change.target.stateData[change.propertyName] += changeValue
       }
     })
     item.changesApplied = true

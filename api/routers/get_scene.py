@@ -4,7 +4,7 @@ import os
 from fastapi import APIRouter
 
 from mongo_client import MongoCRUDClient
-from utils import transform_doc_id
+from utils import transform_doc_id, flatten_oid_list
 
 
 router = APIRouter()
@@ -37,7 +37,8 @@ async def get_scene_data(scene_id):
             "spriteSheets": [],
             "animationSets": [],
             "actions": [],
-            "agentProperties": []
+            "agentProperties": [],
+            "propertyChanges": []
         }
     }
 
@@ -64,7 +65,13 @@ async def get_scene_data(scene_id):
     payload["data"]["animationSets"] = [transform_doc_id(anim_set) for anim_set in animation_sets]
 
     actions = mongo_client.list_documents("actions")  # return all items for now
+    for action in actions:
+        if action.get("propertyChanges"):
+            action["propertyChanges"] = flatten_oid_list(action["propertyChanges"])
     payload["data"]["actions"] = [transform_doc_id(action) for action in actions]
+
+    property_changes = mongo_client.list_documents("property_changes")  # return all items for now
+    payload["data"]["propertyChanges"] = [transform_doc_id(prop_change) for prop_change in property_changes]
 
     agent_properties = mongo_client.list_documents("agent_properties")  # return all items for now
     payload["data"]["agentProperties"] = [transform_doc_id(prop) for prop in agent_properties]

@@ -6,8 +6,8 @@
         <option value="">-- agent --</option>
         <option value="self">self</option>
         <option
-            v-for="[agentType, obj] in Object.entries(store.agentTypes)"
-            :value="obj">{{ agentType }}
+            v-for="agentTypeName in Object.keys(store.agentTypes)"
+            :value="agentTypeName">{{ agentTypeName }}
         </option>
       </select>
 
@@ -111,6 +111,7 @@ export default {
       propChange.id = newId
       // TODO: change this to propChange ID to match document structure in database (or get from API)
       act.propertyChanges.push(propChange)
+      store.propertyChanges.push(propChange)
       isAdding.value = false
     }
 

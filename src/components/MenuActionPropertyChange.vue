@@ -67,17 +67,19 @@ export default {
   name: 'MenuActionPropertyChange',
   props: {
     action: Object,
-    propertyChange: Object,
+    propertyChangeId: String,
     index: Number
   },
   setup: function (props) {
     const store = useStore()
 
+    const propertyChange = store.propertyChanges.find(ch => ch.id === props.propertyChangeId)
+
     const isEditing = ref(false)
     const itemForm = ref({})
 
     const populateItemForm = () => {
-      itemForm.value = {...props.propertyChange}
+      itemForm.value = {...propertyChange}
     }
 
     const saveItem = () => {
@@ -95,7 +97,7 @@ export default {
 
     const deleteItem = () => {
       const action = store.actions.find(act => act.id === props.action.id)
-      api.deletePropertyChange(props.propertyChange.id)
+      api.deletePropertyChange(props.propertyChangeId)
       // TODO: update action here with propertyChanges: [--> remove "ID123"]
       action.propertyChanges.splice(props.index, 1)
     }
@@ -116,6 +118,7 @@ export default {
       store,
       isEditing,
       itemForm,
+      propertyChange,
       populateItemForm,
       saveItem,
       deleteItem,

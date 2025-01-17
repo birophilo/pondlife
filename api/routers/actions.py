@@ -6,7 +6,7 @@ from fastapi.encoders import jsonable_encoder
 from mongo_client import MongoCRUDClient
 
 from schemas import AgentType
-from utils import transform_doc_id
+from utils import transform_doc_id, flatten_oid_list
 
 # https://github.com/mongodb-developer/pymongo-fastapi-crud/blob/main/routes.py
 
@@ -31,6 +31,9 @@ def list_actions(request: Request):
     actions = mongo_client.list_documents("actions")
     print(actions)
     payload = [transform_doc_id(action) for action in actions]
+    for action in payload:
+        if action.get("propertyChanges"):
+            action["propertyChanges"] = flatten_oid_list(action["propertyChanges"])
     return payload
 
 
@@ -39,6 +42,8 @@ def get_action(id: str, request: Request):
     mongo_client = MongoCRUDClient()
     action = mongo_client.get_document("actions", id)
     if action is not None:
+        if action.get("propertyChanges"):
+            action["propertyChanges"] = flatten_oid_list(action["propertyChanges"])
         return transform_doc_id(action)
 
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Action with ID {id} not found")
@@ -70,6 +75,12 @@ async def update_action(id: str, request: Request):
 @router.delete("/action/{id}")
 def delete_action(id: str, request: Request, response: Response):
     mongo_client = MongoCRUDClient()
+
+    action = mongo_client.get_document("actions", id=id)
+
+    for property_change_id in action["propertyChanges"]:
+        mongo_client.delete_document("property_changes", property_change_id)
+
     delete_result = mongo_client.delete_document("actions", id)
 
     if delete_result.deleted_count == 1:

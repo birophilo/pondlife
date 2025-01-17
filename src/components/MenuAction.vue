@@ -111,10 +111,10 @@
 
     <!-- (ACTION) PROPERTY CHANGE ITEM EDIT FORM -->
     <div v-if="action.actionType === 'change'">
-      <div v-for="(propertyChange, index) in action.propertyChanges">
+      <div v-for="(propertyChangeId, index) in action.propertyChanges">
         <MenuActionPropertyChange
           :action="action"
-          :propertyChange="propertyChange"
+          :propertyChangeId="propertyChangeId"
           :index="index"
         />
       </div>
