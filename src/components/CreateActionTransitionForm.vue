@@ -24,6 +24,7 @@
 <script>
 import { ref } from 'vue'
 import { useStore } from '../store/mainStore.js'
+import api from '../apiCrud'
 
 export default {
   name: 'CreateActionTransitionForm',
@@ -42,10 +43,12 @@ export default {
 
     const createTransition = (action) => {
       const transition = {
-        condition: itemForm.value.condition,
-        nextAction: itemForm.value.nextAction
+        condition: itemForm.value.condition.id,
+        nextAction: itemForm.value.nextAction.id
       }
       action.transitions.push(transition)
+
+      api.updateAction(action)
 
       itemForm.value.condition = null
       itemForm.value.nextAction = null

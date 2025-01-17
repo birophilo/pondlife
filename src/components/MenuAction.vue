@@ -106,7 +106,6 @@
 
       <div v-else>
         <div>action type: {{ action.actionType }}</div>
-        <div>{{ action.agentType }}</div>
       </div>
     </div>
 

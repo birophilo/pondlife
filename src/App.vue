@@ -288,11 +288,13 @@ export default {
     const setNextActionOrNull = (agent) => {
       // check for state transitions and set next action if complete
       for (let transition of agent.currentAction.transitions) {
-        const condition = transition.condition
+        const conditionId = transition.condition
+        const condition = store.conditions.find(cond => cond.id === conditionId)
         const conditionHandler = new ConditionHandler()
         const result = conditionHandler.evaluateCondition(condition)
         if (result === true) {
-          const nextAction = transition.nextAction
+          const nextActionId = transition.nextAction
+          const nextAction = store.actions.find(action => action.id === nextActionId)
           setDynamicActionTargetAgents(nextAction)
           let actionHandler = new ActionHandler()
           agent.currentAction = actionHandler.clone(nextAction, agent)
@@ -534,7 +536,7 @@ export default {
       )
       const handler = new AgentHandler()
       handler.useSpriteSheet('idle', newAgent)
-      const newId = await store.api.createAgent({agentType: agentTypeName, position: position})
+      const newId = await api.createAgent({agentType: agentTypeName, position: position})
       newAgent.id = newId
       agentItems.push(newAgent)
     }
