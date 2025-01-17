@@ -81,6 +81,7 @@
 <script>
 import { ref } from 'vue'
 import { useStore } from '../store/mainStore.js'
+import api from '../apiCrud.js'
 
 
 export default {
@@ -101,7 +102,7 @@ export default {
 
     const createInitialAgentProperty = async () => {
       const agentProperty = {...itemForm.value}
-      const createdId = await store.createInitialAgentProperty(agentProperty)
+      const createdId = await api.createInitialAgentProperty(agentProperty)
       agentProperty.id = createdId
       store.agentProperties.push(agentProperty)
       isAdding.value = false

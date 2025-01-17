@@ -59,6 +59,7 @@
 
 <script>
 import { ref } from 'vue'
+import api from '../apiCrud.js'
 import { PropertyChangeHandler } from '../classes/Action.js'
 import { useStore } from '../store/mainStore.js'
 
@@ -84,7 +85,7 @@ export default {
       var action = store.actions.find(act => act.id === props.action.id)
       var propChange = action.propertyChanges[props.index]
       // can do propChange = {...itemForm.value}?
-      store.updatePropertyChange(itemForm.value)
+      api.updatePropertyChange(itemForm.value)
       // TODO: update action here with propertyChanges: ["ID123"]
       const keys = Object.keys(itemForm.value)
       keys.forEach(key => {
@@ -94,7 +95,7 @@ export default {
 
     const deleteItem = () => {
       const action = store.actions.find(act => act.id === props.action.id)
-      store.deletePropertyChange(props.propertyChange.id)
+      api.deletePropertyChange(props.propertyChange.id)
       // TODO: update action here with propertyChanges: [--> remove "ID123"]
       action.propertyChanges.splice(props.index, 1)
     }

@@ -30,6 +30,7 @@
 <script>
 import { ref } from 'vue'
 import { useStore } from '../store/mainStore.js'
+import api from '../apiCrud.js'
 
 export default {
   name: 'AnimationSetForm',
@@ -73,7 +74,7 @@ export default {
       sheetNames.forEach(sheetName => {
         newAnimationSet.sheets[sheetName] = newAnimationSet.sheets[sheetName].id
       })
-      const createdId = store.createAnimationSet(newAnimationSet)
+      const createdId = api.createAnimationSet(newAnimationSet)
       newAnimationSet.id = createdId
       store.animationSets.push(newAnimationSet)
 

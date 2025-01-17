@@ -17,6 +17,7 @@
 <script>
 import { ref } from 'vue'
 import { useStore } from '../store/mainStore.js'
+import api from '../apiCrud.js'
 
 export default {
   name: 'SpriteSheetForm',
@@ -44,7 +45,7 @@ export default {
         refreshInterval: Number(itemForm.value.refreshInterval)
       }
 
-      const createdId = await store.createSpriteSheet(newSpriteSheet)
+      const createdId = await api.createSpriteSheet(newSpriteSheet)
       newSpriteSheet.id = createdId
       store.spriteSheets.push(newSpriteSheet)
 

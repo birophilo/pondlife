@@ -34,6 +34,7 @@
 <script>
 import { ref } from 'vue'
 import { useStore } from '../store/mainStore.js'
+import api from '../apiCrud.js'
 
 
 export default {
@@ -53,12 +54,12 @@ export default {
       sheetNames.forEach(sheetName => {
         payload.sheets[sheetName] = payload.sheets[sheetName].id
       })
-      store.updateAnimationSet(payload)
+      api.updateAnimationSet(payload)
       keys.forEach(key => store.animationSets[props.i][key] = itemForm.value[key])
     }
 
     const deleteItem = (index) => {
-      store.deleteAnimationSet(props.animationSet.id)
+      api.deleteAnimationSet(props.animationSet.id)
       store.animationSets.splice(index, 1)
     }
 

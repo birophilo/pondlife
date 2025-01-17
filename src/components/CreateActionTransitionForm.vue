@@ -23,7 +23,6 @@
 
 <script>
 import { ref } from 'vue'
-import { createActionTransitionObject } from '../classes/Action.js'
 import { useStore } from '../store/mainStore.js'
 
 export default {
@@ -42,10 +41,10 @@ export default {
     })
 
     const createTransition = (action) => {
-      const condition = itemForm.value.condition
-      const nextAction = itemForm.value.nextAction
-
-      const transition = createActionTransitionObject(condition, nextAction)
+      const transition = {
+        condition: itemForm.value.condition,
+        nextAction: itemForm.value.nextAction
+      }
       action.transitions.push(transition)
 
       itemForm.value.condition = null
@@ -59,7 +58,13 @@ export default {
       isAdding.value = false
     }
 
-    return { store, isAdding, itemForm, createTransition, cancelAddTransition }
+    return {
+      store,
+      isAdding,
+      itemForm,
+      createTransition,
+      cancelAddTransition
+    }
   }
 }
 

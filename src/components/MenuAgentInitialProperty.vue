@@ -44,11 +44,10 @@
 
       <div>applies to:
         <select v-model="itemForm.applyTo">
-            <!-- <option :value="{}">-- applies to --</option> -->
-            <option
-              v-for="choice in applyToChoices"
-              :value="choice.value">{{ choice.description }}
-            </option>
+          <option
+            v-for="choice in applyToChoices"
+            :value="choice.value">{{ choice.description }}
+          </option>
         </select>
       </div>
 
@@ -91,6 +90,7 @@
 <script>
 import { ref } from 'vue'
 import { useStore } from '../store/mainStore.js'
+import api from '../apiCrud.js'
 
 export default {
   props: {
@@ -106,7 +106,7 @@ export default {
     const saveItem = () => {
       isEditing.value = false
       const keys = Object.keys(props.agentProperty)
-      store.updateInitialAgentProperty(itemForm.value)
+      api.updateInitialAgentProperty(itemForm.value)
       keys.forEach(key => store.agentProperties[props.index][key] = itemForm.value[key])
     }
 
@@ -122,7 +122,7 @@ export default {
 
     const deleteItem = () => {
       store.agentProperties.splice(props.index, 1)
-      store.deleteInitialAgentProperty(props.agentProperty.id)
+      api.deleteInitialAgentProperty(props.agentProperty.id)
     }
 
     const populateItemForm = () => {

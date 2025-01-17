@@ -77,6 +77,7 @@
 
 <script>
 import { ref } from 'vue'
+import api from '../apiCrud.js'
 // import { createPropertyChange } from '../classes/Action.js'
 import { useStore } from '../store/mainStore.js'
 
@@ -106,7 +107,7 @@ export default {
 
       const act = store.actions.find(a => a.id === props.action.id)
       // create PropertyChange and update the Action's ID field
-      const newId = await store.createPropertyChange(propChange, act.id)
+      const newId = await api.createPropertyChange(propChange, act.id)
       propChange.id = newId
       // TODO: change this to propChange ID to match document structure in database (or get from API)
       act.propertyChanges.push(propChange)

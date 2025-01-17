@@ -62,6 +62,7 @@
 <script>
 import { ref } from 'vue'
 import { useStore } from '../store/mainStore.js'
+import api from '../apiCrud.js'
 
 
 const DEFAULT_CONDITION_TYPE = 'property'
@@ -108,7 +109,7 @@ export default {
         newCondition.classMethod = data.preset
       }
 
-      const createdId = await store.createCondition(newCondition)
+      const createdId = await api.createCondition(newCondition)
       newCondition.id = createdId
       newCondition.agent = store.selectedAgent
       store.conditions.push(newCondition)

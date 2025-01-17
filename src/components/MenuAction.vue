@@ -171,6 +171,7 @@
 <script>
 import { ref, computed } from 'vue'
 import { useStore } from '../store/mainStore.js'
+import api from '../apiCrud.js'
 import ActionPropertyChangeForm from './ActionPropertyChangeForm.vue'
 import MenuActionPropertyChange from './MenuActionPropertyChange.vue'
 import MenuActionTransition from './MenuActionTransition.vue'
@@ -243,11 +244,11 @@ export default {
       }
       store.selectedPoint = {x: null, y: null}
 
-      store.updateAction(act)
+      api.updateAction(act)
     }
 
     const deleteItem = (itemId) => {
-      store.deleteAction(itemId)
+      api.deleteAction(itemId)
       store.actions = store.actions.filter(item => item.id !== itemId)
     }
 

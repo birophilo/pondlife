@@ -204,6 +204,7 @@
 <script>
 import { ref } from 'vue'
 import { useStore } from '../store/mainStore.js'
+import api from '../apiCrud.js'
 import {
   createActionGoTo,
   createActionPropertyChanges,
@@ -291,7 +292,7 @@ export default {
 
       let newAction = actionFunction(null, data)
 
-      const newId = await store.createAction(newAction)
+      const newId = await api.createAction(newAction)
       newAction.id = newId
 
       store.actions.push(newAction)

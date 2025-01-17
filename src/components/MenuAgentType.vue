@@ -29,6 +29,7 @@
 <script>
 import { ref } from 'vue'
 import { useStore } from '../store/mainStore.js'
+import api from '../apiCrud.js'
 
 export default {
   name: 'MenuAgentType',
@@ -54,7 +55,7 @@ export default {
     const itemForm = ref(itemFormData)
 
     const deleteItem = () => {
-      store.deleteAgentType(props.agentType.id)
+      api.deleteAgentType(props.agentType.id)
       delete store.agentTypes[props.agentType.name]
       delete store.agentItems[props.agentType.name]
     }
@@ -99,7 +100,7 @@ export default {
         }
       }
 
-      store.updateAgentType(data)
+      api.updateAgentType(data)
       store.agentTypes[props.agentType.name] = data
     }
 

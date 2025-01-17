@@ -24,6 +24,7 @@
 import { ref } from 'vue'
 import { AgentMenuIcon } from '../classes/SelectionMenu.js'
 import { useStore } from '../store/mainStore.js'
+import api from '../apiCrud.js'
 
 export default {
   name: 'CreateAgentTypeForm',
@@ -62,7 +63,7 @@ export default {
         thumbnail: itemForm.value.thumbnail
       }
 
-      const createdId = await store.createAgentType(newAgentType)
+      const createdId = await api.createAgentType(newAgentType)
       newAgentType.id = createdId
 
       store.agentTypes[agentTypeName] = newAgentType

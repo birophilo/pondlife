@@ -127,6 +127,7 @@ import { createAgentObject, AgentHandler } from './classes/Agent.js'
 import { ConditionHandler } from './classes/Condition.js'
 import { AgentMenu, AgentMenuIcon, DeleteButton, AgentPreview } from './classes/SelectionMenu.js'
 import { ActionHandler, ACTION_HANDLERS } from './classes/Action.js'
+import api from './apiCrud.js'
 import CreateAgentTypeForm from './components/CreateAgentTypeForm.vue'
 import MenuAgentType from './components/MenuAgentType.vue'
 import SetPropertyForm from './components/SetPropertyForm.vue'
@@ -463,7 +464,7 @@ export default {
 
     const deleteAgent = async (agent, agentItems, i) => {
       agent.labelElement.remove()
-      await store.deleteAgent(agent.id)
+      await api.deleteAgent(agent.id)
       agentItems.splice(i, 1)
     }
 
@@ -533,7 +534,7 @@ export default {
       )
       const handler = new AgentHandler()
       handler.useSpriteSheet('idle', newAgent)
-      const newId = await store.createAgent({agentType: agentTypeName, position: position})
+      const newId = await store.api.createAgent({agentType: agentTypeName, position: position})
       newAgent.id = newId
       agentItems.push(newAgent)
     }

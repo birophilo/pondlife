@@ -77,15 +77,6 @@ export function createActionRemoveAgent (agent = null, data) {
 }
 
 
-export function createActionTransitionObject (condition, nextAction) {
-  const item = {
-    condition: condition,
-    nextAction: nextAction
-  }
-  return item
-}
-
-
 // export function createPropertyChange (agent, target, propertyName, changeType, propertyValue, args) {
 //   const item = {
 //     agent: agent,

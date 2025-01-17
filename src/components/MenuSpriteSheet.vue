@@ -23,6 +23,7 @@
 <script>
 import { ref } from 'vue'
 import { useStore } from '../store/mainStore.js'
+import api from '../apiCrud.js'
 
 
 export default {
@@ -45,13 +46,13 @@ export default {
     const saveItem = () => {
       isEditing.value = false
       const keys = Object.keys(props.spriteSheet)
-      store.updateSpriteSheet(itemForm.value)
+      api.updateSpriteSheet(itemForm.value)
       keys.forEach(key => store.spriteSheets[props.i][key] = itemForm.value[key])
     }
 
     const deleteItem = () => {
       store.spriteSheets.splice(props.i, 1)
-      store.deleteSpriteSheet(props.spriteSheet.id)
+      api.deleteSpriteSheet(props.spriteSheet.id)
     }
 
     const updateSpritesheetFileInput = (event) => {

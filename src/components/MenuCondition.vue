@@ -65,6 +65,8 @@
 <script>
 import { ref } from 'vue'
 import { useStore } from '../store/mainStore.js'
+import api from '../apiCrud.js'
+
 
 export default {
   name: 'MenuCondition',
@@ -85,12 +87,12 @@ export default {
     const saveItem = () => {
       isEditing.value = false
       const keys = Object.keys(itemForm.value)
-      store.updateCondition(itemForm.value)
+      api.updateCondition(itemForm.value)
       keys.forEach(key => store.conditions[props.index][key] = itemForm.value[key])
     }
 
     const deleteItem = () => {
-      store.deleteCondition(props.item.id)
+      api.deleteCondition(props.item.id)
       store.conditions.splice(props.index, 1)
     }
 
