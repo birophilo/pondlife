@@ -78,7 +78,7 @@ def delete_action(id: str, request: Request, response: Response):
 
     action = mongo_client.get_document("actions", id=id)
 
-    for property_change_id in action["propertyChanges"]:
+    for property_change_id in action.get("propertyChanges", []):
         mongo_client.delete_document("property_changes", property_change_id)
 
     delete_result = mongo_client.delete_document("actions", id)

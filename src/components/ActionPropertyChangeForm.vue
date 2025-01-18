@@ -110,7 +110,7 @@ export default {
       const newId = await api.createPropertyChange(propChange, act.id)
       propChange.id = newId
       // TODO: change this to propChange ID to match document structure in database (or get from API)
-      act.propertyChanges.push(propChange)
+      act.propertyChanges.push(newId)
       store.propertyChanges.push(propChange)
       isAdding.value = false
     }

@@ -12,13 +12,6 @@ export function createActionObject (agent = null, data) {
     agentType: data.agentType
   }
 
-  // if (item.transitions.length > 0 && item.agent !== null) {
-  //   item.transitions.forEach(transition => {
-  //     // broadly applicable enough?
-  //     transition.condition.agent = item.agent
-  //   })
-  // }
-
   if (data.propertyChanges) item.propertyChanges = data.propertyChanges
 
   return item
@@ -45,13 +38,6 @@ export function createActionGoTo (agent = null, data) {
 export function createActionPropertyChanges (agent = null, data) {
   let item = createActionObject(agent, data)
   item.propertyChanges = data.propertyChanges ? data.propertyChanges : []
-  if (item.agent !== null) {
-    item.propertyChanges.forEach(change => {
-      // this is currently hard-coded just to apply to self agent, not e.g. target agent
-      // change.agent = this.agent  -- WRONG?
-      change.agent = data.agent  // -- RIGHT?
-    })
-  }
   return item
 }
 
@@ -75,20 +61,6 @@ export function createActionRemoveAgent (agent = null, data) {
   const item = createActionObject(agent, data)
   return item
 }
-
-
-// export function createPropertyChange (agent, target, propertyName, changeType, propertyValue, args) {
-//   const item = {
-//     agent: agent,
-//     target: target,
-//     propertyName: propertyName,
-//     changeType: changeType,
-//     // only handling numbers for now, not strings, boolean etc.
-//     propertyValue: propertyValue,
-//     args: args
-//   }
-//   return item
-// }
 
 
 /* HANDLER CLASSES */
@@ -156,18 +128,20 @@ export class ActionGoToHandler extends ActionHandler {
 export class ActionPropertyChangesHandler extends ActionHandler {
 
   // eslint-disable-next-line
-  start(item, globals) {
-    item.propertyChanges.forEach(change => {
+  start(item, globals, agentHandler, store) {
+    item.propertyChanges.forEach(changeId => {
 
-      const value = change.propertyValue
-      const changeValue = change.changeType === 'increase' ? Number(value) : 0 - Number(value)
+      const change = store.propertyChanges.find(ch => ch.id === changeId)
+
+      const value = change.value
+      const changeValue = change.change === 'increase' ? Number(value) : 0 - Number(value)
 
       if (change.agentType === 'self') {
-        item.agent.stateData[change.propertyName] += changeValue
+        item.agent.stateData[change.property] += changeValue
       } else if (change.agentChoiceMethod === 'all') {
-        change.target.forEach(agentItem => agentItem.stateData[change.propertyName] += changeValue)
+        change.target.forEach(agentItem => agentItem.stateData[change.property] += changeValue)
       } else {
-        change.target.stateData[change.propertyName] += changeValue
+        change.target.stateData[change.property] += changeValue
       }
     })
     item.changesApplied = true

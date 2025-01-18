@@ -357,7 +357,8 @@ export default {
                   const emissionsFromAction = handler.start(
                     agent.currentAction,
                     store.GlobalSettings,
-                    agentHandler
+                    agentHandler,
+                    store
                   ) // globals = {}?
                   if (emissionsFromAction) {
                     if (emissionsFromAction.agentsToDelete) {
@@ -498,36 +499,30 @@ export default {
       // if action involves property changes, set target for each change based on
       // agentChoiceMethod ('nearest' etc)
       if (action.actionType === 'change') {
-        action.propertyChanges.forEach(change => {
+        const changeObjs = store.propertyChanges.filter(ch => action.propertyChanges.includes(ch.id))
+        // action.propertyChanges.forEach(change => {
+        changeObjs.forEach(change => {
           if (change.agentType !== 'self') {
             if (change.agentChoiceMethod === 'nearest') {
-              const agentTypeName = change.agentType.name
+              const agentTypeName = change.agentType
               const targetAgents = store.agentItems[agentTypeName]
               const targetAgent = agentHandler.getClosestAgent(store.selectedAgent, targetAgents)
               change.target = targetAgent
-              console.log(1)
-              console.log(targetAgent)
             } else if (change.agentChoiceMethod === 'all') {
               const agentTypeName = change.agentType
               const agentItems = store.agentItems[agentTypeName]
               change.target = agentItems
             }
           }
-          console.log(2)
-          console.log(change)
         })
       }
     }
 
     const cloneAction = (action) => {
-      console.log("START OF CLONE")
-      console.log(action)
       setDynamicActionTargetAgents(action)
       const handlerClass = ACTION_HANDLERS[action.actionType]
       const handler = new handlerClass()
       store.selectedAgent.currentAction = handler.clone(action, store.selectedAgent)
-      console.log("END OF CLONE")
-      console.log(store.selectedAgent.currentAction)
     }
 
     const addAgent = async (agentTypeName, position) => {
