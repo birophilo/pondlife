@@ -6,6 +6,7 @@
     <canvas></canvas>
 
     <div class="scene-button-container">
+      <button @click="playScene">play scene</button>
       <button @click="loadScene('677b5d2f024c92f6b532f00d')">load scene 1</button>
       <button @click="loadScene(2)">load scene 2</button>
       <button @click="saveScene(3)">save scene</button>
@@ -473,7 +474,7 @@ export default {
       agentItems.splice(i, 1)
     }
 
-    const setDynamicActionTargetAgents = (action) => {
+    const setDynamicActionTargetAgents = (action, agent) => {
       /*
       Some target agent/s need to be set dynamically according to criteria that can
       only be determined when the action starts:
@@ -487,7 +488,7 @@ export default {
       if (action.agentChoiceMethod === 'nearest' && action.destinationType === 'agent') {
         const agentTypeName = action.agentType.name
         const agentItems = store.agentItems[agentTypeName]
-        const targetAgent = agentHandler.getClosestAgent(store.selectedAgent, agentItems)
+        const targetAgent = agentHandler.getClosestAgent(agent, agentItems)
         action.target = targetAgent
         action.destination = targetAgent
       } else if (action.agentChoiceMethod === 'all') {
@@ -518,13 +519,6 @@ export default {
       }
     }
 
-    const cloneAction = (action) => {
-      setDynamicActionTargetAgents(action)
-      const handlerClass = ACTION_HANDLERS[action.actionType]
-      const handler = new handlerClass()
-      store.selectedAgent.currentAction = handler.clone(action, store.selectedAgent)
-    }
-
     const addAgent = async (agentTypeName, position) => {
       const agentItems = store.agentItems[agentTypeName]
       const num = agentItems.length + 1
@@ -544,6 +538,32 @@ export default {
 
     const endDay = () => {
       store.dayNumber += 1
+    }
+
+    const cloneAction = (action) => {
+      setDynamicActionTargetAgents(action, store.selectedAgent)
+      const handlerClass = ACTION_HANDLERS[action.actionType]
+      const handler = new handlerClass()
+      store.selectedAgent.currentAction = handler.clone(action, store.selectedAgent)
+    }
+
+    const cloneActionForAgent = (action, agent) => {
+      setDynamicActionTargetAgents(action, agent)
+      const handlerClass = ACTION_HANDLERS[action.actionType]
+      const handler = new handlerClass()
+      agent.currentAction = handler.clone(action, agent)
+    }
+
+    const playScene = () => {
+      // eslint-disable-next-line
+      Object.entries(store.agentTypes).forEach(([name, agentType]) => {
+        if (agentType.firstAction) {
+          const action = store.actions.find(a => a.id === agentType.firstAction)
+          store.agentItems[agentType.name].forEach(agent => {
+            cloneActionForAgent(action, agent)
+          })
+        }
+      })
     }
 
     onMounted(() => {
@@ -643,7 +663,8 @@ export default {
       updateThumbnailFileInput,
       cloneAction,
       loadScene,
-      saveScene
+      saveScene,
+      playScene
     }
   },
 
