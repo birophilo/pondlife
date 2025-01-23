@@ -1,10 +1,12 @@
 import json
 from typing import List
 
-from fastapi import APIRouter, Body, Request, Response, HTTPException, status
+from fastapi import APIRouter, Body, Depends, Request, Response, HTTPException, status
 from fastapi.encoders import jsonable_encoder
+from pymongo.database import Database
 from mongo_client import MongoCRUDClient
 
+from database import get_database
 from schemas import Condition
 from utils import transform_doc_id
 
@@ -13,7 +15,11 @@ from utils import transform_doc_id
 router = APIRouter()
 
 
-@router.post("/conditions", status_code=status.HTTP_201_CREATED, response_model=Condition)
+@router.post(
+    "/conditions",
+    status_code=status.HTTP_201_CREATED,
+    response_model=Condition
+)
 async def create_condition(request: Request):
 
     condition_data = json.loads(await request.body())

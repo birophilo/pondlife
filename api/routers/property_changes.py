@@ -20,7 +20,7 @@ router = APIRouter()
 async def create_property_change(request: Request):
 
     request_body = json.loads(await request.body())
-    property_change_data = request_body["propertyChange"]
+    property_change_data = request_body
     action_id = request_body["actionId"]
 
     property_change = jsonable_encoder(property_change_data)

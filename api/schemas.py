@@ -53,6 +53,7 @@ class AgentType(BaseModel):
     preview_image: str
     animation_set: dict | None  # ID
     thumbnail: str
+    first_action: str | None = None
 
     model_config = ConfigDict(alias_generator=to_camel)
 

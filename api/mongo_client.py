@@ -12,7 +12,7 @@ class MongoCRUDClient:
 
     def create_document(self, collection: str, item, session=None):
         new_item = self.db[collection].insert_one(item)
-        created_item = self.client[DATABASE_NAME][collection].find_one(
+        created_item = self.db[collection].find_one(
             {"_id": ObjectId(new_item.inserted_id)}
         )
         return json.loads(dumps(created_item))

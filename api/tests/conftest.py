@@ -26,5 +26,5 @@ def test_app():
 
     # Delete database after tests
     client = MongoClient(TEST_DATABASE_URL)
-    client.drop_database(TEST_DATABASE_NAME)
+    # client.drop_database(TEST_DATABASE_NAME)
     client.close()
