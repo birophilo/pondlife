@@ -2,30 +2,22 @@ import pytest
 
 
 agent_property_1_post = {
-  "name": "someAgent",
-  "width": 30,
-  "height": 40,
-  "offset": {"x": 96, "y": 46},
-  "scale": 0.7,
-  "nominalSpeed": 0.02,
-  "previewImage": "/img/thumbnails/customer-thumbnail.png",
-  "animationSet": None,
-  "thumbnail": "/img/thumbnails/customer-thumbnail.png",
-  "firstAction": "6786bb121bb0aa405c674e51"
+  "name": "money",
+  "valueType": "int",
+  "initialValue": 100,
+  "applyTo": "agentType",
+  "agentTypes": ["customer"],
+  "description": "customer money"
 }
 
 
 agent_property_1_response = {
-  "name": "someAgent",
-  "width": 30,
-  "height": 40,
-  "offset": {"x": 96, "y": 46},
-  "scale": 0.7,
-  "nominalSpeed": 0.02,
-  "previewImage": "/img/thumbnails/customer-thumbnail.png",
-  "animationSet": None,
-  "thumbnail": "/img/thumbnails/customer-thumbnail.png",
-  "firstAction": "6786bb121bb0aa405c674e51"
+  "name": "money",
+  "valueType": "int",
+  "initialValue": 100,
+  "applyTo": "agentType",
+  "agentTypes": ["customer"],
+  "description": "customer money"
 }
 
 

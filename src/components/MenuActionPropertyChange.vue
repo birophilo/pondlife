@@ -74,7 +74,6 @@ export default {
     const store = useStore()
 
     const propertyChange = store.propertyChanges.find(ch => ch.id === props.propertyChangeId)
-
     const isEditing = ref(false)
     const itemForm = ref({})
 

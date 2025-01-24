@@ -2,7 +2,7 @@ import json
 from bson import ObjectId
 from bson.json_util import dumps
 
-from database import DATABASE_NAME, get_database
+from database import get_database
 
 
 class MongoCRUDClient:

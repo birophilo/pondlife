@@ -119,10 +119,6 @@ export class ActionGoToHandler extends ActionHandler {
   }
 
   defaultCompletionCheckPasses(item, agentHandler) {
-    console.log("COMPLETION CHECK")
-    console.log(item)
-    console.log(agentHandler)
-    // console.log('at destination', this.agent.atDestination())
     return agentHandler.atDestination(item.agent)
   }
 }

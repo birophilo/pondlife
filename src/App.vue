@@ -501,13 +501,13 @@ export default {
       // agentChoiceMethod ('nearest' etc)
       if (action.actionType === 'change') {
         const changeObjs = store.propertyChanges.filter(ch => action.propertyChanges.includes(ch.id))
-        // action.propertyChanges.forEach(change => {
+
         changeObjs.forEach(change => {
           if (change.agentType !== 'self') {
             if (change.agentChoiceMethod === 'nearest') {
               const agentTypeName = change.agentType
               const targetAgents = store.agentItems[agentTypeName]
-              const targetAgent = agentHandler.getClosestAgent(store.selectedAgent, targetAgents)
+              const targetAgent = agentHandler.getClosestAgent(agent, targetAgents)
               change.target = targetAgent
             } else if (change.agentChoiceMethod === 'all') {
               const agentTypeName = change.agentType

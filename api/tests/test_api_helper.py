@@ -17,7 +17,6 @@ resource_list = [
     {"endpoint": "/agentTypes", "pydantic_class": AgentType},
     # {"endpoint": "/actions", "pydantic_class": Action},
     # {"endpoint": "/agents", "pydantic_class": Agent},
-    {"endpoint": "/agentTypes", "pydantic_class": AgentType},
     {"endpoint": "/agentProperties", "pydantic_class": AgentProperty},
     {"endpoint": "/propertyChanges", "pydantic_class": PropertyChange},
 ]

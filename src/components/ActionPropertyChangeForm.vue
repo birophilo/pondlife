@@ -51,8 +51,8 @@
       <select v-model="itemForm.property">
         <option value="">--  property --</option>
         <option
-          v-for="property in Object.keys(store.selectedAgent.stateData)"
-          :value="property">{{ property }}
+          v-for="property in store.agentProperties"
+          :value="property.name">{{ property.name }}
         </option>
       </select>
       <select v-model="itemForm.change">
