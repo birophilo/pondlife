@@ -3,6 +3,26 @@ from bson import ObjectId
 from bson.json_util import dumps
 
 from database import get_database
+from utils import stringify_objectid_list
+
+
+OBJECT_ID_LIST_FIELDS = {
+    # A few documents have fields which are lists of bson ObjectIds. These
+    # shoud be converted to strings by the client. This dict specifies
+    # which fields of which objects require this conversion, intended
+    # as a more lightweight approach than a general-purpose tree-walk
+    # through all objects or a 3rd party library. Can be replaced with
+    # one of those approaches if it becomes unwieldy.
+    "actions": ["propertyChanges"]
+}
+
+
+def stringify_objectid_list_fields(doc: object, collection: str):
+    if collection in OBJECT_ID_LIST_FIELDS:
+        for field in OBJECT_ID_LIST_FIELDS[collection]:
+            if field in doc:
+                doc[field] = stringify_objectid_list(field)
+    return doc
 
 
 class MongoCRUDClient:
@@ -15,19 +35,25 @@ class MongoCRUDClient:
         created_item = self.db[collection].find_one(
             {"_id": ObjectId(new_item.inserted_id)}
         )
+        created_item = stringify_objectid_list_fields(created_item, collection)
+
         return json.loads(dumps(created_item))
 
     def get_document(self, collection: str, id: str):
         item = self.db[collection].find_one({"_id": ObjectId(id)})
+        item = stringify_objectid_list_fields(item, collection)
+
         return json.loads(dumps(item))
 
     def list_documents(self, collection: str):
         items = self.db[collection].find()
+        items = [stringify_objectid_list_fields(item, collection) for item in items]
         return json.loads(dumps(list(items)))
 
     def get_documents_from_ids(self, collection: str, ids: list):
         object_ids = [ObjectId(id) for id in ids]
         items = self.db[collection].find({"_id": {"$in": object_ids}})
+        items = [stringify_objectid_list_fields(item, collection) for item in items]
         return json.loads(dumps(list(items)))
 
     def delete_document(self, collection: str, id: str):
@@ -41,4 +67,6 @@ class MongoCRUDClient:
             {"_id": object_id},
             {"$set": item}
         )
+        print("UPDATED RESULT")
+        print(update_result)
         return update_result

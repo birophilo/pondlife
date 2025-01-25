@@ -5,6 +5,10 @@ def transform_doc_id(doc):
     return doc
 
 
+def stringify_objectid_list(item_list):
+    return [item["$oid"] for item in item_list]
+
+
 def flatten_oid_list(oid_list):
     """
     input: [
