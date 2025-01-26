@@ -21,17 +21,14 @@ async def create_agent_type(request: Request):
     agent_type = jsonable_encoder(agent_type_data)
     mongo_client = MongoCRUDClient()
     created_agent_type = mongo_client.create_document("agent_types", agent_type)
-    agent_type = transform_doc_id(created_agent_type)
-    return agent_type
+    return created_agent_type
 
 
 @router.get("/agentTypes", response_model=List[AgentType])
 def list_agent_types(request: Request):
     mongo_client = MongoCRUDClient()
     agent_types = mongo_client.list_documents("agent_types")
-    print(agent_types)
-    payload = [transform_doc_id(agent_type) for agent_type in agent_types]
-    return payload
+    return agent_types
 
 
 @router.get("/agentType/{id}", response_model=AgentType)
@@ -39,7 +36,7 @@ def get_agent_type(id: str, request: Request):
     mongo_client = MongoCRUDClient()
     agent_type = mongo_client.get_document("agent_types", id)
     if agent_type is not None:
-        return transform_doc_id(agent_type)
+        return agent_type
 
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"AgentType with ID {id} not found")
 
@@ -60,7 +57,6 @@ async def update_agent_type(id: str, request: Request):
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Data for ID: {id} already matches saved document")
 
     item = mongo_client.get_document("agent_types", id=agent_type_id)
-    item = transform_doc_id(item)
     if item is not None:
         return item
 

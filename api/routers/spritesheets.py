@@ -21,16 +21,14 @@ async def create_spritesheet(request: Request):
     spritesheet = jsonable_encoder(spritesheet_data)
     mongo_client = MongoCRUDClient()
     created_spritesheet = mongo_client.create_document("spritesheets", spritesheet)
-    spritesheet = transform_doc_id(created_spritesheet)
-    return spritesheet
+    return created_spritesheet
 
 
 @router.get("/spritesheets", response_model=List[Spritesheet])
 def list_spritesheets(request: Request):
     mongo_client = MongoCRUDClient()
     spritesheets = mongo_client.list_documents("spritesheets")
-    payload = [transform_doc_id(spritesheet) for spritesheet in spritesheets]
-    return payload
+    return spritesheets
 
 
 @router.get("/spritesheet/{id}", response_model=Spritesheet)
@@ -38,7 +36,7 @@ def get_spritesheet(id: str, request: Request):
     mongo_client = MongoCRUDClient()
     spritesheet = mongo_client.get_document("spritesheets", id)
     if spritesheet is not None:
-        return transform_doc_id(spritesheet)
+        return spritesheet
 
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Spritesheet with ID {id} not found")
 
@@ -59,7 +57,6 @@ async def update_spritesheet(id: str, request: Request):
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Data for ID: {id} already matches saved document")
 
     item = mongo_client.get_document("spritesheets", id=spritesheet_id)
-    item = transform_doc_id(item)
     if item is not None:
         return item
 

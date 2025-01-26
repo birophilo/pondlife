@@ -21,20 +21,14 @@ async def create_action(request: Request):
     action = jsonable_encoder(action_data)
     mongo_client = MongoCRUDClient()
     created_action = mongo_client.create_document("actions", action)
-    action = transform_doc_id(created_action)
-    return action
+    return created_action
 
 
 @router.get("/actions")
 def list_actions(request: Request):
     mongo_client = MongoCRUDClient()
     actions = mongo_client.list_documents("actions")
-    print(actions)
-    payload = [transform_doc_id(action) for action in actions]
-    for action in payload:
-        if action.get("propertyChanges"):
-            action["propertyChanges"] = flatten_oid_list(action["propertyChanges"])
-    return payload
+    return actions
 
 
 @router.get("/action/{id}")
@@ -42,9 +36,7 @@ def get_action(id: str, request: Request):
     mongo_client = MongoCRUDClient()
     action = mongo_client.get_document("actions", id)
     if action is not None:
-        if action.get("propertyChanges"):
-            action["propertyChanges"] = flatten_oid_list(action["propertyChanges"])
-        return transform_doc_id(action)
+        return action
 
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Action with ID {id} not found")
 
@@ -65,7 +57,6 @@ async def update_action(id: str, request: Request):
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Data for ID: {id} already matches saved document")
 
     item = mongo_client.get_document("actions", id=action_id)
-    item = transform_doc_id(item)
     if item is not None:
         return item
 

@@ -27,16 +27,14 @@ async def create_condition(request: Request):
     condition = jsonable_encoder(condition_data)
     mongo_client = MongoCRUDClient()
     created_condition = mongo_client.create_document("conditions", condition)
-    condition = transform_doc_id(created_condition)
-    return condition
+    return created_condition
 
 
 @router.get("/conditions", response_model=List[Condition])
 def list_conditions(request: Request):
     mongo_client = MongoCRUDClient()
     conditions = mongo_client.list_documents("conditions")
-    payload = [transform_doc_id(condition) for condition in conditions]
-    return payload
+    return conditions
 
 
 @router.get("/condition/{id}", response_model=Condition)
@@ -44,7 +42,7 @@ def get_condition(id: str, request: Request):
     mongo_client = MongoCRUDClient()
     condition = mongo_client.get_document("conditions", id)
     if condition is not None:
-        return transform_doc_id(condition)
+        return condition
 
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Condition with ID {id} not found")
 
@@ -65,7 +63,6 @@ async def update_condition(id: str, request: Request):
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Data for ID: {id} already matches saved document")
 
     item = mongo_client.get_document("conditions", id=condition_id)
-    item = transform_doc_id(item)
     if item is not None:
         return item
 

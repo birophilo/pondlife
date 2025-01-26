@@ -21,16 +21,14 @@ async def create_agent(request: Request):
     agent = jsonable_encoder(agent_data)
     mongo_client = MongoCRUDClient()
     created_agent = mongo_client.create_document("agents", agent)
-    agent = transform_doc_id(created_agent)
-    return agent
+    return created_agent
 
 
 @router.get("/agents", response_model=List[AgentConstructor])
 def list_agents(request: Request):
     mongo_client = MongoCRUDClient()
     agents = mongo_client.list_documents("agents")
-    payload = [transform_doc_id(agent) for agent in agents]
-    return payload
+    return agents
 
 
 @router.get("/agent/{id}", response_model=AgentConstructor)
@@ -38,7 +36,7 @@ def get_agent(id: str, request: Request):
     mongo_client = MongoCRUDClient()
     agent = mongo_client.get_document("agents", id)
     if agent is not None:
-        return transform_doc_id(agent)
+        return agent
 
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"AgentConstructor with ID {id} not found")
 
@@ -59,7 +57,6 @@ async def update_agent(id: str, request: Request):
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Data for ID: {id} already matches saved document")
 
     item = mongo_client.get_document("agents", id=agent_id)
-    item = transform_doc_id(item)
     if item is not None:
         return item
 

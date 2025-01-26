@@ -41,7 +41,6 @@ async def create_property_change(request: Request):
         )
 
         # session.commit_transaction()
-        property_change = transform_doc_id(created_property_change)
         return property_change
 
     except PyMongoError as e:
@@ -57,8 +56,7 @@ async def create_property_change(request: Request):
 def list_property_changes(request: Request):
     mongo_client = MongoCRUDClient()
     property_changes = mongo_client.list_documents("property_changes")
-    payload = [transform_doc_id(property_change) for property_change in property_changes]
-    return payload
+    return property_changes
 
 
 @router.get("/propertyChange/{id}", response_model=PropertyChange)
@@ -66,7 +64,7 @@ def get_property_change(id: str, request: Request):
     mongo_client = MongoCRUDClient()
     property_change = mongo_client.get_document("property_changes", id)
     if property_change is not None:
-        return transform_doc_id(property_change)
+        return property_change
 
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"PropertyChange with ID {id} not found")
 
@@ -87,7 +85,6 @@ async def update_property_change(id: str, request: Request):
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Data for ID: {id} already matches saved document")
 
     item = mongo_client.get_document("property_changes", id=property_change_id)
-    item = transform_doc_id(item)
     if item is not None:
         return item
 

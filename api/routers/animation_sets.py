@@ -21,16 +21,14 @@ async def create_animation_set(request: Request):
     animation_set = jsonable_encoder(animation_set_data)
     mongo_client = MongoCRUDClient()
     created_animation_set = mongo_client.create_document("animation_sets", animation_set)
-    animation_set = transform_doc_id(created_animation_set)
-    return animation_set
+    return created_animation_set
 
 
 @router.get("/animationSets", response_model=List[AnimationSet])
 def list_animation_sets(request: Request):
     mongo_client = MongoCRUDClient()
     animation_sets = mongo_client.list_documents("animation_sets")
-    payload = [transform_doc_id(animation_set) for animation_set in animation_sets]
-    return payload
+    return animation_sets
 
 
 @router.get("/animationSet/{id}", response_model=AnimationSet)
@@ -38,7 +36,7 @@ def get_animation_set(id: str, request: Request):
     mongo_client = MongoCRUDClient()
     animation_set = mongo_client.get_document("animation_sets", id)
     if animation_set is not None:
-        return transform_doc_id(animation_set)
+        return animation_set
 
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"AnimationSet with ID {id} not found")
 
@@ -59,7 +57,6 @@ async def update_animation_set(id: str, request: Request):
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Data for ID: {id} already matches saved document")
 
     item = mongo_client.get_document("animation_sets", id=animation_set_id)
-    item = transform_doc_id(item)
     if item is not None:
         return item
 

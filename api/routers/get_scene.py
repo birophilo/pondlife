@@ -46,36 +46,32 @@ async def get_scene_data(scene_id):
     agent_documents = mongo_client.list_documents("agents")
 
     for instance in agent_documents:
-        instance = transform_doc_id(instance)
         if instance["agentType"] in agent_instances:
             agent_instances[instance["agentType"]].append(instance)
         else:
             agent_instances[instance["agentType"]] = [instance]
 
+    payload["data"]["agentInstances"] = agent_instances
+
     conditions = mongo_client.list_documents("conditions")  # return all items for now
-    payload["data"]["conditions"] = [transform_doc_id(condition) for condition in conditions]
+    payload["data"]["conditions"] = conditions
 
     agent_types = mongo_client.get_documents_from_ids("agent_types", scene_data["agentTypes"])
-    payload["data"]["agentTypes"] = [transform_doc_id(agent_type) for agent_type in agent_types]
+    payload["data"]["agentTypes"] = agent_types
 
     spritesheets = mongo_client.list_documents("spritesheets")  # return all items for now
-    payload["data"]["spriteSheets"] = [transform_doc_id(spritesheet) for spritesheet in spritesheets]
+    payload["data"]["spriteSheets"] = spritesheets
 
     animation_sets = mongo_client.list_documents("animation_sets")  # return all items for now
-    payload["data"]["animationSets"] = [transform_doc_id(anim_set) for anim_set in animation_sets]
+    payload["data"]["animationSets"] = animation_sets
 
     actions = mongo_client.list_documents("actions")  # return all items for now
-    for action in actions:
-        if action.get("propertyChanges"):
-            action["propertyChanges"] = flatten_oid_list(action["propertyChanges"])
-    payload["data"]["actions"] = [transform_doc_id(action) for action in actions]
+    payload["data"]["actions"] = actions
 
     property_changes = mongo_client.list_documents("property_changes")  # return all items for now
-    payload["data"]["propertyChanges"] = [transform_doc_id(prop_change) for prop_change in property_changes]
+    payload["data"]["propertyChanges"] = property_changes
 
     agent_properties = mongo_client.list_documents("agent_properties")  # return all items for now
-    payload["data"]["agentProperties"] = [transform_doc_id(prop) for prop in agent_properties]
-
-    payload["data"]["agentInstances"] = agent_instances
+    payload["data"]["agentProperties"] = agent_properties
 
     return payload
