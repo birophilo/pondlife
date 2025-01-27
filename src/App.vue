@@ -96,7 +96,7 @@
       <summary class="menu-section-heading">Start action</summary>
       <div v-if="store.actions.length > 0">
         <div v-for="action in store.actions">
-          <button @click="cloneAction(action)">{{ action.actionName }}</button>
+          <button @click="cloneActionForSelectedAgent(action)">{{ action.actionName }}</button>
         </div>
       </div>
       <div v-else>
@@ -298,7 +298,7 @@ export default {
         if (result === true) {
           const nextActionId = transition.nextAction
           const nextAction = store.actions.find(action => action.id === nextActionId)
-          setDynamicActionTargetAgents(nextAction)
+          setDynamicActionTargetAgents(nextAction, agent)
           let actionHandler = new ActionHandler()
           agent.currentAction = actionHandler.clone(nextAction, agent)
           return
@@ -435,12 +435,12 @@ export default {
 
       if (animationId % dayLength === 0) endDay()
 
-      if (store.GlobalSettings.animationFrameId % 32 === 0) {
-        const customerActions = store.agentItems['customer'].map(cust =>
-          `${cust.name}, action: ${cust.currentAction ? cust.currentAction.actionName : 'none'}`
-        )
-        console.log(JSON.stringify(customerActions, null, 2))
-      }
+      // if (store.GlobalSettings.animationFrameId % 32 === 0) {
+      //   const customerActions = store.agentItems['customer'].map(cust =>
+      //     `${cust.name}, action: ${cust.currentAction ? cust.currentAction.actionName : 'none'}`
+      //   )
+      //   console.log(JSON.stringify(customerActions, null, 2))
+      // }
     }
 
     const selectOrDeleteAgent = (agentTypeName, point) => {
@@ -540,18 +540,20 @@ export default {
       store.dayNumber += 1
     }
 
-    const cloneAction = (action) => {
-      setDynamicActionTargetAgents(action, store.selectedAgent)
-      const handlerClass = ACTION_HANDLERS[action.actionType]
-      const handler = new handlerClass()
-      store.selectedAgent.currentAction = handler.clone(action, store.selectedAgent)
-    }
-
     const cloneActionForAgent = (action, agent) => {
+      // general clone action
       setDynamicActionTargetAgents(action, agent)
       const handlerClass = ACTION_HANDLERS[action.actionType]
       const handler = new handlerClass()
       agent.currentAction = handler.clone(action, agent)
+    }
+
+    const cloneActionForSelectedAgent = (action) => {
+      // this function only used for live trigger via button for selected agent
+      setDynamicActionTargetAgents(action, store.selectedAgent)
+      const handlerClass = ACTION_HANDLERS[action.actionType]
+      const handler = new handlerClass()
+      store.selectedAgent.currentAction = handler.clone(action, store.selectedAgent)
     }
 
     const playScene = () => {
@@ -559,6 +561,11 @@ export default {
       Object.entries(store.agentTypes).forEach(([name, agentType]) => {
         if (agentType.firstAction) {
           const action = store.actions.find(a => a.id === agentType.firstAction)
+
+          if (action === undefined) {
+            throw "Play scene: Can't find action"
+          }
+
           store.agentItems[agentType.name].forEach(agent => {
             cloneActionForAgent(action, agent)
           })
@@ -661,7 +668,7 @@ export default {
       deleteCondition,
       conditionReadableFormat,
       updateThumbnailFileInput,
-      cloneAction,
+      cloneActionForSelectedAgent,
       loadScene,
       saveScene,
       playScene

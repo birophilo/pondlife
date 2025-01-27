@@ -7,11 +7,19 @@
       movement speed: <input v-model="itemForm.nominalSpeed" type="number" placeholder="1" /><br />
       animationSet:
       <select v-model="itemForm.animationSet">
-        <option value="">-- select sprite map --</option>
+        <option value="">-- select animation set --</option>
         <option :value="animationSet" v-for="animationSet in store.animationSets">{{ animationSet.name }}</option>
       </select><br />
       thumbnail: {{ itemForm.thumbnail }}<br />
       <input type="file" placeholder="thumbnail" @change="updateThumbnailFileInput($event)" /><br />
+      first action:
+      <select v-model="itemForm.firstAction">
+        <option value="">-- select action --</option>
+        <option
+          v-for="action in store.actions"
+          :value="action.id">{{ action.actionName }}
+        </option>
+      </select><br />
       <button @click="createAgentType()">create agent type</button>
       <button @click="isAdding = false">cancel</button>
     </div>
@@ -41,7 +49,8 @@ export default {
       thumbnail: '',
       nominalSpeed: 0.02,
       positionX: 100,
-      positionY: 100
+      positionY: 100,
+      firstAction: ''
     })
 
     const createAgentType = async () => {
@@ -60,7 +69,8 @@ export default {
         nominalSpeed: Number(itemForm.value.nominalSpeed),
         previewImage: '/img/sprites/GirlSample_Walk_Down.png',
         animationSet: itemForm.value.animationSet,
-        thumbnail: itemForm.value.thumbnail
+        thumbnail: itemForm.value.thumbnail,
+        firstAction: itemForm.value.firstAction
       }
 
       const createdId = await api.createAgentType(newAgentType)
@@ -83,7 +93,7 @@ export default {
 
     const updateThumbnailFileInput = (event) => {
       const fileName = "/img/thumbnails/" + event.target.files[0].name
-      itemForm.value.positionYthumbnail = fileName
+      itemForm.value.thumbnail = fileName
     }
 
     return {

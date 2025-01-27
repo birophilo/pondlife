@@ -24,8 +24,6 @@
             <th>transition to</th>
           </tr>
           <tr v-for="(transition) in action.transitions">
-            <!-- <td>{{ transition.condition.name }}</td>
-            <td>{{ transition.nextAction.actionName }}</td> -->
             <td>{{ getCondition(transition).name }}</td>
             <td>{{ getNextAction(transition).actionName }}</td>
           </tr>

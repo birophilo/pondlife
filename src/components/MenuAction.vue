@@ -94,7 +94,7 @@
             <select v-model="itemForm.target">
               <option :value="{}">-- select agent --</option>
               <option
-                v-for="agent in store.agentItems[itemForm.agentType]"
+                v-for="agent in store.agentItems[itemForm.agentType.name]"
                 :value="agent"
               >
                 {{ agent.name }}
