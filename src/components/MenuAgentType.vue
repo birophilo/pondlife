@@ -16,7 +16,7 @@
         <input type="file" placeholder="thumbnail" @change="updateThumbnailFileInput($event)" /><br />
         first action:
         <select v-model="itemForm.firstAction">
-          <option value="">-- select action --</option>
+          <option :value="null">-- select action --</option>
           <option
             v-for="action in store.actions"
             :value="action.id">{{ action.actionName }}
