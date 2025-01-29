@@ -1,24 +1,46 @@
-# lemonade-stall-js-canvas
+# Pondlife
+
+An open source, browser-based agent-based-modelling platform.
+
+This is an early work-in-progress.
 
 ## Project setup
-```
-npm install
+
+```bash
+# clone the repo
+$ git clone git@github.com:birophilo/pondlife.git
+$ cd pondlife
 ```
 
-### Compiles and hot-reloads for development
-```
-npm run serve
+### Frontend
+
+```bash
+$ npm install
+$ npm run serve
 ```
 
-### Compiles and minifies for production
-```
-npm run build
+
+### Backend API
+
+```bash
+# create and activate a virtual environment
+$ cd api
+$ python -m venv env
+$ source env/bin/activate
+
+#install requirements
+$ pip install -r requirements.txt
+
+# run as background process
+$ ./api/run.sh -d
+# ...or, open a new terminal window then run in foregound with:
+$ ./api/run.sh
 ```
 
-### Lints and fixes files
-```
-npm run lint
-```
+### MongoDB database
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+Install and run [Docker Desktop](https://www.docker.com), then from the root directory:
+
+```bash
+$ docker-compose up -d
+```
