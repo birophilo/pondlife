@@ -14,6 +14,18 @@ export default {
     }
   },
 
+  listItems: async function (resourcePlural) {
+    this.loading = true
+    this.error = null
+    try {
+      const response = await fetch(`${BASE_URL}/${resourcePlural}/`)
+      const resp = await response.json()
+      return resp
+    } catch (error) {
+      this.error = error.message
+    }
+  },
+
   createItem: async function (resourcePlural, data) {
     try {
       const response = await fetch(

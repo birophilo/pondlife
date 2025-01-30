@@ -75,3 +75,16 @@ async def get_scene_data(scene_id):
     payload["data"]["agentProperties"] = agent_properties
 
     return payload
+
+
+@router.get("/scenes", status_code=200)
+async def list_scenes():
+    mongo_client = MongoCRUDClient()
+
+    scenes = mongo_client.list_documents("scenes")
+
+    sceneIds = [
+        {"id": scene["id"], "name": scene["name"]} for scene in scenes
+    ]
+
+    return sceneIds

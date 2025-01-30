@@ -3,51 +3,42 @@
 
   <div>This is the scene menu</div>
 
-  <RouterLink to="/scene-view/1">Scene Menu</RouterLink>
+  <div v-for="scene in store.sceneList">
+    <RouterLink :to="'/scene-view/' + scene.id">Scene {{ scene.name }}</RouterLink>
+  </div>
 
-  <div class="scene-button-container">
+  <!-- <RouterView /> -->
 
-    <div v-for="sceneId in scenes">
+  <!-- <div class="scene-button-container">
+    <div v-for="sceneId in sceneData">
       <div>Scene {{ scene }}
-        <router-link :to="{ name: 'SceneView', params: { id: sceneId } }">
+        <router-link :to="{ name: 'SceneView', params: { sceneId: sceneId } }">
           <button>load</button>
         </router-link>
       </div>
     </div>
-    <button @click="loadScene('677b5d2f024c92f6b532f00d')">load scene 1</button>
-    <button @click="loadScene(2)">load scene 2</button>
-    <button @click="saveScene(3)">save scene</button>
-  </div>
+  </div> -->
 
 </div>
 </template>
 
 
 <script>
+import { onMounted } from 'vue'
 import { useStore } from '../store/mainStore.js'
-// import api from './apiCrud.js'
 
 
 export default {
-  name: 'App',
+  name: 'SceneMenu',
   setup() {
     const store = useStore()
 
-    const loadScene = async (sceneId) => {
-      await store.fetchSceneData(sceneId)
-    }
-
-    const saveScene = async (sceneId) => {
-      await store.saveScene(sceneId)
-    }
-
-    const scenes = [1,2,3]
+    onMounted(() => {
+      store.fetchSceneList()
+    })
 
     return {
-      store,
-      loadScene,
-      saveScene,
-      scenes
+      store
     }
   }
 

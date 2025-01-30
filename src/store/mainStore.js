@@ -55,12 +55,29 @@ export const useStore = defineStore({
       ['downLeft', 'down', 'downRight']
     ],
 
+    // summary list data for scene menu selection
+    sceneList: [],
+
+    // scene detail
     sceneData: {},
 
     api: apiCrud
 
   }),
   actions: {
+    async fetchSceneList() {
+      this.loading = true
+      this.error = null
+      try {
+        const response = await fetch(`${BASE_URL}/scenes`)
+        const data = await response.json()
+        console.log("DATA")
+        console.log(data)
+        this.sceneList = data
+      } catch (error) {
+        this.error = error.message
+      }
+    },
     async fetchSceneData (sceneId) {
       this.loading = true
       this.error = null

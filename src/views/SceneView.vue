@@ -5,7 +5,12 @@
 
     <canvas></canvas>
 
+    <div class="scene-heading">
+      {{ sceneName }}
+    </div>
+
     <div class="scene-button-container">
+      <button @click="loadSceneList">load scene list</button>
       <button @click="playScene">play scene</button>
       <button @click="loadScene('677b5d2f024c92f6b532f00d')">load scene 1</button>
       <button @click="loadScene(2)">load scene 2</button>
@@ -120,7 +125,8 @@
 
 
 <script>
-import { onMounted } from 'vue'
+import { computed, onMounted } from 'vue'
+import { useRoute } from 'vue-router'
 import { useStore } from '@/store/mainStore.js'
 
 import { pointIsInArea } from '@/utils.js'
@@ -152,7 +158,7 @@ let dayLength = 1000 // frames
 const backgroundColor = 'rgb(220, 220, 220)'
 
 export default {
-  name: 'App',
+  name: 'SceneView',
   components: {
     CreateAgentTypeForm,
     MenuAgentType,
@@ -179,6 +185,22 @@ export default {
       await store.fetchSceneData(sceneId)
       loadAgentsAndFixtures()
       animate()
+    }
+
+    const route = useRoute()
+    const sceneId = computed(() => route.params.sceneId)
+
+    const sceneName = ''
+
+    const loadSceneList = async () => {
+      // fetch scene list
+      await store.fetchSceneList()
+
+      console.log("SCENE ID")
+      console.log(sceneId.value)
+      console.log(store.sceneList)
+
+      // sceneName.value = store.sceneList.find(scene => scene.id === sceneId.value).name
     }
 
     const saveScene = async (sceneId) => {
@@ -671,7 +693,9 @@ export default {
       cloneActionForSelectedAgent,
       loadScene,
       saveScene,
-      playScene
+      playScene,
+      sceneName,
+      loadSceneList
     }
   },
 

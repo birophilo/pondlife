@@ -97,5 +97,9 @@ export default {
   },
   deleteInitialAgentProperty (id) {
     return baseApiClient.deleteItem('agentProperty', id)
+  },
+  // add user filter/parameter in due course
+  listScenes () {
+    return baseApiClient.listItems('scenes')
   }
 }
