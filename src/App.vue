@@ -308,11 +308,33 @@ export default {
       agent.currentAction = null
     }
 
+    let tickTimestamp = null
+    let tockTimestamp = null
+    let counter = 0
+    let totalElapsed = 0
+    let avgElapsed = 0
+
     const agentHandler = new AgentHandler()
 
     /* ANIMATE */
 
     const animate = () => {
+
+      if (tickTimestamp) {
+        tockTimestamp = Date.now()
+        const elapsed = tockTimestamp - tickTimestamp
+        console.log(`elapsed: ${elapsed}`)
+
+        counter++
+        totalElapsed = totalElapsed + elapsed
+        avgElapsed = totalElapsed/counter
+
+        console.log(`avg ms: ${Math.ceil(avgElapsed)}, frames/s: ${(1000/avgElapsed).toFixed(2)}`)
+        
+        tickTimestamp = Date.now()
+      } else {
+        tickTimestamp = Date.now()
+      }
 
       store.hover = null
 
