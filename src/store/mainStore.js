@@ -61,7 +61,9 @@ export const useStore = defineStore({
     // scene detail
     sceneData: {},
 
-    api: apiCrud
+    api: apiCrud,
+
+    displaySceneMenu: true
 
   }),
   actions: {
