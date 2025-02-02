@@ -6,30 +6,27 @@
       </p>
     </div>
 
-    <div>This is the scene menu</div>
+    <div>Simulation Menu</div>
 
     <div v-for="scene in store.sceneList">
-      <button @click="$emit('load-scene', scene)">Scene {{ scene.name }} {{ scene.id }}</button>
+      {{ scene.name }}<button @click="$emit('load-scene', scene)">load</button>
     </div>
 
-    <!-- <RouterView /> -->
-
-    <!-- <div class="scene-button-container">
-      <div v-for="sceneId in sceneData">
-        <div>Scene {{ scene }}
-          <router-link :to="{ name: 'SceneView', params: { sceneId: sceneId } }">
-            <button>load</button>
-          </router-link>
-        </div>
-      </div>
-    </div> -->
+    <div v-if="showSceneNameForm">
+      <input v-model = "newSceneName" type="text" placeholder="enter name" />
+      <button @click="$emit('create-new-scene', newSceneName)">create</button>
+      <button @click="cancelCreate">cancel</button>
+    </div>
+    <div v-else>
+      <button @click="showSceneNameForm = true">New simulation</button>
+    </div>
 
   </div>
 </template>
 
 
 <script>
-import { onMounted } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useStore } from '../store/mainStore.js'
 
 
@@ -39,12 +36,23 @@ export default {
   setup() {
     const store = useStore()
 
+    const showSceneNameForm = ref(false)
+    const newSceneName = ref('')
+
+    const cancelCreate = () => {
+      newSceneName.value = ''
+      showSceneNameForm.value = false
+    }
+
     onMounted(() => {
       store.fetchSceneList()
     })
 
     return {
-      store
+      store,
+      showSceneNameForm,
+      newSceneName,
+      cancelCreate
     }
   }
 

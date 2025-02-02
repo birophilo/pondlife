@@ -45,8 +45,8 @@ export default {
         refreshInterval: Number(itemForm.value.refreshInterval)
       }
 
-      const createdId = await api.createSpriteSheet(newSpriteSheet)
-      newSpriteSheet.id = createdId
+      const createdItem = await api.createSpriteSheet(newSpriteSheet)
+      newSpriteSheet.id = createdItem.id
       store.spriteSheets.push(newSpriteSheet)
 
       isAdding.value = false

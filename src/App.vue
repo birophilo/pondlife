@@ -2,7 +2,7 @@
 <div id="container">
 
   <div v-show="store.displaySceneMenu" class="scene-menu-modal">
-    <SceneMenu @load-scene="loadScene" />
+    <SceneMenu @load-scene="loadScene" @create-new-scene="createScene" />
   </div>
 
   <div class="canvas-container">
@@ -136,7 +136,7 @@ import { ConditionHandler } from '@/classes/Condition.js'
 import { AgentMenu, AgentMenuIcon, DeleteButton, AgentPreview } from '@/classes/SelectionMenu.js'
 import { ActionHandler, ACTION_HANDLERS } from '@/classes/Action.js'
 import api from '@/apiCrud.js'
-import SceneMenu from './components/SceneMenu.vue'
+import SceneMenu from '@/components/SceneMenu.vue'
 import CreateAgentTypeForm from '@/components/CreateAgentTypeForm.vue'
 import MenuAgentType from '@/components/MenuAgentType.vue'
 import SetPropertyForm from '@/components/SetPropertyForm.vue'
@@ -219,12 +219,8 @@ export default {
 
       const agentTypeNames = Object.keys(store.agentTypes)
 
-      // hard-coding for the moment - REMOVE NOW?
-      store.agentTypes.customer.animationSet = store.animationSets[0]
-
       // populate agents from initial data
       agentTypeNames.forEach(agentTypeName => {
-        console.log(agentTypeName)
         store.agentItems[agentTypeName] = []
         if (store.sceneData.agentInstances[agentTypeName] !== undefined) {
           store.sceneData.agentInstances[agentTypeName].forEach((item, i) => {
@@ -248,6 +244,7 @@ export default {
       store.propertyChanges = [...store.sceneData.propertyChanges]
 
       store.agentProperties = [...store.sceneData.agentProperties]
+
       // set initial properties, for each agent, of each agent type, for each property
       store.agentProperties.forEach(property => {
         const agentTypes = property.agentTypes
@@ -289,6 +286,14 @@ export default {
       removeAgentLabels()
       await store.fetchSceneData(scene.id)
       loadAgentsAndFixtures()
+      animate()
+    }
+
+    const createScene = async (sceneName) => {
+      const newScene = await api.createScene({ name: sceneName })
+      console.log("NEW SCENE")
+      console.log(newScene)
+      loadScene(newScene)
     }
 
     const deleteCondition = (index) => {
@@ -553,8 +558,8 @@ export default {
       )
       const handler = new AgentHandler()
       handler.useSpriteSheet('idle', newAgent)
-      const newId = await api.createAgent({agentType: agentTypeName, position: position})
-      newAgent.id = newId
+      const newItem = await api.createAgent({agentType: agentTypeName, position: position})
+      newAgent.id = newItem.id
       agentItems.push(newAgent)
     }
 
@@ -579,7 +584,7 @@ export default {
     }
 
     const playScene = () => {
-      animate()
+      // animate()
       // eslint-disable-next-line
       Object.entries(store.agentTypes).forEach(([name, agentType]) => {
         if (agentType.firstAction) {
@@ -690,6 +695,7 @@ export default {
       store,
       loadAgentsAndFixtures,
       loadScene,
+      createScene,
       showSceneMenu,
       deleteCondition,
       conditionReadableFormat,

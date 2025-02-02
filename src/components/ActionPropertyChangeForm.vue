@@ -107,10 +107,9 @@ export default {
 
       const act = store.actions.find(a => a.id === props.action.id)
       // create PropertyChange and update the Action's ID field
-      const newId = await api.createPropertyChange(propChange, act.id)
-      propChange.id = newId
-      // TODO: change this to propChange ID to match document structure in database (or get from API)
-      act.propertyChanges.push(newId)
+      const newItem = await api.createPropertyChange(propChange, act.id)
+      propChange.id = newItem.id
+      act.propertyChanges.push(newItem.id)
       store.propertyChanges.push(propChange)
       isAdding.value = false
     }

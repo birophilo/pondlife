@@ -73,8 +73,8 @@ export default {
         firstAction: itemForm.value.firstAction
       }
 
-      const createdId = await api.createAgentType(newAgentType)
-      newAgentType.id = createdId
+      const createdItem = await api.createAgentType(newAgentType)
+      newAgentType.id = createdItem.id
 
       store.agentTypes[agentTypeName] = newAgentType
 

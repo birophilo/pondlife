@@ -137,3 +137,11 @@ class PropertyChange(BaseModel):
     action_id: str
 
     model_config = ConfigDict(alias_generator=to_camel)
+
+
+class Scene(BaseModel):
+    id: str
+    name: str
+    data: dict
+
+    model_config = ConfigDict(alias_generator=to_camel)

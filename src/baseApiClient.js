@@ -39,7 +39,7 @@ export default {
         }
       )
       const resp = await response.json()
-      return resp.id
+      return resp
     } catch (error) {
       this.error = error.message
     }

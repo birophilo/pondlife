@@ -109,8 +109,8 @@ export default {
         newCondition.classMethod = data.preset
       }
 
-      const createdId = await api.createCondition(newCondition)
-      newCondition.id = createdId
+      const createdItem = await api.createCondition(newCondition)
+      newCondition.id = createdItem.id
       newCondition.agent = store.selectedAgent
       store.conditions.push(newCondition)
       resetConditionForms()

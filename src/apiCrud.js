@@ -101,5 +101,8 @@ export default {
   // add user filter/parameter in due course
   listScenes () {
     return baseApiClient.listItems('scenes')
-  }
+  },
+  createScene (data) {
+    return baseApiClient.createItem('scenes', data)
+  },
 }

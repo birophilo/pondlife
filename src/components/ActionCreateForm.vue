@@ -290,8 +290,8 @@ export default {
 
       let newAction = actionFunction(null, data)
 
-      const newId = await api.createAction(newAction)
-      newAction.id = newId
+      const newItem = await api.createAction(newAction)
+      newAction.id = newItem.id
 
       store.actions.push(newAction)
 

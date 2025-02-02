@@ -5,8 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from routers import (
     hello,
-    get_scene,
-    save_scene,
+    scenes,
     conditions,
     spritesheets,
     animation_sets,
@@ -21,8 +20,7 @@ from routers import (
 def create_application() -> FastAPI:
     application = FastAPI()
     application.include_router(hello.router)
-    application.include_router(get_scene.router)
-    application.include_router(save_scene.router)
+    application.include_router(scenes.router)
     application.include_router(conditions.router)
     application.include_router(spritesheets.router)
     application.include_router(animation_sets.router)

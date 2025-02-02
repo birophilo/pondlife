@@ -102,8 +102,8 @@ export default {
 
     const createInitialAgentProperty = async () => {
       const agentProperty = {...itemForm.value}
-      const createdId = await api.createInitialAgentProperty(agentProperty)
-      agentProperty.id = createdId
+      const createdItem = await api.createInitialAgentProperty(agentProperty)
+      agentProperty.id = createdItem.id
       store.agentProperties.push(agentProperty)
       isAdding.value = false
     }

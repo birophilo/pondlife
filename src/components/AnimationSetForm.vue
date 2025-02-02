@@ -74,8 +74,8 @@ export default {
       sheetNames.forEach(sheetName => {
         newAnimationSet.sheets[sheetName] = newAnimationSet.sheets[sheetName].id
       })
-      const createdId = api.createAnimationSet(newAnimationSet)
-      newAnimationSet.id = createdId
+      const createdItem = api.createAnimationSet(newAnimationSet)
+      newAnimationSet.id = createdItem.id
       store.animationSets.push(newAnimationSet)
 
       isAdding.value = false
