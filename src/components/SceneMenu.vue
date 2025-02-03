@@ -8,8 +8,18 @@
 
     <div>Simulation Menu</div>
 
-    <div v-for="scene in store.sceneList">
-      {{ scene.name }}<button @click="$emit('load-scene', scene)">load</button>
+    <div class="scene-menu-item">
+      <div class="scene-name">Name</div>
+      <div class="scene-last-modified">Last modified</div>
+      <div class="scene-load-button"></div>
+    </div>
+
+    <div v-for="scene in store.sceneList" class="scene-menu-item">
+      <div class="scene-name">{{ scene.name }}</div>
+      <div class="scene-last-modified">{{ formatDate(scene.lastModified) }}</div>
+      <div class="scene-load-button">
+        <button @click="$emit('load-scene', scene)">load</button>
+      </div>
     </div>
 
     <div v-if="showSceneNameForm">
@@ -44,6 +54,11 @@ export default {
       showSceneNameForm.value = false
     }
 
+    const formatDate = (timestamp) => {
+      const date = new Date(timestamp).toLocaleString("en-GB")
+      return date
+    }
+
     onMounted(() => {
       store.fetchSceneList()
     })
@@ -52,7 +67,8 @@ export default {
       store,
       showSceneNameForm,
       newSceneName,
-      cancelCreate
+      cancelCreate,
+      formatDate
     }
   }
 
@@ -60,16 +76,34 @@ export default {
 
 </script>
 
-<style>
+<style scoped>
 
 .content-container {
-  width: 450px;
   height: 600px;
   border: 1px solid black;
 }
 
 .close-menu-button {
   cursor: pointer
+}
+
+.scene-menu-item {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  width: 600px;
+}
+
+.scene-name {
+  width: 300px;
+}
+
+.scene-load-button {
+  width: 100px;
+}
+
+.scene-last-modified {
+  width: 200px;
 }
 
 </style>
