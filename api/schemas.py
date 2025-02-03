@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Any, List
 
 from pydantic import BaseModel, ConfigDict
@@ -141,7 +142,11 @@ class PropertyChange(BaseModel):
 
 class Scene(BaseModel):
     id: str
+    resource: str = "scene"
     name: str
     data: dict
+
+    created_at: int
+    last_modified: int
 
     model_config = ConfigDict(alias_generator=to_camel)

@@ -1,4 +1,5 @@
 import json
+import time
 from bson import ObjectId
 from bson.json_util import dumps
 
@@ -45,6 +46,13 @@ class MongoCRUDClient:
         self.db = get_database()
 
     def create_document(self, collection: str, item, session=None):
+
+        # timestamps only for scenes for now until update other object schemas
+        if item.get("resource") and item.get("resource") == "scene":
+            current_time = int(time.time()*1000)
+            item["createdAt"] = current_time
+            item["lastModified"] = current_time
+
         new_item = self.db[collection].insert_one(item)
         created_item = self.db[collection].find_one(
             {"_id": ObjectId(new_item.inserted_id)}
@@ -54,7 +62,6 @@ class MongoCRUDClient:
         created_item = stringify_objectid_list_fields(created_item, collection)
 
         return created_item
-        # return json.loads(dumps(created_item))
 
     def get_document(self, collection: str, id: str):
         item = self.db[collection].find_one({"_id": ObjectId(id)})

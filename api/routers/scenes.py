@@ -45,7 +45,10 @@ async def get_scene_data(scene_id):
             "actions": [],
             "agentProperties": [],
             "propertyChanges": []
-        }
+        },
+        "createdAt": scene["createdAt"],
+        "lastModified": scene["lastModified"],
+        "resource": scene["resource"]
     }
 
     agent_instances = {}
@@ -91,7 +94,11 @@ async def list_scenes():
     scenes = mongo_client.list_documents("scenes")
 
     sceneIds = [
-        {"id": scene["id"], "name": scene["name"]} for scene in scenes
+        {
+            "id": scene["id"],
+            "name": scene["name"],
+            "lastModified": scene["lastModified"]
+        } for scene in scenes
     ]
 
     return sceneIds
@@ -102,10 +109,8 @@ async def create_scene(request: Request):
 
     data = json.loads(await request.body())
 
-    scene_name = data["name"]
-
     blank_scene = {
-        "name": scene_name,
+        "name": data["name"],
         "data": {
             "conditions": [],
             "agentTypes": [],
@@ -115,7 +120,8 @@ async def create_scene(request: Request):
             "actions": [],
             "agentProperties": [],
             "propertyChanges": []
-        }
+        },
+        "resource": "scene"
     }
     mongo_client = MongoCRUDClient()
     created_scene = mongo_client.create_document("scenes", blank_scene)
