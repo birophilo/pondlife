@@ -88,6 +88,7 @@ export const useStore = defineStore({
         const data = await response.json()
         this.sceneData = data.data
         this.sceneId = data.id
+        this.sceneName = data.name
       } catch (error) {
         this.error = error.message
       }
@@ -99,16 +100,47 @@ export const useStore = defineStore({
       this.agentTypes = {}
       this.agentMenuButtons = []
     },
-    async saveScene (sceneId) {
+    async saveScene () {
+
+
+      const data = {
+        conditions: this.conditions.map(i => i.id),
+        agentTypes: [],
+        actions: this.actions.map(i => i.id),
+        agentProperties: this.agentProperties.map(i => i.id),
+        spritesheets: this.spriteSheets.map(i => i.id),
+        animationSets: this.animationSets.map(i => i.id),
+        agentInstances: []
+      }
+
+      // eslint-disable-next-line
+      for (const [key, val] of Object.entries(this.agentTypes)) {
+        data.agentTypes.push(val.id)
+      }
+
+      const agentTypeNames = Object.keys(this.agentItems)
+
+      agentTypeNames.forEach(name => {
+        this.agentItems[name].forEach(agent => {
+          data.agentInstances.push(agent.id)
+        })
+      })
+
+      const payload = {
+        id: this.sceneId,
+        name: this.sceneName,
+        data: data
+      }
+
       try {
         const response = await fetch(
-          `${BASE_URL}/scene/${sceneId}`, {
-            method: 'POST',
+          `${BASE_URL}/scene/${this.sceneId}`, {
+            method: 'PUT',
             headers: {
               Accept: "application/json",
               "Content-Type": "application/json;charset=UTF-8",
             },
-            body: JSON.stringify(this.sceneData)
+            body: JSON.stringify(payload)
           }
         )
         const resp = await response.json()

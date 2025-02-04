@@ -40,7 +40,7 @@ async def get_scene_data(scene_id):
             "conditions": [],
             "agentTypes": [],
             "agentInstances": [],
-            "spriteSheets": [],
+            "spritesheets": [],
             "animationSets": [],
             "actions": [],
             "agentProperties": [],
@@ -52,7 +52,6 @@ async def get_scene_data(scene_id):
     }
 
     agent_instances = {}
-    agent_documents = mongo_client.list_documents("agents")
     agent_documents = mongo_client.get_documents_from_ids("agents", scene_data["agentInstances"])
 
     for instance in agent_documents:
@@ -70,7 +69,7 @@ async def get_scene_data(scene_id):
     payload["data"]["agentTypes"] = agent_types
 
     spritesheets = mongo_client.list_documents("spritesheets")  # return all items for now
-    payload["data"]["spriteSheets"] = spritesheets
+    payload["data"]["spritesheets"] = spritesheets
 
     animation_sets = mongo_client.list_documents("animation_sets")  # return all items for now
     payload["data"]["animationSets"] = animation_sets
@@ -115,7 +114,7 @@ async def create_scene(request: Request):
             "conditions": [],
             "agentTypes": [],
             "agentInstances": [],
-            "spriteSheets": [],
+            "spritesheets": [],
             "animationSets": [],
             "actions": [],
             "agentProperties": [],
@@ -128,14 +127,24 @@ async def create_scene(request: Request):
     return created_scene
 
 
-@router.put("/scene/{scene_id}", status_code=200)
-async def post_scene_data(scene_id: str, request: Request):
+@router.put("/scene/{id}", response_model=Scene)
+async def update_agent_type(id: str, request: Request):
 
-    data = json.loads(await request.body())
+    scene = json.loads(await request.body())
+    scene_id = scene["id"]
 
-    scene_path = os.path.join(data_dir, f"scene{scene_id}.json")
+    # agent_type = {k: v for k, v in agent_type_data.dict().items() if v is not None}
 
-    with open(scene_path, 'w') as f:
-        f.write(json.dumps(data, indent=2))
+    if len(scene) >= 1:
+        mongo_client = MongoCRUDClient()
+        try:
+            mongo_client.update_document("scenes", scene)
+        except Exception as e:
+            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Error updating {id}: {e}")
 
-    return {'message': 'OK'}
+    item = mongo_client.get_document("scenes", id=scene_id)
+    if item is not None:
+        return item
+
+    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Scene with ID {id} not found")
+

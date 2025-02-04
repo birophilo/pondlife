@@ -1,0 +1,83 @@
+[
+  {
+    "id": 1,
+    "name": "CustomerWalkUp",
+    "src": "/img/sprites/GirlSample_Walk_Up.png",
+    "columns": 4,
+    "rows": 3,
+    "numImages": 9,
+    "refreshInterval": 3
+  },
+  {
+    "id": 2,
+    "name": "CustomerWalkUpLeft",
+    "src": "/img/sprites/GirlSample_Walk_UpLeft.png",
+    "columns": 4,
+    "rows": 3,
+    "numImages": 9,
+    "refreshInterval": 3
+  },
+  {
+    "id": 3,
+    "name": "CustomerWalkUpRight",
+    "src": "/img/sprites/GirlSample_Walk_UpRight.png",
+    "columns": 4,
+    "rows": 3,
+    "numImages": 9,
+    "refreshInterval": 3
+  },
+  {
+    "id": 4,
+    "name": "CustomerWalkLeft",
+    "src": "/img/sprites/GirlSample_Walk_Left.png",
+    "columns": 4,
+    "rows": 3,
+    "numImages": 9,
+    "refreshInterval": 3
+  },
+  {
+    "id": 5,
+    "name": "CustomerWalkRight",
+    "src": "",
+    "columns": 4,
+    "rows": 3,
+    "numImages": 9,
+    "refreshInterval": 3
+  },
+  {
+    "id": 6,
+    "name": "CustomerWalkDownLeft",
+    "src": "/img/sprites/GirlSample_Walk_DownLeft.png",
+    "columns": 4,
+    "rows": 3,
+    "numImages": 9,
+    "refreshInterval": 3
+  },
+  {
+    "id": 7,
+    "name": "CustomerWalkDown",
+    "src": "/img/sprites/GirlSample_Walk_Down.png",
+    "columns": 4,
+    "rows": 3,
+    "numImages": 9,
+    "refreshInterval": 3
+  },
+  {
+    "id": 8,
+    "name": "CustomerWalkDownRight",
+    "src": "/img/sprites/GirlSample_Walk_DownRight.png",
+    "columns": 4,
+    "rows": 3,
+    "numImages": 9,
+    "refreshInterval": 3
+  },
+  {
+    "id": 9,
+    "name": "CustomerIdle",
+    "src": "/img/sprites/GirlSample_Walk_Down.png",
+    "columns": 4,
+    "rows": 3,
+    "numImages": 1,
+    "refreshInterval": 3
+  }
+]

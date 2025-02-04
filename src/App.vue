@@ -15,7 +15,7 @@
 
     <div class="scene-button-container">
       <button @click="playScene">play scene</button>
-      <button @click="saveScene(3)">save scene</button>
+      <button @click="saveScene">save scene</button>
       <button @click="showSceneMenu">scene menu</button>
     </div>
   </div>
@@ -202,7 +202,7 @@ export default {
 
       // populate spriteSheets and animationSets
       store.animationSets = store.sceneData.animationSets
-      store.spriteSheets = store.sceneData.spriteSheets
+      store.spriteSheets = store.sceneData.spritesheets
 
       // replace animationSet spriteSheet ID references with spriteSheet objects
       store.animationSets.forEach(animSet => {

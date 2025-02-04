@@ -51,10 +51,10 @@ async def update_agent_type(id: str, request: Request):
 
     if len(agent_type) >= 1:
         mongo_client = MongoCRUDClient()
-        update_result = mongo_client.update_document("agent_types", agent_type)
-
-        if update_result.modified_count == 0:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Data for ID: {id} already matches saved document")
+        try:
+            mongo_client.update_document("agent_types", agent_type)
+        except Exception as e:
+            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Error updating {id}: {e}")
 
     item = mongo_client.get_document("agent_types", id=agent_type_id)
     if item is not None:
