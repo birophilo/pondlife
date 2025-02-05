@@ -320,7 +320,8 @@ export default {
         if (result === true) {
           const nextActionId = transition.nextAction
           const nextAction = store.actions.find(action => action.id === nextActionId)
-          setDynamicActionTargetAgents(nextAction, agent, agent.currentAction)
+          const ok = setDynamicActionTargetAgents(nextAction, agent, agent.currentAction)
+          if (!ok) return
           let actionHandler = new ActionHandler()
           agent.currentAction = actionHandler.clone(nextAction, agent)
           return
@@ -515,6 +516,11 @@ export default {
       if (action.agentChoiceMethod === 'nearest' && action.destinationType === 'agent') {
         const agentTypeName = action.agentType.name
         const agentItems = store.agentItems[agentTypeName]
+        if (agentItems.length === 0) {
+          console.log(`No ${agentTypeName} exist - cannot choose nearest.`)
+          agentHandler.idle(agent)
+          return false
+        }
         const targetAgent = agentHandler.getClosestAgent(agent, agentItems)
         action.target = targetAgent
         action.destination = targetAgent
@@ -564,6 +570,7 @@ export default {
           }
         }
       }
+      return true  // 'ok' used by outer function, circuit breaker if not
     }
 
     const addAgent = async (agentTypeName, position) => {
@@ -589,7 +596,8 @@ export default {
 
     const cloneActionForAgent = (action, agent) => {
       // general clone action
-      setDynamicActionTargetAgents(action, agent)
+      const ok = setDynamicActionTargetAgents(action, agent)
+      if (!ok) return
       const handlerClass = ACTION_HANDLERS[action.actionType]
       const handler = new handlerClass()
       agent.currentAction = handler.clone(action, agent)
@@ -597,7 +605,8 @@ export default {
 
     const cloneActionForSelectedAgent = (action) => {
       // this function only used for live trigger via button for selected agent
-      setDynamicActionTargetAgents(action, store.selectedAgent)
+      const ok = setDynamicActionTargetAgents(action, store.selectedAgent)
+      if (!ok) return
       const handlerClass = ACTION_HANDLERS[action.actionType]
       const handler = new handlerClass()
       store.selectedAgent.currentAction = handler.clone(action, store.selectedAgent)
