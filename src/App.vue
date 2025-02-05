@@ -320,7 +320,7 @@ export default {
         if (result === true) {
           const nextActionId = transition.nextAction
           const nextAction = store.actions.find(action => action.id === nextActionId)
-          setDynamicActionTargetAgents(nextAction, agent)
+          setDynamicActionTargetAgents(nextAction, agent, agent.currentAction)
           let actionHandler = new ActionHandler()
           agent.currentAction = actionHandler.clone(nextAction, agent)
           return
@@ -501,7 +501,7 @@ export default {
       agentItems.splice(i, 1)
     }
 
-    const setDynamicActionTargetAgents = (action, agent) => {
+    const setDynamicActionTargetAgents = (action, agent, lastAction) => {
       /*
       Some target agent/s need to be set dynamically according to criteria that can
       only be determined when the action starts:
@@ -543,6 +543,26 @@ export default {
             }
           }
         })
+      }
+
+      if (action.actionType === 'removeAgent') {
+
+        if (action.agentType === 'currentTarget') {
+          action.target = lastAction.target
+        }
+
+        else if (action.agentType !== 'self') {
+          if (action.agentChoiceMethod === 'nearest') {
+            const agentTypeName = action.agentType
+            const targetAgents = store.agentItems[agentTypeName]
+            const targetAgent = agentHandler.getClosestAgent(agent, targetAgents)
+            action.target = targetAgent
+          } else if (action.agentChoiceMethod === 'all') {
+            const agentTypeName = action.agentType.name
+            const agentItems = store.agentItems[agentTypeName]
+            action.target = agentItems
+          }
+        }
       }
     }
 

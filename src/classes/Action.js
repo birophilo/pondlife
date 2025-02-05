@@ -29,7 +29,7 @@ export function createActionGoTo (agent = null, data) {
     item.destination = data.target
   }
   if (data.destinationType === 'point') {
-      item.destination = data.target
+    item.destination = data.target
   }
   return item
 }
@@ -59,6 +59,11 @@ export function createActionSpawnAgent (agent = null, data) {
 
 export function createActionRemoveAgent (agent = null, data) {
   const item = createActionObject(agent, data)
+
+  item.agentType = data.agentType
+  item.agentChoiceMethod = data.agentChoiceMethod,
+  item.target = data.target
+
   return item
 }
 
@@ -206,8 +211,20 @@ export class ActionRemoveAgentHandler extends ActionHandler {
 
   // eslint-disable-next-line
   start(item, globals) {
+    let emissions = {agentsToDelete: []}
+
+    if (item.agentType === 'self') {
+      emissions.agentsToDelete = [item.agent]
+    } else if (item.agentType === 'currentTarget') {
+      emissions.agentsToDelete = [item.target]
+    } else if (item.agentChoiceMethod === 'specific' || item.agentChoiceMethod === 'nearest') {
+      emissions.agentsToDelete = [item.target]
+    } else if (item.agentChoiceMethod === 'all') {
+      emissions.agentsToDelete = [...item.target]
+    }
+
     item.isComplete = true
-    return {agentsToDelete: [item.agent]}
+    return emissions
   }
 
   defaultCompletionCheckPasses(item) {

@@ -114,6 +114,8 @@
 
       <select v-model="itemForm.agentType">
         <option value="">-- agent type --</option>
+        <option value="self">self</option>
+        <option value="currentTarget">current target</option>
         <option
             v-for="[agentType, obj] in Object.entries(store.agentTypes)"
             :value="obj">{{ agentType }}
@@ -149,7 +151,7 @@
         <select v-model="itemForm.target">
           <option :value="{}">-- select agent --</option>
           <option
-            v-for="agent in store.agentItems[itemForm.agentType]"
+            v-for="agent in store.agentItems[itemForm.agentType.name]"
             :value="agent"
           >
             {{ agent.name }}

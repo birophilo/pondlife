@@ -76,7 +76,7 @@ class AgentProperty(BaseModel):
     value_type: str
     initial_value: str | bool | int | float | None
     apply_to: str
-    agent_types: list[str]
+    agent_types: List[str]
     description: str
 
     model_config = ConfigDict(alias_generator=to_camel)
