@@ -61,8 +61,7 @@ export default {
   deleteAction (id) {
     return baseApiClient.deleteItem('action', id)
   },
-  createPropertyChange (propertyChange, actionId) {
-    const data = {propertyChange: propertyChange, actionId: actionId}
+  createPropertyChange (data) {
     return baseApiClient.createItem('propertyChanges', data)
   },
   getPropertyChange (id) {

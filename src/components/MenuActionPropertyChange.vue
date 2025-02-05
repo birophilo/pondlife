@@ -83,14 +83,12 @@ export default {
 
     const saveItem = () => {
       isEditing.value = false
-      var action = store.actions.find(act => act.id === props.action.id)
-      var propChange = action.propertyChanges[props.index]
-      // can do propChange = {...itemForm.value}?
       api.updatePropertyChange(itemForm.value)
-      // TODO: update action here with propertyChanges: ["ID123"]
+      let propertyChange = store.propertyChanges.find(ch => ch.id === props.propertyChangeId)
+      // propertyChange = {...itemForm.value}
       const keys = Object.keys(itemForm.value)
       keys.forEach(key => {
-        propChange[key] = itemForm.value[key]
+        propertyChange[key] = itemForm.value[key]
       })
     }
 

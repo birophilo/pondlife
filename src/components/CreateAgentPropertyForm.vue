@@ -4,6 +4,32 @@
       <div>property: <input v-model="itemForm.name" type="text" /></div>
       <div>description: <input v-model="itemForm.description" type="text" /></div>
 
+      <div>applies to:
+        <select v-model="itemForm.applyTo">
+            <!-- <option :value="{}">-- applies to --</option> -->
+            <option
+              v-for="choice in applyToChoices"
+              :value="choice.value">{{ choice.description }}
+            </option>
+        </select>
+      </div>
+
+      <div v-if="itemForm.applyTo === 'agentType'">
+        <div>agent types:</div>
+        <div v-for="agentType in Object.keys(store.agentTypes)">
+          <input
+            class="agent-type-checkbox"
+            type="checkbox"
+            :id="agentType"
+            name="agentTypeForm"
+            :value="agentType"
+            :checked="itemForm.agentTypes.includes(agentType)"
+            @change="handleAgentTypesCheckbox"
+          >
+          <label :for="agentType" >{{ agentType }}</label><br>
+        </div>
+      </div>
+
       <div>value type:
         <select v-model="itemForm.valueType" @change="$forceUpdate()">
             <option :value="{}">-- value type --</option>
@@ -40,32 +66,6 @@
       </div>
       <div v-else-if="itemForm.valueType === 'string'">
         <div>initial value: <input v-model="itemForm.initialValue" type="text" /></div>
-      </div>
-
-      <div>applies to:
-        <select v-model="itemForm.applyTo">
-            <!-- <option :value="{}">-- applies to --</option> -->
-            <option
-              v-for="choice in applyToChoices"
-              :value="choice.value">{{ choice.description }}
-            </option>
-        </select>
-      </div>
-
-      <div v-if="itemForm.applyTo === 'agentType'">
-        <div>agent types:</div>
-        <div v-for="agentType in Object.keys(store.agentTypes)">
-          <input
-            class="agent-type-checkbox"
-            type="checkbox"
-            :id="agentType"
-            name="agentTypeForm"
-            :value="agentType"
-            :checked="itemForm.agentTypes.includes(agentType)"
-            @change="handleAgentTypesCheckbox"
-          >
-          <label :for="agentType" >{{ agentType }}</label><br>
-        </div>
       </div>
 
       <button @click="createInitialAgentProperty">create</button>

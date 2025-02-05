@@ -22,26 +22,24 @@ async def create_property_change(request: Request):
     request_body = json.loads(await request.body())
     property_change_data = request_body
     action_id = request_body["actionId"]
-
     property_change = jsonable_encoder(property_change_data)
     mongo_client = MongoCRUDClient()
+
     # session = mongo_client.client.start_session()
     # session.start_transaction()
-    session = None
 
     try:
-        created_property_change = mongo_client.create_document("property_changes", property_change, session=session)
-        new_property_change = transform_doc_id(created_property_change)
+        created_item = mongo_client.create_document("property_changes", property_change)
 
         action_collection = mongo_client.db.actions
         action_collection.update_one(
             {"_id": ObjectId(action_id)},
-            {"$push": {"propertyChanges": ObjectId(new_property_change["id"])}},
+            {"$push": {"propertyChanges": ObjectId(created_item["id"])}},
             # session=session
         )
 
         # session.commit_transaction()
-        return property_change
+        return created_item
 
     except PyMongoError as e:
         # session.abort_transaction()

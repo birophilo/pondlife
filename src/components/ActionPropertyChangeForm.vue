@@ -103,11 +103,11 @@ export default {
     })
 
     const createItem = async () => {
-      const propChange = {...itemForm.value, agent: null} // does agent need to be null?
-
       const act = store.actions.find(a => a.id === props.action.id)
+      const propChange = {...itemForm.value, agent: null, actionId: act.id} // does agent need to be null?
+
       // create PropertyChange and update the Action's ID field
-      const newItem = await api.createPropertyChange(propChange, act.id)
+      const newItem = await api.createPropertyChange(propChange)
       propChange.id = newItem.id
       act.propertyChanges.push(newItem.id)
       store.propertyChanges.push(propChange)
