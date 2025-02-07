@@ -66,8 +66,15 @@ export default {
 
     const deleteItem = () => {
       api.deleteAgentType(props.agentType.id)
-      delete store.agentTypes[props.agentType.name]
-      delete store.agentItems[props.agentType.name]
+      removeAgentTypeFromStore()
+    }
+
+    const removeAgentTypeFromStore = () => {
+      const atName = props.agentType.name
+      delete store.agentTypes[atName]
+      delete store.agentItems[atName]
+      delete store.firstActions[atName]
+      store.agentMenuButtons = store.agentMenuButtons.filter(button => button.name !== atName)
     }
 
     const editItem = () => {
@@ -122,13 +129,9 @@ export default {
     }
 
     const removeFromMenu = async () => {
-
       const atName = props.agentType.name
       store.agentItems[atName].forEach((agent, i) => deleteAgent(agent, store.agentItems[atName], i))
-
-      delete store.agentTypes[atName]
-      delete store.agentItems[atName]
-      store.agentMenuButtons = store.agentMenuButtons.filter(button => button.name !== atName)
+      removeAgentTypeFromStore()
       await store.saveScene()
     }
 

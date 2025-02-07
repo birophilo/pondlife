@@ -79,8 +79,8 @@ export default {
       newAgentType.id = createdItem.id
 
       store.agentTypes[agentTypeName] = newAgentType
-
       store.agentItems[agentTypeName] = []
+      store.firstActions[agentTypeName] = null
 
       let newIcon = new AgentMenuIcon({
         menu: store.itemMenu,

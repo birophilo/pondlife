@@ -48,6 +48,8 @@ export const useStore = defineStore({
 
     agentProperties: [],
 
+    firstActions: {},
+
     // hard-coded 8-way list (9 including 'idle') for basic 2D directional sprite movements
     directionList: [
       ['upLeft', 'up', 'upRight'],
@@ -74,8 +76,6 @@ export const useStore = defineStore({
       try {
         const response = await fetch(`${BASE_URL}/scenes`)
         const data = await response.json()
-        console.log("DATA")
-        console.log(data)
         this.sceneList = data
       } catch (error) {
         this.error = error.message
@@ -111,7 +111,8 @@ export const useStore = defineStore({
         agentProperties: this.agentProperties.map(i => i.id),
         spritesheets: this.spriteSheets.map(i => i.id),
         animationSets: this.animationSets.map(i => i.id),
-        propertyChanges: this.propertyChanges.map(i => i.id)
+        propertyChanges: this.propertyChanges.map(i => i.id),
+        firstActions: {...this.firstActions}
       }
 
       // eslint-disable-next-line

@@ -56,8 +56,9 @@
 
     <details class="menu-section" id="agent-types-section">
       <summary class="menu-section-heading">Agent Types</summary>
-      <div v-for="(agentType) in store.agentTypes">
+      <div v-for="(agentType) in store.agentTypes" class="agent-type-menu-container">
         <MenuAgentType :agentType="agentType" />
+        <AgentTypeFirstActionMenu :agentType="agentType" />
       </div>
       <CreateAgentTypeForm />
       <button @click="loadAgentTypesModal">load agent type</button>
@@ -156,7 +157,8 @@ import AnimationSetForm from '@/components/AnimationSetForm.vue'
 import MenuAnimationSet from '@/components/MenuAnimationSet.vue'
 import CreateAgentPropertyForm from '@/components/CreateAgentPropertyForm.vue'
 import MenuAgentInitialProperty from '@/components/MenuAgentInitialProperty.vue'
-import ModalLoadObject from './components/ModalLoadObject.vue'
+import ModalLoadObject from '@/components/ModalLoadObject.vue'
+import AgentTypeFirstActionMenu from '@/components/AgentTypeFirstActionMenu.vue'
 
 
 let canvas;
@@ -183,7 +185,8 @@ export default {
     AnimationSetForm,
     CreateAgentPropertyForm,
     MenuAgentInitialProperty,
-    ModalLoadObject
+    ModalLoadObject,
+    AgentTypeFirstActionMenu
   },
   setup() {
     const store = useStore()
@@ -248,9 +251,9 @@ export default {
 
       })
 
-      store.propertyChanges = [...store.sceneData.propertyChanges]
-
+      store.firstActions = {...store.sceneData.firstActions}
       store.agentProperties = [...store.sceneData.agentProperties]
+      store.propertyChanges = [...store.sceneData.propertyChanges]
 
       // set initial properties, for each agent, of each agent type, for each property
       store.agentProperties.forEach(property => {
@@ -298,8 +301,6 @@ export default {
 
     const createScene = async (sceneName) => {
       const newScene = await api.createScene({ name: sceneName })
-      console.log("NEW SCENE")
-      console.log(newScene)
       loadScene(newScene)
     }
 
@@ -622,17 +623,17 @@ export default {
     }
 
     const playScene = () => {
-      // animate()
       // eslint-disable-next-line
-      Object.entries(store.agentTypes).forEach(([name, agentType]) => {
-        if (agentType.firstAction) {
-          const action = store.actions.find(a => a.id === agentType.firstAction)
+      Object.keys(store.agentTypes).forEach(atName => {
+        const firstActionId = store.firstActions[atName]
+        if (firstActionId) {
+          const action = store.actions.find(a => a.id === firstActionId)
 
           if (action === undefined) {
             throw "Play scene: Can't find action"
           }
 
-          store.agentItems[agentType.name].forEach(agent => {
+          store.agentItems[atName].forEach(agent => {
             cloneActionForAgent(action, agent)
           })
         }
@@ -884,6 +885,12 @@ input,select,button {
 
 .selection-mode-button {
   cursor: pointer;
+}
+
+.agent-type-menu-container {
+  padding-bottom: 12px;
+  margin-bottom: 12px;
+  border-bottom: 1px solid #e8b9ad;
 }
 
 .canvas-agent-label {

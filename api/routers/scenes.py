@@ -1,21 +1,10 @@
 
 import json
-import os
 
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Request, HTTPException, status
 
 from mongo_client import MongoCRUDClient
 from schemas import Scene
-from utils import transform_doc_id
-
-import json
-from typing import List
-
-from fastapi import APIRouter, Body, Request, Response, HTTPException, status
-from fastapi.encoders import jsonable_encoder
-from mongo_client import MongoCRUDClient
-
-from schemas import AgentType
 from utils import transform_doc_id
 
 
@@ -44,7 +33,8 @@ async def get_scene_data(scene_id):
             "animationSets": [],
             "actions": [],
             "agentProperties": [],
-            "propertyChanges": []
+            "propertyChanges": [],
+            "firstActions": scene["data"]["firstActions"]
         },
         "createdAt": scene["createdAt"],
         "lastModified": scene["lastModified"],
@@ -118,7 +108,8 @@ async def create_scene(request: Request):
             "animationSets": [],
             "actions": [],
             "agentProperties": [],
-            "propertyChanges": []
+            "propertyChanges": [],
+            "firstActions": {}
         },
         "resource": "scene"
     }
@@ -128,12 +119,11 @@ async def create_scene(request: Request):
 
 
 @router.put("/scene/{id}", response_model=Scene)
-async def update_agent_type(id: str, request: Request):
+async def update_scene(id: str, request: Request):
 
     scene = json.loads(await request.body())
-    scene_id = scene["id"]
 
-    # agent_type = {k: v for k, v in agent_type_data.dict().items() if v is not None}
+    scene_id = scene["id"]
 
     if len(scene) >= 1:
         mongo_client = MongoCRUDClient()
@@ -147,4 +137,3 @@ async def update_agent_type(id: str, request: Request):
         return item
 
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Scene with ID {id} not found")
-
