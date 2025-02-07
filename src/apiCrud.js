@@ -43,6 +43,9 @@ export default {
   getAgentType (id) {
     return baseApiClient.getItem('agentType', id)
   },
+  listAgentTypes () {
+    return baseApiClient.listItems('agentTypes')
+  },
   updateAgentType (data) {
     return baseApiClient.updateItem('agentType', data)
   },

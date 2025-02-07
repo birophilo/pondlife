@@ -20,8 +20,10 @@
           :value="action.id">{{ action.actionName }}
         </option>
       </select><br />
-      <button @click="createAgentType()">create agent type</button>
+      <button @click="createAgentType">new agent type</button>
       <button @click="isAdding = false">cancel</button>
+      <br />
+      <button @click="loadAgentType">load agent type</button>
     </div>
     <div v-else><button @click="isAdding = true">new agent type</button></div>
   </div>

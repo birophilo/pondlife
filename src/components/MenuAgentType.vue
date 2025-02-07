@@ -28,6 +28,7 @@
       <div v-else>
         {{ agentType.name }}
         <button @click="editItem">edit</button>
+        <button @click="removeFromMenu(agentType)">remove from menu</button>
         <button @click="deleteItem">delete</button>
       </div>
     </div>
@@ -120,6 +121,23 @@ export default {
       itemForm.value.thumbnail = fileName
     }
 
+    const removeFromMenu = async () => {
+
+      const atName = props.agentType.name
+      store.agentItems[atName].forEach((agent, i) => deleteAgent(agent, store.agentItems[atName], i))
+
+      delete store.agentTypes[atName]
+      delete store.agentItems[atName]
+      store.agentMenuButtons = store.agentMenuButtons.filter(button => button.name !== atName)
+      await store.saveScene()
+    }
+
+    const deleteAgent = async (agent, agentItems, i) => {
+      agent.labelElement.remove()
+      await api.deleteAgent(agent.id)
+      agentItems.splice(i, 1)
+    }
+
     return {
       store,
       isEditing,
@@ -129,7 +147,8 @@ export default {
       deleteItem,
       cancelEdit,
       populateItemForm,
-      updateThumbnailFileInput
+      updateThumbnailFileInput,
+      removeFromMenu
     }
   }
 }

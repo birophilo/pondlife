@@ -63,7 +63,8 @@ export const useStore = defineStore({
 
     api: apiCrud,
 
-    displaySceneMenu: true
+    displaySceneMenu: true,
+    displayLoadObjectModal: false
 
   }),
   actions: {
@@ -100,17 +101,17 @@ export const useStore = defineStore({
       this.agentTypes = {}
       this.agentMenuButtons = []
     },
+
     async saveScene () {
-
-
       const data = {
-        conditions: this.conditions.map(i => i.id),
         agentTypes: [],
+        agentInstances: [],
+        conditions: this.conditions.map(i => i.id),
         actions: this.actions.map(i => i.id),
         agentProperties: this.agentProperties.map(i => i.id),
         spritesheets: this.spriteSheets.map(i => i.id),
         animationSets: this.animationSets.map(i => i.id),
-        agentInstances: []
+        propertyChanges: this.propertyChanges.map(i => i.id)
       }
 
       // eslint-disable-next-line

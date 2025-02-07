@@ -5,6 +5,10 @@
     <SceneMenu @load-scene="loadScene" @create-new-scene="createScene" />
   </div>
 
+  <div v-show="store.displayLoadObjectModal" class="load-object-modal">
+    <ModalLoadObject :agentTypeList="agentTypeList" />
+  </div>
+
   <div class="canvas-container">
 
     <canvas></canvas>
@@ -56,6 +60,7 @@
         <MenuAgentType :agentType="agentType" />
       </div>
       <CreateAgentTypeForm />
+      <button @click="loadAgentTypesModal">load agent type</button>
     </details>
 
     <details class="menu-section" id="sprite-sheets-section">
@@ -151,6 +156,7 @@ import AnimationSetForm from '@/components/AnimationSetForm.vue'
 import MenuAnimationSet from '@/components/MenuAnimationSet.vue'
 import CreateAgentPropertyForm from '@/components/CreateAgentPropertyForm.vue'
 import MenuAgentInitialProperty from '@/components/MenuAgentInitialProperty.vue'
+import ModalLoadObject from './components/ModalLoadObject.vue'
 
 
 let canvas;
@@ -176,7 +182,8 @@ export default {
     MenuAnimationSet,
     AnimationSetForm,
     CreateAgentPropertyForm,
-    MenuAgentInitialProperty
+    MenuAgentInitialProperty,
+    ModalLoadObject
   },
   setup() {
     const store = useStore()
@@ -500,6 +507,7 @@ export default {
       agent.labelElement.remove()
       await api.deleteAgent(agent.id)
       agentItems.splice(i, 1)
+      await store.saveScene()
     }
 
     const setDynamicActionTargetAgents = (action, agent, lastAction) => {
@@ -588,6 +596,7 @@ export default {
       const newItem = await api.createAgent({agentType: agentTypeName, position: position})
       newAgent.id = newItem.id
       agentItems.push(newAgent)
+      await store.saveScene()
     }
 
     const endDay = () => {
@@ -628,6 +637,13 @@ export default {
           })
         }
       })
+    }
+
+    let agentTypeList = ref([])
+
+    const loadAgentTypesModal = async () => {
+      store.displayLoadObjectModal = true
+      agentTypeList.value = await api.listAgentTypes()
     }
 
     onMounted(() => {
@@ -732,7 +748,9 @@ export default {
       cloneActionForSelectedAgent,
       saveScene,
       playScene,
-      sceneName
+      sceneName,
+      loadAgentTypesModal,
+      agentTypeList
     }
   },
 
@@ -776,6 +794,17 @@ body {
   left: 0px;
   height: 100%;
   width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #efeee8;;
+}
+
+.load-object-modal {
+  position: absolute;
+  z-index: 2;
+  height: 70%;
+  width: 70%;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -861,7 +890,7 @@ input,select,button {
   position: absolute;
   font-size: 11px;
   color: black;
-  z-index: 5;
+  z-index: 1;
   font-family: 'Helvetica';
   font-weight: 400;
 }

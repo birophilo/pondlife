@@ -62,22 +62,22 @@ async def get_scene_data(scene_id):
 
     payload["data"]["agentInstances"] = agent_instances
 
-    conditions = mongo_client.list_documents("conditions")  # return all items for now
+    conditions = mongo_client.get_documents_from_ids("conditions", scene_data["conditions"])
     payload["data"]["conditions"] = conditions
 
-    agent_types = mongo_client.list_documents("agent_types")  # return all items for now
+    agent_types = mongo_client.get_documents_from_ids("agent_types", scene_data["agentTypes"])
     payload["data"]["agentTypes"] = agent_types
 
-    spritesheets = mongo_client.list_documents("spritesheets")  # return all items for now
+    spritesheets = mongo_client.get_documents_from_ids("spritesheets", scene_data["spritesheets"])
     payload["data"]["spritesheets"] = spritesheets
 
-    animation_sets = mongo_client.list_documents("animation_sets")  # return all items for now
+    animation_sets = mongo_client.get_documents_from_ids("animation_sets", scene_data["animationSets"])
     payload["data"]["animationSets"] = animation_sets
 
-    actions = mongo_client.list_documents("actions")  # return all items for now
+    actions = mongo_client.get_documents_from_ids("actions", scene_data["actions"])
     payload["data"]["actions"] = actions
 
-    property_changes = mongo_client.list_documents("property_changes")  # return all items for now
+    property_changes = mongo_client.get_documents_from_ids("property_changes", scene_data["propertyChanges"])
     payload["data"]["propertyChanges"] = property_changes
 
     agent_properties = mongo_client.get_documents_from_ids("agent_properties", scene_data["agentProperties"])
