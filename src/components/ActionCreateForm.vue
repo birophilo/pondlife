@@ -297,6 +297,8 @@ export default {
 
       store.actions.push(newAction)
 
+      await store.saveScene()
+
       resetForm()
     }
 

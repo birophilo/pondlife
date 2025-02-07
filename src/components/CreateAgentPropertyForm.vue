@@ -105,6 +105,9 @@ export default {
       const createdItem = await api.createInitialAgentProperty(agentProperty)
       agentProperty.id = createdItem.id
       store.agentProperties.push(agentProperty)
+
+      await store.saveScene()
+
       isAdding.value = false
     }
 

@@ -113,6 +113,9 @@ export default {
       newCondition.id = createdItem.id
       newCondition.agent = store.selectedAgent
       store.conditions.push(newCondition)
+
+      await store.saveScene()
+
       resetConditionForms()
     }
 

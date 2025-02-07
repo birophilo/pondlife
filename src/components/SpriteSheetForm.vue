@@ -49,6 +49,8 @@ export default {
       newSpriteSheet.id = createdItem.id
       store.spriteSheets.push(newSpriteSheet)
 
+      await store.saveScene()
+
       isAdding.value = false
 
       itemForm.value = {

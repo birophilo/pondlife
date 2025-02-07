@@ -59,7 +59,7 @@ export default {
       }
     })
 
-    const createItem = () => {
+    const createItem = async () => {
       const newAnimationSet = {
         name: itemForm.value.name,
         scale: Number(itemForm.value.scale),
@@ -74,9 +74,11 @@ export default {
       sheetNames.forEach(sheetName => {
         newAnimationSet.sheets[sheetName] = newAnimationSet.sheets[sheetName].id
       })
-      const createdItem = api.createAnimationSet(newAnimationSet)
+      const createdItem = await api.createAnimationSet(newAnimationSet)
       newAnimationSet.id = createdItem.id
       store.animationSets.push(newAnimationSet)
+
+      await store.saveScene()
 
       isAdding.value = false
 

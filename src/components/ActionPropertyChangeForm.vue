@@ -111,6 +111,9 @@ export default {
       propChange.id = newItem.id
       act.propertyChanges.push(newItem.id)
       store.propertyChanges.push(propChange)
+
+      await store.saveScene()
+
       isAdding.value = false
     }
 

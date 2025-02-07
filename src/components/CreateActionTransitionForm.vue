@@ -41,14 +41,14 @@ export default {
       nextAction: null
     })
 
-    const createTransition = (action) => {
+    const createTransition = async (action) => {
       const transition = {
         condition: itemForm.value.condition.id,
         nextAction: itemForm.value.nextAction.id
       }
       action.transitions.push(transition)
 
-      api.updateAction(action)
+      await api.updateAction(action)
 
       itemForm.value.condition = null
       itemForm.value.nextAction = null

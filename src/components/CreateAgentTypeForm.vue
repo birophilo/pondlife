@@ -72,6 +72,8 @@ export default {
       store.agentItems[agentTypeName] = []
       store.firstActions[agentTypeName] = null
 
+      await store.saveScene()
+
       let newIcon = new AgentMenuIcon({
         menu: store.itemMenu,
         i: store.agentMenuButtons.length + 1,
