@@ -14,14 +14,6 @@
         <br />
         thumbnail: {{ itemForm.thumbnail }}<br />
         <input type="file" placeholder="thumbnail" @change="updateThumbnailFileInput($event)" /><br />
-        first action:
-        <select v-model="itemForm.firstAction">
-          <option :value="null">-- select action --</option>
-          <option
-            v-for="action in store.actions"
-            :value="action.id">{{ action.actionName }}
-          </option>
-        </select><br />
         <button @click="saveItem(itemForm.name)">save</button>
         <button @click="cancelEdit">cancel</button>
       </div>
@@ -58,8 +50,7 @@ export default {
       thumbnail: props.agentType.thumbnail,
       nominalSpeed: props.agentType.nominalSpeed,
       positionX: 100,
-      positionY: 100,
-      firstAction: props.agentType.firstAction
+      positionY: 100
     }
 
     const itemForm = ref(itemFormData)
@@ -97,8 +88,7 @@ export default {
         thumbnail: props.agentType.thumbnail,
         nominalSpeed: props.agentType.nominalSpeed,
         positionX: props.agentType.offset.x,
-        positionY: props.agentType.offset.y,
-        firstAction: props.agentType.firstAction
+        positionY: props.agentType.offset.y
       }
     }
 
@@ -115,8 +105,7 @@ export default {
         offset: {
           x: itemForm.value.positionX,
           y: itemForm.value.positionY
-        },
-        firstAction: itemForm.value.firstAction
+        }
       }
 
       api.updateAgentType(data)

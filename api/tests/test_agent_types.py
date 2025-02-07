@@ -10,8 +10,7 @@ agent_type_1_post = {
   "nominalSpeed": 0.02,
   "previewImage": "/img/thumbnails/customer-thumbnail.png",
   "animationSet": None,
-  "thumbnail": "/img/thumbnails/customer-thumbnail.png",
-  "firstAction": "6786bb121bb0aa405c674e51"
+  "thumbnail": "/img/thumbnails/customer-thumbnail.png"
 }
 
 
@@ -24,8 +23,7 @@ agent_type_1_response = {
   "nominalSpeed": 0.02,
   "previewImage": "/img/thumbnails/customer-thumbnail.png",
   "animationSet": None,
-  "thumbnail": "/img/thumbnails/customer-thumbnail.png",
-  "firstAction": "6786bb121bb0aa405c674e51"
+  "thumbnail": "/img/thumbnails/customer-thumbnail.png"
 }
 
 

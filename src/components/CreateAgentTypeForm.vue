@@ -12,14 +12,6 @@
       </select><br />
       thumbnail: {{ itemForm.thumbnail }}<br />
       <input type="file" placeholder="thumbnail" @change="updateThumbnailFileInput($event)" /><br />
-      first action:
-      <select v-model="itemForm.firstAction">
-        <option value="">-- select action --</option>
-        <option
-          v-for="action in store.actions"
-          :value="action.id">{{ action.actionName }}
-        </option>
-      </select><br />
       <button @click="createAgentType">new agent type</button>
       <button @click="isAdding = false">cancel</button>
       <br />
@@ -51,8 +43,7 @@ export default {
       thumbnail: '',
       nominalSpeed: 0.02,
       positionX: 100,
-      positionY: 100,
-      firstAction: ''
+      positionY: 100
     })
 
     const createAgentType = async () => {
@@ -71,8 +62,7 @@ export default {
         nominalSpeed: Number(itemForm.value.nominalSpeed),
         previewImage: '/img/sprites/GirlSample_Walk_Down.png',
         animationSet: itemForm.value.animationSet,
-        thumbnail: itemForm.value.thumbnail,
-        firstAction: itemForm.value.firstAction
+        thumbnail: itemForm.value.thumbnail
       }
 
       const createdItem = await api.createAgentType(newAgentType)
