@@ -130,12 +130,17 @@ export default {
       itemForm.value.agentTypes = selectedAgentTypes
     }
 
+    const cancelCreate = () => {
+      isAdding.value = false
+    }
+
     return {
       store,
       isAdding,
       itemForm,
       applyToChoices,
       valueTypeChoices,
+      cancelCreate,
       handleAgentTypesCheckbox,
       createInitialAgentProperty
     }

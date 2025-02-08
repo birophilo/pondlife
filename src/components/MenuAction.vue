@@ -38,7 +38,35 @@
         </select>
 
         <div v-if="itemForm.destinationType === 'point'">
-          <div>Select point:
+
+          <form name="pointRadioSelect">
+            <input
+              @click="handleDefinedPointClick"
+              type="radio"
+              v-model="itemForm.pointType"
+              name="pointType"
+              value="defined"
+              checked="true"
+            />
+            <label for="defined">defined</label>
+            <input
+              type="radio"
+              v-model="itemForm.pointType"
+              name="pointType"
+              value="custom"
+            />
+            <label for="custom">custom</label>
+          </form>
+
+          <div v-if="itemForm.pointType === 'defined'">
+            <select v-model="itemForm.definedPoint">
+              <option value="">--- select point ---</option>
+              <option value="spawnPoint">agent spawn point</option>
+            </select>
+          </div>
+
+          <div v-if="itemForm.pointType === 'custom'">
+            Select point:
             <button
               class="selection-mode-button"
               @click="store.selectionMode = !store.selectionMode"
@@ -87,7 +115,7 @@
               name="agentChoiceMethod"
               value="specific"
             />
-            <label for="nearest">specific</label>
+            <label for="specific">specific</label>
           </form>
 
           <div v-if="itemForm.agentChoiceMethod === 'specific'">
@@ -204,7 +232,9 @@ export default {
         transitions: props.action.transitions,
         duration: props.action.duration,
         target: props.action.target,
-        spriteSheet: props.action.spriteSheet
+        spriteSheet: props.action.spriteSheet,
+        pointType: props.action.pointType,
+        definedPoint: props.action.definedPoint
       }
 
       if (props.action.actionType === 'spawnAgent') {
@@ -237,10 +267,20 @@ export default {
       if (props.action.actionType === 'spawnAgent') {
         act.position = {x: Number(store.selectedPoint.x), y: Number(store.selectedPoint.y)}
       } else if (props.action.actionType === 'goTo') {
-        act.target.position = {x: Number(store.selectedPoint.x), y: Number(store.selectedPoint.y)}
+        // act.target.position = {x: Number(store.selectedPoint.x), y: Number(store.selectedPoint.y)}
+        if (itemForm.value.pointType === 'custom') {
+          act.pointType = itemForm.value.pointType
+          act.target.position = {x: Number(store.selectedPoint.x), y: Number(store.selectedPoint.y)}
+        } else if (itemForm.value.pointType === 'defined') {
+          act.pointType = itemForm.value.pointType
+          act.definedPoint = itemForm.value.definedPoint
+        }
       } else if (props.action.actionType === 'interval') {
         act.spriteSheet = itemForm.value.spriteSheet
       }
+
+      if (act.pointType !== 'defined') {delete act.definedPoint}
+
       store.selectedPoint = {x: null, y: null}
 
       api.updateAction(act)
@@ -260,6 +300,10 @@ export default {
       store.selectedPoint = {x: null, y: null}
       isEditing.value = false
       itemForm.value = {}
+    }
+
+    const handleDefinedPointClick = () => {
+      itemForm.value.definedPoint = ''
     }
 
     const targetPointX = computed(() => {
@@ -290,7 +334,8 @@ export default {
       targetPointX,
       targetPointY,
       positionPointX,
-      positionPointY
+      positionPointY,
+      handleDefinedPointClick
     }
   }
 }

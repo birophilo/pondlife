@@ -30,6 +30,11 @@ export function createActionGoTo (agent = null, data) {
   }
   if (data.destinationType === 'point') {
     item.destination = data.target
+    item.pointType = data.pointType
+
+    if (item.pointType === 'defined') {
+      item.definedPoint = data.definedPoint
+    }
   }
   return item
 }
@@ -109,6 +114,11 @@ export class ActionGoToHandler extends ActionHandler {
   // eslint-disable-next-line
   start(item, globals) {
 
+    if (item.target.name === 'spawnPoint') {
+      item.target = item.agent.spawnPoint
+    } else {
+      item.destination = item.target
+    }
     item.destination = item.target
     item.agent.destination = item.target
 

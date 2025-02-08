@@ -47,8 +47,6 @@ async def update_action(id: str, request: Request):
     action = json.loads(await request.body())
     action_id = action["id"]
 
-    # action = {k: v for k, v in action_data.dict().items() if v is not None}
-
     if len(action) >= 1:
         mongo_client = MongoCRUDClient()
         update_result = mongo_client.update_document("actions", action)

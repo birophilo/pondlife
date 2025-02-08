@@ -90,10 +90,5 @@ class MongoCRUDClient:
     def update_document(self, collection: str, item):
         object_id = ObjectId(item["id"])
         item.pop("id", None)
-        update_result = self.db[collection].update_one(
-            {"_id": object_id},
-            {"$set": item}
-        )
-        print("UPDATED RESULT")
-        print(update_result)
+        update_result = self.db[collection].replace_one({"_id": object_id}, item)
         return update_result

@@ -22,14 +22,14 @@
             :value="true"
             type="radio"
           />
-          <label for="">true</label>
+          <label :for="true">true</label>
           <input
             v-model="itemForm.initialValue"
             name="itemBooleanValue"
             :value="false"
             type="radio"
           />
-          <label for="nearest">false</label>
+          <label :for="false">false</label>
         </div>
       </div>
       <div v-else-if="itemForm.valueType === 'int'">

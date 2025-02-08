@@ -51,7 +51,7 @@
             name="agentChoiceMethod"
             value="specific"
           />
-          <label for="nearest">specific</label>
+          <label for="specific">specific</label>
         </form>
         <button
           class="selection-mode-button"
@@ -74,13 +74,40 @@
       </div>
 
       <div v-if="itemForm.destinationType === 'point'">
-        <div>Select point:
+
+        <form name="pointRadioSelect">
+          <input
+            type="radio"
+            v-model="itemForm.pointType"
+            name="pointType"
+            value="defined"
+            checked="true"
+          />
+          <label for="defined">defined</label>
+          <input
+            type="radio"
+            v-model="itemForm.pointType"
+            name="pointType"
+            value="custom"
+          />
+          <label for="custom">custom</label>
+        </form>
+
+        <div v-if="itemForm.pointType === 'defined'">
+          <select v-model="itemForm.definedPoint">
+            <option value="">--- select point ---</option>
+            <option value="spawnPoint">agent spawn point</option>
+          </select>
+        </div>
+
+        <div v-if="itemForm.pointType === 'custom'">click to enable cursor select:
           <button
             class="selection-mode-button"
             @click="store.selectionMode = !store.selectionMode"
             :style="{backgroundColor: store.selectionMode ? 'grey' : 'white'}"
           >x</button>
-          <br />
+        </div>
+        <div v-if="itemForm.pointType === 'custom'">
           x:
           <input
             v-model="store.selectedPoint.x"
@@ -242,12 +269,16 @@ export default {
       target: {},
       duration: 0,
       destinationType: '',
+      // 'defined' for named points; 'custom' for nominal user-selected XY point
+      pointType: 'custom',
+      // can have multiple defined named XY positions here, but only 'spawnPoint' for now
+      definedPoint: '',
       spriteSheet: '',
       propertyChanges: []
     })
 
     const forms = ref({
-      goTo: ['destinationType', 'agentType', 'agentChoiceMethod', 'target'],
+      goTo: ['destinationType', 'agentType', 'agentChoiceMethod', 'target', 'pointType', 'definedPoint'],
       change: ['propertyChanges'],
       interval: ['duration', 'spriteSheet'],
       spawnAgent: ['agentType', 'target'],
@@ -270,16 +301,20 @@ export default {
 
       if (actionType === 'goTo') {
         if (itemForm.value.destinationType === 'point') {
-          const pointX = Number(store.selectedPoint.x)
-          const pointY = Number(store.selectedPoint.y)
-          data.target = {
-            name: `point: {x: ${pointX}, y: ${pointY}}`,
-            width: 10,
-            height: 10,
-            position: {x: pointX, y: pointY}
+          if (itemForm.value.pointType === 'custom') {
+            const pointX = Number(store.selectedPoint.x)
+            const pointY = Number(store.selectedPoint.y)
+            data.target = {
+              name: `point: {x: ${pointX}, y: ${pointY}}`,
+              width: 10,
+              height: 10,
+              position: {x: pointX, y: pointY}
+            }
+          } else if (itemForm.value.pointType === 'defined' && itemForm.value.definedPoint === 'spawnPoint') {
+            itemForm.value.pointType = 'defined'
+            data.target = {name: 'spawnPoint'}
           }
         }
-        if (itemForm.value.target === 'home') data.destination = store.selectedAgent.home
       }
 
       if (actionType === 'spawnAgent') {
@@ -308,6 +343,7 @@ export default {
       itemForm.value.actionType = DEFAULT_ACTION_TYPE
       itemForm.value.target = {}
       itemForm.value.spriteSheet = ''
+      itemForm.value.pointType = 'custom'
     }
 
     const cancelAddAction = () => {

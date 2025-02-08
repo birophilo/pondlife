@@ -50,14 +50,13 @@ export function createAgentObject (
   }
 
   item.center = {...position}
-  item.homePosition = {...position}
+  item.spawnPointPosition = {...position}
 
-  item.home = {
+  item.spawnPoint = {
     position: {...position},
     width: 80,
     height: 80,
-    name: 'home',
-    id: 1
+    name: 'spawn point'
   }
 
   item.labelElement = document.createElement('div')
