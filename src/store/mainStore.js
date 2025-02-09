@@ -90,6 +90,8 @@ export const useStore = defineStore({
         this.sceneData = data.data
         this.sceneId = data.id
         this.sceneName = data.name
+        this.createdAt = data.createdAt
+        this.lastModified = data.lastModified
       } catch (error) {
         this.error = error.message
       }
@@ -131,7 +133,10 @@ export const useStore = defineStore({
       const payload = {
         id: this.sceneId,
         name: this.sceneName,
-        data: data
+        data: data,
+        createdAt: this.createdAt,
+        lastModified: this.lastModified,
+        resource: 'scene'
       }
 
       try {

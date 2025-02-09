@@ -90,8 +90,6 @@ export class SpriteHandler {
   useSpriteSheet(spriteSheetName, item) {
     if (item.animationSet !== null) {
       const spriteSheet = item.animationSet.sheets[spriteSheetName]
-      console.log("USE SPRITESHEET")
-      console.log(spriteSheet.name)
       item.image.src = spriteSheet.src
 
       item.frames = {

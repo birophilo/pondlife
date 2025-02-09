@@ -13,7 +13,7 @@
             <option v-for="spriteSheet in store.spriteSheets" :value="spriteSheet">{{ spriteSheet.name }}</option>
           </select>
           <br />
-          <img :src="itemForm.sheets[directionName].src" width="70" height="70"/>
+          <img :src="itemForm.sheets[directionName]?.src" width="70" height="70"/>
         </td>
       </tr>
     </table>
@@ -47,7 +47,6 @@ export default {
 
     const saveItem = () => {
       isEditing.value = false
-      const keys = Object.keys(props.animationSet)
       const payload = {...itemForm.value}
       // replace Spritesheet objects with just IDs for payload
       const sheetNames = Object.keys(payload.sheets)
@@ -55,7 +54,6 @@ export default {
         payload.sheets[sheetName] = payload.sheets[sheetName].id
       })
       api.updateAnimationSet(payload)
-      keys.forEach(key => store.animationSets[props.i][key] = itemForm.value[key])
     }
 
     const deleteItem = (index) => {

@@ -12,10 +12,9 @@
       </select><br />
       thumbnail: {{ itemForm.thumbnail }}<br />
       <input type="file" placeholder="thumbnail" @change="updateThumbnailFileInput($event)" /><br />
-      <button @click="createAgentType">new agent type</button>
+      <button @click="createAgentType">save agent type</button>
       <button @click="isAdding = false">cancel</button>
       <br />
-      <button @click="loadAgentType">load agent type</button>
     </div>
     <div v-else><button @click="isAdding = true">new agent type</button></div>
   </div>
