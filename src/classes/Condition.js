@@ -5,6 +5,10 @@ function isGreaterThan(comparisonValue, refValue) {
   return comparisonValue > refValue
 }
 
+function isLessThan(comparisonValue, refValue) {
+  return comparisonValue < refValue
+}
+
 
 function isIdentical(comparisonValue, refValue) {
   return comparisonValue === refValue
@@ -13,6 +17,7 @@ function isIdentical(comparisonValue, refValue) {
 
 const COMPARISONS = {
   isGreaterThan: isGreaterThan,
+  isLessThan: isLessThan,
   isIdentical: isIdentical
 }
 

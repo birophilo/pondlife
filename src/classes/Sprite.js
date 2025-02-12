@@ -4,7 +4,6 @@ export function createSpriteObject (
   animationSet = null,
   // defaultSpriteSheet = 'idle'
 ) {
-
   const item = {
     position: position,
     image: new Image(),
@@ -59,17 +58,22 @@ export class SpriteHandler {
       height: cropHeight
     }
 
-    c.drawImage(
-      item.image,
-      crop.position.x + offset.x,
-      crop.position.y + offset.y,
-      crop.width, // image width
-      crop.height, // image height
-      item.position.x,
-      item.position.y,
-      crop.width * scale,  // image crop width
-      crop.height * scale  // image crop height
-    )
+    try {
+      c.drawImage(
+        item.image,
+        crop.position.x + offset.x,
+        crop.position.y + offset.y,
+        crop.width, // image width
+        crop.height, // image height
+        item.position.x,
+        item.position.y,
+        crop.width * scale,  // image crop width
+        crop.height * scale  // image crop height
+      )
+    } catch(error) {
+      console.log(error)
+    }
+
   }
 
   update(globals, item) {

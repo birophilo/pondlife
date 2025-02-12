@@ -17,7 +17,7 @@
         id="action-change-property-name"
       >
         <option value="">-- select property --</option>
-        <option value="money">money</option>
+        <option v-for="property in store.agentProperties" :value="property.name">{{ property.name }}</option>
       </select>
       <select v-model="itemForm.forms.property.comparison" value="isGreaterThan">
         <option value="">-- select comparison --</option>

@@ -526,7 +526,7 @@ export default {
         const agentTypeName = action.agentType.name
         const agentItems = store.agentItems[agentTypeName]
         if (agentItems.length === 0) {
-          console.log(`No ${agentTypeName} exist - cannot choose nearest.`)
+          console.log(`No ${agentTypeName} exists - cannot choose nearest.`)
           agentHandler.idle(agent)
           return false
         }
@@ -568,7 +568,7 @@ export default {
 
         else if (action.agentType !== 'self') {
           if (action.agentChoiceMethod === 'nearest') {
-            const agentTypeName = action.agentType
+            const agentTypeName = action.agentType.name
             const targetAgents = store.agentItems[agentTypeName]
             const targetAgent = agentHandler.getClosestAgent(agent, targetAgents)
             action.target = targetAgent
