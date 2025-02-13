@@ -18,7 +18,15 @@
     </div>
 
     <div class="scene-button-container">
-      <button @click="playScene">play scene</button>
+      <span v-if="store.sceneIsPlaying">
+        <button @click="pauseScene">pause scene</button>
+      </span>
+      <span v-else-if="store.sceneIsPaused">
+        <button @click="unPauseScene">unpause scene</button>
+      </span>
+      <span v-else>
+        <button @click="playScene">play scene</button>
+      </span>
       <button @click="saveScene">save scene</button>
       <button @click="showSceneMenu">scene menu</button>
     </div>
@@ -242,10 +250,11 @@ export default {
               i + 1,  // num
               store.GlobalSettings, // globals
             )
-            const handler = new AgentHandler()
-            handler.useSpriteSheet('idle', newAgent)
 
             store.agentItems[agentTypeName].push(newAgent)
+
+            const handler = new AgentHandler()
+            handler.useSpriteSheet('idle', newAgent)
           })
         }
 
@@ -350,12 +359,19 @@ export default {
 
     const animate = () => {
 
+      let animationId
+
+      if (store.sceneIsPaused === true) {
+        animationId = requestAnimationFrame(() => console.log("PAUSED"))
+      } else {
+        animationId = requestAnimationFrame(animate)
+      }
+
       store.hover = null
 
       c.fillStyle = backgroundColor
       c.fillRect(0, 0, canvas.width, canvas.height)
 
-      const animationId = requestAnimationFrame(animate)
       store.GlobalSettings.animationFrameId = animationId
 
       const agentTypeNames = Object.keys(store.agentItems)
@@ -488,17 +504,11 @@ export default {
         if (isInArea) {
           store.selectedAgent = agent
           store.hover = true
-
-          if (store.selectionMode === true) {
-            store.selectedTargetAgent = agent
-            // to fix/update
-            // actionsSection.adding.forms.goTo.target = store.selectedTargetAgent
-          }
+          if (store.selectionMode === true) store.selectedTargetAgent = agent
         }
         // DELETE AGENT (in delete mode)
         if (isInArea && store.deleteMode === true) {
           const agent = agentItems[i]
-
           deleteAgent(agent, agentItems, i)
         }
       })
@@ -570,7 +580,11 @@ export default {
           if (action.agentChoiceMethod === 'nearest') {
             const agentTypeName = action.agentType.name
             const targetAgents = store.agentItems[agentTypeName]
+            // console.log(`POSITION IS x: ${agent.position.x}, y: ${agent.position.y}`)
+            // console.log("FINDING NEAREST TO REMOVE")
+            // targetAgents.forEach(ag => console.log(`${ag.name} x: ${ag.position.x}, y: ${ag.position.y}`))
             const targetAgent = agentHandler.getClosestAgent(agent, targetAgents)
+            // console.log(`CHOSE: ${targetAgent.name} x: ${targetAgent.position.x}, y: ${targetAgent.position.y}`)
             action.target = targetAgent
           } else if (action.agentChoiceMethod === 'all') {
             const agentTypeName = action.agentType.name
@@ -623,6 +637,10 @@ export default {
     }
 
     const playScene = () => {
+
+      store.sceneIsPlaying = true
+      store.sceneIsPaused = false
+
       // eslint-disable-next-line
       Object.keys(store.agentTypes).forEach(atName => {
         const firstActionId = store.firstActions[atName]
@@ -638,6 +656,17 @@ export default {
           })
         }
       })
+    }
+
+    const unPauseScene = () => {
+      store.sceneIsPlaying = true
+      store.sceneIsPaused = false
+      requestAnimationFrame(animate)
+    }
+
+    const pauseScene = () => {
+      store.sceneIsPlaying = false
+      store.sceneIsPaused = true
     }
 
     let agentTypeList = ref([])
@@ -668,7 +697,7 @@ export default {
       canvas.addEventListener('click', (event) => {
         const point = {x: event.x, y: event.y}
 
-        // PLACE NEW AGENT ON
+        // PLACE NEW AGENT ON BOARD
         if (store.placingAgent) {
           const isInMenuArea = pointIsInArea(point, store.itemMenu.area)
 
@@ -729,6 +758,7 @@ export default {
 
       })
 
+      // cancel agent placement mode with Escape button
       document.addEventListener('keydown', (e) => {
         if (e.code === 'Escape' && store.placingAgent === true) {
           store.placingAgent = false
@@ -749,6 +779,8 @@ export default {
       cloneActionForSelectedAgent,
       saveScene,
       playScene,
+      pauseScene,
+      unPauseScene,
       sceneName,
       loadAgentTypesModal,
       agentTypeList

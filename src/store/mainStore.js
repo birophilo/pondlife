@@ -13,6 +13,9 @@ export const useStore = defineStore({
       animationFrameId: 1
     },
 
+    sceneIsPlaying: false,
+    sceneIsPaused: false,
+
     dayNumber: 1,
     // agent detail to display in UI
     selectedAgent: null,
