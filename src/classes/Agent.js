@@ -181,11 +181,20 @@ export class AgentHandler extends SpriteHandler {
     let closestDistance = this.getDistanceToAgent(agent, targetAgents[0])
     let closestAgent = targetAgents[0]
     for (let i = 1; i < targetAgents.length; i++) {
-      if (this.getDistanceToAgent(agent, targetAgents[i]) < closestDistance) {
+      const distance = this.getDistanceToAgent(agent, targetAgents[i])
+      if (distance < closestDistance) {
         closestAgent = targetAgents[i]
+        closestDistance = distance
       }
     }
     return closestAgent
+  }
+
+  getClosestAgentViaMap(agent, agentList) {
+    const distances = agentList.map(ag => this.getDistanceToAgent(agent, ag))
+    const closest = Math.min(...distances)
+    const index = distances.indexOf(closest)
+    return agentList[index]
   }
 
   setProperty(property, value, item) {

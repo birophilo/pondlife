@@ -161,6 +161,66 @@
       </div>
     </div>
 
+    <div v-if="itemForm.actionType === 'removeAgent'">
+
+      <div v-if="isEditing === true">
+
+        <select v-model="itemForm.agentType">
+          <option value="">-- agent type --</option>
+          <option value="self">self</option>
+          <option value="currentTarget">current target</option>
+          <option
+              v-for="[agentType, obj] in Object.entries(store.agentTypes)"
+              :value="obj">{{ agentType }}
+          </option>
+        </select>
+
+        <form name="agentRadioSelect">
+          <input
+            type="radio"
+            v-model="itemForm.agentChoiceMethod"
+            name="agentChoiceMethod"
+            value="nearest"
+            checked="true"
+          />
+          <label for="nearest">nearest</label>
+          <input
+            type="radio"
+            v-model="itemForm.agentChoiceMethod"
+            name="agentChoiceMethod"
+            value="specific"
+          />
+          <label for="nearest">specific</label>
+          <input
+            type="radio"
+            v-model="itemForm.agentChoiceMethod"
+            name="agentChoiceMethod"
+            value="all"
+          />
+          <label for="all">all</label>
+        </form>
+
+        <div v-if="itemForm.agentChoiceMethod === 'specific'">
+          <select v-model="itemForm.target">
+            <option :value="{}">-- select agent --</option>
+            <option
+              v-for="agent in store.agentItems[itemForm.agentType.name]"
+              :value="agent"
+            >
+              {{ agent.name }}
+            </option>
+          </select>
+        </div>
+
+      </div>
+
+      <!-- <div v-else>
+        <div>action type: {{ action.actionType }}</div>
+        <div>interval (frames): <input :value="action.duration" type="number" disabled /></div>
+      </div> -->
+
+    </div>
+
     <div v-if="action.actionType === 'spawnAgent'">
       <div>Select point:
         <button

@@ -50,6 +50,9 @@ export function createActionPropertyChanges (agent = null, data) {
 export function createActionInterval (agent = null, data) {
   let item = createActionObject(agent, data)
   item.duration = data.duration
+  // quick fix to allow interval actions to retain 'target' information in other transitions,
+  // goTo target agent -> wait -> remove target agent
+  item.target = data.target
   return item
 }
 

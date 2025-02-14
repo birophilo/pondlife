@@ -436,7 +436,7 @@ export default {
               emissions.agentsToDelete.forEach(agent => {
                 const agentType = agent.agentType
                 const items = store.agentItems[agentType]
-                const item = items.find(ag => ag.name === agent.name)
+                const item = items.find(ag => ag.id === agent.id)
                 item.labelElement.remove()
                 items.splice(items.indexOf(item), 1)
               })
@@ -541,6 +541,7 @@ export default {
           return false
         }
         const targetAgent = agentHandler.getClosestAgent(agent, agentItems)
+
         action.target = targetAgent
         action.destination = targetAgent
       } else if (action.agentChoiceMethod === 'all') {
@@ -558,8 +559,8 @@ export default {
           if (change.agentType !== 'self') {
             if (change.agentChoiceMethod === 'nearest') {
               const agentTypeName = change.agentType
-              const targetAgents = store.agentItems[agentTypeName]
-              const targetAgent = agentHandler.getClosestAgent(agent, targetAgents)
+              const agentItems = store.agentItems[agentTypeName]
+              const targetAgent = agentHandler.getClosestAgent(agent, agentItems)
               change.target = targetAgent
             } else if (change.agentChoiceMethod === 'all') {
               const agentTypeName = change.agentType
@@ -568,6 +569,10 @@ export default {
             }
           }
         })
+      }
+
+      if (action.actionType === 'interval') {
+        action.target = lastAction.target
       }
 
       if (action.actionType === 'removeAgent') {
@@ -580,11 +585,7 @@ export default {
           if (action.agentChoiceMethod === 'nearest') {
             const agentTypeName = action.agentType.name
             const targetAgents = store.agentItems[agentTypeName]
-            // console.log(`POSITION IS x: ${agent.position.x}, y: ${agent.position.y}`)
-            // console.log("FINDING NEAREST TO REMOVE")
-            // targetAgents.forEach(ag => console.log(`${ag.name} x: ${ag.position.x}, y: ${ag.position.y}`))
             const targetAgent = agentHandler.getClosestAgent(agent, targetAgents)
-            // console.log(`CHOSE: ${targetAgent.name} x: ${targetAgent.position.x}, y: ${targetAgent.position.y}`)
             action.target = targetAgent
           } else if (action.agentChoiceMethod === 'all') {
             const agentTypeName = action.agentType.name
