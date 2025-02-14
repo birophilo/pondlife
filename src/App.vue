@@ -435,15 +435,15 @@ export default {
             if (emissions.agentsToDelete?.length > 0) {
               emissions.agentsToDelete.forEach(agent => {
                 const agentType = agent.agentType
-                const items = store.agentItems[agentType]
-                const item = items.find(ag => ag.id === agent.id)
-                item.labelElement.remove()
-                items.splice(items.indexOf(item), 1)
+                const agentItems = store.agentItems[agentType]
+                const agentToDelete = agentItems.find(ag => ag.id === agent.id)
+                const i = agentItems.indexOf(agentToDelete)
+                deleteAgent(agentToDelete, agentItems, i)
               })
             }
             if (emissions.agentsToSpawn?.length > 0) {
               emissions.agentsToSpawn.forEach(args => {
-                const agentTypeName = args.agentType
+                const agentTypeName = args.agentType.name
 
                 let newAgent = createAgentObject(
                   null,
@@ -453,10 +453,6 @@ export default {
                   store.GlobalSettings  // globals
                 )
                 addAgent(agentTypeName, args.position)
-
-                const handler = new AgentHandler()
-                handler.useSpriteSheet('idle', newAgent)
-
                 store.agentItems[agentTypeName].push(newAgent)
               })
             }

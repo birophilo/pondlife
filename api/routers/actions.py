@@ -5,8 +5,6 @@ from fastapi import APIRouter, Body, Request, Response, HTTPException, status
 from fastapi.encoders import jsonable_encoder
 from mongo_client import MongoCRUDClient
 
-from schemas import AgentType
-from utils import transform_doc_id, flatten_oid_list
 
 # https://github.com/mongodb-developer/pymongo-fastapi-crud/blob/main/routes.py
 

@@ -62,6 +62,8 @@ export function createActionSpawnAgent (agent = null, data) {
   item.agentType = data.agentType
   item.position = data.position
   item.useRandomPosition = data.useRandomPosition
+
+  return item
 }
 
 

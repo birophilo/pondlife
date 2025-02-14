@@ -222,27 +222,29 @@
     </div>
 
     <div v-if="action.actionType === 'spawnAgent'">
-      <div>Select point:
-        <button
-          class="selection-mode-button"
-          @click="store.selectionMode = !store.selectionMode"
-          :style="{backgroundColor: store.selectionMode ? 'grey' : 'white'}"
-        >x</button>
-        <span v-if="store.selectionMode === true">x: {{ store.mouse.x }}, y: {{ store.mouse.y }}</span><br/>
-        x: <input
-          v-model="positionPointX"
-          type="text"
-          :placeholder="store.mouse.x"
-        />
-        <br />
-        y:
-        <input
-          v-model="positionPointY"
-          type="text"
-          :placeholder="store.mouse.y"
-          value=""
-        />
-        <br />
+      <div v-if="isEditing === true">
+        <div>Select point:
+          <button
+            class="selection-mode-button"
+            @click="store.selectionMode = !store.selectionMode"
+            :style="{backgroundColor: store.selectionMode ? 'grey' : 'white'}"
+          >x</button>
+          <span v-if="store.selectionMode === true">x: {{ store.mouse.x }}, y: {{ store.mouse.y }}</span><br/>
+          x: <input
+            v-model="positionPointX"
+            type="text"
+            :placeholder="store.mouse.x"
+          />
+          <br />
+          y:
+          <input
+            v-model="positionPointY"
+            type="text"
+            :placeholder="store.mouse.y"
+            value=""
+          />
+          <br />
+        </div>
       </div>
     </div>
 

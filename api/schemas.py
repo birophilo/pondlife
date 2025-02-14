@@ -49,7 +49,6 @@ class AgentType(BaseModel):
     width: float
     height: float
     offset: XY
-    scale: float
     nominal_speed: float
     preview_image: str
     animation_set: dict | None  # TODO: change to ID string not whole object

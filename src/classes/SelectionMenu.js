@@ -169,7 +169,6 @@ export class AgentPreview {
     this.position = {x: 0, y: 0}
     this.width = agentType.width,
     this.height = agentType.height,
-    this.scale = agentType.scale,
     this.image = new Image()
     this.image.src = agentType.previewImage
   }

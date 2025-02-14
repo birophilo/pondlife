@@ -95,6 +95,7 @@ export const useStore = defineStore({
         this.sceneName = data.name
         this.createdAt = data.createdAt
         this.lastModified = data.lastModified
+
       } catch (error) {
         this.error = error.message
       }
