@@ -251,9 +251,7 @@
     <h4>Action transitions</h4>
     <CreateActionTransitionForm :action="action" />
     <!-- ACTION TRANSITIONS -->
-    <div v-for="(transition, index) in action.transitions">
-      <MenuActionTransition :action="action" :transition="transition" :index="index" />
-    </div>
+    <MenuActionTransition :action="action" />
   </div>
 </template>
 
