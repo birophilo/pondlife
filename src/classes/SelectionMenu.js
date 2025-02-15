@@ -171,15 +171,36 @@ export class AgentPreview {
     this.height = agentType.height,
     this.image = new Image()
     this.image.src = agentType.previewImage
+
+    if (agentType.defaultSpritesheet !== undefined) {
+      this.image.src = agentType.defaultSpritesheet
+      this.spritesheet = agentType.defaultSpritesheet
+    } else {
+      try {
+        this.image.src = agentType.animationSet.sheets['idle'].src
+        this.spritesheet = agentType.animationSet.sheets['idle']
+      } catch (error) {
+        console.log(`Could not load image for ${agentType.name}: ${error}`)
+      }
+    }
   }
 
   draw(c) {
+    const spriteWidth = this.image.width / this.spritesheet.columns
+    const spriteHeight = this.image.height / this.spritesheet.rows
+    const offsetX = this.agentType.animationSet.offset.x * this.agentType.animationSet.scale
+    const offsetY = this.agentType.animationSet.offset.y * this.agentType.animationSet.scale
+
     c.drawImage(
       this.image,
-      this.position.x,
-      this.position.y,
-      this.width,
-      this.height
+      0,
+      0,
+      spriteWidth,
+      spriteHeight,
+      this.position.x - offsetX,
+      this.position.y - offsetY,
+      spriteWidth * this.agentType.animationSet.scale,
+      spriteHeight * this.agentType.animationSet.scale
     )
   }
 

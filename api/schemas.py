@@ -50,7 +50,6 @@ class AgentType(BaseModel):
     height: float
     offset: XY
     nominal_speed: float
-    preview_image: str
     animation_set: dict | None  # TODO: change to ID string not whole object
     thumbnail: str
     first_action: str | None = None
