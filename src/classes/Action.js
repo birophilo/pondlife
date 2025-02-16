@@ -182,6 +182,7 @@ export class ActionIntervalHandler extends ActionHandler {
     //   agentHandler.useSpriteSheet(item.args.spriteSheet, item.agent)
     // }
     agentHandler.useSpriteSheet('idle', item.agent)
+    item.agent.currentDirection = 'idle'
     const currentFrame = globals.animationFrameId
     item.startFrame = currentFrame
     item.agent.currentStateName = `waiting for ${item.duration} frames`

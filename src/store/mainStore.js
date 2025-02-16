@@ -144,7 +144,7 @@ export const useStore = defineStore({
       }
 
       try {
-        const response = await fetch(
+        await fetch(
           `${BASE_URL}/scene/${this.sceneId}`, {
             method: 'PUT',
             headers: {
@@ -154,8 +154,8 @@ export const useStore = defineStore({
             body: JSON.stringify(payload)
           }
         )
-        const resp = await response.json()
-        console.log("RESPONSE", resp)
+        // const resp = await response.json()
+        console.log('Saved scene')
       } catch (error) {
         this.error = error.message
       }

@@ -706,8 +706,7 @@ export default {
             }
 
             addAgent(agentTypeName, position)
-            store.placingAgent = false
-            store.agentPreview = null
+
           } else {
             store.hover = true
           }

@@ -84,7 +84,9 @@ export class AgentHandler extends SpriteHandler {
 
       if (item.config.animationSet !== null) {
         const direction = get8WayDirection(xVelocity, yVelocity)
-        if (item.currentDirection !== direction) this.useSpriteSheet(direction, item)
+        if (item.currentDirection !== direction) {
+          this.useSpriteSheet(direction, item)
+        }
         item.currentDirection = direction
       }
     }

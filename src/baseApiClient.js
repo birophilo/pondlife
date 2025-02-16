@@ -57,7 +57,6 @@ export default {
         }
       )
       const resp = await response.json()
-      console.log("RESPONSE", resp)
       return resp.id
     } catch (error) {
       this.error = error.message
@@ -77,7 +76,6 @@ export default {
         }
       )
       const resp = await response.json()
-      console.log("RESPONSE", resp)
       return resp
     } catch (error) {
       this.error = error.message
