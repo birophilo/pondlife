@@ -675,6 +675,8 @@ export default {
 
     onMounted(() => {
 
+      store.displaySceneMenu = true
+
       canvas = document.querySelector('canvas')
       c = canvas.getContext('2d')
 

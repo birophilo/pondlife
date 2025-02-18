@@ -40,6 +40,9 @@ export default {
   createAgentType (data) {
     return baseApiClient.createItem('agentTypes', data)
   },
+  createAgentTypeMultipart (data) {
+    return baseApiClient.createItemMultipartForm('agentTypesMultipart', data)
+  },
   getAgentType (id) {
     return baseApiClient.getItem('agentType', id)
   },

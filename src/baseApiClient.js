@@ -45,6 +45,21 @@ export default {
     }
   },
 
+  createItemMultipartForm: async function (resourcePlural, formData) {
+    try {
+      const response = await fetch(
+        `${BASE_URL}/${resourcePlural}/`, {
+          method: 'POST',
+          body: formData
+        }
+      )
+      const resp = await response.json()
+      return resp
+    } catch (error) {
+      this.error = error.message
+    }
+  },
+
   deleteItem: async function (resource, id) {
     try {
       const response = await fetch(

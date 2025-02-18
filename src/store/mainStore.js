@@ -68,7 +68,7 @@ export const useStore = defineStore({
 
     api: apiCrud,
 
-    displaySceneMenu: true,
+    displaySceneMenu: false,
     displayLoadObjectModal: false
 
   }),
