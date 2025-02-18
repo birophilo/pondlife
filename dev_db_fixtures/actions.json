@@ -1,0 +1,612 @@
+[
+    {
+        "_id": "67a3bccb522293bc6cda2b39",
+        "agent": null,
+        "actionName": "go to nearest shop",
+        "actionType": "goTo",
+        "inProgress": false,
+        "isComplete": false,
+        "conditions": [],
+        "transitions": [
+            {
+                "condition": "67a251050370e42b011a2ba8",
+                "nextAction": "67a3c29d86f328910e053fe9"
+            }
+        ],
+        "agentType": {
+            "name": "lemonadeStall",
+            "width": 130,
+            "height": 104,
+            "offset": {
+                "x": 0,
+                "y": 0
+            },
+            "scale": 1,
+            "nominalSpeed": 0.02,
+            "previewImage": "/img/sprites/stall-1.png",
+            "animationSet": null,
+            "thumbnail": "/img/thumbnails/lemonade-stall-thumbnail.png",
+            "id": "67a252bb0370e42b011a2bbc"
+        },
+        "destinationType": "agent",
+        "agentChoiceMethod": "nearest",
+        "target": {}
+    },
+    {
+        "_id": "67a3bcd8522293bc6cda2b3b",
+        "agent": null,
+        "actionName": "drink",
+        "actionType": "interval",
+        "inProgress": false,
+        "isComplete": false,
+        "conditions": [],
+        "transitions": [],
+        "spriteSheet": "",
+        "duration": 120
+    },
+    {
+        "_id": "67a3c29d86f328910e053fe9",
+        "agent": null,
+        "actionName": "pay",
+        "actionType": "change",
+        "inProgress": false,
+        "isComplete": false,
+        "conditions": [],
+        "transitions": [
+            {
+                "condition": "67a250f70370e42b011a2ba6",
+                "nextAction": "67a3bcd8522293bc6cda2b3b"
+            }
+        ],
+        "propertyChanges": [
+            "67a3c4d386f328910e053ffa",
+            "67a3c55d86f328910e054001"
+        ]
+    },
+    {
+        "_id": "67a64d72419ae16493287ce9",
+        "agent": null,
+        "actionName": "go to shop",
+        "actionType": "goTo",
+        "inProgress": false,
+        "isComplete": false,
+        "conditions": [],
+        "transitions": [],
+        "agentType": {
+            "name": "lemonadeStall",
+            "width": 130,
+            "height": 104,
+            "offset": {
+                "x": 0,
+                "y": 0
+            },
+            "scale": 1,
+            "nominalSpeed": 0.02,
+            "previewImage": "/img/sprites/stall-1.png",
+            "animationSet": null,
+            "thumbnail": "/img/thumbnails/lemonade-stall-thumbnail.png",
+            "id": "67a252bb0370e42b011a2bbc"
+        },
+        "destinationType": "agent",
+        "agentChoiceMethod": "nearest",
+        "target": {}
+    },
+    {
+        "_id": "67a660aa419ae16493287cee",
+        "agent": null,
+        "actionName": "go to shop again",
+        "actionType": "goTo",
+        "inProgress": false,
+        "isComplete": false,
+        "conditions": [],
+        "transitions": [],
+        "agentType": {
+            "name": "lemonadeStall",
+            "width": 130,
+            "height": 104,
+            "offset": {
+                "x": 0,
+                "y": 0
+            },
+            "scale": 1,
+            "nominalSpeed": 0.02,
+            "previewImage": "/img/sprites/stall-1.png",
+            "animationSet": null,
+            "thumbnail": "/img/thumbnails/lemonade-stall-thumbnail.png",
+            "id": "67a252bb0370e42b011a2bbc"
+        },
+        "destinationType": "agent",
+        "agentChoiceMethod": "nearest",
+        "target": {}
+    },
+    {
+        "_id": "67ad1d21036d42b4a04943be",
+        "agent": null,
+        "actionName": "go to carrot",
+        "actionType": "goTo",
+        "inProgress": false,
+        "isComplete": false,
+        "conditions": [],
+        "transitions": [
+            {
+                "condition": "67a251050370e42b011a2ba8",
+                "nextAction": "67ad1d3a036d42b4a04943c1"
+            }
+        ],
+        "agentType": {
+            "name": "Carrot",
+            "height": 50,
+            "width": 50,
+            "animationSet": {
+                "name": "Carrot",
+                "scale": 0.5,
+                "offset": {
+                    "x": 0,
+                    "y": 0
+                },
+                "sheets": {
+                    "idle": {
+                        "name": "Carrot",
+                        "src": "/img/sprites/Carrot.png",
+                        "columns": 1,
+                        "rows": 1,
+                        "numImages": 1,
+                        "refreshInterval": 1,
+                        "id": "67ace794036d42b4a049435a"
+                    },
+                    "upLeft": {
+                        "name": "Carrot",
+                        "src": "/img/sprites/Carrot.png",
+                        "columns": 1,
+                        "rows": 1,
+                        "numImages": 1,
+                        "refreshInterval": 1,
+                        "id": "67ace794036d42b4a049435a"
+                    },
+                    "left": {
+                        "name": "Carrot",
+                        "src": "/img/sprites/Carrot.png",
+                        "columns": 1,
+                        "rows": 1,
+                        "numImages": 1,
+                        "refreshInterval": 1,
+                        "id": "67ace794036d42b4a049435a"
+                    },
+                    "downLeft": {
+                        "name": "Carrot",
+                        "src": "/img/sprites/Carrot.png",
+                        "columns": 1,
+                        "rows": 1,
+                        "numImages": 1,
+                        "refreshInterval": 1,
+                        "id": "67ace794036d42b4a049435a"
+                    },
+                    "down": {
+                        "name": "Carrot",
+                        "src": "/img/sprites/Carrot.png",
+                        "columns": 1,
+                        "rows": 1,
+                        "numImages": 1,
+                        "refreshInterval": 1,
+                        "id": "67ace794036d42b4a049435a"
+                    },
+                    "up": {
+                        "name": "Carrot",
+                        "src": "/img/sprites/Carrot.png",
+                        "columns": 1,
+                        "rows": 1,
+                        "numImages": 1,
+                        "refreshInterval": 1,
+                        "id": "67ace794036d42b4a049435a"
+                    },
+                    "downRight": {
+                        "name": "Carrot",
+                        "src": "/img/sprites/Carrot.png",
+                        "columns": 1,
+                        "rows": 1,
+                        "numImages": 1,
+                        "refreshInterval": 1,
+                        "id": "67ace794036d42b4a049435a"
+                    },
+                    "right": {
+                        "name": "Carrot",
+                        "src": "/img/sprites/Carrot.png",
+                        "columns": 1,
+                        "rows": 1,
+                        "numImages": 1,
+                        "refreshInterval": 1,
+                        "id": "67ace794036d42b4a049435a"
+                    },
+                    "upRight": {
+                        "name": "Carrot",
+                        "src": "/img/sprites/Carrot.png",
+                        "columns": 1,
+                        "rows": 1,
+                        "numImages": 1,
+                        "refreshInterval": 1,
+                        "id": "67ace794036d42b4a049435a"
+                    }
+                },
+                "id": "67ace7a0036d42b4a049435d"
+            },
+            "thumbnail": "/img/thumbnails/carrot.png",
+            "nominalSpeed": 0.02,
+            "offset": {
+                "x": 100,
+                "y": 100
+            },
+            "id": "67ace7ba036d42b4a0494360"
+        },
+        "destinationType": "agent",
+        "agentChoiceMethod": "nearest",
+        "target": {}
+    },
+    {
+        "_id": "67ad1d3a036d42b4a04943c1",
+        "agent": null,
+        "actionName": "eat carrot",
+        "actionType": "interval",
+        "inProgress": false,
+        "isComplete": false,
+        "conditions": [],
+        "transitions": [
+            {
+                "condition": "67a250f70370e42b011a2ba6",
+                "nextAction": "67ae57e481ec1100c68d650b"
+            }
+        ],
+        "spriteSheet": "",
+        "duration": 100
+    },
+    {
+        "_id": "67ad1d4a036d42b4a04943c4",
+        "agent": null,
+        "actionName": "remove carrot",
+        "actionType": "removeAgent",
+        "inProgress": false,
+        "isComplete": false,
+        "conditions": [],
+        "transitions": [
+            {
+                "condition": "67a250f70370e42b011a2ba6",
+                "nextAction": "67ad23068ed4af6b4da868a4"
+            }
+        ],
+        "agentType": {
+            "name": "Carrot",
+            "height": 50,
+            "width": 50,
+            "animationSet": {
+                "name": "Carrot",
+                "scale": 0.5,
+                "offset": {
+                    "x": 0,
+                    "y": 0
+                },
+                "sheets": {
+                    "idle": {
+                        "name": "Carrot",
+                        "src": "/img/sprites/Carrot.png",
+                        "columns": 1,
+                        "rows": 1,
+                        "numImages": 1,
+                        "refreshInterval": 1,
+                        "id": "67ace794036d42b4a049435a"
+                    },
+                    "upLeft": {
+                        "name": "Carrot",
+                        "src": "/img/sprites/Carrot.png",
+                        "columns": 1,
+                        "rows": 1,
+                        "numImages": 1,
+                        "refreshInterval": 1,
+                        "id": "67ace794036d42b4a049435a"
+                    },
+                    "left": {
+                        "name": "Carrot",
+                        "src": "/img/sprites/Carrot.png",
+                        "columns": 1,
+                        "rows": 1,
+                        "numImages": 1,
+                        "refreshInterval": 1,
+                        "id": "67ace794036d42b4a049435a"
+                    },
+                    "downLeft": {
+                        "name": "Carrot",
+                        "src": "/img/sprites/Carrot.png",
+                        "columns": 1,
+                        "rows": 1,
+                        "numImages": 1,
+                        "refreshInterval": 1,
+                        "id": "67ace794036d42b4a049435a"
+                    },
+                    "down": {
+                        "name": "Carrot",
+                        "src": "/img/sprites/Carrot.png",
+                        "columns": 1,
+                        "rows": 1,
+                        "numImages": 1,
+                        "refreshInterval": 1,
+                        "id": "67ace794036d42b4a049435a"
+                    },
+                    "up": {
+                        "name": "Carrot",
+                        "src": "/img/sprites/Carrot.png",
+                        "columns": 1,
+                        "rows": 1,
+                        "numImages": 1,
+                        "refreshInterval": 1,
+                        "id": "67ace794036d42b4a049435a"
+                    },
+                    "downRight": {
+                        "name": "Carrot",
+                        "src": "/img/sprites/Carrot.png",
+                        "columns": 1,
+                        "rows": 1,
+                        "numImages": 1,
+                        "refreshInterval": 1,
+                        "id": "67ace794036d42b4a049435a"
+                    },
+                    "right": {
+                        "name": "Carrot",
+                        "src": "/img/sprites/Carrot.png",
+                        "columns": 1,
+                        "rows": 1,
+                        "numImages": 1,
+                        "refreshInterval": 1,
+                        "id": "67ace794036d42b4a049435a"
+                    },
+                    "upRight": {
+                        "name": "Carrot",
+                        "src": "/img/sprites/Carrot.png",
+                        "columns": 1,
+                        "rows": 1,
+                        "numImages": 1,
+                        "refreshInterval": 1,
+                        "id": "67ace794036d42b4a049435a"
+                    }
+                },
+                "id": "67ace7a0036d42b4a049435d"
+            },
+            "thumbnail": "/img/thumbnails/carrot.png",
+            "nominalSpeed": 0.02,
+            "offset": {
+                "x": 100,
+                "y": 100
+            },
+            "id": "67ace7ba036d42b4a0494360"
+        },
+        "agentChoiceMethod": "nearest",
+        "target": {}
+    },
+    {
+        "_id": "67ad23068ed4af6b4da868a4",
+        "agent": null,
+        "actionName": "perspire",
+        "actionType": "change",
+        "inProgress": false,
+        "isComplete": false,
+        "conditions": [],
+        "transitions": [
+            {
+                "condition": "67ad23a78ed4af6b4da868af",
+                "nextAction": "67ad24728ed4af6b4da868b9"
+            },
+            {
+                "condition": "67a250f70370e42b011a2ba6",
+                "nextAction": "67ad1d21036d42b4a04943be"
+            }
+        ],
+        "propertyChanges": [
+            "67ad230f8ed4af6b4da868a7"
+        ]
+    },
+    {
+        "_id": "67ad23278ed4af6b4da868aa",
+        "agent": null,
+        "actionName": "start drinking",
+        "actionType": "interval",
+        "inProgress": false,
+        "isComplete": false,
+        "conditions": [],
+        "transitions": [
+            {
+                "condition": "67a250f70370e42b011a2ba6",
+                "nextAction": "67ad25818ed4af6b4da868dc"
+            }
+        ],
+        "spriteSheet": "",
+        "duration": 200
+    },
+    {
+        "_id": "67ad24728ed4af6b4da868b9",
+        "agent": null,
+        "actionName": "go to watering point",
+        "actionType": "goTo",
+        "inProgress": false,
+        "isComplete": false,
+        "conditions": [],
+        "transitions": [
+            {
+                "condition": "67a251050370e42b011a2ba8",
+                "nextAction": "67ad23278ed4af6b4da868aa"
+            }
+        ],
+        "agentType": "",
+        "destinationType": "point",
+        "agentChoiceMethod": "nearest",
+        "target": {
+            "name": "point: {x: 51, y: 41}",
+            "width": 10,
+            "height": 10,
+            "position": {
+                "x": 51,
+                "y": 41
+            }
+        },
+        "destination": {
+            "name": "point: {x: 51, y: 41}",
+            "width": 10,
+            "height": 10,
+            "position": {
+                "x": 51,
+                "y": 41
+            }
+        },
+        "pointType": "custom"
+    },
+    {
+        "_id": "67ad25818ed4af6b4da868dc",
+        "agent": null,
+        "actionName": "drink",
+        "actionType": "change",
+        "inProgress": false,
+        "isComplete": false,
+        "conditions": [],
+        "transitions": [
+            {
+                "condition": "67a250f70370e42b011a2ba6",
+                "nextAction": "67ad1d21036d42b4a04943be"
+            }
+        ],
+        "propertyChanges": [
+            "67ad258d8ed4af6b4da868df"
+        ]
+    },
+    {
+        "_id": "67ae57e481ec1100c68d650b",
+        "agent": null,
+        "actionName": "remove carrot target",
+        "actionType": "removeAgent",
+        "inProgress": false,
+        "isComplete": false,
+        "conditions": [],
+        "transitions": [
+            {
+                "condition": "67a250f70370e42b011a2ba6",
+                "nextAction": "67ad23068ed4af6b4da868a4"
+            }
+        ],
+        "agentType": "currentTarget",
+        "agentChoiceMethod": "nearest",
+        "target": {}
+    },
+    {
+        "_id": "67af8eb793185d9278f7e13d",
+        "agent": null,
+        "actionName": "create dog",
+        "actionType": "spawnAgent",
+        "inProgress": false,
+        "isComplete": false,
+        "conditions": [],
+        "transitions": [],
+        "agentType": {
+            "name": "dog",
+            "height": 50,
+            "width": 50,
+            "animationSet": {
+                "name": "Dog",
+                "scale": 0.5,
+                "offset": {
+                    "x": 0,
+                    "y": 0
+                },
+                "sheets": {
+                    "idle": {
+                        "name": "DogIdle",
+                        "src": "/img/sprites/DogIdle.png",
+                        "columns": 8,
+                        "rows": 1,
+                        "numImages": 8,
+                        "refreshInterval": 5,
+                        "id": "67a80d766dae6de3690c5f40"
+                    },
+                    "up": {
+                        "name": "DogWalkUp",
+                        "src": "/img/sprites/DogWalkUp.png",
+                        "columns": 8,
+                        "rows": 1,
+                        "numImages": 8,
+                        "refreshInterval": 5,
+                        "id": "67a80c9c6dae6de3690c5f27"
+                    },
+                    "upRight": {
+                        "name": "DogWalkUpRight",
+                        "src": "/img/sprites/DogWalkUpRight.png",
+                        "columns": 8,
+                        "rows": 1,
+                        "numImages": 8,
+                        "refreshInterval": 5,
+                        "id": "67a80cf46dae6de3690c5f2e"
+                    },
+                    "right": {
+                        "name": "DogWalkRight",
+                        "src": "/img/sprites/DogWalkRight.png",
+                        "columns": 8,
+                        "rows": 1,
+                        "numImages": 8,
+                        "refreshInterval": 5,
+                        "id": "67a80d246dae6de3690c5f34"
+                    },
+                    "downRight": {
+                        "name": "DogWalkDownRight",
+                        "src": "/img/sprites/DogWalkRight.png",
+                        "columns": 8,
+                        "rows": 1,
+                        "numImages": 8,
+                        "refreshInterval": 5,
+                        "id": "67a80d546dae6de3690c5f3a"
+                    },
+                    "down": {
+                        "name": "DogWalkDown",
+                        "src": "/img/sprites/DogWalkDown.png",
+                        "columns": 8,
+                        "rows": 1,
+                        "numImages": 8,
+                        "refreshInterval": 5,
+                        "id": "67a80d696dae6de3690c5f3d"
+                    },
+                    "downLeft": {
+                        "name": "DogWalkDownLeft",
+                        "src": "/img/sprites/DogWalkDownLeft.png",
+                        "columns": 8,
+                        "rows": 1,
+                        "numImages": 8,
+                        "refreshInterval": 5,
+                        "id": "67ae4e7981ec1100c68d63db"
+                    },
+                    "left": {
+                        "name": "DogWalkLeft",
+                        "src": "/img/sprites/DogWalkLeft.png",
+                        "columns": 8,
+                        "rows": 1,
+                        "numImages": 8,
+                        "refreshInterval": 5,
+                        "id": "67a80d0a6dae6de3690c5f31"
+                    },
+                    "upLeft": {
+                        "name": "DogWalkUpLeft",
+                        "src": "/img/sprites/DogWalkUpLeft.png",
+                        "columns": 8,
+                        "rows": 1,
+                        "numImages": 8,
+                        "refreshInterval": 5,
+                        "id": "67a80cc26dae6de3690c5f2b"
+                    }
+                },
+                "id": "67a80db26dae6de3690c5f43"
+            },
+            "thumbnail": "/img/thumbnails/dog-thumbnail.png",
+            "nominalSpeed": 0.04,
+            "offset": {
+                "x": 100,
+                "y": 100
+            },
+            "id": "67a8197ef6d7fc93893f35c2"
+        },
+        "position": {
+            "x": 726,
+            "y": 461
+        }
+    }
+]

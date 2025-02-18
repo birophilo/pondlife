@@ -1,0 +1,376 @@
+[
+    {
+        "_id": "67a252bb0370e42b011a2bbb",
+        "name": "customer",
+        "height": 40,
+        "width": 30,
+        "animationSet": {
+            "name": "Customer",
+            "sheets": {
+                "idle": {
+                    "name": "CustomerIdle",
+                    "src": "/img/sprites/GirlSample_Walk_Down.png",
+                    "columns": 4,
+                    "rows": 3,
+                    "numImages": 1,
+                    "refreshInterval": 3,
+                    "id": "67a251fa0370e42b011a2bb6"
+                },
+                "up": {
+                    "name": "CustomerWalkUp",
+                    "src": "/img/sprites/GirlSample_Walk_Up.png",
+                    "columns": 4,
+                    "rows": 3,
+                    "numImages": 9,
+                    "refreshInterval": 3,
+                    "id": "67a251fa0370e42b011a2bae"
+                },
+                "upRight": {
+                    "name": "CustomerWalkUpRight",
+                    "src": "/img/sprites/GirlSample_Walk_UpRight.png",
+                    "columns": 4,
+                    "rows": 3,
+                    "numImages": 9,
+                    "refreshInterval": 3,
+                    "id": "67a251fa0370e42b011a2bb0"
+                },
+                "right": {
+                    "name": "CustomerWalkRight",
+                    "src": "/img/sprites/GirlSample_Walk_Right.png",
+                    "columns": 4,
+                    "rows": 3,
+                    "numImages": 9,
+                    "refreshInterval": 3,
+                    "id": "67a251fa0370e42b011a2bb2"
+                },
+                "downRight": {
+                    "name": "CustomerWalkDownRight",
+                    "src": "/img/sprites/GirlSample_Walk_DownRight.png",
+                    "columns": 4,
+                    "rows": 3,
+                    "numImages": 9,
+                    "refreshInterval": 3,
+                    "id": "67a251fa0370e42b011a2bb5"
+                },
+                "down": {
+                    "name": "CustomerWalkDown",
+                    "src": "/img/sprites/GirlSample_Walk_Down.png",
+                    "columns": 4,
+                    "rows": 3,
+                    "numImages": 9,
+                    "refreshInterval": 3,
+                    "id": "67a251fa0370e42b011a2bb4"
+                },
+                "downLeft": {
+                    "name": "CustomerWalkDownLeft",
+                    "src": "/img/sprites/GirlSample_Walk_DownLeft.png",
+                    "columns": 4,
+                    "rows": 3,
+                    "numImages": 9,
+                    "refreshInterval": 3,
+                    "id": "67a251fa0370e42b011a2bb3"
+                },
+                "left": {
+                    "name": "CustomerWalkLeft",
+                    "src": "/img/sprites/GirlSample_Walk_Left.png",
+                    "columns": 4,
+                    "rows": 3,
+                    "numImages": 9,
+                    "refreshInterval": 3,
+                    "id": "67a251fa0370e42b011a2bb1"
+                },
+                "upLeft": {
+                    "name": "CustomerWalkUpLeft",
+                    "src": "/img/sprites/GirlSample_Walk_UpLeft.png",
+                    "columns": 4,
+                    "rows": 3,
+                    "numImages": 9,
+                    "refreshInterval": 3,
+                    "id": "67a251fa0370e42b011a2baf"
+                }
+            },
+            "offset": {
+                "x": 96,
+                "y": 46
+            },
+            "scale": 0.7,
+            "id": "67a2525d0370e42b011a2bb9"
+        },
+        "thumbnail": "/img/thumbnails/customer-thumbnail.png",
+        "nominalSpeed": 0.02,
+        "offset": {
+            "x": 96,
+            "y": 46
+        }
+    },
+    {
+        "_id": "67a252bb0370e42b011a2bbc",
+        "name": "lemonadeStall",
+        "height": 104,
+        "width": 130,
+        "animationSet": {
+            "name": "LemonadeStall",
+            "scale": 1,
+            "offset": {
+                "x": 0,
+                "y": 0
+            },
+            "sheets": {
+                "idle": {
+                    "name": "LemonadeStallIdle",
+                    "src": "/img/sprites/stall-1.png",
+                    "columns": 1,
+                    "rows": 1,
+                    "numImages": 1,
+                    "refreshInterval": 1,
+                    "id": "67b121e99d33fa0fab203b30"
+                }
+            },
+            "id": "67b122019d33fa0fab203b33"
+        },
+        "thumbnail": "/img/thumbnails/lemonade-stall-thumbnail.png",
+        "nominalSpeed": 0.02,
+        "offset": {
+            "x": 0,
+            "y": 0
+        }
+    },
+    {
+        "_id": "67a252bb0370e42b011a2bbd",
+        "name": "supplyVan",
+        "width": 50,
+        "height": 50,
+        "offset": {
+            "x": 2,
+            "y": 0
+        },
+        "scale": 2.5,
+        "nominalSpeed": 0.02,
+        "previewImage": "/img/sprites/SupplyVan_Right.png",
+        "animationSet": null,
+        "thumbnail": "/img/thumbnails/supply-van-thumbnail.png"
+    },
+    {
+        "_id": "67a252bb0370e42b011a2bbe",
+        "name": "world",
+        "width": 25,
+        "height": 25,
+        "offset": {
+            "x": 0,
+            "y": 0
+        },
+        "scale": 1,
+        "nominalSpeed": 0.02,
+        "previewImage": "/img/thumbnails/world-thumbnail.png",
+        "animationSet": null,
+        "thumbnail": ""
+    },
+    {
+        "_id": "67a8197ef6d7fc93893f35c2",
+        "name": "dog",
+        "height": 50,
+        "width": 50,
+        "animationSet": {
+            "name": "Dog",
+            "scale": 0.5,
+            "offset": {
+                "x": 0,
+                "y": 0
+            },
+            "sheets": {
+                "idle": {
+                    "name": "DogIdle",
+                    "src": "/img/sprites/DogIdle.png",
+                    "columns": 8,
+                    "rows": 1,
+                    "numImages": 8,
+                    "refreshInterval": 5,
+                    "id": "67a80d766dae6de3690c5f40"
+                },
+                "up": {
+                    "name": "DogWalkUp",
+                    "src": "/img/sprites/DogWalkUp.png",
+                    "columns": 8,
+                    "rows": 1,
+                    "numImages": 8,
+                    "refreshInterval": 5,
+                    "id": "67a80c9c6dae6de3690c5f27"
+                },
+                "upRight": {
+                    "name": "DogWalkUpRight",
+                    "src": "/img/sprites/DogWalkUpRight.png",
+                    "columns": 8,
+                    "rows": 1,
+                    "numImages": 8,
+                    "refreshInterval": 5,
+                    "id": "67a80cf46dae6de3690c5f2e"
+                },
+                "right": {
+                    "name": "DogWalkRight",
+                    "src": "/img/sprites/DogWalkRight.png",
+                    "columns": 8,
+                    "rows": 1,
+                    "numImages": 8,
+                    "refreshInterval": 5,
+                    "id": "67b129c59d33fa0fab203ccd"
+                },
+                "downRight": {
+                    "name": "DogWalkDownRight",
+                    "src": "/img/sprites/DogWalkDownRight.png",
+                    "columns": 8,
+                    "rows": 1,
+                    "numImages": 8,
+                    "refreshInterval": 5,
+                    "id": "67a80d546dae6de3690c5f3a"
+                },
+                "down": {
+                    "name": "DogWalkDown",
+                    "src": "/img/sprites/DogWalkDown.png",
+                    "columns": 8,
+                    "rows": 1,
+                    "numImages": 8,
+                    "refreshInterval": 5,
+                    "id": "67a80d696dae6de3690c5f3d"
+                },
+                "downLeft": {
+                    "name": "DogWalkDownLeft",
+                    "src": "/img/sprites/DogWalkDownLeft.png",
+                    "columns": 8,
+                    "rows": 1,
+                    "numImages": 8,
+                    "refreshInterval": 5,
+                    "id": "67ae4e7981ec1100c68d63db"
+                },
+                "left": {
+                    "name": "DogWalkLeft",
+                    "src": "/img/sprites/DogWalkLeft.png",
+                    "columns": 8,
+                    "rows": 1,
+                    "numImages": 8,
+                    "refreshInterval": 5,
+                    "id": "67a80d0a6dae6de3690c5f31"
+                },
+                "upLeft": {
+                    "name": "DogWalkUpLeft",
+                    "src": "/img/sprites/DogWalkUpLeft.png",
+                    "columns": 8,
+                    "rows": 1,
+                    "numImages": 8,
+                    "refreshInterval": 5,
+                    "id": "67a80cc26dae6de3690c5f2b"
+                }
+            },
+            "id": "67a80db26dae6de3690c5f43"
+        },
+        "thumbnail": "/img/thumbnails/dog-thumbnail.png",
+        "nominalSpeed": 0.02,
+        "offset": {
+            "x": 100,
+            "y": 100
+        }
+    },
+    {
+        "_id": "67ace7ba036d42b4a0494360",
+        "name": "Carrot",
+        "height": 50,
+        "width": 50,
+        "animationSet": {
+            "name": "Carrot",
+            "scale": 0.5,
+            "offset": {
+                "x": 0,
+                "y": 0
+            },
+            "sheets": {
+                "idle": {
+                    "name": "Carrot",
+                    "src": "/img/sprites/Carrot.png",
+                    "columns": 1,
+                    "rows": 1,
+                    "numImages": 1,
+                    "refreshInterval": 1,
+                    "id": "67ace794036d42b4a049435a"
+                },
+                "upLeft": {
+                    "name": "Carrot",
+                    "src": "/img/sprites/Carrot.png",
+                    "columns": 1,
+                    "rows": 1,
+                    "numImages": 1,
+                    "refreshInterval": 1,
+                    "id": "67ace794036d42b4a049435a"
+                },
+                "left": {
+                    "name": "Carrot",
+                    "src": "/img/sprites/Carrot.png",
+                    "columns": 1,
+                    "rows": 1,
+                    "numImages": 1,
+                    "refreshInterval": 1,
+                    "id": "67ace794036d42b4a049435a"
+                },
+                "downLeft": {
+                    "name": "Carrot",
+                    "src": "/img/sprites/Carrot.png",
+                    "columns": 1,
+                    "rows": 1,
+                    "numImages": 1,
+                    "refreshInterval": 1,
+                    "id": "67ace794036d42b4a049435a"
+                },
+                "down": {
+                    "name": "Carrot",
+                    "src": "/img/sprites/Carrot.png",
+                    "columns": 1,
+                    "rows": 1,
+                    "numImages": 1,
+                    "refreshInterval": 1,
+                    "id": "67ace794036d42b4a049435a"
+                },
+                "up": {
+                    "name": "Carrot",
+                    "src": "/img/sprites/Carrot.png",
+                    "columns": 1,
+                    "rows": 1,
+                    "numImages": 1,
+                    "refreshInterval": 1,
+                    "id": "67ace794036d42b4a049435a"
+                },
+                "downRight": {
+                    "name": "Carrot",
+                    "src": "/img/sprites/Carrot.png",
+                    "columns": 1,
+                    "rows": 1,
+                    "numImages": 1,
+                    "refreshInterval": 1,
+                    "id": "67ace794036d42b4a049435a"
+                },
+                "right": {
+                    "name": "Carrot",
+                    "src": "/img/sprites/Carrot.png",
+                    "columns": 1,
+                    "rows": 1,
+                    "numImages": 1,
+                    "refreshInterval": 1,
+                    "id": "67ace794036d42b4a049435a"
+                },
+                "upRight": {
+                    "name": "Carrot",
+                    "src": "/img/sprites/Carrot.png",
+                    "columns": 1,
+                    "rows": 1,
+                    "numImages": 1,
+                    "refreshInterval": 1,
+                    "id": "67ace794036d42b4a049435a"
+                }
+            },
+            "id": "67ace7a0036d42b4a049435d"
+        },
+        "thumbnail": "/img/thumbnails/carrot.png",
+        "nominalSpeed": 0.02,
+        "offset": {
+            "x": 100,
+            "y": 100
+        }
+    }
+]

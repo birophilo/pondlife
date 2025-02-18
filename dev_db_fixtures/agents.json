@@ -1,0 +1,146 @@
+[
+    {
+        "_id": "67a3c906d07eeff9455b509e",
+        "agentType": "lemonadeStall",
+        "position": {
+            "x": 661,
+            "y": 72
+        }
+    },
+    {
+        "_id": "67a3c9f7d07eeff9455b50ac",
+        "agentType": "customer",
+        "position": {
+            "x": 149,
+            "y": 144
+        }
+    },
+    {
+        "_id": "67acf4a8036d42b4a0494382",
+        "agentType": "Carrot",
+        "position": {
+            "x": 162,
+            "y": 272
+        }
+    },
+    {
+        "_id": "67acf4eb036d42b4a0494388",
+        "agentType": "Carrot",
+        "position": {
+            "x": 739,
+            "y": 94
+        }
+    },
+    {
+        "_id": "67ad1cd0036d42b4a04943aa",
+        "agentType": "Carrot",
+        "position": {
+            "x": 491,
+            "y": 88
+        }
+    },
+    {
+        "_id": "67ad1f70036d42b4a04943d3",
+        "agentType": "Carrot",
+        "position": {
+            "x": 341,
+            "y": 369
+        }
+    },
+    {
+        "_id": "67ad1f72036d42b4a04943d6",
+        "agentType": "Carrot",
+        "position": {
+            "x": 751,
+            "y": 334
+        }
+    },
+    {
+        "_id": "67ad1f74036d42b4a04943d9",
+        "agentType": "Carrot",
+        "position": {
+            "x": 634,
+            "y": 515
+        }
+    },
+    {
+        "_id": "67ad2209d83970963e66267a",
+        "agentType": "Carrot",
+        "position": {
+            "x": 83,
+            "y": 115
+        }
+    },
+    {
+        "_id": "67ad2219d83970963e66268b",
+        "agentType": "Carrot",
+        "position": {
+            "x": 334,
+            "y": 482
+        }
+    },
+    {
+        "_id": "67ad221bd83970963e66268e",
+        "agentType": "Carrot",
+        "position": {
+            "x": 697,
+            "y": 226
+        }
+    },
+    {
+        "_id": "67ae54cf81ec1100c68d6456",
+        "agentType": "Carrot",
+        "position": {
+            "x": 24,
+            "y": 101
+        }
+    },
+    {
+        "_id": "67ae54d181ec1100c68d6459",
+        "agentType": "Carrot",
+        "position": {
+            "x": 24,
+            "y": 228
+        }
+    },
+    {
+        "_id": "67ae54d381ec1100c68d645c",
+        "agentType": "Carrot",
+        "position": {
+            "x": 70,
+            "y": 464
+        }
+    },
+    {
+        "_id": "67b120859d33fa0fab203b23",
+        "agentType": "lemonadeStall",
+        "position": {
+            "x": 211,
+            "y": 200
+        }
+    },
+    {
+        "_id": "67b1208b9d33fa0fab203b26",
+        "agentType": "customer",
+        "position": {
+            "x": 52,
+            "y": 310
+        }
+    },
+    {
+        "_id": "67b122a39d33fa0fab203b6f",
+        "agentType": "lemonadeStall",
+        "position": {
+            "x": 626,
+            "y": 283
+        }
+    },
+    {
+        "_id": "67b126649d33fa0fab203be9",
+        "agentType": "dog",
+        "position": {
+            "x": 72,
+            "y": 164
+        }
+    }
+]

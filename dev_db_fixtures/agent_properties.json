@@ -1,0 +1,45 @@
+[
+    {
+        "_id": "67a260a4459f4fe9f08ced17",
+        "name": "money",
+        "valueType": "int",
+        "initialValue": 100,
+        "applyTo": "agentType",
+        "agentTypes": [
+            "customer"
+        ],
+        "description": "customer money"
+    },
+    {
+        "_id": "67a3bc33522293bc6cda2b2d",
+        "name": "money",
+        "valueType": "int",
+        "initialValue": 100,
+        "applyTo": "agentType",
+        "agentTypes": [
+            "customer"
+        ],
+        "description": "customer money"
+    },
+    {
+        "_id": "67a3bc42522293bc6cda2b2f",
+        "name": "money",
+        "valueType": "int",
+        "initialValue": 5,
+        "applyTo": "agentType",
+        "agentTypes": [
+            "lemonadeStall"
+        ],
+        "description": "lemonade stall money"
+    },
+    {
+        "_id": "67ad22df8ed4af6b4da8689f",
+        "name": "water",
+        "valueType": "int",
+        "initialValue": 50,
+        "applyTo": "agentType",
+        "agentTypes": [
+            "dog"
+        ]
+    }
+]

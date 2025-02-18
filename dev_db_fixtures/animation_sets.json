@@ -1,0 +1,74 @@
+[
+    {
+        "_id": "67a2525d0370e42b011a2bb9",
+        "name": "Customer",
+        "sheets": {
+            "idle": "67a251fa0370e42b011a2bb6",
+            "up": "67a251fa0370e42b011a2bae",
+            "upRight": "67a251fa0370e42b011a2bb0",
+            "right": "67a251fa0370e42b011a2bb2",
+            "downRight": "67a251fa0370e42b011a2bb5",
+            "down": "67a251fa0370e42b011a2bb4",
+            "downLeft": "67a251fa0370e42b011a2bb3",
+            "left": "67a251fa0370e42b011a2bb1",
+            "upLeft": "67a251fa0370e42b011a2baf"
+        },
+        "offset": {
+            "x": 96,
+            "y": 46
+        },
+        "scale": 0.7
+    },
+    {
+        "_id": "67a80db26dae6de3690c5f43",
+        "name": "Dog",
+        "scale": 0.5,
+        "offset": {
+            "x": 0,
+            "y": 0
+        },
+        "sheets": {
+            "idle": "67a80d766dae6de3690c5f40",
+            "up": "67a80c9c6dae6de3690c5f27",
+            "upRight": "67a80cf46dae6de3690c5f2e",
+            "right": "67b129c59d33fa0fab203ccd",
+            "downRight": "67a80d546dae6de3690c5f3a",
+            "down": "67a80d696dae6de3690c5f3d",
+            "downLeft": "67ae4e7981ec1100c68d63db",
+            "left": "67a80d0a6dae6de3690c5f31",
+            "upLeft": "67a80cc26dae6de3690c5f2b"
+        }
+    },
+    {
+        "_id": "67ace7a0036d42b4a049435d",
+        "name": "Carrot",
+        "scale": 0.5,
+        "offset": {
+            "x": 0,
+            "y": 0
+        },
+        "sheets": {
+            "idle": "67ace794036d42b4a049435a",
+            "upLeft": "67ace794036d42b4a049435a",
+            "left": "67ace794036d42b4a049435a",
+            "downLeft": "67ace794036d42b4a049435a",
+            "down": "67ace794036d42b4a049435a",
+            "up": "67ace794036d42b4a049435a",
+            "downRight": "67ace794036d42b4a049435a",
+            "right": "67ace794036d42b4a049435a",
+            "upRight": "67ace794036d42b4a049435a"
+        }
+    },
+    {
+        "_id": "67b122019d33fa0fab203b33",
+        "name": "LemonadeStall",
+        "scale": 1,
+        "offset": {
+            "x": 0,
+            "y": 0
+        },
+        "sheets": {
+            "idle": "67b121e99d33fa0fab203b30"
+        }
+    }
+]

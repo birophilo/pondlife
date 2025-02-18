@@ -1,0 +1,26 @@
+[
+    {
+        "_id": "67a250f70370e42b011a2ba6",
+        "conditionType": "preset",
+        "name": "is complete",
+        "classMethod": "actionIsComplete",
+        "comparison": "isIdentical",
+        "conditionValue": true
+    },
+    {
+        "_id": "67a251050370e42b011a2ba8",
+        "conditionType": "preset",
+        "name": "at destination",
+        "classMethod": "atDestination",
+        "comparison": "isIdentical",
+        "conditionValue": true
+    },
+    {
+        "_id": "67ad23a78ed4af6b4da868af",
+        "name": "isThirsty",
+        "comparison": "isLessThan",
+        "conditionValue": 5,
+        "conditionType": "property",
+        "property": "water"
+    }
+]

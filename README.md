@@ -44,3 +44,16 @@ Install and run [Docker Desktop](https://www.docker.com), then from the root dir
 ```bash
 $ docker-compose up -d
 ```
+
+Populate the database with current dev fixtures:
+
+```bash
+# import: populate dev db fixtures
+$ python dev_db_commands.py populate
+# default is 'dev_db_fixtures/' or specify different directory
+$ python dev_db_commands.py populate <custom_dir>
+
+# export: dump dev db into json files
+$ python dev_db dump
+$ python dev_db_commands.py dump <custom_dir>
+```

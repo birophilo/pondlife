@@ -1,0 +1,57 @@
+[
+    {
+        "_id": "67a25152842e585ffbbf3613",
+        "agent": null,
+        "property": "onions",
+        "change": "decrease",
+        "value": 5,
+        "target": "",
+        "agentType": "self",
+        "agentChoiceMethod": "nearest",
+        "actionId": "678b3310fff047ac9c26fd8c"
+    },
+    {
+        "_id": "67a3c4d386f328910e053ffa",
+        "agent": null,
+        "property": "money",
+        "change": "decrease",
+        "value": 4,
+        "target": "",
+        "agentType": "self",
+        "agentChoiceMethod": "nearest",
+        "actionId": "67a3c29d86f328910e053fe9"
+    },
+    {
+        "_id": "67a3c55d86f328910e054001",
+        "agent": null,
+        "property": "money",
+        "change": "increase",
+        "value": 4,
+        "target": "",
+        "agentType": "lemonadeStall",
+        "agentChoiceMethod": "nearest",
+        "actionId": "67a3c29d86f328910e053fe9"
+    },
+    {
+        "_id": "67ad230f8ed4af6b4da868a7",
+        "agent": null,
+        "property": "water",
+        "change": "decrease",
+        "value": 10,
+        "target": "",
+        "agentType": "self",
+        "agentChoiceMethod": "nearest",
+        "actionId": "67ad23068ed4af6b4da868a4"
+    },
+    {
+        "_id": "67ad258d8ed4af6b4da868df",
+        "agent": null,
+        "property": "water",
+        "change": "increase",
+        "value": 30,
+        "target": "",
+        "agentType": "self",
+        "agentChoiceMethod": "nearest",
+        "actionId": "67ad25818ed4af6b4da868dc"
+    }
+]
