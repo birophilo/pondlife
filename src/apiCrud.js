@@ -110,4 +110,7 @@ export default {
   createScene (data) {
     return baseApiClient.createItem('scenes', data)
   },
+  uploadFile (data) {
+    return baseApiClient.uploadImage(data)
+  }
 }

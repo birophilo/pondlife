@@ -12,9 +12,8 @@
       </select><br />
       thumbnail: {{ itemForm.thumbnail }}<br />
       <!-- <input type="file" placeholder="thumbnail" @change="updateThumbnailFileInput($event)" /><br /> -->
-      <input type="file" @change="handleImageFileUpload" placeholder="media file upload" />
-      <button @click="uploadFile">upload image</button>
-      <button @click="createAgentTypeMultipart">save agent type</button>
+      <input type="file" @change="uploadFile" placeholder="media file upload" />
+      <button @click="createAgentType">save agent type</button>
       <button @click="isAdding = false">cancel</button>
       <br />
     </div>
@@ -36,9 +35,6 @@ export default {
 
     const isAdding = ref(false)
 
-    const imageFile = ref(null)
-    const formData = ref(null)
-
     const itemForm = ref({
       name: '',
       height: 50,
@@ -50,26 +46,18 @@ export default {
       positionY: 100
     })
 
-    const updateThumbnailFileInput = (event) => {
-      const fileName = "/img/thumbnails/" + event.target.files[0].name
-      itemForm.value.thumbnail = fileName
+    const uploadFile = async (event) => {
+      const imageFile = event.target.files[0]
+      let formData = new FormData()
+      formData.append("resource", "agentType")
+      formData.append("imageType", "thumbnail")
+      formData.append("file", imageFile)
+
+      const createdResponse = await api.uploadFile(formData.value)
+      itemForm.value.thumbnail = createdResponse.filename
     }
 
-    const handleImageFileUpload = (event) => {
-      imageFile.value = event.target.files[0]
-    }
-
-    const uploadFile = async () => {
-      formData.value = new FormData();
-      formData.value.append("jsondata", "this_image");
-      formData.value.append("file", imageFile.value);
-
-      const createdItem = await api.createAgentTypeMultipart(formData.value)
-
-      console.log(createdItem)
-    }
-
-    const createAgentTypeMultipart = async () => {
+    const createAgentType = async () => {
 
       const agentTypeName = itemForm.value.name
 
@@ -83,15 +71,11 @@ export default {
         },
         scale: 1,
         nominalSpeed: Number(itemForm.value.nominalSpeed),
-        animationSet: itemForm.value.animationSet
+        animationSet: itemForm.value.animationSet,
+        thumbnail: itemForm.value.thumbnail
       }
 
-      formData.value = new FormData();
-      formData.value.append("jsondata", JSON.stringify(newAgentType));
-      formData.value.append("file", imageFile.value);
-
-      const createdItem = await api.createAgentTypeMultipart(formData.value)
-
+      const createdItem = await api.createAgentType(newAgentType)
       newAgentType.id = createdItem.id
 
       store.agentTypes[agentTypeName] = newAgentType
@@ -115,9 +99,7 @@ export default {
       store,
       isAdding,
       itemForm,
-      createAgentTypeMultipart,
-      updateThumbnailFileInput,
-      handleImageFileUpload,
+      createAgentType,
       uploadFile
     }
   }

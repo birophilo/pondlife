@@ -45,10 +45,10 @@ export default {
     }
   },
 
-  createItemMultipartForm: async function (resourcePlural, formData) {
+  uploadImage: async function (formData) {
     try {
       const response = await fetch(
-        `${BASE_URL}/${resourcePlural}/`, {
+        `${BASE_URL}/uploadImage`, {
           method: 'POST',
           body: formData
         }
