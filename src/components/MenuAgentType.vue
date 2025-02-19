@@ -8,13 +8,13 @@
         movement speed: <input v-model="itemForm.nominalSpeed" type="number" placeholder="1" /><br />
         animationSet:
         <select v-model="itemForm.animationSet">
-          <option value="">-- select animation set --</option>
+          <option :value="null">-- select animation set --</option>
           <option :value="animationSet" v-for="animationSet in store.animationSets">{{ animationSet.name }}</option>
         </select>
         <br />
         thumbnail: {{ itemForm.thumbnail }}<br />
-        <input type="file" placeholder="thumbnail" @change="updateThumbnailFileInput($event)" /><br />
-        <button @click="saveItem(itemForm.name)">save</button>
+        <input type="file" placeholder="thumbnail" @change="uploadFile" /><br />
+        <button @click="saveItem">save</button>
         <button @click="cancelEdit">cancel</button>
       </div>
       <div v-else>
@@ -92,8 +92,18 @@ export default {
       }
     }
 
+    const uploadFile = async (event) => {
+      const imageFile = event.target.files[0]
+      let formData = new FormData()
+      formData.append("resource", "agentType")
+      formData.append("imageType", "thumbnail")
+      formData.append("file", imageFile)
+
+      const createdResponse = await api.uploadFile(formData)
+      itemForm.value.thumbnail = createdResponse.filename
+    }
+
     const saveItem = () => {
-      isEditing.value = false
       const data = {
         id: itemForm.value.id,
         name: itemForm.value.name,
@@ -110,11 +120,8 @@ export default {
 
       api.updateAgentType(data)
       store.agentTypes[props.agentType.name] = data
-    }
 
-    const updateThumbnailFileInput = (event) => {
-      const fileName = "/img/thumbnails/" + event.target.files[0].name
-      itemForm.value.thumbnail = fileName
+      isEditing.value = false
     }
 
     const removeFromMenu = async () => {
@@ -139,7 +146,7 @@ export default {
       deleteItem,
       cancelEdit,
       populateItemForm,
-      updateThumbnailFileInput,
+      uploadFile,
       removeFromMenu
     }
   }

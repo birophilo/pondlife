@@ -28,33 +28,6 @@ async def create_agent_type(request: Request):
     return created_agent_type
 
 
-@router.post("/agentTypesMultipart", status_code=status.HTTP_201_CREATED)
-async def create_agent_type_multipart(
-    jsondata: Annotated[str, Form()],
-    file: UploadFile
-):
-
-    agent_type_data = json.loads(jsondata)
-    print(json.loads(jsondata))
-    print(file)
-
-    timestamp = int(time.time() * 3)
-
-    filename = f"agent-type-{timestamp}.png"
-
-    file_path = UPLOAD_FOLDER / filename
-
-    # Save file
-    with file_path.open("wb") as buffer:
-        buffer.write(await file.read())
-
-    agent_type = jsonable_encoder(agent_type_data)
-    agent_type["thumbnail"] = filename
-    mongo_client = MongoCRUDClient()
-    created_agent_type = mongo_client.create_document("agent_types", agent_type)
-    return created_agent_type
-
-
 @router.get("/agentTypes", response_model=List[AgentType])
 def list_agent_types(request: Request):
     mongo_client = MongoCRUDClient()

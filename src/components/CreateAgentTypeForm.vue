@@ -7,7 +7,7 @@
       movement speed: <input v-model="itemForm.nominalSpeed" type="number" placeholder="1" /><br />
       animationSet:
       <select v-model="itemForm.animationSet">
-        <option value="">-- select animation set --</option>
+        <option :value="null">-- select animation set --</option>
         <option :value="animationSet" v-for="animationSet in store.animationSets">{{ animationSet.name }}</option>
       </select><br />
       thumbnail: {{ itemForm.thumbnail }}<br />
@@ -39,7 +39,7 @@ export default {
       name: '',
       height: 50,
       width: 50,
-      animationSet: '',
+      animationSet: null,
       thumbnail: '',
       nominalSpeed: 0.02,
       positionX: 100,
@@ -53,7 +53,7 @@ export default {
       formData.append("imageType", "thumbnail")
       formData.append("file", imageFile)
 
-      const createdResponse = await api.uploadFile(formData.value)
+      const createdResponse = await api.uploadFile(formData)
       itemForm.value.thumbnail = createdResponse.filename
     }
 
@@ -69,7 +69,6 @@ export default {
           x: itemForm.value.positionX,
           y: itemForm.value.positionY
         },
-        scale: 1,
         nominalSpeed: Number(itemForm.value.nominalSpeed),
         animationSet: itemForm.value.animationSet,
         thumbnail: itemForm.value.thumbnail
