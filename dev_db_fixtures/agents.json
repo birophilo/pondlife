@@ -136,11 +136,107 @@
         }
     },
     {
-        "_id": "67b126649d33fa0fab203be9",
+        "_id": "67b8dd1295db79bed57779a3",
+        "agentType": "someOtherVan",
+        "position": {
+            "x": 708,
+            "y": 467
+        }
+    },
+    {
+        "_id": "67b8e6af95db79bed5777a43",
+        "agentType": "someOtherVan",
+        "position": {
+            "x": 239,
+            "y": 514
+        }
+    },
+    {
+        "_id": "67b8ed972118a2b40ed5bcbf",
+        "agentType": "someOtherVan",
+        "position": {
+            "x": 341,
+            "y": 317
+        }
+    },
+    {
+        "_id": "67b9177fad2e7d1475d3e74d",
+        "agentType": "someOtherVan",
+        "position": {
+            "x": 457,
+            "y": 165
+        }
+    },
+    {
+        "_id": "67b9288e8b51703c50f56047",
+        "agentType": "customer",
+        "position": {
+            "x": 234,
+            "y": 249
+        }
+    },
+    {
+        "_id": "67b9289f8b51703c50f5604c",
+        "agentType": "someOtherVan",
+        "position": {
+            "x": 662,
+            "y": 153
+        }
+    },
+    {
+        "_id": "67b92a818b51703c50f5606f",
         "agentType": "dog",
         "position": {
-            "x": 72,
-            "y": 164
+            "x": 88,
+            "y": 355
+        }
+    },
+    {
+        "_id": "67b92b688b51703c50f56087",
+        "agentType": "dog",
+        "position": {
+            "x": 46,
+            "y": 96
+        }
+    },
+    {
+        "_id": "67b92d978b51703c50f56098",
+        "agentType": "Carrot",
+        "position": {
+            "x": 668,
+            "y": 311
+        }
+    },
+    {
+        "_id": "67b92d9a8b51703c50f5609b",
+        "agentType": "dog",
+        "position": {
+            "x": 582,
+            "y": 364
+        }
+    },
+    {
+        "_id": "67b92da38b51703c50f560a0",
+        "agentType": "customer",
+        "position": {
+            "x": 322,
+            "y": 91
+        }
+    },
+    {
+        "_id": "67b930edb059a3df7f04201e",
+        "agentType": "lemonadeStall",
+        "position": {
+            "x": 779,
+            "y": 186
+        }
+    },
+    {
+        "_id": "67b9311af6cc71d586b49ad6",
+        "agentType": "lemonadeStall",
+        "position": {
+            "x": 390,
+            "y": 416
         }
     }
 ]

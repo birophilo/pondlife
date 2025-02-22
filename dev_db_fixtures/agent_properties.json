@@ -41,5 +41,16 @@
         "agentTypes": [
             "dog"
         ]
+    },
+    {
+        "_id": "67b8e57a95db79bed57779f4",
+        "name": "water",
+        "valueType": "int",
+        "initialValue": 50,
+        "applyTo": "agentType",
+        "agentTypes": [
+            "someOtherVan"
+        ],
+        "description": "supply van water"
     }
 ]

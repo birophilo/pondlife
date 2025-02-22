@@ -2,7 +2,7 @@
     {
         "_id": "67a251fa0370e42b011a2bae",
         "name": "CustomerWalkUp",
-        "src": "/img/sprites/GirlSample_Walk_Up.png",
+        "src": "spritesheet-spritesheet-5220518758.png",
         "columns": 4,
         "rows": 3,
         "numImages": 9,
@@ -11,7 +11,7 @@
     {
         "_id": "67a251fa0370e42b011a2baf",
         "name": "CustomerWalkUpLeft",
-        "src": "/img/sprites/GirlSample_Walk_UpLeft.png",
+        "src": "spritesheet-spritesheet-5220518802.png",
         "columns": 4,
         "rows": 3,
         "numImages": 9,
@@ -20,7 +20,7 @@
     {
         "_id": "67a251fa0370e42b011a2bb0",
         "name": "CustomerWalkUpRight",
-        "src": "/img/sprites/GirlSample_Walk_UpRight.png",
+        "src": "spritesheet-spritesheet-5220518835.png",
         "columns": 4,
         "rows": 3,
         "numImages": 9,
@@ -29,7 +29,7 @@
     {
         "_id": "67a251fa0370e42b011a2bb1",
         "name": "CustomerWalkLeft",
-        "src": "/img/sprites/GirlSample_Walk_Left.png",
+        "src": "spritesheet-spritesheet-5220518871.png",
         "columns": 4,
         "rows": 3,
         "numImages": 9,
@@ -38,7 +38,7 @@
     {
         "_id": "67a251fa0370e42b011a2bb2",
         "name": "CustomerWalkRight",
-        "src": "/img/sprites/GirlSample_Walk_Right.png",
+        "src": "spritesheet-spritesheet-5220518901.png",
         "columns": 4,
         "rows": 3,
         "numImages": 9,
@@ -47,7 +47,7 @@
     {
         "_id": "67a251fa0370e42b011a2bb3",
         "name": "CustomerWalkDownLeft",
-        "src": "/img/sprites/GirlSample_Walk_DownLeft.png",
+        "src": "spritesheet-spritesheet-5220518936.png",
         "columns": 4,
         "rows": 3,
         "numImages": 9,
@@ -56,7 +56,7 @@
     {
         "_id": "67a251fa0370e42b011a2bb4",
         "name": "CustomerWalkDown",
-        "src": "/img/sprites/GirlSample_Walk_Down.png",
+        "src": "spritesheet-spritesheet-5220518959.png",
         "columns": 4,
         "rows": 3,
         "numImages": 9,
@@ -65,7 +65,7 @@
     {
         "_id": "67a251fa0370e42b011a2bb5",
         "name": "CustomerWalkDownRight",
-        "src": "/img/sprites/GirlSample_Walk_DownRight.png",
+        "src": "spritesheet-spritesheet-5220518987.png",
         "columns": 4,
         "rows": 3,
         "numImages": 9,
@@ -74,7 +74,7 @@
     {
         "_id": "67a251fa0370e42b011a2bb6",
         "name": "CustomerIdle",
-        "src": "/img/sprites/GirlSample_Walk_Down.png",
+        "src": "spritesheet-spritesheet-5220519037.png",
         "columns": 4,
         "rows": 3,
         "numImages": 1,
@@ -83,7 +83,7 @@
     {
         "_id": "67a80c9c6dae6de3690c5f27",
         "name": "DogWalkUp",
-        "src": "/img/sprites/DogWalkUp.png",
+        "src": "spritesheet-spritesheet-5220565240.png",
         "columns": 8,
         "rows": 1,
         "numImages": 8,
@@ -92,7 +92,7 @@
     {
         "_id": "67a80cc26dae6de3690c5f2b",
         "name": "DogWalkUpLeft",
-        "src": "/img/sprites/DogWalkUpLeft.png",
+        "src": "spritesheet-spritesheet-5220565284.png",
         "columns": 8,
         "rows": 1,
         "numImages": 8,
@@ -101,7 +101,7 @@
     {
         "_id": "67a80cf46dae6de3690c5f2e",
         "name": "DogWalkUpRight",
-        "src": "/img/sprites/DogWalkUpRight.png",
+        "src": "spritesheet-spritesheet-5220565316.png",
         "columns": 8,
         "rows": 1,
         "numImages": 8,
@@ -110,7 +110,7 @@
     {
         "_id": "67a80d0a6dae6de3690c5f31",
         "name": "DogWalkLeft",
-        "src": "/img/sprites/DogWalkLeft.png",
+        "src": "spritesheet-spritesheet-5220565341.png",
         "columns": 8,
         "rows": 1,
         "numImages": 8,
@@ -119,7 +119,7 @@
     {
         "_id": "67a80d546dae6de3690c5f3a",
         "name": "DogWalkDownRight",
-        "src": "/img/sprites/DogWalkDownRight.png",
+        "src": "spritesheet-spritesheet-5220565403.png",
         "columns": 8,
         "rows": 1,
         "numImages": 8,
@@ -128,7 +128,7 @@
     {
         "_id": "67a80d696dae6de3690c5f3d",
         "name": "DogWalkDown",
-        "src": "/img/sprites/DogWalkDown.png",
+        "src": "spritesheet-spritesheet-5220565434.png",
         "columns": 8,
         "rows": 1,
         "numImages": 8,
@@ -137,7 +137,7 @@
     {
         "_id": "67a80d766dae6de3690c5f40",
         "name": "DogIdle",
-        "src": "/img/sprites/DogIdle.png",
+        "src": "spritesheet-spritesheet-5220565457.png",
         "columns": 8,
         "rows": 1,
         "numImages": 8,
@@ -146,7 +146,7 @@
     {
         "_id": "67ace794036d42b4a049435a",
         "name": "Carrot",
-        "src": "/img/sprites/Carrot.png",
+        "src": "spritesheet-spritesheet-5220517364.png",
         "columns": 1,
         "rows": 1,
         "numImages": 1,
@@ -155,7 +155,7 @@
     {
         "_id": "67ae4e7981ec1100c68d63db",
         "name": "DogWalkDownLeft",
-        "src": "/img/sprites/DogWalkDownLeft.png",
+        "src": "spritesheet-spritesheet-5220565496.png",
         "columns": 8,
         "rows": 1,
         "numImages": 8,
@@ -164,7 +164,7 @@
     {
         "_id": "67b121e99d33fa0fab203b30",
         "name": "LemonadeStallIdle",
-        "src": "/img/sprites/stall-1.png",
+        "src": "spritesheet-spritesheet-5220569774.png",
         "columns": 1,
         "rows": 1,
         "numImages": 1,
@@ -173,10 +173,91 @@
     {
         "_id": "67b129c59d33fa0fab203ccd",
         "name": "DogWalkRight",
-        "src": "/img/sprites/DogWalkRight.png",
+        "src": "spritesheet-spritesheet-5220565517.png",
         "columns": 8,
         "rows": 1,
         "numImages": 8,
         "refreshInterval": 5
+    },
+    {
+        "_id": "67b8d41395db79bed577791c",
+        "name": "SupplyVanIdle",
+        "src": "spritesheet-spritesheet-5220509598.png",
+        "columns": 1,
+        "rows": 1,
+        "numImages": 1,
+        "refreshInterval": 1
+    },
+    {
+        "_id": "67b8dae795db79bed577795a",
+        "name": "SupplyVanUpLeft",
+        "src": "spritesheet-spritesheet-5220509645.png",
+        "columns": 1,
+        "rows": 1,
+        "numImages": 1,
+        "refreshInterval": 1
+    },
+    {
+        "_id": "67b8db0695db79bed577795d",
+        "name": "SupplyVanUp",
+        "src": "spritesheet-spritesheet-5220509768.png",
+        "columns": 1,
+        "rows": 1,
+        "numImages": 1,
+        "refreshInterval": 1
+    },
+    {
+        "_id": "67b8db1595db79bed5777960",
+        "name": "SupplyVanUpRight",
+        "src": "spritesheet-spritesheet-5220509828.png",
+        "columns": 1,
+        "rows": 1,
+        "numImages": 1,
+        "refreshInterval": 1
+    },
+    {
+        "_id": "67b8db3695db79bed5777963",
+        "name": "SupplyVanLeft",
+        "src": "spritesheet-spritesheet-5220509856.png",
+        "columns": 1,
+        "rows": 1,
+        "numImages": 1,
+        "refreshInterval": 1
+    },
+    {
+        "_id": "67b8db4895db79bed5777966",
+        "name": "SupplyVanRight",
+        "src": "spritesheet-spritesheet-5220509883.png",
+        "columns": 1,
+        "rows": 1,
+        "numImages": 1,
+        "refreshInterval": 1
+    },
+    {
+        "_id": "67b8db6495db79bed577796a",
+        "name": "SupplyVanDownLeft",
+        "src": "spritesheet-spritesheet-5220509940.png",
+        "columns": 1,
+        "rows": 1,
+        "numImages": 1,
+        "refreshInterval": 1
+    },
+    {
+        "_id": "67b8db7e95db79bed577796d",
+        "name": "SupplyVanDown",
+        "src": "spritesheet-spritesheet-5220509970.png",
+        "columns": 1,
+        "rows": 1,
+        "numImages": 1,
+        "refreshInterval": 1
+    },
+    {
+        "_id": "67b8df5e95db79bed57779c5",
+        "name": "SupplyVanDownRight",
+        "src": "spritesheet-spritesheet-5220508159.png",
+        "columns": 1,
+        "rows": 1,
+        "numImages": 1,
+        "refreshInterval": 1
     }
 ]

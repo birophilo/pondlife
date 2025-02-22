@@ -70,5 +70,25 @@
         "sheets": {
             "idle": "67b121e99d33fa0fab203b30"
         }
+    },
+    {
+        "_id": "67b8d4ad95db79bed5777923",
+        "name": "SupplyVan",
+        "scale": 2,
+        "offset": {
+            "x": 0,
+            "y": 0
+        },
+        "sheets": {
+            "idle": "67b8db4895db79bed5777966",
+            "upLeft": "67b8dae795db79bed577795a",
+            "up": "67b8db0695db79bed577795d",
+            "upRight": "67b8db1595db79bed5777960",
+            "left": "67b8db3695db79bed5777963",
+            "right": "67b8db4895db79bed5777966",
+            "downLeft": "67b8db6495db79bed577796a",
+            "down": "67b8db7e95db79bed577796d",
+            "downRight": "67b8df5e95db79bed57779c5"
+        }
     }
 ]

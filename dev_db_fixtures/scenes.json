@@ -63,10 +63,21 @@
                 "67a252bb0370e42b011a2bbb",
                 "67a252bb0370e42b011a2bbc",
                 "67a8197ef6d7fc93893f35c2",
-                "67ace7ba036d42b4a0494360"
+                "67ace7ba036d42b4a0494360",
+                "67b8d38895db79bed5777911"
             ],
             "agentInstances": [
-                "67b126649d33fa0fab203be9"
+                "67b9288e8b51703c50f56047",
+                "67b92da38b51703c50f560a0",
+                "67b930edb059a3df7f04201e",
+                "67b9311af6cc71d586b49ad6",
+                "67b92a818b51703c50f5606f",
+                "67b92b688b51703c50f56087",
+                "67b92d9a8b51703c50f5609b",
+                "67b92d978b51703c50f56098",
+                "67b8ed972118a2b40ed5bcbf",
+                "67b9177fad2e7d1475d3e74d",
+                "67b9289f8b51703c50f5604c"
             ],
             "conditions": [
                 "67a250f70370e42b011a2ba6",
@@ -85,7 +96,8 @@
                 "67af8eb793185d9278f7e13d"
             ],
             "agentProperties": [
-                "67ad22df8ed4af6b4da8689f"
+                "67ad22df8ed4af6b4da8689f",
+                "67b8e57a95db79bed57779f4"
             ],
             "spritesheets": [
                 "67a251fa0370e42b011a2bae",
@@ -106,12 +118,24 @@
                 "67a80d766dae6de3690c5f40",
                 "67ace794036d42b4a049435a",
                 "67ae4e7981ec1100c68d63db",
-                "67b129c59d33fa0fab203ccd"
+                "67b121e99d33fa0fab203b30",
+                "67b129c59d33fa0fab203ccd",
+                "67b8d41395db79bed577791c",
+                "67b8dae795db79bed577795a",
+                "67b8db0695db79bed577795d",
+                "67b8db1595db79bed5777960",
+                "67b8db3695db79bed5777963",
+                "67b8db4895db79bed5777966",
+                "67b8db6495db79bed577796a",
+                "67b8db7e95db79bed577796d",
+                "67b8df5e95db79bed57779c5"
             ],
             "animationSets": [
                 "67a2525d0370e42b011a2bb9",
                 "67a80db26dae6de3690c5f43",
-                "67ace7a0036d42b4a049435d"
+                "67ace7a0036d42b4a049435d",
+                "67b122019d33fa0fab203b33",
+                "67b8d4ad95db79bed5777923"
             ],
             "propertyChanges": [
                 "67ad230f8ed4af6b4da868a7",
@@ -120,7 +144,11 @@
             "firstActions": {
                 "lemonadeStall": null,
                 "dog": "67ad1d21036d42b4a04943be",
-                "Carrot": null
+                "Carrot": null,
+                "VanThing": null,
+                "someVan": null,
+                "anotherNullThing": null,
+                "someOtherVan": null
             }
         },
         "createdAt": 1738690074561,
