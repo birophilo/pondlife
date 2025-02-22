@@ -15,7 +15,8 @@ export function createAgentObject (
     position,
     agentType.previewImage,
     agentType.animationSet,
-    agentType.initialSpriteSheet  // not currently in object?
+    agentType
+    // agentType.initialSpriteSheet  // not currently in object?
   )
 
   let agentObject = {

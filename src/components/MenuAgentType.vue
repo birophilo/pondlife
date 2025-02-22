@@ -9,7 +9,7 @@
         animationSet:
         <select v-model="itemForm.animationSet">
           <option :value="null">-- select animation set --</option>
-          <option :value="animationSet" v-for="animationSet in store.animationSets">{{ animationSet.name }}</option>
+          <option v-for="animationSet in store.animationSets" :value="animationSet.id">{{ animationSet.name }}</option>
         </select>
         <br />
         thumbnail: {{ itemForm.thumbnail }}<br />
@@ -84,7 +84,7 @@ export default {
         name: props.agentType.name,
         height: props.agentType.height,
         width: props.agentType.width,
-        animationSet: props.agentType.animationSet,
+        animationSet: props.agentType.animationSet?.id,
         thumbnail: props.agentType.thumbnail,
         nominalSpeed: props.agentType.nominalSpeed,
         positionX: props.agentType.offset.x,

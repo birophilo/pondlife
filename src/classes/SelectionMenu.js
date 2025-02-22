@@ -110,7 +110,7 @@ export class AgentMenuIcon extends AgentMenuButton {
     this.name = name
     this.agent = Agent
     this.thumbnail = new Image()
-    this.thumbnail.src = agentType.thumbnail
+    this.thumbnail.src = '/media/' + agentType.thumbnail
     this.agentType = agentType
   }
 
@@ -170,14 +170,14 @@ export class AgentPreview {
     this.width = agentType.width,
     this.height = agentType.height,
     this.image = new Image()
-    this.image.src = agentType.previewImage
+    this.image.src = "/media/" + agentType.previewImage
 
     if (agentType.defaultSpritesheet !== undefined) {
       this.image.src = agentType.defaultSpritesheet
       this.spritesheet = agentType.defaultSpritesheet
     } else {
       try {
-        this.image.src = agentType.animationSet.sheets['idle'].src
+        this.image.src = "/media/" + agentType.animationSet.sheets['idle'].src
         this.spritesheet = agentType.animationSet.sheets['idle']
       } catch (error) {
         console.log(`Could not load image for ${agentType.name}: ${error}`)

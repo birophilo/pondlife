@@ -1,7 +1,7 @@
 <template>
-  <div v-if="isAdding === true">
+  <div v-if="isAdding === true" class="spritesheet-form">
     name: <input v-model="itemForm.name" type="text" placeholder="name" /><br />
-    src: <input type="file" placeholder="src" @change="updateSpritesheetFileInput($event)" /><br />
+    src: <input type="file" placeholder="src" @change="uploadFile" /><br />
     rows: <input v-model="itemForm.rows" type="number" placeholder="rows" /><br />
     columns: <input v-model="itemForm.columns" type="number" placeholder="columns" /><br />
     numImages: <input v-model="itemForm.numImages" type="number" placeholder="number of images" /><br />
@@ -9,7 +9,7 @@
     <button @click="createSpriteSheet()">create sprite sheet</button>
     <button @click="isAdding = false">cancel</button>
   </div>
-  <div v-else>
+  <div v-else class="spritesheet-form">
     <button @click="isAdding = true">new sprite sheet</button>
   </div>
 </template>
@@ -63,14 +63,31 @@ export default {
       }
     }
 
-    const updateSpritesheetFileInput = (event) => {
-      const fileName = "/img/sprites/" + event.target.files[0].name
-      itemForm.value.src = fileName
-      // TODO: update AnimationSet here?
+    const uploadFile = async (event) => {
+      const imageFile = event.target.files[0]
+      let formData = new FormData()
+      formData.append("resource", "spritesheet")
+      formData.append("imageType", "spritesheet")
+      formData.append("file", imageFile)
+
+      const createdResponse = await api.uploadFile(formData)
+      itemForm.value.src = createdResponse.filename
     }
 
-    return { store, isAdding, itemForm, createSpriteSheet, updateSpritesheetFileInput }
+    return {
+      store,
+      isAdding,
+      itemForm,
+      createSpriteSheet,
+      uploadFile
+    }
   }
 }
 </script>
+
+<style>
+.spritesheet-form {
+  border-top: 1px solid #e8b9ad;
+}
+</style>
 

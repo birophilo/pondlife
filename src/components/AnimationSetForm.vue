@@ -19,10 +19,10 @@
         </tr>
       </table>
 
-      <button @click="createItem">create sprite map</button>
+      <button @click="createItem">create animation set</button>
     </div>
     <div v-else>
-      <button @click="isAdding = true">new sprite map</button>
+      <button @click="isAdding = true">new animation set</button>
     </div>
   </div>
 </template>

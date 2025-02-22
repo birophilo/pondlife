@@ -80,6 +80,7 @@
       </div>
       <SpriteSheetForm />
 
+      <div class="agent-type-menu-container"></div>
       <h3 class="menu-section-heading">Animation Sets</h3>
       <div v-for="(animationSet, index) in store.animationSets">
         <MenuAnimationSet :animationSet="animationSet" :i="index" />
@@ -235,7 +236,14 @@ export default {
         store.agentTypes[agentType.name] = agentType
       })
 
+
       const agentTypeNames = Object.keys(store.agentTypes)
+
+      agentTypeNames.forEach(agentTypeName => {
+        const animationSetId = store.agentTypes[agentTypeName].animationSet
+        const animationSet = store.animationSets.find(a => a.id === animationSetId)
+        store.agentTypes[agentTypeName].animationSet = animationSet
+      })
 
       // populate agents from initial data
       agentTypeNames.forEach(agentTypeName => {
@@ -434,8 +442,8 @@ export default {
           if (emissions) {
             if (emissions.agentsToDelete?.length > 0) {
               emissions.agentsToDelete.forEach(agent => {
-                const agentType = agent.agentType
-                const agentItems = store.agentItems[agentType]
+                const agentTypeName = agent.agentType.name
+                const agentItems = store.agentItems[agentTypeName]
                 const agentToDelete = agentItems.find(ag => ag.id === agent.id)
                 const i = agentItems.indexOf(agentToDelete)
                 deleteAgent(agentToDelete, agentItems, i)

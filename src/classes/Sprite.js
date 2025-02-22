@@ -2,6 +2,7 @@ export function createSpriteObject (
   position = {x: 0, y: 0},
   previewImage,
   animationSet = null,
+  agentType
   // defaultSpriteSheet = 'idle'
 ) {
   const item = {
@@ -27,7 +28,8 @@ export function createSpriteObject (
     }
   }
 
-  item.image.src = previewImage
+  item.image.src = '/media/' + previewImage
+  item.agentType = agentType
 
   return item
 }
@@ -72,6 +74,8 @@ export class SpriteHandler {
       )
     } catch(error) {
       console.log(error)
+      console.log(item.image)
+      console.log(item.image.src)
     }
 
   }
@@ -94,7 +98,7 @@ export class SpriteHandler {
   useSpriteSheet(spriteSheetName, item) {
     if (item.animationSet !== null) {
       const spriteSheet = item.animationSet.sheets[spriteSheetName]
-      item.image.src = spriteSheet.src
+      item.image.src = '/media/' + spriteSheet.src
 
       item.frames = {
         ...item.frames,

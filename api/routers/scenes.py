@@ -58,10 +58,12 @@ async def get_scene_data(scene_id):
     agent_types = mongo_client.get_documents_from_ids("agent_types", scene_data["agentTypes"])
     payload["data"]["agentTypes"] = agent_types
 
-    spritesheets = mongo_client.get_documents_from_ids("spritesheets", scene_data["spritesheets"])
+    # spritesheets = mongo_client.get_documents_from_ids("spritesheets", scene_data["spritesheets"])
+    spritesheets = mongo_client.list_documents("spritesheets")
     payload["data"]["spritesheets"] = spritesheets
 
-    animation_sets = mongo_client.get_documents_from_ids("animation_sets", scene_data["animationSets"])
+    # animation_sets = mongo_client.get_documents_from_ids("animation_sets", scene_data["animationSets"])
+    animation_sets = mongo_client.list_documents("animation_sets")
     payload["data"]["animationSets"] = animation_sets
 
     actions = mongo_client.get_documents_from_ids("actions", scene_data["actions"])

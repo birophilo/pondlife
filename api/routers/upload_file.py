@@ -5,7 +5,7 @@ from typing import Annotated
 from fastapi import APIRouter, Form, status, UploadFile
 
 
-UPLOAD_FOLDER = Path("media")
+UPLOAD_FOLDER = Path("../public/media")
 UPLOAD_FOLDER.mkdir(parents=True, exist_ok=True)
 
 

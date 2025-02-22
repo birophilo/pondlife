@@ -70,7 +70,7 @@ export default {
           y: itemForm.value.positionY
         },
         nominalSpeed: Number(itemForm.value.nominalSpeed),
-        animationSet: itemForm.value.animationSet,
+        animationSet: itemForm.value.animationSet.id,
         thumbnail: itemForm.value.thumbnail
       }
 
