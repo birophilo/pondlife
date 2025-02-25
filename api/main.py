@@ -14,27 +14,29 @@ from routers import (
     actions,
     property_changes,
     agent_properties,
-    upload_file
+    upload_file,
+    auth
 )
 
 
-def create_application() -> FastAPI:
-    application = FastAPI()
-    application.include_router(hello.router)
-    application.include_router(scenes.router)
-    application.include_router(conditions.router)
-    application.include_router(spritesheets.router)
-    application.include_router(animation_sets.router)
-    application.include_router(agent_types.router)
-    application.include_router(agents.router)
-    application.include_router(actions.router)
-    application.include_router(property_changes.router)
-    application.include_router(agent_properties.router)
-    application.include_router(upload_file.router)
-    return application
+def create_app() -> FastAPI:
+    app = FastAPI()
+    app.include_router(hello.router)
+    app.include_router(scenes.router)
+    app.include_router(conditions.router)
+    app.include_router(spritesheets.router)
+    app.include_router(animation_sets.router)
+    app.include_router(agent_types.router)
+    app.include_router(agents.router)
+    app.include_router(actions.router)
+    app.include_router(property_changes.router)
+    app.include_router(agent_properties.router)
+    app.include_router(upload_file.router)
+    app.include_router(auth.router)
+    return app
 
 
-app = create_application()
+app = create_app()
 
 origins = [
     "http://localhost:8000",

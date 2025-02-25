@@ -1,4 +1,3 @@
-from datetime import datetime
 from typing import Any, List
 
 from pydantic import BaseModel, ConfigDict
@@ -148,3 +147,9 @@ class Scene(BaseModel):
     last_modified: int
 
     model_config = ConfigDict(alias_generator=to_camel)
+
+
+class UserSignup(BaseModel):
+    username: str
+    password: str
+    email: str
