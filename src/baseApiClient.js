@@ -1,4 +1,16 @@
+import axios from 'axios'
+
+
 const BASE_URL = 'http://localhost:8000'
+
+
+const apiClient = axios.create({
+  baseURL: BASE_URL,
+  headers: {
+    Accept: 'application/json',
+    'Content-Type': 'application/json'
+  }
+})
 
 
 export default {
@@ -6,7 +18,7 @@ export default {
     this.loading = true
     this.error = null
     try {
-      const response = await fetch(`${BASE_URL}/${resource}/${id}`)
+      const response = await apiClient.get(`${BASE_URL}/${resource}/${id}`)
       const resp = await response.json()
       return resp
     } catch (error) {
@@ -18,7 +30,7 @@ export default {
     this.loading = true
     this.error = null
     try {
-      const response = await fetch(`${BASE_URL}/${resourcePlural}/`)
+      const response = await apiClient.get(`${BASE_URL}/${resourcePlural}/`)
       const resp = await response.json()
       return resp
     } catch (error) {
@@ -28,15 +40,9 @@ export default {
 
   createItem: async function (resourcePlural, data) {
     try {
-      const response = await fetch(
-        `${BASE_URL}/${resourcePlural}/`, {
-          method: 'POST',
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json;charset=UTF-8",
-          },
-          body: JSON.stringify(data)
-        }
+      const response = await apiClient.post(
+        `${BASE_URL}/${resourcePlural}/`,
+        JSON.stringify(data)
       )
       const resp = await response.json()
       return resp
@@ -47,11 +53,9 @@ export default {
 
   uploadImage: async function (formData) {
     try {
-      const response = await fetch(
-        `${BASE_URL}/uploadImage`, {
-          method: 'POST',
-          body: formData
-        }
+      const response = await apiClient.post(
+        `${BASE_URL}/uploadImage`,
+        formData
       )
       const resp = await response.json()
       return resp
@@ -62,15 +66,7 @@ export default {
 
   deleteItem: async function (resource, id) {
     try {
-      const response = await fetch(
-        `${BASE_URL}/${resource}/${id}`, {
-          method: 'DELETE',
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json;charset=UTF-8",
-          },
-        }
-      )
+      const response = await apiClient.delete(`${BASE_URL}/${resource}/${id}`)
       const resp = await response.json()
       return resp.id
     } catch (error) {
@@ -80,15 +76,9 @@ export default {
 
   updateItem: async function (resource, data) {
     try {
-      const response = await fetch(
-        `${BASE_URL}/${resource}/${data.id}`, {
-          method: 'PUT',
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json;charset=UTF-8",
-          },
-          body: JSON.stringify(data)
-        }
+      const response = await apiClient.put(
+        `${BASE_URL}/${resource}/${data.id}`,
+        JSON.stringify(data)
       )
       const resp = await response.json()
       return resp
