@@ -19,10 +19,9 @@ export default {
     this.error = null
     try {
       const response = await apiClient.get(`${BASE_URL}/${resource}/${id}`)
-      const resp = await response.json()
-      return resp
+      return response.data
     } catch (error) {
-      this.error = error.message
+      return { error: error.message }
     }
   },
 
@@ -31,10 +30,9 @@ export default {
     this.error = null
     try {
       const response = await apiClient.get(`${BASE_URL}/${resourcePlural}/`)
-      const resp = await response.json()
-      return resp
+      return response.data
     } catch (error) {
-      this.error = error.message
+      return { error: error.message }
     }
   },
 
@@ -44,10 +42,11 @@ export default {
         `${BASE_URL}/${resourcePlural}/`,
         JSON.stringify(data)
       )
-      const resp = await response.json()
-      return resp
+      console.log("CREATED")
+      console.log(response.data)
+      return response.data
     } catch (error) {
-      this.error = error.message
+      return { error: error.message }
     }
   },
 
@@ -57,20 +56,18 @@ export default {
         `${BASE_URL}/uploadImage`,
         formData
       )
-      const resp = await response.json()
-      return resp
+      return response.data
     } catch (error) {
-      this.error = error.message
+      return { error: error.message }
     }
   },
 
   deleteItem: async function (resource, id) {
     try {
       const response = await apiClient.delete(`${BASE_URL}/${resource}/${id}`)
-      const resp = await response.json()
-      return resp.id
+      return response.id
     } catch (error) {
-      this.error = error.message
+      return { error: error.message }
     }
   },
 
@@ -80,10 +77,11 @@ export default {
         `${BASE_URL}/${resource}/${data.id}`,
         JSON.stringify(data)
       )
-      const resp = await response.json()
-      return resp
+      console.log("UPDATED")
+      console.log(response.data)
+      return response.data
     } catch (error) {
-      this.error = error.message
+      return { error: error.message }
     }
   }
 

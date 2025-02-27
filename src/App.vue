@@ -1,4 +1,7 @@
 <template>
+
+<!-- <NavTopLogin /> -->
+
 <div id="container">
 
   <div v-show="store.displaySceneMenu" class="scene-menu-modal">
@@ -168,6 +171,7 @@ import CreateAgentPropertyForm from '@/components/CreateAgentPropertyForm.vue'
 import MenuAgentInitialProperty from '@/components/MenuAgentInitialProperty.vue'
 import ModalLoadObject from '@/components/ModalLoadObject.vue'
 import AgentTypeFirstActionMenu from '@/components/AgentTypeFirstActionMenu.vue'
+// import NavTopLogin from './components/NavTopLogin.vue'
 
 
 let canvas;
@@ -195,7 +199,8 @@ export default {
     CreateAgentPropertyForm,
     MenuAgentInitialProperty,
     ModalLoadObject,
-    AgentTypeFirstActionMenu
+    AgentTypeFirstActionMenu,
+    // NavTopLogin
   },
   setup() {
     const store = useStore()
@@ -699,6 +704,7 @@ export default {
       canvas.addEventListener('mousemove', (event) => {
         store.mouse.x = event.pageX
         store.mouse.y = event.pageY
+        console.log(store.mouse.x, store.mouse.y)
       })
 
       canvas.addEventListener('click', (event) => {
@@ -821,6 +827,7 @@ body {
 }
 
 #container {
+  position: relative;
   display: flex;
   width: 100%;
   justify-content: left;
