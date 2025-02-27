@@ -80,7 +80,6 @@ export default {
     return baseApiClient.deleteItem('propertyChange', id)
   },
   createAgent (data) {
-    console.log("CREATING AGENT IN APICRUD")
     return baseApiClient.createItem('agents', data)
   },
   getAgent (id) {

@@ -1,6 +1,6 @@
 <template>
 
-<!-- <NavTopLogin /> -->
+<NavTopLogin />
 
 <div id="container">
 
@@ -171,7 +171,7 @@ import CreateAgentPropertyForm from '@/components/CreateAgentPropertyForm.vue'
 import MenuAgentInitialProperty from '@/components/MenuAgentInitialProperty.vue'
 import ModalLoadObject from '@/components/ModalLoadObject.vue'
 import AgentTypeFirstActionMenu from '@/components/AgentTypeFirstActionMenu.vue'
-// import NavTopLogin from './components/NavTopLogin.vue'
+import NavTopLogin from './components/NavTopLogin.vue'
 
 
 let canvas;
@@ -200,7 +200,7 @@ export default {
     MenuAgentInitialProperty,
     ModalLoadObject,
     AgentTypeFirstActionMenu,
-    // NavTopLogin
+    NavTopLogin
   },
   setup() {
     const store = useStore()
@@ -702,13 +702,14 @@ export default {
       /* --- CLICK ACTIONS / EVENT LISTENERS --- */
 
       canvas.addEventListener('mousemove', (event) => {
-        store.mouse.x = event.pageX
-        store.mouse.y = event.pageY
+        store.mouse.x = event.offsetX
+        store.mouse.y = event.offsetY
         console.log(store.mouse.x, store.mouse.y)
       })
 
       canvas.addEventListener('click', (event) => {
-        const point = {x: event.x, y: event.y}
+
+        const point = {x: event.offsetX, y: event.offsetY}
 
         // PLACE NEW AGENT ON BOARD
         if (store.placingAgent) {
