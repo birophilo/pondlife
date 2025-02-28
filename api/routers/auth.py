@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta, timezone
+from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from jose import jwt
 from passlib.context import CryptContext
@@ -61,19 +62,20 @@ def signup(details: UserSignup, db: MongoClient = Depends(get_database)):
 
 
 @router.post("/login")
-def login(
-    form_data: OAuth2PasswordRequestForm = Depends(),
+async def login(
+    form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
     db: MongoClient = Depends(get_database)
 ):
-    user = get_user_by_username(db, form_data.username)
-    verified = verify_password(form_data.password, user["hashed_password"])
+    username, password = form_data.username, form_data.password
+    user = get_user_by_username(db, username)
+    verified = verify_password(password, user["hashed_password"])
     if not user or not verified:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid credentials"
         )
     access_token = create_access_token(data={"sub": user["username"]})
-    return {"accessToken": access_token, "tokenType": "bearer"}
+    return {"user": username, "accessToken": access_token, "tokenType": "bearer"}
 
 
 @router.post("/logout")

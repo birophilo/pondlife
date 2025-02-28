@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import authService from '@/services/authService'
 
 export const useAuthStore = defineStore('auth', () => {
@@ -7,8 +7,8 @@ export const useAuthStore = defineStore('auth', () => {
   const user = ref(null)
   const token = ref(authService.getToken())
 
-  const login = async () => {
-    const response = await authService.login()
+  const login = async (credentialsFormData) => {
+    const response = await authService.login(credentialsFormData)
     user.value = response.user
     token.value = response.accessToken
   }
@@ -19,10 +19,8 @@ export const useAuthStore = defineStore('auth', () => {
     token.value = null
   }
 
-  const isAuthenticated = ()  => {
-    return authService.isAuthenticated()
-  }
+  const isAuthenticated = computed(()  => !!token.value)
 
-  return { login, logout, isAuthenticated }
+  return { login, logout, user, isAuthenticated }
 
 }) 

@@ -1,7 +1,11 @@
 <template>
-  <nav v-if="isLoggingIn">
+  <nav v-if="authStore.isAuthenticated">
+    {{ authStore.user }} - logged in
+    <button @click="authStore.logout">log out</button>
+  </nav>
+  <nav v-else-if="isLoggingIn">
     <form @submit.prevent="handleLogin" class="top-nav-bar">
-      <input v-model="email" type="text" placeholder="email" />
+      <input v-model="username" type="text" placeholder="username" />
       <input v-model="password" type="password" placeholder="password" />
       <button type="submit">Log in</button>
       <div>reset password</div>
@@ -26,18 +30,23 @@ export default {
 
     const isLoggingIn = ref(false)
 
-    const email = ref('')
+    const username = ref('')
     const password = ref('')
 
     const handleLogin = async () => {
       console.log('Logging in')
-      const response = await authStore.login({ email: email.value, password: password.value })
-      console.log(response)
+      const formData = new FormData()
+      formData.append("username", username.value)
+      formData.append("password", password.value)
+      await authStore.login(formData)
+      username.value = ''
+      password.value = ''
     }
 
     return {
+      authStore,
       isLoggingIn,
-      email,
+      username,
       password,
       handleLogin
     }

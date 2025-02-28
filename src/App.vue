@@ -704,7 +704,6 @@ export default {
       canvas.addEventListener('mousemove', (event) => {
         store.mouse.x = event.offsetX
         store.mouse.y = event.offsetY
-        console.log(store.mouse.x, store.mouse.y)
       })
 
       canvas.addEventListener('click', (event) => {

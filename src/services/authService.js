@@ -7,17 +7,15 @@ const accessTokenName = 'PondlifeAccessToken'
 
 export default {
 
-  async login(credentials) {
+  async login(credentialsFormData) {
     try {
       const response = await axios.post(
         `${BASE_URL}/login`,
-        credentials
+        credentialsFormData
       )
       console.log(response.data)
       if (response.data.accessToken) {
-        localStorage.setItem(accessTokenName)
-        console.log('set token')
-        console.log(response.data.accessToken)
+        localStorage.setItem(accessTokenName, response.data.accessToken)
       }
       return response.data
     } catch(error) {
