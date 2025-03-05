@@ -1,12 +1,11 @@
 import json
 from typing import List
 
-from fastapi import APIRouter, Body, Request, Response, HTTPException, status
+from fastapi import APIRouter, Request, Response, HTTPException, status
 from fastapi.encoders import jsonable_encoder
 from mongo_client import MongoCRUDClient
 
 from schemas import AgentProperty
-from utils import transform_doc_id
 
 # https://github.com/mongodb-developer/pymongo-fastapi-crud/blob/main/routes.py
 
@@ -25,14 +24,14 @@ async def create_agent_property(request: Request):
 
 
 @router.get("/agentProperties", response_model=List[AgentProperty])
-def list_agent_properties(request: Request):
+def list_agent_properties():
     mongo_client = MongoCRUDClient()
     agent_properties = mongo_client.list_documents("agent_properties")
     return agent_properties
 
 
 @router.get("/agentProperty/{id}", response_model=AgentProperty)
-def get_agent_property(id: str, request: Request):
+def get_agent_property(id: str):
     mongo_client = MongoCRUDClient()
     agent_property = mongo_client.get_document("agent_properties", id)
     if agent_property is not None:
@@ -64,7 +63,7 @@ async def update_agent_property(id: str, request: Request):
 
 
 @router.delete("/agentProperty/{id}")
-def delete_agent_property(id: str, request: Request, response: Response):
+def delete_agent_property(id: str, response: Response):
     mongo_client = MongoCRUDClient()
     delete_result = mongo_client.delete_document("agent_properties", id)
 

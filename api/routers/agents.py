@@ -1,7 +1,7 @@
 import json
 from typing import List
 
-from fastapi import APIRouter, Body, Request, Response, HTTPException, status
+from fastapi import APIRouter, Request, Response, HTTPException, status
 from fastapi.encoders import jsonable_encoder
 from mongo_client import MongoCRUDClient
 
@@ -24,14 +24,14 @@ async def create_agent(request: Request):
 
 
 @router.get("/agents", response_model=List[AgentConstructor])
-def list_agents(request: Request):
+def list_agents():
     mongo_client = MongoCRUDClient()
     agents = mongo_client.list_documents("agents")
     return agents
 
 
 @router.get("/agent/{id}", response_model=AgentConstructor)
-def get_agent(id: str, request: Request):
+def get_agent(id: str):
     mongo_client = MongoCRUDClient()
     agent = mongo_client.get_document("agents", id)
     if agent is not None:
@@ -50,10 +50,10 @@ async def update_agent(id: str, request: Request):
 
     if len(agent) >= 1:
         mongo_client = MongoCRUDClient()
-        update_result = mongo_client.update_document("agents", agent)
-
-        if update_result.modified_count == 0:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Data for ID: {id} already matches saved document")
+        try:
+            mongo_client.update_document("agents", agent)
+        except Exception as e:
+            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Error updating {id}: {e}")
 
     item = mongo_client.get_document("agents", id=agent_id)
     if item is not None:
@@ -63,7 +63,7 @@ async def update_agent(id: str, request: Request):
 
 
 @router.delete("/agent/{id}")
-def delete_agent(id: str, request: Request, response: Response):
+def delete_agent(id: str, response: Response):
     mongo_client = MongoCRUDClient()
     delete_result = mongo_client.delete_document("agents", id)
 

@@ -1,7 +1,6 @@
 import json
-from typing import List
 
-from fastapi import APIRouter, Body, Request, Response, HTTPException, status
+from fastapi import APIRouter, Request, Response, HTTPException, status
 from fastapi.encoders import jsonable_encoder
 from mongo_client import MongoCRUDClient
 
@@ -23,14 +22,14 @@ async def create_action(request: Request):
 
 
 @router.get("/actions")
-def list_actions(request: Request):
+def list_actions():
     mongo_client = MongoCRUDClient()
     actions = mongo_client.list_documents("actions")
     return actions
 
 
 @router.get("/action/{id}")
-def get_action(id: str, request: Request):
+def get_action(id: str):
     mongo_client = MongoCRUDClient()
     action = mongo_client.get_document("actions", id)
     if action is not None:
@@ -60,7 +59,7 @@ async def update_action(id: str, request: Request):
 
 
 @router.delete("/action/{id}")
-def delete_action(id: str, request: Request, response: Response):
+def delete_action(id: str, response: Response):
     mongo_client = MongoCRUDClient()
 
     action = mongo_client.get_document("actions", id=id)

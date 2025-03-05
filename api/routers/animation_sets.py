@@ -1,12 +1,11 @@
 import json
 from typing import List
 
-from fastapi import APIRouter, Body, Request, Response, HTTPException, status
+from fastapi import APIRouter, Request, Response, HTTPException, status
 from fastapi.encoders import jsonable_encoder
 from mongo_client import MongoCRUDClient
 
 from schemas import AnimationSet
-from utils import transform_doc_id
 
 # https://github.com/mongodb-developer/pymongo-fastapi-crud/blob/main/routes.py
 
@@ -25,14 +24,14 @@ async def create_animation_set(request: Request):
 
 
 @router.get("/animationSets", response_model=List[AnimationSet])
-def list_animation_sets(request: Request):
+def list_animation_sets():
     mongo_client = MongoCRUDClient()
     animation_sets = mongo_client.list_documents("animation_sets")
     return animation_sets
 
 
 @router.get("/animationSet/{id}", response_model=AnimationSet)
-def get_animation_set(id: str, request: Request):
+def get_animation_set(id: str):
     mongo_client = MongoCRUDClient()
     animation_set = mongo_client.get_document("animation_sets", id)
     if animation_set is not None:
@@ -51,10 +50,10 @@ async def update_animation_set(id: str, request: Request):
 
     if len(animation_set) >= 1:
         mongo_client = MongoCRUDClient()
-        update_result = mongo_client.update_document("animation_sets", animation_set)
-
-        if update_result.modified_count == 0:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Data for ID: {id} already matches saved document")
+        try:
+            mongo_client.update_document("animation_sets", animation_set)
+        except Exception as e:
+            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Error updating {id}: {e}")
 
     item = mongo_client.get_document("animation_sets", id=animation_set_id)
     if item is not None:
@@ -64,7 +63,7 @@ async def update_animation_set(id: str, request: Request):
 
 
 @router.delete("/animationSet/{id}")
-def delete_animation_set(id: str, request: Request, response: Response):
+def delete_animation_set(id: str, response: Response):
     mongo_client = MongoCRUDClient()
     delete_result = mongo_client.delete_document("animation_sets", id)
 

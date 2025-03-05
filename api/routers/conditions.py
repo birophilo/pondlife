@@ -1,14 +1,11 @@
 import json
 from typing import List
 
-from fastapi import APIRouter, Body, Depends, Request, Response, HTTPException, status
+from fastapi import APIRouter, Request, Response, HTTPException, status
 from fastapi.encoders import jsonable_encoder
-from pymongo.database import Database
-from mongo_client import MongoCRUDClient
 
-from database import get_database
+from mongo_client import MongoCRUDClient
 from schemas import Condition
-from utils import transform_doc_id
 
 # https://github.com/mongodb-developer/pymongo-fastapi-crud/blob/main/routes.py
 
@@ -31,14 +28,14 @@ async def create_condition(request: Request):
 
 
 @router.get("/conditions", response_model=List[Condition])
-def list_conditions(request: Request):
+def list_conditions():
     mongo_client = MongoCRUDClient()
     conditions = mongo_client.list_documents("conditions")
     return conditions
 
 
 @router.get("/condition/{id}", response_model=Condition)
-def get_condition(id: str, request: Request):
+def get_condition(id: str):
     mongo_client = MongoCRUDClient()
     condition = mongo_client.get_document("conditions", id)
     if condition is not None:
@@ -57,10 +54,10 @@ async def update_condition(id: str, request: Request):
 
     if len(condition) >= 1:
         mongo_client = MongoCRUDClient()
-        update_result = mongo_client.update_document("conditions", condition)
-
-        if update_result.modified_count == 0:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Data for ID: {id} already matches saved document")
+        try:
+            mongo_client.update_document("conditions", condition)
+        except Exception as e:
+            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Error updating {id}: {e}")
 
     item = mongo_client.get_document("conditions", id=condition_id)
     if item is not None:
@@ -70,7 +67,7 @@ async def update_condition(id: str, request: Request):
 
 
 @router.delete("/condition/{id}")
-def delete_condition(id: str, request: Request, response: Response):
+def delete_condition(id: str, response: Response):
     mongo_client = MongoCRUDClient()
     delete_result = mongo_client.delete_document("conditions", id)
 

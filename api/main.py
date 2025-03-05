@@ -4,35 +4,37 @@ from fastapi.middleware.cors import CORSMiddleware
 
 
 from routers import (
-    hello,
-    scenes,
-    conditions,
-    spritesheets,
-    animation_sets,
-    agent_types,
-    agents,
     actions,
-    property_changes,
+    agents,
     agent_properties,
-    upload_file,
-    auth
+    agent_types,
+    animation_sets,
+    auth,
+    conditions,
+    hello,
+    property_changes,
+    scenes,
+    sensors,
+    spritesheets,
+    upload_file
 )
 
 
 def create_app() -> FastAPI:
     app = FastAPI()
-    app.include_router(hello.router)
-    app.include_router(scenes.router)
-    app.include_router(conditions.router)
-    app.include_router(spritesheets.router)
-    app.include_router(animation_sets.router)
-    app.include_router(agent_types.router)
-    app.include_router(agents.router)
     app.include_router(actions.router)
-    app.include_router(property_changes.router)
+    app.include_router(agents.router)
     app.include_router(agent_properties.router)
-    app.include_router(upload_file.router)
+    app.include_router(agent_types.router)
+    app.include_router(animation_sets.router)
     app.include_router(auth.router)
+    app.include_router(conditions.router)
+    app.include_router(hello.router)
+    app.include_router(property_changes.router)
+    app.include_router(scenes.router)
+    app.include_router(sensors.router)
+    app.include_router(spritesheets.router)
+    app.include_router(upload_file.router)
     return app
 
 

@@ -153,3 +153,14 @@ class UserSignup(BaseModel):
     username: str
     password: str
     email: str
+
+    model_config = ConfigDict(alias_generator=to_camel)
+
+
+class Sensor(BaseModel):
+    type: str  # "spatial"
+    range_type: str  # "circle"
+    radius: float
+    sample_interval: float
+
+    model_config = ConfigDict(alias_generator=to_camel)
