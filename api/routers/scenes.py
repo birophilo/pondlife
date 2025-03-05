@@ -34,6 +34,7 @@ async def get_scene_data(scene_id):
             "actions": [],
             "agentProperties": [],
             "propertyChanges": [],
+            "sensors": [],
             "firstActions": scene["data"]["firstActions"]
         },
         "createdAt": scene["createdAt"],
@@ -75,6 +76,9 @@ async def get_scene_data(scene_id):
     agent_properties = mongo_client.get_documents_from_ids("agent_properties", scene_data["agentProperties"])
     payload["data"]["agentProperties"] = agent_properties
 
+    sensors = mongo_client.list_documents("sensors")
+    payload["data"]["sensors"] = sensors
+
     return payload
 
 
@@ -111,6 +115,7 @@ async def create_scene(request: Request):
             "actions": [],
             "agentProperties": [],
             "propertyChanges": [],
+            "sensors": [],
             "firstActions": {}
         },
         "resource": "scene"
@@ -132,10 +137,16 @@ async def update_scene(id: str, request: Request):
         try:
             mongo_client.update_document("scenes", scene)
         except Exception as e:
-            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Error updating {id}: {e}")
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"Error updating {id}: {e}"
+            )
 
     item = mongo_client.get_document("scenes", id=scene_id)
     if item is not None:
         return item
 
-    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Scene with ID {id} not found")
+    raise HTTPException(
+        status_code=status.HTTP_404_NOT_FOUND,
+        detail=f"Scene with ID {id} not found"
+    )

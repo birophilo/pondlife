@@ -19,7 +19,7 @@
     </table>
 
     <br />
-    <button @click="saveItem()">save</button>
+    <button @click="saveItem">save</button>
     <button @click="cancelEdit">cancel</button>
   </div>
   <div v-else>
@@ -39,6 +39,10 @@ import api from '../apiCrud.js'
 
 export default {
   name: 'MenuAnimationSet',
+  props: {
+    animationSet: Object,
+    i: Number
+  },
   setup(props) {
     const store = useStore()
 
@@ -85,10 +89,6 @@ export default {
       cancelEdit,
       populateItemForm
     }
-  },
-  props: {
-    animationSet: Object,
-    i: Number
   }
 }
 </script>

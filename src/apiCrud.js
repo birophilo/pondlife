@@ -112,5 +112,17 @@ export default {
   },
   uploadFile (data) {
     return baseApiClient.uploadImage(data)
+  },
+  createSensor (data) {
+    return baseApiClient.createItem('sensors', data)
+  },
+  getSensor (id) {
+    return baseApiClient.getItem('sensor', id)
+  },
+  updateSensor (data) {
+    return baseApiClient.updateItem('sensor', data)
+  },
+  deleteSensor (id) {
+    return baseApiClient.deleteItem('sensor', id)
   }
 }

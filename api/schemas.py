@@ -49,8 +49,9 @@ class AgentType(BaseModel):
     height: float
     offset: XY
     nominal_speed: float
-    animation_set: str
+    animation_set: str | None = None
     thumbnail: str
+    sensors: List[str] = []  # Sensor IDs
     first_action: str | None = None
 
     model_config = ConfigDict(alias_generator=to_camel)
@@ -149,18 +150,19 @@ class Scene(BaseModel):
     model_config = ConfigDict(alias_generator=to_camel)
 
 
-class UserSignup(BaseModel):
-    username: str
-    password: str
-    email: str
+class Sensor(BaseModel):
+    name: str | None = None
+    type: str  # e.g. "spatial"
+    range_type: str  # e.g. "circle"
+    radius: float
+    sample_interval: float
 
     model_config = ConfigDict(alias_generator=to_camel)
 
 
-class Sensor(BaseModel):
-    type: str  # "spatial"
-    range_type: str  # "circle"
-    radius: float
-    sample_interval: float
+class UserSignup(BaseModel):
+    username: str
+    password: str
+    email: str
 
     model_config = ConfigDict(alias_generator=to_camel)

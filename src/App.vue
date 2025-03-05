@@ -139,6 +139,16 @@
       <ConditionCreateForm />
     </details>
 
+    <details class="menu-section" id="actions-section">
+      <summary class="menu-section-heading">Sensors</summary>
+      <div class="item-list">
+        <div v-for="(sensor, index) in store.sensors" class="created-item">
+          <MenuSensor :sensor="sensor" :i="index" />
+        </div>
+      </div>
+      <SensorCreateForm />
+    </details>
+
   </div>
 </div>
 </template>
@@ -171,7 +181,9 @@ import CreateAgentPropertyForm from '@/components/CreateAgentPropertyForm.vue'
 import MenuAgentInitialProperty from '@/components/MenuAgentInitialProperty.vue'
 import ModalLoadObject from '@/components/ModalLoadObject.vue'
 import AgentTypeFirstActionMenu from '@/components/AgentTypeFirstActionMenu.vue'
-import NavTopLogin from './components/NavTopLogin.vue'
+import NavTopLogin from '@/components/NavTopLogin.vue'
+import SensorCreateForm from '@/components/CreateSensorForm.vue'
+import MenuSensor from '@/components/MenuSensor.vue'
 
 
 let canvas;
@@ -200,7 +212,9 @@ export default {
     MenuAgentInitialProperty,
     ModalLoadObject,
     AgentTypeFirstActionMenu,
-    NavTopLogin
+    NavTopLogin,
+    SensorCreateForm,
+    MenuSensor
   },
   setup() {
     const store = useStore()
@@ -236,6 +250,8 @@ export default {
           animSet.sheets[sheet] = spriteSheet
         })
       })
+
+      store.sensors = [...store.sceneData.sensors]
 
       store.sceneData.agentTypes.forEach(agentType => {
         store.agentTypes[agentType.name] = agentType
