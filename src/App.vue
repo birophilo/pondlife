@@ -158,7 +158,7 @@
 import { onMounted, ref } from 'vue'
 import { useStore } from '@/store/mainStore.js'
 
-import { pointIsInArea } from '@/utils.js'
+import { pointIsInArea, rectanglesOverlap } from '@/utils.js'
 import { createAgentObject, AgentHandler } from '@/classes/Agent.js'
 import { ConditionHandler } from '@/classes/Condition.js'
 import { AgentMenu, AgentMenuIcon, DeleteButton, AgentPreview } from '@/classes/SelectionMenu.js'
@@ -404,6 +404,13 @@ export default {
       store.GlobalSettings.animationFrameId = animationId
 
       const agentTypeNames = Object.keys(store.agentItems)
+
+      // update agent knowledge via sensory input
+      agentTypeNames.forEach(agentTypeName => {
+        store.agentItems[agentTypeName].forEach(agent => {
+          updateAgentKnowledge(agent)
+        })
+      })
 
       // update each agent of each agent type
       agentTypeNames.forEach(agentTypeName => {
@@ -700,6 +707,34 @@ export default {
     const loadAgentTypesModal = async () => {
       store.displayLoadObjectModal = true
       agentTypeList.value = await api.listAgentTypes()
+    }
+
+    const updateAgentKnowledge = (agent) => {
+      const agentType = store.agentTypes.find(at => at.id === agent.agentType)
+      const sensor = store.sensors.find(sensor => sensor.id === agentType.sensor)
+      if (!sensor) return
+
+      const len = sensor.radius
+      const area = {
+        x: agent.center - len,
+        y: agent.center - len,
+        width: len * 2,
+        height: len * 2
+      }
+
+      if (!agent.knowledge) {
+        agent.knowledge = {
+          vicinity: {
+            agents: []
+          }
+        }
+      }
+
+      store.agents.forEach(agent => {
+        if (rectanglesOverlap(area, agent)) {
+          agent.knowledge.vicinity.agents.push(agent.id)
+        }
+      })
     }
 
     onMounted(() => {
