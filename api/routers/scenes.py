@@ -1,5 +1,6 @@
 
 import json
+import time
 
 from fastapi import APIRouter, Request, HTTPException, status
 
@@ -135,6 +136,8 @@ async def update_scene(id: str, request: Request):
     if len(scene) >= 1:
         mongo_client = MongoCRUDClient()
         try:
+            now = int(time.time() * 1000)
+            scene["lastModified"] = now
             mongo_client.update_document("scenes", scene)
         except Exception as e:
             raise HTTPException(

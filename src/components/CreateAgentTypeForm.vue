@@ -11,7 +11,6 @@
         <option :value="animationSet" v-for="animationSet in store.animationSets">{{ animationSet.name }}</option>
       </select><br />
       thumbnail: {{ itemForm.thumbnail }}<br />
-      <!-- <input type="file" placeholder="thumbnail" @change="updateThumbnailFileInput($event)" /><br /> -->
       <input type="file" @change="uploadFile" placeholder="media file upload" />
       <button @click="createAgentType">save agent type</button>
       <button @click="isAdding = false">cancel</button>

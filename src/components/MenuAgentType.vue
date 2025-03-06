@@ -6,14 +6,25 @@
         width: <input v-model="itemForm.width" type="number" placeholder="width" /><br />
         height: <input v-model="itemForm.height" type="number" placeholder="height" /><br />
         movement speed: <input v-model="itemForm.nominalSpeed" type="number" placeholder="1" /><br />
-        animationSet:
+
+        animation set:
         <select v-model="itemForm.animationSet">
           <option :value="null">-- select animation set --</option>
           <option v-for="animationSet in store.animationSets" :value="animationSet.id">{{ animationSet.name }}</option>
         </select>
         <br />
+
         thumbnail: {{ itemForm.thumbnail }}<br />
         <input type="file" placeholder="thumbnail" @change="uploadFile" /><br />
+
+        sensor: <select v-model="itemForm.sensor">
+          <option :value="null">no sensor</option>
+          <option
+            v-for="sensor in store.sensors"
+            :value="sensor.id"
+          >{{ sensor.name }}</option>
+        </select><br />
+
         <button @click="saveItem">save</button>
         <button @click="cancelEdit">cancel</button>
       </div>
@@ -42,18 +53,22 @@ export default {
 
     const isEditing = ref(false)
 
-    const itemFormData = {
-      name: props.agentType.name,
-      height: props.agentType.height,
-      width: props.agentType.width,
-      animationSet: props.agentType.animationSet,
-      thumbnail: props.agentType.thumbnail,
-      nominalSpeed: props.agentType.nominalSpeed,
-      positionX: 100,
-      positionY: 100
+    const populateItemForm = () => {
+      itemForm.value = {
+        id: props.agentType.id,
+        name: props.agentType.name,
+        height: props.agentType.height,
+        width: props.agentType.width,
+        animationSet: props.agentType.animationSet?.id,
+        thumbnail: props.agentType.thumbnail,
+        nominalSpeed: props.agentType.nominalSpeed,
+        positionX: props.agentType.offset.x,
+        positionY: props.agentType.offset.y,
+        sensor: props.agentType.sensor
+      }
     }
 
-    const itemForm = ref(itemFormData)
+    const itemForm = ref({})
 
     const deleteItem = () => {
       api.deleteAgentType(props.agentType.id)
@@ -76,20 +91,6 @@ export default {
     const cancelEdit = () => {
       isEditing.value = false
       itemForm.value = {}
-    }
-
-    const populateItemForm = () => {
-      itemForm.value = {
-        id: props.agentType.id,
-        name: props.agentType.name,
-        height: props.agentType.height,
-        width: props.agentType.width,
-        animationSet: props.agentType.animationSet?.id,
-        thumbnail: props.agentType.thumbnail,
-        nominalSpeed: props.agentType.nominalSpeed,
-        positionX: props.agentType.offset.x,
-        positionY: props.agentType.offset.y
-      }
     }
 
     const uploadFile = async (event) => {
@@ -115,7 +116,8 @@ export default {
         offset: {
           x: itemForm.value.positionX,
           y: itemForm.value.positionY
-        }
+        },
+        sensor: itemForm.value.sensor
       }
 
       api.updateAgentType(data)

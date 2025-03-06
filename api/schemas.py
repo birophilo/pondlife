@@ -51,7 +51,7 @@ class AgentType(BaseModel):
     nominal_speed: float
     animation_set: str | None = None
     thumbnail: str
-    sensors: List[str] = []  # Sensor IDs
+    sensor: str | None = None
     first_action: str | None = None
 
     model_config = ConfigDict(alias_generator=to_camel)
