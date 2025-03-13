@@ -192,6 +192,8 @@ let c;  // canvas context
 let dayLength = 1000 // frames
 const backgroundColor = 'rgb(220, 220, 220)'
 
+const UPDATE_AGENT_KNOWLEDGE_EVERY_X_FRAMES = 10
+
 export default {
   name: 'App',
   components: {
@@ -295,12 +297,20 @@ export default {
 
       // set initial properties, for each agent, of each agent type, for each property
       store.agentProperties.forEach(property => {
-        const agentTypes = property.agentTypes
-        agentTypes.forEach(agentType => {
-          const agentItems = store.agentItems[agentType]
+        const agentTypeNames = property.agentTypes
+        agentTypeNames.forEach(agentTypeName => {
+
+          // set initial property values for each agent
+          const agentItems = store.agentItems[agentTypeName]
           agentItems.forEach(agent => {
             agent.stateData[property.name] = property.initialValue
           })
+
+          // add properties to agentType model (this currently only in memory, not a DB field)
+          if (!store.agentTypes[agentTypeName].properties) {
+            store.agentTypes[agentTypeName].properties = []
+          }
+          store.agentTypes[agentTypeName].properties.push(property.name)
         })
       })
 
@@ -362,7 +372,7 @@ export default {
         const conditionId = transition.condition
         const condition = store.conditions.find(cond => cond.id === conditionId)
         const conditionHandler = new ConditionHandler()
-        const result = conditionHandler.evaluateCondition(condition, agent)
+        const result = conditionHandler.evaluateCondition(condition, agent, store)
         if (result === true) {
           const nextActionId = transition.nextAction
           const nextAction = store.actions.find(action => action.id === nextActionId)
@@ -408,7 +418,12 @@ export default {
       // update agent knowledge via sensory input
       agentTypeNames.forEach(agentTypeName => {
         store.agentItems[agentTypeName].forEach(agent => {
-          updateAgentKnowledge(agent)
+          if (animationId % UPDATE_AGENT_KNOWLEDGE_EVERY_X_FRAMES === 0) {
+            updateAgentKnowledge(agent)
+            if (animationId % 60 === 0) {
+              console.log(agent.knowledge)
+            }
+          }
         })
       })
 
@@ -603,13 +618,13 @@ export default {
         })
       }
 
-      if (action.actionType === 'interval') {
+      if (action.actionType === 'interval' && lastAction) {
         action.target = lastAction.target
       }
 
       if (action.actionType === 'removeAgent') {
 
-        if (action.agentType === 'currentTarget') {
+        if (action.agentType === 'currentTarget' && lastAction) {
           action.target = lastAction.target
         }
 
@@ -710,8 +725,9 @@ export default {
     }
 
     const updateAgentKnowledge = (agent) => {
-      const agentType = store.agentTypes.find(at => at.id === agent.agentType)
-      const sensor = store.sensors.find(sensor => sensor.id === agentType.sensor)
+      const agentTypeNames = Object.keys(store.agentTypes)
+
+      const sensor = store.sensors.find(sensor => sensor.id === agent.agentType.sensor)
       if (!sensor) return
 
       const len = sensor.radius
@@ -730,11 +746,21 @@ export default {
         }
       }
 
-      store.agents.forEach(agent => {
-        if (rectanglesOverlap(area, agent)) {
-          agent.knowledge.vicinity.agents.push(agent.id)
-        }
+      agent.knowledge.vicinity.agents = []
+
+      agentTypeNames.forEach(agentTypeName => {
+        store.agentItems[agentTypeName].forEach(ag => {
+          const agentArea = {x: ag.position.x, y: ag.position.y, width: ag.width, height: ag.height}
+
+          if (agent.id !== ag.id) {  // don't add own id to vicinity knowledge
+            if (rectanglesOverlap(area, agentArea)) {
+              agent.knowledge.vicinity.agents.push(ag.id)
+            }
+          }
+
+        })
       })
+
     }
 
     onMounted(() => {

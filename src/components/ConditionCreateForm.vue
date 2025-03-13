@@ -8,6 +8,7 @@
     <select v-model="itemForm.type">
       <option value="property">property</option>
       <option value="preset">preset</option>
+      <option value="vicinity">vicinity</option>
     </select>
     <br />
 
@@ -54,6 +55,39 @@
 
     </div>
 
+    <div v-else-if="itemForm.type === 'vicinity'">
+      <select
+        v-model="itemForm.forms.vicinity.agentType"
+        id="action-change-vicinity-name"
+      >
+        <option :value=null>-- select agent type --</option>
+        <option v-for="[agentTypeName, agentType] of Object.entries(store.agentTypes)" :value="agentType">
+          {{ agentTypeName }}
+        </option>
+      </select>
+
+      agent count: <input v-model="itemForm.forms.vicinity.value" type="number" />
+
+      <select v-model="itemForm.forms.vicinity.comparison">
+        <option value="">-- select comparison --</option>
+        <option value="isGreaterThan">is greater than</option>
+        <option value="isLessThan">is less than</option>
+      </select>
+
+      <div v-if="itemForm.forms.vicinity.agentType !== null">
+        {{ JSON.stringify(itemForm.forms.vicinity.agentType.properties) }}
+        <select v-model="itemForm.forms.vicinity.property">
+          <option :value="null">-- select agent property --</option>
+          <option v-for="propert in itemForm.forms.vicinity.agentType.properties" :value="propert">
+            {{ propert }}
+          </option>
+        </select>
+      </div>
+
+      property value: <input v-model="itemForm.forms.vicinity.propertyValue" type="text" />
+
+    </div>
+
     <button @click="createCondition">add</button> |
     <button @click="cancelAddCondition">cancel</button>
   </div>
@@ -88,6 +122,13 @@ export default {
           preset: '',
           comparison: '',
           value: true
+        },
+        vicinity: {
+          agentType: null,
+          comparison: '',
+          value: 0,  // agent count only for now
+          property: '',
+          propertyValue: ''  // e.g. 'red' - string only for now
         }
       }
     })
@@ -105,8 +146,12 @@ export default {
 
       if (conditionType === 'property') {
         newCondition.property = data.property
-      } else {
+      } else if (conditionType === 'preset') {
         newCondition.classMethod = data.preset
+      } else if (conditionType === 'vicinity') {
+        newCondition.agentType = data.agentType.id
+        newCondition.property = data.property
+        newCondition.propertyValue = data.propertyValue
       }
 
       const createdItem = await api.createCondition(newCondition)
@@ -132,6 +177,11 @@ export default {
       itemForm.value.forms.preset.preset = ''
       itemForm.value.forms.preset.comparison = ''
       itemForm.value.forms.preset.value = ''
+      itemForm.value.forms.vicinity.agentType = null
+      itemForm.value.forms.vicinity.comparison = ''
+      itemForm.value.forms.vicinity.property = ''
+      itemForm.value.forms.vicinity.propertyValue = 0
+      itemForm.value.forms.vicinity.count = 0
     }
 
     const cancelAddCondition = () => {

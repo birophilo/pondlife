@@ -19,6 +19,10 @@ class Condition(BaseModel):
     class_method: str | None = None
     condition_value: str | bool | int | float
 
+    # specific to 'vicinity'-based conditions
+    agent_type: str | None = None
+    count: float | None = None
+
     model_config = ConfigDict(alias_generator=to_camel)
 
 
