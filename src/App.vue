@@ -731,9 +731,9 @@ export default {
       if (!sensor) return
 
       const len = sensor.radius
-      const area = {
-        x: agent.center - len,
-        y: agent.center - len,
+      const vicinityArea = {
+        x: agent.center.x - len,
+        y: agent.center.y - len,
         width: len * 2,
         height: len * 2
       }
@@ -753,7 +753,7 @@ export default {
           const agentArea = {x: ag.position.x, y: ag.position.y, width: ag.width, height: ag.height}
 
           if (agent.id !== ag.id) {  // don't add own id to vicinity knowledge
-            if (rectanglesOverlap(area, agentArea)) {
+            if (rectanglesOverlap(vicinityArea, agentArea)) {
               agent.knowledge.vicinity.agents.push(ag.id)
             }
           }

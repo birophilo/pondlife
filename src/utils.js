@@ -36,7 +36,7 @@ export function pointIsInArea(point, area) {
 export function rectanglesOverlap(rect1, rect2) {
 
   const r1 = {x1: rect1.x, x2: rect1.x + rect1.width, y1: rect1.y, y2: rect1.y + rect1.height}
-  const r2 = {x1: rect2.x, x2: rect2.x + rect2.width, y1: rect2.y, y2: rect2.y + rect1.height}
+  const r2 = {x1: rect2.x, x2: rect2.x + rect2.width, y1: rect2.y, y2: rect2.y + rect2.height}
 
   return !(
     r1.x2 < r2.x1 ||
