@@ -581,7 +581,8 @@ export default {
 
       if (action.agentChoiceMethod === 'nearest' && action.destinationType === 'agent') {
         const agentTypeName = action.agentType.name
-        const agentItems = store.agentItems[agentTypeName]
+        // get agents excluding self
+        const agentItems = store.agentItems[agentTypeName].filter(ag => ag.id !== agent.id)
         if (agentItems.length === 0) {
           console.log(`No ${agentTypeName} exists - cannot choose nearest.`)
           agentHandler.idle(agent)
@@ -595,6 +596,20 @@ export default {
         const agentTypeName = action.agentType.name
         const agentItems = store.agentItems[agentTypeName]
         action.target = agentItems
+      }
+
+      if (action.agentChoiceMethod === 'random' && action.destinationType === 'agent') {
+        const agentTypeName = action.agentType.name
+        // get agents excluding self
+        const agentItems = store.agentItems[agentTypeName].filter(ag => ag.id !== agent.id)
+        if (agentItems.length === 0) {
+          console.log(`No ${agentTypeName} exists - cannot choose random.`)
+          agentHandler.idle(agent)
+          return false
+        }
+        const targetAgent = agentHandler.getRandomAgent(agentItems)
+        action.target = targetAgent
+        action.destination = targetAgent
       }
 
       // if action involves property changes, set target for each change based on
@@ -706,15 +721,15 @@ export default {
       })
     }
 
+    const pauseScene = () => {
+      store.sceneIsPlaying = false
+      store.sceneIsPaused = true
+    }
+
     const unPauseScene = () => {
       store.sceneIsPlaying = true
       store.sceneIsPaused = false
       requestAnimationFrame(animate)
-    }
-
-    const pauseScene = () => {
-      store.sceneIsPlaying = false
-      store.sceneIsPaused = true
     }
 
     let agentTypeList = ref([])

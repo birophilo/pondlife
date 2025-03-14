@@ -52,6 +52,13 @@
             value="specific"
           />
           <label for="specific">specific</label>
+          <input
+            type="radio"
+            v-model="itemForm.agentChoiceMethod"
+            name="agentChoiceMethod"
+            value="random"
+          />
+          <label for="random">random</label>
         </form>
         <button
           class="selection-mode-button"
@@ -164,7 +171,7 @@
           name="agentChoiceMethod"
           value="specific"
         />
-        <label for="nearest">specific</label>
+        <label for="specific">specific</label>
         <input
           type="radio"
           v-model="itemForm.agentChoiceMethod"

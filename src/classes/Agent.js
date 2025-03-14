@@ -200,6 +200,11 @@ export class AgentHandler extends SpriteHandler {
     return agentList[index]
   }
 
+  getRandomAgent(agents) {
+    const randomIndex = Math.floor(Math.random() * agents.length)
+    return agents[randomIndex]
+  }
+
   setProperty(property, value, item) {
     item.stateData[property] = value
   }
