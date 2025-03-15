@@ -18,18 +18,21 @@
         id="action-change-property-name"
       >
         <option value="">-- select property --</option>
-        <option v-for="property in store.agentProperties" :value="property.name">{{ property.name }}</option>
+        <option v-for="property in store.agentProperties" :value="property.name">
+          {{ property.name }}
+        </option>
       </select>
       <select v-model="itemForm.forms.property.comparison" value="isGreaterThan">
         <option value="">-- select comparison --</option>
         <option value="isGreaterThan">is greater than</option>
         <option value="isLessThan">is less than</option>
       </select>
+
+      value
       <input
-        number="text"
+        type="number"
         v-model="itemForm.forms.property.value"
         id="action-change-property-value"
-        placeholder="conditions value"
       />
     </div>
 
@@ -56,39 +59,52 @@
     </div>
 
     <div v-else-if="itemForm.type === 'vicinity'">
+      agent
       <select
         v-model="itemForm.forms.vicinity.agentType"
         id="action-change-vicinity-name"
       >
         <option :value=null>-- select agent type --</option>
-        <option v-for="[agentTypeName, agentType] of Object.entries(store.agentTypes)" :value="agentType">
+        <option
+          v-for="[agentTypeName, agentType] of Object.entries(store.agentTypes)"
+          :value="agentType"
+        >
           {{ agentTypeName }}
         </option>
       </select>
-
-      agent count: <input v-model="itemForm.forms.vicinity.value" type="number" />
+      <br />
 
       <select v-model="itemForm.forms.vicinity.comparison">
         <option value="">-- select comparison --</option>
         <option value="isGreaterThan">is greater than</option>
         <option value="isLessThan">is less than</option>
       </select>
+      <br />
 
-      <div v-if="itemForm.forms.vicinity.agentType !== null">
-        {{ JSON.stringify(itemForm.forms.vicinity.agentType.properties) }}
-        <select v-model="itemForm.forms.vicinity.property">
-          <option :value="null">-- select agent property --</option>
-          <option v-for="propert in itemForm.forms.vicinity.agentType.properties" :value="propert">
-            {{ propert }}
-          </option>
-        </select>
+      agent count: <input v-model="itemForm.forms.vicinity.value" type="number" /><br />
+
+      <input type="checkbox" v-model="usingVicinityPropertyValue" /> use property value
+
+      <div v-if="usingVicinityPropertyValue === true">
+
+        <div v-if="itemForm.forms.vicinity.agentType !== null">
+          <select v-model="itemForm.forms.vicinity.property">
+            <option :value="null">-- select agent property --</option>
+            <option v-for="propert in itemForm.forms.vicinity.agentType.properties" :value="propert">
+              {{ propert }}
+            </option>
+          </select>
+        </div>
+        <br />
+
+        property value: <input v-model="itemForm.forms.vicinity.propertyValue" type="text" />
+
       </div>
 
-      property value: <input v-model="itemForm.forms.vicinity.propertyValue" type="text" />
 
     </div>
 
-    <button @click="createCondition">add</button> |
+    <button @click="createCondition">add</button>
     <button @click="cancelAddCondition">cancel</button>
   </div>
 </template>
@@ -108,6 +124,8 @@ export default {
     const store = useStore()
 
     const isAdding = ref(false)
+
+    const usingVicinityPropertyValue = ref(false)
 
     const itemForm = ref({
       type: 'property',
@@ -191,6 +209,7 @@ export default {
     return {
       store,
       isAdding,
+      usingVicinityPropertyValue,
       itemForm,
       createCondition,
       resetConditionForms,

@@ -420,9 +420,9 @@ export default {
         store.agentItems[agentTypeName].forEach(agent => {
           if (animationId % UPDATE_AGENT_KNOWLEDGE_EVERY_X_FRAMES === 0) {
             updateAgentKnowledge(agent)
-            if (animationId % 60 === 0) {
-              console.log(agent.knowledge)
-            }
+            // if (animationId % 60 === 0) {
+            //   console.log(agent.knowledge)
+            // }
           }
         })
       })
