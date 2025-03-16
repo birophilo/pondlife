@@ -12,6 +12,13 @@ const apiClient = axios.create({
   }
 })
 
+const apiFormClient = axios.create({
+  baseURL: BASE_URL,
+  headers: {
+    'Content-Type': 'multipart/form-data'
+  }
+})
+
 
 export default {
   getItem: async function (resource, id) {
@@ -50,9 +57,10 @@ export default {
     }
   },
 
+  // note: formData client not default JSON header
   uploadImage: async function (formData) {
     try {
-      const response = await apiClient.post(
+      const response = await apiFormClient.post(
         `${BASE_URL}/uploadImage`,
         formData
       )

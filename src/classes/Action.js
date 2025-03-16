@@ -62,6 +62,7 @@ export function createActionSpawnAgent (agent = null, data) {
   item.agentType = data.agentType
   item.position = data.position
   item.useRandomPosition = data.useRandomPosition
+  item.spawnAgentPlacement = data.spawnAgentPlacement
 
   return item
 }
@@ -209,11 +210,19 @@ export class ActionSpawnAgentHandler extends ActionHandler {
 
   // eslint-disable-next-line
   start(item, globals) {
-    item.isComplete = true
+
+    // 'selfPosition'- -> use agent's current position; 'specific' -> predefined XY position
+    const position = item.spawnAgentPlacement === 'selfPosition'
+      ? item.agent.position
+      : item.position
+
     const spawnArgs = {
       agentType: item.agentType,
-      position: item.position
+      position: position
     }
+
+    item.isComplete = true
+
     return {agentsToSpawn: [spawnArgs]}
   }
 

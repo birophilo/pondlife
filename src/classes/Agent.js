@@ -60,10 +60,11 @@ export function createAgentObject (
     name: 'spawn point'
   }
 
-  item.labelElement = document.createElement('div')
-  item.labelElement.classList.add('canvas-agent-label')
-  const canvasContainer = document.getElementsByClassName('canvas-container')[0]
-  canvasContainer.appendChild(item.labelElement)
+  // REMOVE THIS FOR NOW
+  // item.labelElement = document.createElement('div')
+  // item.labelElement.classList.add('canvas-agent-label')
+  // const canvasContainer = document.getElementsByClassName('canvas-container')[0]
+  // canvasContainer.appendChild(item.labelElement)
 
   return item
 }
@@ -150,7 +151,7 @@ export class AgentHandler extends SpriteHandler {
 
   draw(c, item) {
     super.draw(c, item)
-    this.updateLabel(item)
+    // this.updateLabel(item)
   }
 
   update(c, newData, globals, item) {
@@ -161,7 +162,7 @@ export class AgentHandler extends SpriteHandler {
     item.globals = globals
     item.speed = item.nominalSpeed * item.globals.globalSpeed
 
-    this.updateLabel(item)
+    // this.updateLabel(item)
 
     this.draw(c, item)
     if (item.currentAction?.actionType === 'goTo') {

@@ -116,6 +116,7 @@ class ActionInterval(BaseAction):
 
 
 class ActionSpawnAgent(BaseModel):
+    spawn_agent_placement: str
     pass
 
 

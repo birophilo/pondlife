@@ -388,8 +388,9 @@ export default {
     }
 
     const removeAgentLabels = () => {
-      const agentLabels = document.getElementsByClassName('canvas-agent-label')
-      Array.from(agentLabels).forEach(label => label.remove())
+      // REMOVE THIS FOR NOW
+      // const agentLabels = document.getElementsByClassName('canvas-agent-label')
+      // Array.from(agentLabels).forEach(label => label.remove())
     }
 
     const agentHandler = new AgentHandler()
@@ -562,7 +563,7 @@ export default {
     }
 
     const deleteAgent = async (agent, agentItems, i) => {
-      agent.labelElement.remove()
+      // agent.labelElement.remove()
       await api.deleteAgent(agent.id)
       agentItems.splice(i, 1)
       await store.saveScene()
@@ -656,6 +657,10 @@ export default {
           }
         }
       }
+
+      // if (action.actionType === 'spawnAgent' && action.spawnAgentPlacement === 'selfPosition') {
+      //   const position = agent.position.
+      // }
       return true  // 'ok' used by outer function, circuit breaker if not
     }
 

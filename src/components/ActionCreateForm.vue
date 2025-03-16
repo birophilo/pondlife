@@ -204,29 +204,51 @@
             :value="obj">{{ agentType }}
         </option>
       </select>
+      <br />
 
-      <div>Select point:
-        <button
-          class="selection-mode-button"
-          @click="store.selectionMode = !store.selectionMode"
-          :style="{backgroundColor: store.selectionMode ? 'grey' : 'white'}"
-        >x</button>
-        <span v-if="store.selectionMode === true">x: {{ store.mouse.x }}, y: {{ store.mouse.y }}</span><br />
-        x:
+      Create at position:
+      <div>
         <input
-          v-model="store.selectedPoint.x"
-          type="text"
-          :placeholder="store.mouse.x"
-        />
+          type="radio"
+          v-model="itemForm.spawnAgentPlacement"
+          value="selfPosition"
+        >
+        <label for="selfPosition">position of triggering agent</label>
         <br />
-        y:
         <input
-          v-model="store.selectedPoint.y"
-          type="text"
-          :placeholder="store.mouse.y"
-          value=""
-        />
-        <br />
+          type="radio"
+          v-model="itemForm.spawnAgentPlacement"
+          value="specific"
+        >
+        <label for="specific">specific point</label>
+      </div>
+
+      <div v-if="itemForm.spawnAgentPlacement === 'specific'">
+
+        <div>Select point:
+          <button
+            class="selection-mode-button"
+            @click="store.selectionMode = !store.selectionMode"
+            :style="{backgroundColor: store.selectionMode ? 'grey' : 'white'}"
+          >x</button>
+          <span v-if="store.selectionMode === true">x: {{ store.mouse.x }}, y: {{ store.mouse.y }}</span><br />
+          x:
+          <input
+            v-model="store.selectedPoint.x"
+            type="text"
+            :placeholder="store.mouse.x"
+          />
+          <br />
+          y:
+          <input
+            v-model="store.selectedPoint.y"
+            type="text"
+            :placeholder="store.mouse.y"
+            value=""
+          />
+          <br />
+        </div>
+
       </div>
 
     </div>
@@ -268,6 +290,8 @@ export default {
 
     const isAdding = ref(false)
 
+    const spawnAgentPlacement = ref("specific")
+
     const itemForm = ref({
       actionType: '',
       actionName: '',
@@ -281,14 +305,15 @@ export default {
       // can have multiple defined named XY positions here, but only 'spawnPoint' for now
       definedPoint: '',
       spriteSheet: '',
-      propertyChanges: []
+      propertyChanges: [],
+      spawnAgentPlacement: 'specific'
     })
 
     const forms = ref({
       goTo: ['destinationType', 'agentType', 'agentChoiceMethod', 'target', 'pointType', 'definedPoint'],
       change: ['propertyChanges'],
       interval: ['duration', 'spriteSheet'],
-      spawnAgent: ['agentType', 'target'],
+      spawnAgent: ['agentType', 'target', 'spawnAgentPlacement'],
       removeAgent: ['agentType', 'agentChoiceMethod', 'target']
     })
 
@@ -361,6 +386,7 @@ export default {
     return {
       store,
       isAdding,
+      spawnAgentPlacement,
       itemForm,
       forms,
       createAction,
