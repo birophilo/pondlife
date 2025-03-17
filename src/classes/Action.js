@@ -213,8 +213,8 @@ export class ActionSpawnAgentHandler extends ActionHandler {
 
     // 'selfPosition'- -> use agent's current position; 'specific' -> predefined XY position
     const position = item.spawnAgentPlacement === 'selfPosition'
-      ? item.agent.position
-      : item.position
+      ? {...item.agent.position}
+      : {...item.position}
 
     const spawnArgs = {
       agentType: item.agentType,

@@ -52,6 +52,7 @@ export class ConditionHandler {
 
       agentValue = agentsInVicinity.length
     }
+
     const evalFunc = COMPARISONS[item.comparison]
     const result = evalFunc(agentValue, item.conditionValue)
     return result
