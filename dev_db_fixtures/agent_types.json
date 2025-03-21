@@ -103,8 +103,8 @@
     {
         "_id": "67d5ebc73037477e169386a2",
         "name": "WPerson",
-        "height": 30,
-        "width": 30,
+        "height": 5,
+        "width": 5,
         "animationSet": "67d5eaae3037477e1693868b",
         "thumbnail": "thumbnail-agentType-5226218322.png",
         "nominalSpeed": 0.2,

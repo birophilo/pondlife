@@ -688,14 +688,6 @@
         }
     },
     {
-        "_id": "67d5f9f13037477e1693886f",
-        "agentType": "Vacancy",
-        "position": {
-            "x": 590,
-            "y": 154
-        }
-    },
-    {
         "_id": "67d5f9f43037477e16938875",
         "agentType": "Vacancy",
         "position": {
@@ -725,14 +717,6 @@
         "position": {
             "x": 704,
             "y": 207
-        }
-    },
-    {
-        "_id": "67d5f9f93037477e16938887",
-        "agentType": "Vacancy",
-        "position": {
-            "x": 646,
-            "y": 208
         }
     },
     {
@@ -848,14 +832,6 @@
         }
     },
     {
-        "_id": "67d5fa233037477e16938908",
-        "agentType": "Vacancy",
-        "position": {
-            "x": 482,
-            "y": 419
-        }
-    },
-    {
         "_id": "67d5fa243037477e1693890b",
         "agentType": "Vacancy",
         "position": {
@@ -869,14 +845,6 @@
         "position": {
             "x": 361,
             "y": 418
-        }
-    },
-    {
-        "_id": "67d5fa2a3037477e16938920",
-        "agentType": "Vacancy",
-        "position": {
-            "x": 535,
-            "y": 470
         }
     },
     {
@@ -1093,14 +1061,6 @@
         "position": {
             "x": 315.5,
             "y": 419.5
-        }
-    },
-    {
-        "_id": "67d8aa6b0095e333c848ff1a",
-        "agentType": "Vacancy",
-        "position": {
-            "x": 423.5,
-            "y": 472.5
         }
     },
     {
@@ -1376,14 +1336,6 @@
         }
     },
     {
-        "_id": "67db22c00095e333c8490100",
-        "agentType": "Vacancy",
-        "position": {
-            "x": 365.5,
-            "y": 473.5
-        }
-    },
-    {
         "_id": "67db22c30095e333c8490103",
         "agentType": "Vacancy",
         "position": {
@@ -1416,26 +1368,10 @@
         }
     },
     {
-        "_id": "67db22ca0095e333c8490112",
-        "agentType": "Vacancy",
-        "position": {
-            "x": 370.5,
-            "y": 209.5
-        }
-    },
-    {
         "_id": "67db22cc0095e333c8490115",
         "agentType": "Vacancy",
         "position": {
             "x": 431.5,
-            "y": 103.5
-        }
-    },
-    {
-        "_id": "67db22cd0095e333c8490118",
-        "agentType": "Vacancy",
-        "position": {
-            "x": 541.5,
             "y": 103.5
         }
     },
@@ -1488,14 +1424,6 @@
         }
     },
     {
-        "_id": "67db22d80095e333c8490130",
-        "agentType": "Vacancy",
-        "position": {
-            "x": 705.5,
-            "y": 261.5
-        }
-    },
-    {
         "_id": "67db22db0095e333c8490136",
         "agentType": "Vacancy",
         "position": {
@@ -1517,14 +1445,6 @@
         "position": {
             "x": 480.5,
             "y": 261.5
-        }
-    },
-    {
-        "_id": "67db22e40095e333c849014b",
-        "agentType": "Vacancy",
-        "position": {
-            "x": 481.5,
-            "y": 209.5
         }
     },
     {
@@ -1568,27 +1488,11 @@
         }
     },
     {
-        "_id": "67db22f10095e333c8490163",
-        "agentType": "Vacancy",
-        "position": {
-            "x": 594.5,
-            "y": 413.5
-        }
-    },
-    {
         "_id": "67db22f20095e333c8490166",
         "agentType": "Vacancy",
         "position": {
             "x": 652.5,
             "y": 314.5
-        }
-    },
-    {
-        "_id": "67db22f30095e333c8490169",
-        "agentType": "Vacancy",
-        "position": {
-            "x": 651.5,
-            "y": 365.5
         }
     },
     {
@@ -1613,14 +1517,6 @@
         "position": {
             "x": 821.5,
             "y": 309.5
-        }
-    },
-    {
-        "_id": "67db22fc0095e333c8490175",
-        "agentType": "Vacancy",
-        "position": {
-            "x": 429.5,
-            "y": 316.5
         }
     },
     {
@@ -1664,22 +1560,6 @@
         }
     },
     {
-        "_id": "67db23310095e333c849019b",
-        "agentType": "Vacancy",
-        "position": {
-            "x": 423.5,
-            "y": 262.5
-        }
-    },
-    {
-        "_id": "67db23350095e333c849019f",
-        "agentType": "Vacancy",
-        "position": {
-            "x": 268.5,
-            "y": 542.5
-        }
-    },
-    {
         "_id": "67db233b0095e333c84901a2",
         "agentType": "House",
         "position": {
@@ -1693,14 +1573,6 @@
         "position": {
             "x": 631,
             "y": 396
-        }
-    },
-    {
-        "_id": "67db23510095e333c84901aa",
-        "agentType": "Vacancy",
-        "position": {
-            "x": 706.5,
-            "y": 466.5
         }
     },
     {
@@ -1720,22 +1592,6 @@
         }
     },
     {
-        "_id": "67db23590095e333c84901b3",
-        "agentType": "Vacancy",
-        "position": {
-            "x": 649.5,
-            "y": 260.5
-        }
-    },
-    {
-        "_id": "67db23690095e333c84901b9",
-        "agentType": "Vacancy",
-        "position": {
-            "x": 539.5,
-            "y": 413.5
-        }
-    },
-    {
         "_id": "67db23900095e333c84901dc",
         "agentType": "Vacancy",
         "position": {
@@ -1752,14 +1608,6 @@
         }
     },
     {
-        "_id": "67db23920095e333c84901e2",
-        "agentType": "Vacancy",
-        "position": {
-            "x": 426.5,
-            "y": 368.5
-        }
-    },
-    {
         "_id": "67db23940095e333c84901e5",
         "agentType": "Vacancy",
         "position": {
@@ -1773,14 +1621,6 @@
         "position": {
             "x": 482.5,
             "y": 316.5
-        }
-    },
-    {
-        "_id": "67db26a90095e333c84901f1",
-        "agentType": "Vacancy",
-        "position": {
-            "x": 484.5,
-            "y": 263.5
         }
     },
     {
@@ -1821,22 +1661,6 @@
         "position": {
             "x": 763.5,
             "y": 359.5
-        }
-    },
-    {
-        "_id": "67db26b40095e333c8490209",
-        "agentType": "Vacancy",
-        "position": {
-            "x": 823.5,
-            "y": 102.5
-        }
-    },
-    {
-        "_id": "67db26b60095e333c849020c",
-        "agentType": "Vacancy",
-        "position": {
-            "x": 314.5,
-            "y": 156.5
         }
     },
     {
@@ -2072,30 +1896,6 @@
         }
     },
     {
-        "_id": "67dd851f0095e333c8490285",
-        "agentType": "Vacancy",
-        "position": {
-            "x": 817.5,
-            "y": 360.5
-        }
-    },
-    {
-        "_id": "67dd85210095e333c8490288",
-        "agentType": "Vacancy",
-        "position": {
-            "x": 817.5,
-            "y": 411.5
-        }
-    },
-    {
-        "_id": "67dd85240095e333c849028e",
-        "agentType": "Vacancy",
-        "position": {
-            "x": 759.5,
-            "y": 467.5
-        }
-    },
-    {
         "_id": "67dd853b0095e333c8490299",
         "agentType": "Vacancy",
         "position": {
@@ -2117,6 +1917,246 @@
         "position": {
             "x": 366.5,
             "y": 422.5
+        }
+    },
+    {
+        "_id": "67dd91513c60c0063c5c9826",
+        "agentType": "Vacancy",
+        "position": {
+            "x": 365.5,
+            "y": 474.5
+        }
+    },
+    {
+        "_id": "67dd91533c60c0063c5c9829",
+        "agentType": "Vacancy",
+        "position": {
+            "x": 483.5,
+            "y": 421.5
+        }
+    },
+    {
+        "_id": "67dd9bca149fe3cd7e4563bc",
+        "agentType": "Vacancy",
+        "position": {
+            "x": 422.5,
+            "y": 259.5
+        }
+    },
+    {
+        "_id": "67dd9bcb149fe3cd7e4563bf",
+        "agentType": "Vacancy",
+        "position": {
+            "x": 479.5,
+            "y": 209.5
+        }
+    },
+    {
+        "_id": "67dd9bcc149fe3cd7e4563c2",
+        "agentType": "Vacancy",
+        "position": {
+            "x": 479.5,
+            "y": 260.5
+        }
+    },
+    {
+        "_id": "67dd9bcd149fe3cd7e4563c5",
+        "agentType": "Vacancy",
+        "position": {
+            "x": 649.5,
+            "y": 208.5
+        }
+    },
+    {
+        "_id": "67dd9bd0149fe3cd7e4563cb",
+        "agentType": "Vacancy",
+        "position": {
+            "x": 537.5,
+            "y": 101.5
+        }
+    },
+    {
+        "_id": "67dd9bd1149fe3cd7e4563ce",
+        "agentType": "Vacancy",
+        "position": {
+            "x": 647.5,
+            "y": 262.5
+        }
+    },
+    {
+        "_id": "67dd9bd2149fe3cd7e4563d1",
+        "agentType": "Vacancy",
+        "position": {
+            "x": 652.5,
+            "y": 363.5
+        }
+    },
+    {
+        "_id": "67dd9bd3149fe3cd7e4563d4",
+        "agentType": "Vacancy",
+        "position": {
+            "x": 816.5,
+            "y": 356.5
+        }
+    },
+    {
+        "_id": "67dd9bd4149fe3cd7e4563d7",
+        "agentType": "Vacancy",
+        "position": {
+            "x": 816.5,
+            "y": 413.5
+        }
+    },
+    {
+        "_id": "67dd9bd4149fe3cd7e4563da",
+        "agentType": "Vacancy",
+        "position": {
+            "x": 760.5,
+            "y": 469.5
+        }
+    },
+    {
+        "_id": "67dd9bd5149fe3cd7e4563dd",
+        "agentType": "Vacancy",
+        "position": {
+            "x": 590.5,
+            "y": 415.5
+        }
+    },
+    {
+        "_id": "67dd9bd6149fe3cd7e4563e0",
+        "agentType": "Vacancy",
+        "position": {
+            "x": 532.5,
+            "y": 471.5
+        }
+    },
+    {
+        "_id": "67dda40e149fe3cd7e456414",
+        "agentType": "Vacancy",
+        "position": {
+            "x": 536.5,
+            "y": 415.5
+        }
+    },
+    {
+        "_id": "67dda40f149fe3cd7e456417",
+        "agentType": "Vacancy",
+        "position": {
+            "x": 421.5,
+            "y": 315.5
+        }
+    },
+    {
+        "_id": "67dda410149fe3cd7e45641a",
+        "agentType": "Vacancy",
+        "position": {
+            "x": 822.5,
+            "y": 98.5
+        }
+    },
+    {
+        "_id": "67dda412149fe3cd7e45641d",
+        "agentType": "Vacancy",
+        "position": {
+            "x": 701.5,
+            "y": 464.5
+        }
+    },
+    {
+        "_id": "67dda413149fe3cd7e456420",
+        "agentType": "Vacancy",
+        "position": {
+            "x": 311.5,
+            "y": 155.5
+        }
+    },
+    {
+        "_id": "67dda414149fe3cd7e456423",
+        "agentType": "Vacancy",
+        "position": {
+            "x": 368.5,
+            "y": 202.5
+        }
+    },
+    {
+        "_id": "67dda416149fe3cd7e456426",
+        "agentType": "Vacancy",
+        "position": {
+            "x": 701.5,
+            "y": 257.5
+        }
+    },
+    {
+        "_id": "67ddb5374766634f147c7713",
+        "agentType": "Vacancy",
+        "position": {
+            "x": 597.5,
+            "y": 156.5
+        }
+    },
+    {
+        "_id": "67ddcb0d4766634f147c774b",
+        "agentType": "BPerson",
+        "position": {
+            "x": 103.5,
+            "y": 20.5
+        }
+    },
+    {
+        "_id": "67ddcb0d4766634f147c774e",
+        "agentType": "BPerson",
+        "position": {
+            "x": 189.5,
+            "y": 11.5
+        }
+    },
+    {
+        "_id": "67ddcb0e4766634f147c7751",
+        "agentType": "BPerson",
+        "position": {
+            "x": 107.5,
+            "y": 71.5
+        }
+    },
+    {
+        "_id": "67ddcb124766634f147c7754",
+        "agentType": "WPerson",
+        "position": {
+            "x": 118.5,
+            "y": 215.5
+        }
+    },
+    {
+        "_id": "67ddcb134766634f147c7757",
+        "agentType": "WPerson",
+        "position": {
+            "x": 175.5,
+            "y": 334.5
+        }
+    },
+    {
+        "_id": "67ddcb144766634f147c775a",
+        "agentType": "WPerson",
+        "position": {
+            "x": 106.5,
+            "y": 395.5
+        }
+    },
+    {
+        "_id": "67ddf7e94766634f147c7767",
+        "agentType": "Vacancy",
+        "position": {
+            "x": 423.5,
+            "y": 471.5
+        }
+    },
+    {
+        "_id": "67ddf7ea4766634f147c776a",
+        "agentType": "Vacancy",
+        "position": {
+            "x": 427.5,
+            "y": 367.5
         }
     }
 ]

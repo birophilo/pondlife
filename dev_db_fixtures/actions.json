@@ -42,7 +42,8 @@
         "conditions": [],
         "transitions": [],
         "spriteSheet": "",
-        "duration": 120
+        "duration": 120,
+        "intervalType": "frames"
     },
     {
         "_id": "67a3c29d86f328910e053fe9",
@@ -256,7 +257,8 @@
             }
         ],
         "spriteSheet": "",
-        "duration": 100
+        "duration": 100,
+        "intervalType": "frames"
     },
     {
         "_id": "67ad1d4a036d42b4a04943c4",
@@ -416,7 +418,8 @@
             }
         ],
         "spriteSheet": "",
-        "duration": 200
+        "duration": 200,
+        "intervalType": "frames"
     },
     {
         "_id": "67ad24728ed4af6b4da868b9",
@@ -867,7 +870,8 @@
             }
         ],
         "spriteSheet": "",
-        "duration": 100
+        "duration": 100,
+        "intervalType": "frames"
     },
     {
         "_id": "67d720979a9eb09732f7e46e",
@@ -884,7 +888,8 @@
             }
         ],
         "spriteSheet": "",
-        "duration": 10
+        "duration": 10,
+        "intervalType": "frames"
     },
     {
         "_id": "67d720a99a9eb09732f7e471",
@@ -1268,7 +1273,8 @@
             }
         ],
         "spriteSheet": "",
-        "duration": 100
+        "duration": 100,
+        "intervalType": "frames"
     },
     {
         "_id": "67d8a81c0095e333c848fe98",
@@ -1285,7 +1291,8 @@
             }
         ],
         "spriteSheet": "",
-        "duration": 10
+        "duration": 10,
+        "intervalType": "frames"
     },
     {
         "_id": "67d8a8360095e333c848fe9b",
