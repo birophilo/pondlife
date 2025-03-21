@@ -608,5 +608,807 @@
             "x": 726,
             "y": 461
         }
+    },
+    {
+        "_id": "67d71f0a9a9eb09732f7e458",
+        "agent": null,
+        "actionName": "W Go to random vacancy",
+        "actionType": "goTo",
+        "inProgress": false,
+        "isComplete": false,
+        "conditions": [],
+        "transitions": [
+            {
+                "condition": "67d71f529a9eb09732f7e45e",
+                "nextAction": "67d71fd89a9eb09732f7e468"
+            }
+        ],
+        "agentType": {
+            "name": "Vacancy",
+            "width": 20,
+            "height": 20,
+            "offset": {
+                "x": 100,
+                "y": 100
+            },
+            "nominalSpeed": 0.02,
+            "animationSet": {
+                "name": "Vacancy",
+                "scale": 1,
+                "offset": {
+                    "x": 0,
+                    "y": 0
+                },
+                "sheets": {
+                    "idle": {
+                        "name": "Vacancy",
+                        "src": "spritesheet-spritesheet-5226227206.png",
+                        "columns": 1,
+                        "rows": 1,
+                        "numImages": 1,
+                        "refreshInterval": 10,
+                        "id": "67d5f7993037477e169386fb"
+                    },
+                    "up": {
+                        "name": "Vacancy",
+                        "src": "spritesheet-spritesheet-5226227206.png",
+                        "columns": 1,
+                        "rows": 1,
+                        "numImages": 1,
+                        "refreshInterval": 10,
+                        "id": "67d5f7993037477e169386fb"
+                    },
+                    "upRight": {
+                        "name": "Vacancy",
+                        "src": "spritesheet-spritesheet-5226227206.png",
+                        "columns": 1,
+                        "rows": 1,
+                        "numImages": 1,
+                        "refreshInterval": 10,
+                        "id": "67d5f7993037477e169386fb"
+                    },
+                    "right": {
+                        "name": "Vacancy",
+                        "src": "spritesheet-spritesheet-5226227206.png",
+                        "columns": 1,
+                        "rows": 1,
+                        "numImages": 1,
+                        "refreshInterval": 10,
+                        "id": "67d5f7993037477e169386fb"
+                    },
+                    "downRight": {
+                        "name": "Vacancy",
+                        "src": "spritesheet-spritesheet-5226227206.png",
+                        "columns": 1,
+                        "rows": 1,
+                        "numImages": 1,
+                        "refreshInterval": 10,
+                        "id": "67d5f7993037477e169386fb"
+                    },
+                    "down": {
+                        "name": "Vacancy",
+                        "src": "spritesheet-spritesheet-5226227206.png",
+                        "columns": 1,
+                        "rows": 1,
+                        "numImages": 1,
+                        "refreshInterval": 10,
+                        "id": "67d5f7993037477e169386fb"
+                    },
+                    "downLeft": {
+                        "name": "Vacancy",
+                        "src": "spritesheet-spritesheet-5226227206.png",
+                        "columns": 1,
+                        "rows": 1,
+                        "numImages": 1,
+                        "refreshInterval": 10,
+                        "id": "67d5f7993037477e169386fb"
+                    },
+                    "left": {
+                        "name": "Vacancy",
+                        "src": "spritesheet-spritesheet-5226227206.png",
+                        "columns": 1,
+                        "rows": 1,
+                        "numImages": 1,
+                        "refreshInterval": 10,
+                        "id": "67d5f7993037477e169386fb"
+                    },
+                    "upLeft": {
+                        "name": "Vacancy",
+                        "src": "spritesheet-spritesheet-5226227206.png",
+                        "columns": 1,
+                        "rows": 1,
+                        "numImages": 1,
+                        "refreshInterval": 10,
+                        "id": "67d5f7993037477e169386fb"
+                    }
+                },
+                "id": "67d5f7c13037477e169386fe"
+            },
+            "thumbnail": "thumbnail-agentType-5226227592.png",
+            "id": "67d5f7d93037477e16938703"
+        },
+        "destinationType": "agent",
+        "agentChoiceMethod": "random",
+        "target": {}
+    },
+    {
+        "_id": "67d71fd89a9eb09732f7e468",
+        "agent": null,
+        "actionName": "W Remove vacancy",
+        "actionType": "removeAgent",
+        "inProgress": false,
+        "isComplete": false,
+        "conditions": [],
+        "transitions": [
+            {
+                "condition": "67d71f439a9eb09732f7e45b",
+                "nextAction": "67d7200f9a9eb09732f7e46b"
+            }
+        ],
+        "agentType": {
+            "name": "Vacancy",
+            "width": 20,
+            "height": 20,
+            "offset": {
+                "x": 100,
+                "y": 100
+            },
+            "nominalSpeed": 0.02,
+            "animationSet": {
+                "name": "Vacancy",
+                "scale": 1,
+                "offset": {
+                    "x": 0,
+                    "y": 0
+                },
+                "sheets": {
+                    "idle": {
+                        "name": "Vacancy",
+                        "src": "spritesheet-spritesheet-5226227206.png",
+                        "columns": 1,
+                        "rows": 1,
+                        "numImages": 1,
+                        "refreshInterval": 10,
+                        "id": "67d5f7993037477e169386fb"
+                    },
+                    "up": {
+                        "name": "Vacancy",
+                        "src": "spritesheet-spritesheet-5226227206.png",
+                        "columns": 1,
+                        "rows": 1,
+                        "numImages": 1,
+                        "refreshInterval": 10,
+                        "id": "67d5f7993037477e169386fb"
+                    },
+                    "upRight": {
+                        "name": "Vacancy",
+                        "src": "spritesheet-spritesheet-5226227206.png",
+                        "columns": 1,
+                        "rows": 1,
+                        "numImages": 1,
+                        "refreshInterval": 10,
+                        "id": "67d5f7993037477e169386fb"
+                    },
+                    "right": {
+                        "name": "Vacancy",
+                        "src": "spritesheet-spritesheet-5226227206.png",
+                        "columns": 1,
+                        "rows": 1,
+                        "numImages": 1,
+                        "refreshInterval": 10,
+                        "id": "67d5f7993037477e169386fb"
+                    },
+                    "downRight": {
+                        "name": "Vacancy",
+                        "src": "spritesheet-spritesheet-5226227206.png",
+                        "columns": 1,
+                        "rows": 1,
+                        "numImages": 1,
+                        "refreshInterval": 10,
+                        "id": "67d5f7993037477e169386fb"
+                    },
+                    "down": {
+                        "name": "Vacancy",
+                        "src": "spritesheet-spritesheet-5226227206.png",
+                        "columns": 1,
+                        "rows": 1,
+                        "numImages": 1,
+                        "refreshInterval": 10,
+                        "id": "67d5f7993037477e169386fb"
+                    },
+                    "downLeft": {
+                        "name": "Vacancy",
+                        "src": "spritesheet-spritesheet-5226227206.png",
+                        "columns": 1,
+                        "rows": 1,
+                        "numImages": 1,
+                        "refreshInterval": 10,
+                        "id": "67d5f7993037477e169386fb"
+                    },
+                    "left": {
+                        "name": "Vacancy",
+                        "src": "spritesheet-spritesheet-5226227206.png",
+                        "columns": 1,
+                        "rows": 1,
+                        "numImages": 1,
+                        "refreshInterval": 10,
+                        "id": "67d5f7993037477e169386fb"
+                    },
+                    "upLeft": {
+                        "name": "Vacancy",
+                        "src": "spritesheet-spritesheet-5226227206.png",
+                        "columns": 1,
+                        "rows": 1,
+                        "numImages": 1,
+                        "refreshInterval": 10,
+                        "id": "67d5f7993037477e169386fb"
+                    }
+                },
+                "id": "67d5f7c13037477e169386fe"
+            },
+            "thumbnail": "thumbnail-agentType-5226227592.png",
+            "id": "67d5f7d93037477e16938703"
+        },
+        "agentChoiceMethod": "nearest",
+        "target": {}
+    },
+    {
+        "_id": "67d7200f9a9eb09732f7e46b",
+        "agent": null,
+        "actionName": "W Wait for moment",
+        "actionType": "interval",
+        "inProgress": false,
+        "isComplete": false,
+        "conditions": [],
+        "transitions": [
+            {
+                "condition": "67d71f439a9eb09732f7e45b",
+                "nextAction": "67d720979a9eb09732f7e46e"
+            }
+        ],
+        "spriteSheet": "",
+        "duration": 100
+    },
+    {
+        "_id": "67d720979a9eb09732f7e46e",
+        "agent": null,
+        "actionName": "W Check for neighbours",
+        "actionType": "interval",
+        "inProgress": false,
+        "isComplete": false,
+        "conditions": [],
+        "transitions": [
+            {
+                "condition": "67d71f729a9eb09732f7e461",
+                "nextAction": "67d720a99a9eb09732f7e471"
+            }
+        ],
+        "spriteSheet": "",
+        "duration": 10
+    },
+    {
+        "_id": "67d720a99a9eb09732f7e471",
+        "agent": null,
+        "actionName": "W create vacancy",
+        "actionType": "spawnAgent",
+        "inProgress": false,
+        "isComplete": false,
+        "conditions": [],
+        "transitions": [
+            {
+                "condition": "67d71f439a9eb09732f7e45b",
+                "nextAction": "67d71f0a9a9eb09732f7e458"
+            }
+        ],
+        "agentType": {
+            "name": "Vacancy",
+            "width": 20,
+            "height": 20,
+            "offset": {
+                "x": 100,
+                "y": 100
+            },
+            "nominalSpeed": 0.02,
+            "animationSet": {
+                "name": "Vacancy",
+                "scale": 1,
+                "offset": {
+                    "x": 0,
+                    "y": 0
+                },
+                "sheets": {
+                    "idle": {
+                        "name": "Vacancy",
+                        "src": "spritesheet-spritesheet-5226227206.png",
+                        "columns": 1,
+                        "rows": 1,
+                        "numImages": 1,
+                        "refreshInterval": 10,
+                        "id": "67d5f7993037477e169386fb"
+                    },
+                    "up": {
+                        "name": "Vacancy",
+                        "src": "spritesheet-spritesheet-5226227206.png",
+                        "columns": 1,
+                        "rows": 1,
+                        "numImages": 1,
+                        "refreshInterval": 10,
+                        "id": "67d5f7993037477e169386fb"
+                    },
+                    "upRight": {
+                        "name": "Vacancy",
+                        "src": "spritesheet-spritesheet-5226227206.png",
+                        "columns": 1,
+                        "rows": 1,
+                        "numImages": 1,
+                        "refreshInterval": 10,
+                        "id": "67d5f7993037477e169386fb"
+                    },
+                    "right": {
+                        "name": "Vacancy",
+                        "src": "spritesheet-spritesheet-5226227206.png",
+                        "columns": 1,
+                        "rows": 1,
+                        "numImages": 1,
+                        "refreshInterval": 10,
+                        "id": "67d5f7993037477e169386fb"
+                    },
+                    "downRight": {
+                        "name": "Vacancy",
+                        "src": "spritesheet-spritesheet-5226227206.png",
+                        "columns": 1,
+                        "rows": 1,
+                        "numImages": 1,
+                        "refreshInterval": 10,
+                        "id": "67d5f7993037477e169386fb"
+                    },
+                    "down": {
+                        "name": "Vacancy",
+                        "src": "spritesheet-spritesheet-5226227206.png",
+                        "columns": 1,
+                        "rows": 1,
+                        "numImages": 1,
+                        "refreshInterval": 10,
+                        "id": "67d5f7993037477e169386fb"
+                    },
+                    "downLeft": {
+                        "name": "Vacancy",
+                        "src": "spritesheet-spritesheet-5226227206.png",
+                        "columns": 1,
+                        "rows": 1,
+                        "numImages": 1,
+                        "refreshInterval": 10,
+                        "id": "67d5f7993037477e169386fb"
+                    },
+                    "left": {
+                        "name": "Vacancy",
+                        "src": "spritesheet-spritesheet-5226227206.png",
+                        "columns": 1,
+                        "rows": 1,
+                        "numImages": 1,
+                        "refreshInterval": 10,
+                        "id": "67d5f7993037477e169386fb"
+                    },
+                    "upLeft": {
+                        "name": "Vacancy",
+                        "src": "spritesheet-spritesheet-5226227206.png",
+                        "columns": 1,
+                        "rows": 1,
+                        "numImages": 1,
+                        "refreshInterval": 10,
+                        "id": "67d5f7993037477e169386fb"
+                    }
+                },
+                "id": "67d5f7c13037477e169386fe"
+            },
+            "thumbnail": "thumbnail-agentType-5226227592.png",
+            "id": "67d5f7d93037477e16938703"
+        },
+        "position": {
+            "x": 0,
+            "y": 0
+        },
+        "spawnAgentPlacement": "selfPosition"
+    },
+    {
+        "_id": "67d8a59f0095e333c848fe8f",
+        "agent": null,
+        "actionName": "B Go to random vacancy",
+        "actionType": "goTo",
+        "inProgress": false,
+        "isComplete": false,
+        "conditions": [],
+        "transitions": [
+            {
+                "condition": "67d71f529a9eb09732f7e45e",
+                "nextAction": "67d8a5c00095e333c848fe92"
+            }
+        ],
+        "agentType": {
+            "name": "Vacancy",
+            "height": 5,
+            "width": 5,
+            "animationSet": {
+                "name": "Vacancy",
+                "scale": 1,
+                "offset": {
+                    "x": 0,
+                    "y": 0
+                },
+                "sheets": {
+                    "idle": {
+                        "name": "Vacancy",
+                        "src": "spritesheet-spritesheet-5226227206.png",
+                        "columns": 1,
+                        "rows": 1,
+                        "numImages": 1,
+                        "refreshInterval": 10,
+                        "id": "67d5f7993037477e169386fb"
+                    },
+                    "up": {
+                        "name": "Vacancy",
+                        "src": "spritesheet-spritesheet-5226227206.png",
+                        "columns": 1,
+                        "rows": 1,
+                        "numImages": 1,
+                        "refreshInterval": 10,
+                        "id": "67d5f7993037477e169386fb"
+                    },
+                    "upRight": {
+                        "name": "Vacancy",
+                        "src": "spritesheet-spritesheet-5226227206.png",
+                        "columns": 1,
+                        "rows": 1,
+                        "numImages": 1,
+                        "refreshInterval": 10,
+                        "id": "67d5f7993037477e169386fb"
+                    },
+                    "right": {
+                        "name": "Vacancy",
+                        "src": "spritesheet-spritesheet-5226227206.png",
+                        "columns": 1,
+                        "rows": 1,
+                        "numImages": 1,
+                        "refreshInterval": 10,
+                        "id": "67d5f7993037477e169386fb"
+                    },
+                    "downRight": {
+                        "name": "Vacancy",
+                        "src": "spritesheet-spritesheet-5226227206.png",
+                        "columns": 1,
+                        "rows": 1,
+                        "numImages": 1,
+                        "refreshInterval": 10,
+                        "id": "67d5f7993037477e169386fb"
+                    },
+                    "down": {
+                        "name": "Vacancy",
+                        "src": "spritesheet-spritesheet-5226227206.png",
+                        "columns": 1,
+                        "rows": 1,
+                        "numImages": 1,
+                        "refreshInterval": 10,
+                        "id": "67d5f7993037477e169386fb"
+                    },
+                    "downLeft": {
+                        "name": "Vacancy",
+                        "src": "spritesheet-spritesheet-5226227206.png",
+                        "columns": 1,
+                        "rows": 1,
+                        "numImages": 1,
+                        "refreshInterval": 10,
+                        "id": "67d5f7993037477e169386fb"
+                    },
+                    "left": {
+                        "name": "Vacancy",
+                        "src": "spritesheet-spritesheet-5226227206.png",
+                        "columns": 1,
+                        "rows": 1,
+                        "numImages": 1,
+                        "refreshInterval": 10,
+                        "id": "67d5f7993037477e169386fb"
+                    },
+                    "upLeft": {
+                        "name": "Vacancy",
+                        "src": "spritesheet-spritesheet-5226227206.png",
+                        "columns": 1,
+                        "rows": 1,
+                        "numImages": 1,
+                        "refreshInterval": 10,
+                        "id": "67d5f7993037477e169386fb"
+                    }
+                },
+                "id": "67d5f7c13037477e169386fe"
+            },
+            "thumbnail": "thumbnail-agentType-5226227592.png",
+            "nominalSpeed": 0.02,
+            "offset": {
+                "x": 100,
+                "y": 100
+            },
+            "id": "67d5f7d93037477e16938703"
+        },
+        "destinationType": "agent",
+        "agentChoiceMethod": "random",
+        "target": {}
+    },
+    {
+        "_id": "67d8a5c00095e333c848fe92",
+        "agent": null,
+        "actionName": "B Remove vacancy",
+        "actionType": "removeAgent",
+        "inProgress": false,
+        "isComplete": false,
+        "conditions": [],
+        "transitions": [
+            {
+                "condition": "67d71f439a9eb09732f7e45b",
+                "nextAction": "67d8a5d60095e333c848fe95"
+            }
+        ],
+        "agentType": {
+            "name": "Vacancy",
+            "height": 5,
+            "width": 5,
+            "animationSet": {
+                "name": "Vacancy",
+                "scale": 1,
+                "offset": {
+                    "x": 0,
+                    "y": 0
+                },
+                "sheets": {
+                    "idle": {
+                        "name": "Vacancy",
+                        "src": "spritesheet-spritesheet-5226227206.png",
+                        "columns": 1,
+                        "rows": 1,
+                        "numImages": 1,
+                        "refreshInterval": 10,
+                        "id": "67d5f7993037477e169386fb"
+                    },
+                    "up": {
+                        "name": "Vacancy",
+                        "src": "spritesheet-spritesheet-5226227206.png",
+                        "columns": 1,
+                        "rows": 1,
+                        "numImages": 1,
+                        "refreshInterval": 10,
+                        "id": "67d5f7993037477e169386fb"
+                    },
+                    "upRight": {
+                        "name": "Vacancy",
+                        "src": "spritesheet-spritesheet-5226227206.png",
+                        "columns": 1,
+                        "rows": 1,
+                        "numImages": 1,
+                        "refreshInterval": 10,
+                        "id": "67d5f7993037477e169386fb"
+                    },
+                    "right": {
+                        "name": "Vacancy",
+                        "src": "spritesheet-spritesheet-5226227206.png",
+                        "columns": 1,
+                        "rows": 1,
+                        "numImages": 1,
+                        "refreshInterval": 10,
+                        "id": "67d5f7993037477e169386fb"
+                    },
+                    "downRight": {
+                        "name": "Vacancy",
+                        "src": "spritesheet-spritesheet-5226227206.png",
+                        "columns": 1,
+                        "rows": 1,
+                        "numImages": 1,
+                        "refreshInterval": 10,
+                        "id": "67d5f7993037477e169386fb"
+                    },
+                    "down": {
+                        "name": "Vacancy",
+                        "src": "spritesheet-spritesheet-5226227206.png",
+                        "columns": 1,
+                        "rows": 1,
+                        "numImages": 1,
+                        "refreshInterval": 10,
+                        "id": "67d5f7993037477e169386fb"
+                    },
+                    "downLeft": {
+                        "name": "Vacancy",
+                        "src": "spritesheet-spritesheet-5226227206.png",
+                        "columns": 1,
+                        "rows": 1,
+                        "numImages": 1,
+                        "refreshInterval": 10,
+                        "id": "67d5f7993037477e169386fb"
+                    },
+                    "left": {
+                        "name": "Vacancy",
+                        "src": "spritesheet-spritesheet-5226227206.png",
+                        "columns": 1,
+                        "rows": 1,
+                        "numImages": 1,
+                        "refreshInterval": 10,
+                        "id": "67d5f7993037477e169386fb"
+                    },
+                    "upLeft": {
+                        "name": "Vacancy",
+                        "src": "spritesheet-spritesheet-5226227206.png",
+                        "columns": 1,
+                        "rows": 1,
+                        "numImages": 1,
+                        "refreshInterval": 10,
+                        "id": "67d5f7993037477e169386fb"
+                    }
+                },
+                "id": "67d5f7c13037477e169386fe"
+            },
+            "thumbnail": "thumbnail-agentType-5226227592.png",
+            "nominalSpeed": 0.02,
+            "offset": {
+                "x": 100,
+                "y": 100
+            },
+            "id": "67d5f7d93037477e16938703"
+        },
+        "agentChoiceMethod": "nearest",
+        "target": {}
+    },
+    {
+        "_id": "67d8a5d60095e333c848fe95",
+        "agent": null,
+        "actionName": "B Wait for moment",
+        "actionType": "interval",
+        "inProgress": false,
+        "isComplete": false,
+        "conditions": [],
+        "transitions": [
+            {
+                "condition": "67d71f439a9eb09732f7e45b",
+                "nextAction": "67d8a81c0095e333c848fe98"
+            }
+        ],
+        "spriteSheet": "",
+        "duration": 100
+    },
+    {
+        "_id": "67d8a81c0095e333c848fe98",
+        "agent": null,
+        "actionName": "B Check for neighbours",
+        "actionType": "interval",
+        "inProgress": false,
+        "isComplete": false,
+        "conditions": [],
+        "transitions": [
+            {
+                "condition": "67d71f859a9eb09732f7e464",
+                "nextAction": "67d8a8360095e333c848fe9b"
+            }
+        ],
+        "spriteSheet": "",
+        "duration": 10
+    },
+    {
+        "_id": "67d8a8360095e333c848fe9b",
+        "agent": null,
+        "actionName": "B Create vacancy",
+        "actionType": "spawnAgent",
+        "inProgress": false,
+        "isComplete": false,
+        "conditions": [],
+        "transitions": [
+            {
+                "condition": "67d71f439a9eb09732f7e45b",
+                "nextAction": "67d8a59f0095e333c848fe8f"
+            }
+        ],
+        "agentType": {
+            "name": "Vacancy",
+            "height": 5,
+            "width": 5,
+            "animationSet": {
+                "name": "Vacancy",
+                "scale": 1,
+                "offset": {
+                    "x": 0,
+                    "y": 0
+                },
+                "sheets": {
+                    "idle": {
+                        "name": "Vacancy",
+                        "src": "spritesheet-spritesheet-5226227206.png",
+                        "columns": 1,
+                        "rows": 1,
+                        "numImages": 1,
+                        "refreshInterval": 10,
+                        "id": "67d5f7993037477e169386fb"
+                    },
+                    "up": {
+                        "name": "Vacancy",
+                        "src": "spritesheet-spritesheet-5226227206.png",
+                        "columns": 1,
+                        "rows": 1,
+                        "numImages": 1,
+                        "refreshInterval": 10,
+                        "id": "67d5f7993037477e169386fb"
+                    },
+                    "upRight": {
+                        "name": "Vacancy",
+                        "src": "spritesheet-spritesheet-5226227206.png",
+                        "columns": 1,
+                        "rows": 1,
+                        "numImages": 1,
+                        "refreshInterval": 10,
+                        "id": "67d5f7993037477e169386fb"
+                    },
+                    "right": {
+                        "name": "Vacancy",
+                        "src": "spritesheet-spritesheet-5226227206.png",
+                        "columns": 1,
+                        "rows": 1,
+                        "numImages": 1,
+                        "refreshInterval": 10,
+                        "id": "67d5f7993037477e169386fb"
+                    },
+                    "downRight": {
+                        "name": "Vacancy",
+                        "src": "spritesheet-spritesheet-5226227206.png",
+                        "columns": 1,
+                        "rows": 1,
+                        "numImages": 1,
+                        "refreshInterval": 10,
+                        "id": "67d5f7993037477e169386fb"
+                    },
+                    "down": {
+                        "name": "Vacancy",
+                        "src": "spritesheet-spritesheet-5226227206.png",
+                        "columns": 1,
+                        "rows": 1,
+                        "numImages": 1,
+                        "refreshInterval": 10,
+                        "id": "67d5f7993037477e169386fb"
+                    },
+                    "downLeft": {
+                        "name": "Vacancy",
+                        "src": "spritesheet-spritesheet-5226227206.png",
+                        "columns": 1,
+                        "rows": 1,
+                        "numImages": 1,
+                        "refreshInterval": 10,
+                        "id": "67d5f7993037477e169386fb"
+                    },
+                    "left": {
+                        "name": "Vacancy",
+                        "src": "spritesheet-spritesheet-5226227206.png",
+                        "columns": 1,
+                        "rows": 1,
+                        "numImages": 1,
+                        "refreshInterval": 10,
+                        "id": "67d5f7993037477e169386fb"
+                    },
+                    "upLeft": {
+                        "name": "Vacancy",
+                        "src": "spritesheet-spritesheet-5226227206.png",
+                        "columns": 1,
+                        "rows": 1,
+                        "numImages": 1,
+                        "refreshInterval": 10,
+                        "id": "67d5f7993037477e169386fb"
+                    }
+                },
+                "id": "67d5f7c13037477e169386fe"
+            },
+            "thumbnail": "thumbnail-agentType-5226227592.png",
+            "nominalSpeed": 0.02,
+            "offset": {
+                "x": 100,
+                "y": 100
+            },
+            "id": "67d5f7d93037477e16938703"
+        },
+        "position": {
+            "x": 0,
+            "y": 0
+        },
+        "spawnAgentPlacement": "selfPosition"
     }
 ]

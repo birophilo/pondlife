@@ -90,5 +90,85 @@
             "down": "67b8db7e95db79bed577796d",
             "downRight": "67b8df5e95db79bed57779c5"
         }
+    },
+    {
+        "_id": "67d5eaae3037477e1693868b",
+        "name": "WPerson",
+        "scale": 1,
+        "offset": {
+            "x": 0,
+            "y": 0
+        },
+        "sheets": {
+            "idle": "67d5ea643037477e16938685",
+            "up": "67d5ea643037477e16938685",
+            "upRight": "67d5ea643037477e16938685",
+            "right": "67d5ea643037477e16938685",
+            "downRight": "67d5ea643037477e16938685",
+            "down": "67d5ea643037477e16938685",
+            "downLeft": "67d5ea643037477e16938685",
+            "left": "67d5ea643037477e16938685",
+            "upLeft": "67d5ea643037477e16938685"
+        }
+    },
+    {
+        "_id": "67d5eadc3037477e1693868e",
+        "name": "BPerson",
+        "scale": 1,
+        "offset": {
+            "x": 0,
+            "y": 0
+        },
+        "sheets": {
+            "idle": "67d5ea803037477e16938688",
+            "up": "67d5ea803037477e16938688",
+            "upRight": "67d5ea803037477e16938688",
+            "right": "67d5ea803037477e16938688",
+            "downRight": "67d5ea803037477e16938688",
+            "down": "67d5ea803037477e16938688",
+            "downLeft": "67d5ea803037477e16938688",
+            "left": "67d5ea803037477e16938688",
+            "upLeft": "67d5ea803037477e16938688"
+        }
+    },
+    {
+        "_id": "67d5f4003037477e169386dd",
+        "name": "House",
+        "scale": 1,
+        "offset": {
+            "x": 0,
+            "y": 0
+        },
+        "sheets": {
+            "idle": "67d5f3d63037477e169386da",
+            "up": "67d5f3d63037477e169386da",
+            "upRight": "67d5f3d63037477e169386da",
+            "right": "67d5f3d63037477e169386da",
+            "downRight": "67d5f3d63037477e169386da",
+            "down": "67d5f3d63037477e169386da",
+            "downLeft": "67d5f3d63037477e169386da",
+            "left": "67d5f3d63037477e169386da",
+            "upLeft": "67d5f3d63037477e169386da"
+        }
+    },
+    {
+        "_id": "67d5f7c13037477e169386fe",
+        "name": "Vacancy",
+        "scale": 1,
+        "offset": {
+            "x": 0,
+            "y": 0
+        },
+        "sheets": {
+            "idle": "67d5f7993037477e169386fb",
+            "up": "67d5f7993037477e169386fb",
+            "upRight": "67d5f7993037477e169386fb",
+            "right": "67d5f7993037477e169386fb",
+            "downRight": "67d5f7993037477e169386fb",
+            "down": "67d5f7993037477e169386fb",
+            "downLeft": "67d5f7993037477e169386fb",
+            "left": "67d5f7993037477e169386fb",
+            "upLeft": "67d5f7993037477e169386fb"
+        }
     }
 ]

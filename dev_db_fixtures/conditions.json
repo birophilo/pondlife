@@ -22,5 +22,50 @@
         "conditionValue": 5,
         "conditionType": "property",
         "property": "water"
+    },
+    {
+        "_id": "67be394948d20d51ab879d77",
+        "name": "isNotThirsty",
+        "comparison": "isGreaterThan",
+        "conditionValue": 3,
+        "conditionType": "property",
+        "property": "water"
+    },
+    {
+        "_id": "67d71f439a9eb09732f7e45b",
+        "name": "is complete",
+        "comparison": "isIdentical",
+        "conditionValue": true,
+        "conditionType": "preset",
+        "classMethod": "actionIsComplete"
+    },
+    {
+        "_id": "67d71f529a9eb09732f7e45e",
+        "name": "at destination",
+        "comparison": "isIdentical",
+        "conditionValue": true,
+        "conditionType": "preset",
+        "classMethod": "atDestination"
+    },
+    {
+        "_id": "67d71f729a9eb09732f7e461",
+        "name": "2 BPerson in vicinity",
+        "comparison": "isGreaterThan",
+        "conditionValue": 1,
+        "conditionType": "vicinity",
+        "agentType": "67d5ef8a3037477e169386c6",
+        "property": "",
+        "propertyValue": 0
+    },
+    {
+        "_id": "67d71f859a9eb09732f7e464",
+        "name": "2 WPerson in vicinity",
+        "comparison": "isGreaterThan",
+        "conditionValue": 1,
+        "conditionType": "vicinity",
+        "agentType": "67d5ebc73037477e169386a2",
+        "property": "",
+        "propertyValue": 0,
+        "agent": null
     }
 ]

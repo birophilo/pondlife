@@ -1,0 +1,26 @@
+[
+    {
+        "_id": "67c8b73c4cddd06e53b258ee",
+        "name": "look2",
+        "type": "spatial",
+        "rangeType": "circle",
+        "radius": 300,
+        "sampleInterval": 1
+    },
+    {
+        "_id": "67d896fe9a9eb09732f7e48a",
+        "name": "WPerson neighbour knowledge",
+        "type": "spatial",
+        "rangeType": "circle",
+        "radius": 100,
+        "sampleInterval": "5"
+    },
+    {
+        "_id": "67d897089a9eb09732f7e48d",
+        "name": "BPerson neighbour knowledge",
+        "type": "spatial",
+        "rangeType": "circle",
+        "radius": 100,
+        "sampleInterval": "5"
+    }
+]

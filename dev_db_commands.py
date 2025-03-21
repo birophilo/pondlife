@@ -53,9 +53,21 @@ def export_dev_db(database: str, to_dir: str):
     print(f"Exported database '{database}' to '{to_dir}'")
 
 
+def print_options():
+    print("Use `python dev_db_commands.py dump` to export the MongoDB data to JSON, or")
+    print("use `python dev_db_commands.py populate [<dir>]` to load exported data into MongoDB.")
+
+
 def run():
+
+    if len(sys.argv) < 2:
+        print("No command given.")
+        print_options()
+        sys.exit(1)
+
     command = sys.argv[1]
     dir_input = sys.argv[2] if len(sys.argv) > 2 else None
+
     directory = dir_input or DEV_DB_DUMP_DIRECTORY
 
     if command == "populate":
@@ -65,6 +77,10 @@ def run():
 
     elif command == "dump":
         export_dev_db(database=DATABASE_NAME, to_dir=directory)
+
+    else:
+        print("Command not recognised.")
+        print_options()
 
 
 if __name__ == "__main__":

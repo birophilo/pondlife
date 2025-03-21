@@ -10,7 +10,8 @@
         "offset": {
             "x": 96,
             "y": 46
-        }
+        },
+        "sensor": "67c8b73c4cddd06e53b258ee"
     },
     {
         "_id": "67a252bb0370e42b011a2bbc",
@@ -23,7 +24,8 @@
         "offset": {
             "x": 0,
             "y": 0
-        }
+        },
+        "sensor": null
     },
     {
         "_id": "67a252bb0370e42b011a2bbd",
@@ -37,7 +39,8 @@
         "scale": 2.5,
         "nominalSpeed": 0.02,
         "animationSet": null,
-        "thumbnail": "img/thumbnails/supply-van-thumbnail.png"
+        "thumbnail": "img/thumbnails/supply-van-thumbnail.png",
+        "sensor": null
     },
     {
         "_id": "67a252bb0370e42b011a2bbe",
@@ -52,7 +55,8 @@
         "nominalSpeed": 0.02,
         "previewImage": "img/thumbnails/world-thumbnail.png",
         "animationSet": null,
-        "thumbnail": ""
+        "thumbnail": "",
+        "sensor": null
     },
     {
         "_id": "67a8197ef6d7fc93893f35c2",
@@ -65,7 +69,8 @@
             "x": 100,
             "y": 100
         },
-        "thumbnail": "img/thumbnails/dog-thumbnail.png"
+        "thumbnail": "img/thumbnails/dog-thumbnail.png",
+        "sensor": null
     },
     {
         "_id": "67ace7ba036d42b4a0494360",
@@ -78,7 +83,8 @@
         "offset": {
             "x": 100,
             "y": 100
-        }
+        },
+        "sensor": null
     },
     {
         "_id": "67b8d38895db79bed5777911",
@@ -87,6 +93,61 @@
         "width": 50,
         "animationSet": "67b8d4ad95db79bed5777923",
         "thumbnail": "img/sprites/SupplyVan_Right.png",
+        "nominalSpeed": 0.02,
+        "offset": {
+            "x": 100,
+            "y": 100
+        },
+        "sensor": null
+    },
+    {
+        "_id": "67d5ebc73037477e169386a2",
+        "name": "WPerson",
+        "height": 30,
+        "width": 30,
+        "animationSet": "67d5eaae3037477e1693868b",
+        "thumbnail": "thumbnail-agentType-5226218322.png",
+        "nominalSpeed": 0.2,
+        "offset": {
+            "x": 100,
+            "y": 100
+        },
+        "sensor": "67d896fe9a9eb09732f7e48a"
+    },
+    {
+        "_id": "67d5ef8a3037477e169386c6",
+        "name": "BPerson",
+        "height": 5,
+        "width": 5,
+        "animationSet": "67d5eadc3037477e1693868e",
+        "thumbnail": "thumbnail-agentType-5226221188.png",
+        "nominalSpeed": 0.2,
+        "offset": {
+            "x": 100,
+            "y": 100
+        },
+        "sensor": "67d897089a9eb09732f7e48d"
+    },
+    {
+        "_id": "67d5f4ce3037477e169386e0",
+        "name": "House",
+        "height": 50,
+        "width": 50,
+        "animationSet": "67d5f4003037477e169386dd",
+        "thumbnail": "thumbnail-agentType-5226225247.png",
+        "nominalSpeed": 0.02,
+        "offset": {
+            "x": 100,
+            "y": 100
+        }
+    },
+    {
+        "_id": "67d5f7d93037477e16938703",
+        "name": "Vacancy",
+        "height": 5,
+        "width": 5,
+        "animationSet": "67d5f7c13037477e169386fe",
+        "thumbnail": "thumbnail-agentType-5226227592.png",
         "nominalSpeed": 0.02,
         "offset": {
             "x": 100,

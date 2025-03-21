@@ -259,5 +259,41 @@
         "rows": 1,
         "numImages": 1,
         "refreshInterval": 1
+    },
+    {
+        "_id": "67d5ea643037477e16938685",
+        "name": "WPersonStatic",
+        "src": "spritesheet-spritesheet-5226217162.png",
+        "columns": 1,
+        "rows": 1,
+        "numImages": 1,
+        "refreshInterval": 10
+    },
+    {
+        "_id": "67d5ea803037477e16938688",
+        "name": "BPersonStatic",
+        "src": "spritesheet-spritesheet-5226217314.png",
+        "columns": 1,
+        "rows": 1,
+        "numImages": 1,
+        "refreshInterval": 10
+    },
+    {
+        "_id": "67d5f3d63037477e169386da",
+        "name": "House",
+        "src": "spritesheet-spritesheet-5226224471.png",
+        "columns": 1,
+        "rows": 1,
+        "numImages": 1,
+        "refreshInterval": 10
+    },
+    {
+        "_id": "67d5f7993037477e169386fb",
+        "name": "Vacancy",
+        "src": "spritesheet-spritesheet-5226227206.png",
+        "columns": 1,
+        "rows": 1,
+        "numImages": 1,
+        "refreshInterval": 10
     }
 ]
