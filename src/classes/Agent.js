@@ -81,8 +81,14 @@ export class AgentHandler extends SpriteHandler {
       const xVelocity = Math.cos(angle) * item.speed
       const yVelocity = Math.sin(angle) * item.speed
 
-      item.position.x += xVelocity
-      item.position.y += yVelocity
+      const xFunc = xVelocity > 0 ? Math.min : Math.max
+      const yFunc = yVelocity > 0 ? Math.min : Math.max
+
+      const xTravel = xFunc(xVelocity, xDistance)
+      const yTravel = yFunc(yVelocity, yDistance)
+
+      item.position.x += xTravel
+      item.position.y += yTravel
 
       if (item.config.animationSet !== null) {
         const direction = get8WayDirection(xVelocity, yVelocity)
@@ -110,10 +116,10 @@ export class AgentHandler extends SpriteHandler {
     if (!item.destination) {
       return false
     }
-    const destinationLeftExtent = item.destination.position.x - 20
-    const destinationRightExtent = item.destination.position.x + item.destination.width + 20
-    const destinationTopExtent = item.destination.position.y - 20
-    const destinationBottomExtent = item.destination.position.y + item.destination.height + 20
+    const destinationLeftExtent = item.destination.position.x
+    const destinationRightExtent = item.destination.position.x + item.destination.width
+    const destinationTopExtent = item.destination.position.y
+    const destinationBottomExtent = item.destination.position.y + item.destination.height
     const atDestination = (
       item.center.x > destinationLeftExtent &&
       item.center.x < destinationRightExtent &&

@@ -47,6 +47,37 @@ export function rectanglesOverlap(rect1, rect2) {
 }
 
 
+// export function agentCenterOverlapsTargetArea(item) {
+//   const destinationLeftExtent = item.destination.position.x
+//   const destinationRightExtent = item.destination.position.x + item.destination.width
+//   const destinationTopExtent = item.destination.position.y
+//   const destinationBottomExtent = item.destination.position.y + item.destination.height
+//   const atDestination = (
+//     item.center.x > destinationLeftExtent &&
+//     item.center.x < destinationRightExtent &&
+//     item.center.y > destinationTopExtent &&
+//     item.center.y < destinationBottomExtent
+//   )
+//   return atDestination
+// }
+
+
+// export function agentCenterIsAtTargetAreaCentre(item) {
+//   const destinationLeftExtent = item.destination.position.x
+//   const destinationRightExtent = item.destination.position.x + item.destination.width
+//   const destinationTopExtent = item.destination.position.y
+//   const destinationBottomExtent = item.destination.position.y + item.destination.height
+//   const atDestination = (
+//     item.center.x > destinationLeftExtent &&
+//     item.center.x < destinationRightExtent &&
+//     item.center.y > destinationTopExtent &&
+//     item.center.y < destinationBottomExtent
+//   )
+//   return atDestination
+// }
+
+
+
 const CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
 
 
