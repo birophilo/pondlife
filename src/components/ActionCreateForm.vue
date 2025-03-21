@@ -88,7 +88,6 @@
             v-model="itemForm.pointType"
             name="pointType"
             value="defined"
-            checked="true"
           />
           <label for="defined">defined</label>
           <input
@@ -136,11 +135,32 @@
     </div>
 
     <div v-if="itemForm.actionType === 'interval'">
-      <input
-        type="number"
-        v-model="itemForm.duration"
-        placeholder="0"
-      />
+
+      <form name="pointRadioSelect">
+        <input
+          type="radio"
+          v-model="itemForm.intervalType"
+          name="intervalType"
+          value="frames"
+        />
+        <label for="frames">frames</label>
+        <input
+          type="radio"
+          v-model="itemForm.intervalType"
+          name="intervalType"
+          value="untilNextInterval"
+        />
+        <label for="untilNextInterval">untilNextInterval</label>
+      </form>
+
+      <div v-if="itemForm.intervalType === 'frames'">
+        frames duration: <input
+          type="number"
+          v-model="itemForm.duration"
+          placeholder="0"
+        />
+      </div>
+
       <input type="text" v-model="itemForm.spriteSheet" placeholder="sprite sheet" />
     </div>
 
@@ -306,13 +326,14 @@ export default {
       definedPoint: '',
       spriteSheet: '',
       propertyChanges: [],
-      spawnAgentPlacement: 'specific'
+      spawnAgentPlacement: 'specific',
+      intervalType: 'frames'
     })
 
     const forms = ref({
       goTo: ['destinationType', 'agentType', 'agentChoiceMethod', 'target', 'pointType', 'definedPoint'],
       change: ['propertyChanges'],
-      interval: ['duration', 'spriteSheet'],
+      interval: ['duration', 'intervalType', 'spriteSheet'],
       spawnAgent: ['agentType', 'target', 'spawnAgentPlacement'],
       removeAgent: ['agentType', 'agentChoiceMethod', 'target']
     })
@@ -376,6 +397,7 @@ export default {
       itemForm.value.target = {}
       itemForm.value.spriteSheet = ''
       itemForm.value.pointType = 'custom'
+      itemForm.value.intervalType = 'frames'
     }
 
     const cancelAddAction = () => {

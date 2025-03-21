@@ -159,6 +159,22 @@
     <!-- INTERVAL EDIT FORM -->
     <div v-if="action.actionType === 'interval'">
       <div v-if="isEditing === true">
+        <form name="pointRadioSelect">
+          <input
+            type="radio"
+            v-model="itemForm.intervalType"
+            name="intervalType"
+            value="frames"
+          />
+          <label for="frames">frames</label>
+          <input
+            type="radio"
+            v-model="itemForm.intervalType"
+            name="intervalType"
+            value="untilNextInterval"
+          />
+          <label for="untilNextInterval">untilNextInterval</label>
+        </form>
         <div>interval (frames): <input v-model="itemForm.duration" type="number" /></div>
         <div>spritesheet: <input v-model="itemForm.spriteSheet" type="text" /></div>
       </div>
@@ -301,7 +317,8 @@ export default {
         target: props.action.target,
         spriteSheet: props.action.spriteSheet,
         pointType: props.action.pointType,
-        definedPoint: props.action.definedPoint
+        definedPoint: props.action.definedPoint,
+        intervaltype: props.action.intervalType
       }
 
       if (props.action.actionType === 'spawnAgent') {
@@ -310,6 +327,7 @@ export default {
 
       if (props.action.actionType === 'interval') {
         itemForm.value.spriteSheet = props.action.spriteSheet
+        itemForm.value.intervalType = props.action.intervalType
       }
     }
 
@@ -344,6 +362,7 @@ export default {
         }
       } else if (props.action.actionType === 'interval') {
         act.spriteSheet = itemForm.value.spriteSheet
+        act.intervalType = itemForm.value.intervalType
       }
 
       if (act.pointType !== 'defined') {delete act.definedPoint}

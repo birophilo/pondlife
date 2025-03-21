@@ -45,3 +45,19 @@ export function rectanglesOverlap(rect1, rect2) {
     r1.y1 > r2.y2
   )
 }
+
+
+const CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+
+
+export function generateFakeIdString () {
+  /*
+  generate random 10-character dummy MongoDB ID string when need to generate an ID
+  but not save the object to a database.
+  */
+  const randomCharArray =  [...Array(10)].map(() =>
+    CHARS.charAt(
+      Math.floor(Math.random() * CHARS.length))
+    )
+  return randomCharArray.join("")
+}

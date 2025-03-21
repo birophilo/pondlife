@@ -4,6 +4,12 @@ from pydantic import BaseModel, ConfigDict
 from pydantic.alias_generators import to_camel
 
 
+class DefaultInterval:
+    name: str = "day"
+    type: str = "frame"  # only option for now, later support "clock" time
+    interval: float = 1.0
+
+
 class XY(BaseModel):
     x: float
     y: float
@@ -113,11 +119,11 @@ class ActionPropertyChangeSet(BaseAction):
 
 class ActionInterval(BaseAction):
     start_frame: int
+    interval_type: str
 
 
 class ActionSpawnAgent(BaseModel):
     spawn_agent_placement: str
-    pass
 
 
 class ActionRemoveAgent(BaseModel):

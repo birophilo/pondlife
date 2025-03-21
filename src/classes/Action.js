@@ -50,6 +50,7 @@ export function createActionPropertyChanges (agent = null, data) {
 export function createActionInterval (agent = null, data) {
   let item = createActionObject(agent, data)
   item.duration = data.duration
+  item.intervalType = data.intervalType
   // quick fix to allow interval actions to retain 'target' information in other transitions,
   // goTo target agent -> wait -> remove target agent
   item.target = data.target
@@ -84,6 +85,10 @@ export function createActionRemoveAgent (agent = null, data) {
 
 export class ActionHandler {
 
+  constructor() {
+    this.name = 'baseHandler'
+  }
+
   meetsConditions(item) {
     for (let i = 0; i < item.conditions.length; i++) {
       const qualifies = item.conditions[i].evaluate()
@@ -97,7 +102,7 @@ export class ActionHandler {
 
   // eslint-disable-next-line
   check(item, stateData, globals, agentHandler) {
-    // console.log(item.actionName)
+
     if (this.defaultCompletionCheckPasses(item, agentHandler)) {
       item.isComplete = true
     }
@@ -116,6 +121,11 @@ export class ActionHandler {
 
 
 export class ActionGoToHandler extends ActionHandler {
+
+  constructor() {
+    super()
+    this.name = 'goToHandler'
+  }
 
   // eslint-disable-next-line
   start(item, globals) {
@@ -146,6 +156,11 @@ export class ActionGoToHandler extends ActionHandler {
 
 
 export class ActionPropertyChangesHandler extends ActionHandler {
+
+  constructor() {
+    super()
+    this.name = 'propertyChangesHandler'
+  }
 
   // eslint-disable-next-line
   start(item, globals, agentHandler, store) {
@@ -178,15 +193,26 @@ export class ActionIntervalHandler extends ActionHandler {
     A timer object; an 'action' that just waits for a specified frame duration.
   */
 
+  constructor() {
+    super()
+    this.name = 'intervalHandler'
+  }
+
   start(item, globals, agentHandler) {
     // if (item.args.spriteSheet) {
     //   agentHandler.useSpriteSheet(item.args.spriteSheet, item.agent)
     // }
     agentHandler.useSpriteSheet('idle', item.agent)
     item.agent.currentDirection = 'idle'
-    const currentFrame = globals.animationFrameId
-    item.startFrame = currentFrame
-    item.agent.currentStateName = `waiting for ${item.duration} frames`
+
+    if (item.intervalType === 'frames') {
+      const currentFrame = globals.animationFrameId
+      item.startFrame = currentFrame
+      item.agent.currentStateName = `waiting for ${item.duration} frames`
+    } else if (item.intervalType === 'untilNextInterval') {
+      // set item.currentDefaultIntervalValue here (i.e. item.currentDay)
+    }
+
   }
 
   defaultCompletionCheckPasses(item) {
@@ -194,8 +220,15 @@ export class ActionIntervalHandler extends ActionHandler {
   }
 
   check(item, stateData, globals, agentHandler) {
-    const currentFrame = globals.animationFrameId
-    const timerExpired = currentFrame - (item.startFrame + item.duration) >= 0
+
+    let timerExpired
+
+    if (item.intervalType === 'frames') {
+      const currentFrame = globals.animationFrameId
+      timerExpired = currentFrame - (item.startFrame + item.duration) >= 0
+    } else if (item.intervalType === 'untilNextInterval') {
+      // check value of current day vs. this untilDay
+    }
 
     if (timerExpired) {
       item.isComplete = true
@@ -207,6 +240,11 @@ export class ActionIntervalHandler extends ActionHandler {
 
 
 export class ActionSpawnAgentHandler extends ActionHandler {
+
+  constructor() {
+    super()
+    this.name = 'spawnAgentHandler'
+  }
 
   // eslint-disable-next-line
   start(item, globals) {
@@ -233,6 +271,11 @@ export class ActionSpawnAgentHandler extends ActionHandler {
 
 
 export class ActionRemoveAgentHandler extends ActionHandler {
+
+  constructor() {
+    super()
+    this.name = 'removeAgentHandler'
+  }
 
   // eslint-disable-next-line
   start(item, globals) {

@@ -39,11 +39,20 @@
 
     <div class="menu-section">
       <div class="day-container">
-        Day: <span id="day-number">{{ store.dayNumber }}</span>
+        <div v-if="isEditingDefaultInterval">
+          Default time interval:<br />
+          name: <input v-model="defaultInterval.name" type="text" />
+          frames per interval: <input v-model="defaultInterval.frames" type="number" />
+        </div>
+        <div v-else>
+          <div>{{ defaultInterval.name }}: <span id="day-number">{{ store.dayNumber }}</span></div>
+          <button @click="isEditingDefaultInterval = true">edit</button>
+        </div>
       </div>
+
       <div class="speed-slide-container">
         <div>
-          <span>Speed: {{ store.GlobalSettings.globalSpeed / 100 }}</span>
+          <span>speed: {{ store.GlobalSettings.globalSpeed / 100 }}</span>
         </div>
         <input
           v-model="store.GlobalSettings.globalSpeed"
@@ -60,7 +69,7 @@
       </summary>
       <div v-if="store.selectedAgent !== null">
         {{ store.selectedAgent.name }}<br/>
-        current action: {{ store.selectedAgent.currentStateName }}
+        current action: {{ store.selectedAgent.currentAction?.actionName }}
       </div>
       <div v-else>none</div>
     </details>
@@ -158,7 +167,7 @@
 import { onMounted, ref } from 'vue'
 import { useStore } from '@/store/mainStore.js'
 
-import { pointIsInArea, rectanglesOverlap } from '@/utils.js'
+import { pointIsInArea, rectanglesOverlap, generateFakeIdString } from '@/utils.js'
 import { createAgentObject, AgentHandler } from '@/classes/Agent.js'
 import { ConditionHandler } from '@/classes/Condition.js'
 import { AgentMenu, AgentMenuIcon, DeleteButton, AgentPreview } from '@/classes/SelectionMenu.js'
@@ -230,6 +239,12 @@ export default {
     const showSceneMenu = () => {
       removeAgentLabels()
       store.displaySceneMenu = true
+    }
+
+    const isEditingDefaultInterval = ref(false)
+    const defaultInterval = {
+      name: "day",
+      frames: 1000
     }
 
     const loadAgentsAndFixtures = () => {
@@ -563,10 +578,18 @@ export default {
     }
 
     const deleteAgent = async (agent, agentItems, i) => {
+      // do not save agents created or deleted during scene runtime, i.e. scene will revert
+      // to setup positions once finish playing.
       // agent.labelElement.remove()
-      await api.deleteAgent(agent.id)
-      agentItems.splice(i, 1)
-      await store.saveScene()
+      if (store.sceneIsPlaying !== true) {
+        await api.deleteAgent(agent.id)
+        agentItems.splice(i, 1)
+        await store.saveScene()
+      }
+      // if scene is playing, don't call API
+      else {
+        agentItems.splice(i, 1)
+      }
     }
 
     const setDynamicActionTargetAgents = (action, agent, lastAction) => {
@@ -676,10 +699,21 @@ export default {
       )
       const handler = new AgentHandler()
       handler.useSpriteSheet('idle', newAgent)
-      const newItem = await api.createAgent({agentType: agentTypeName, position: position})
-      newAgent.id = newItem.id
-      agentItems.push(newAgent)
-      await store.saveScene()
+
+      // do not save agents created or deleted during scene runtime, i.e. scene will revert
+      // to setup positions once finish playing.
+      if (store.sceneIsPlaying !== true) {
+        const newItem = await api.createAgent({agentType: agentTypeName, position: position})
+        newAgent.id = newItem.id
+        agentItems.push(newAgent)
+        await store.saveScene()
+      }
+      // if scene is playing, don't call API; use dummy ID and don't save
+      // created/deleted/updated to database.
+      else {
+        newAgent.id = generateFakeIdString()
+        agentItems.push(newAgent)
+      }
     }
 
     const endDay = () => {
@@ -892,7 +926,9 @@ export default {
       unPauseScene,
       sceneName,
       loadAgentTypesModal,
-      agentTypeList
+      agentTypeList,
+      isEditingDefaultInterval,
+      defaultInterval
     }
   },
 
