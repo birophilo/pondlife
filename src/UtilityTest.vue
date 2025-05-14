@@ -1,5 +1,5 @@
 <template>
-  <div class="container">Utility</div>
+  <!-- <div class="container">Utility</div> -->
   <div class="properties">
     <div>Hunger: {{ Math.round(hunger) }}</div>
     <div>Thirst: {{ Math.round(thirst) }}</div>
@@ -7,7 +7,7 @@
     <div>Boredom: {{ Math.round(boredom) }}</div>
     <br />
     <br />
-    <div>Agent is {{ agent.action }}</div>
+    <div>Agent is {{ agent.action.toUpperCase() }}</div>
   </div>
 </template>
 
@@ -24,35 +24,35 @@ export default {
     const boredom = ref(0)
 
     const INCREMENTS = {
-      'hunger': 0.36,
-      'thirst': 0.63,
+      'hunger': 0.53,
+      'thirst': 0.83,
       'tiredness': 0.27,
-      'boredom': 2
+      'boredom': 1.71
     }
 
     const ACTIONS = {
       'eat': {
         'property': hunger,
         'statusName': 'eating',
-        'duration': 50,
+        'duration': 80,
         'value': -100
       },
       'drink': {
         'property': thirst,
         'statusName': 'drinking',
-        'duration': 50,
+        'duration': 40,
         'value': -100
       },
       'sleep': {
         'property': tiredness,
         'statusName': 'sleeping',
-        'duration': 150,
+        'duration': 250,
         'value': -100
       },
       'shitpost': {
         'property': boredom,
         'statusName': 'shitposting',
-        'duration': 10,
+        'duration': 20,
         'value': -100
       },
     }
@@ -70,7 +70,6 @@ export default {
     }
 
     const incrementProperties = () => {
-      console.log('incrementing values')
 
       incrementProperty(hunger, 'hunger')
       incrementProperty(thirst, 'thirst')
@@ -97,26 +96,24 @@ export default {
       animationFrameId = requestAnimationFrame(animate)
 
       if (agent.value.action !== 'doing nothing') {
-        console.log(animationFrameId)
-        console.log(agent.value.actionStartedFrame + agent.value.actionDuration)
         if (animationFrameId > agent.value.actionStartedFrame + agent.value.actionDuration) {
           doNothingAgain()
         }
       }
 
-      if (animationFrameId % 3 === 0) {
+      if (animationFrameId % 5 === 0) {
         incrementProperties()
 
-        if (Math.round(hunger.value) === 100 && agent.value.action === 'doing nothing') {
+        if ([98, 99, 100].includes(Math.round(hunger.value)) && agent.value.action === 'doing nothing') {
           doAction('eat')
         }
-        if (Math.round(thirst.value) === 100 && agent.value.action === 'doing nothing') {
+        if ([98, 99, 100].includes(Math.round(thirst.value)) && agent.value.action === 'doing nothing') {
           doAction('drink')
         }
-        if (Math.round(tiredness.value) === 100 && agent.value.action === 'doing nothing') {
+        if ([98, 99, 100].includes(Math.round(tiredness.value)) && agent.value.action === 'doing nothing') {
           doAction('sleep')
         }
-        if (Math.round(boredom.value) === 100 && agent.value.action === 'doing nothing') {
+        if ([98, 99, 100].includes(Math.round(boredom.value)) && agent.value.action === 'doing nothing') {
           doAction('shitpost')
         }
 
@@ -138,6 +135,10 @@ export default {
 </script>
 
 <style>
+
+body {
+  font-family: Arial, Helvetica, sans-serif;
+}
 
 .properties {
   display: flex;
