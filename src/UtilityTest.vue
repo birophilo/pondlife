@@ -25,7 +25,7 @@ export default {
 
     const INCREMENTS = {
       'hunger': 0.53,
-      'thirst': 0.83,
+      'thirst': 1.33,
       'tiredness': 0.27,
       'boredom': 1.71
     }
@@ -81,6 +81,7 @@ export default {
 
     const doAction = (actionName) => {
       ACTIONS[actionName]['property'].value += ACTIONS[actionName]['value']
+      ACTIONS[actionName]['property'].value = 0
       agent.value.action = ACTIONS[actionName]['statusName']
       agent.value.actionStartedFrame = animationFrameId
       agent.value.actionDuration = ACTIONS[actionName]['duration']
