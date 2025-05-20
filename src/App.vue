@@ -244,7 +244,6 @@ export default {
     }
 
     const showSceneMenu = () => {
-      removeAgentLabels()
       store.displaySceneMenu = true
     }
 
@@ -280,7 +279,6 @@ export default {
       store.sceneData.agentTypes.forEach(agentType => {
         store.agentTypes[agentType.name] = agentType
       })
-
 
       const agentTypeNames = Object.keys(store.agentTypes)
 
@@ -362,7 +360,6 @@ export default {
       store.sceneId = scene.id
       store.displaySceneMenu = false
       store.clearAllData()
-      removeAgentLabels()
       await store.fetchSceneData(scene.id)
       loadAgentsAndFixtures()
       animate()
@@ -380,11 +377,6 @@ export default {
     const conditionReadableFormat = (condition) => {
       const readable = `${ condition.property } ${ condition.comparison } ${ condition.value }`
       return readable
-    }
-
-    const updateThumbnailFileInput = (event, agentTypeForm) => {
-      const fileName = "/img/thumbnails/" + event.target.files[0].name
-      agentTypeForm.thumbnail = fileName
     }
 
     const setNextActionOrNull = (agent) => {
@@ -406,12 +398,6 @@ export default {
       }
       // no further action if no transitions
       agent.currentAction = null
-    }
-
-    const removeAgentLabels = () => {
-      // REMOVE THIS FOR NOW
-      // const agentLabels = document.getElementsByClassName('canvas-agent-label')
-      // Array.from(agentLabels).forEach(label => label.remove())
     }
 
     const agentHandler = new AgentHandler()
@@ -461,14 +447,18 @@ export default {
       // update each agent of each agent type
       agentTypeNames.forEach(agentTypeName => {
         store.agentItems[agentTypeName].forEach(agent => {
+
+          // paint agent on canvas
           agentHandler.update(c, {}, store.GlobalSettings, agent)
 
+          // set agent action
           if (agent.currentAction) {
             const handler = actionHandlers[agent.currentAction.actionType]
             if (handler.defaultCompletionCheckPasses(agent.currentAction, agentHandler) === true) {
               setNextActionOrNull(agent)
             }
 
+            // start and check actions
             // if unstarted Action in action list, start it; if already doing action, check if complete
             if (agent.currentAction && agent.currentAction.isComplete === false) {
               const handler = actionHandlers[agent.currentAction.actionType]
@@ -505,6 +495,7 @@ export default {
             agentHandler.idle(agent)
           }
 
+          // move this?
           const isInArea = pointIsInArea(store.mouse, agent.collisionArea)
           if (isInArea) store.hover = true
         })
@@ -557,6 +548,34 @@ export default {
           deleteAgent(agent, agentItems, i)
         }
       })
+    }
+
+    const addAgent = async (agentTypeName, position) => {
+      const agentItems = store.agentItems[agentTypeName]
+      const num = agentItems.length + 1
+      let newAgent = createAgentObject(
+        null,
+        store.agentTypes[agentTypeName],
+        position,
+        num,
+        store.GlobalSettings
+      )
+      agentHandler.useSpriteSheet('idle', newAgent)
+
+      // do not save agents created or deleted during scene runtime, i.e. scene will revert
+      // to setup positions once finish playing.
+      if (store.sceneIsPlaying !== true) {
+        const newItem = await api.createAgent({agentType: agentTypeName, position: position})
+        newAgent.id = newItem.id
+        agentItems.push(newAgent)
+        await store.saveScene()
+      }
+      // if scene is playing, don't call API; use dummy ID and don't save
+      // created/deleted/updated to database.
+      else {
+        newAgent.id = generateFakeIdString()
+        agentItems.push(newAgent)
+      }
     }
 
     const deleteAgent = async (agent, agentItems, i) => {
@@ -692,42 +711,7 @@ export default {
         }
       }
 
-      // if (action.actionType === 'spawnAgent' && action.spawnAgentPlacement === 'selfPosition') {
-      //   const position = agent.position.
-      // }
       return true  // 'ok' used by outer function, circuit breaker if not
-    }
-
-    const addAgent = async (agentTypeName, position) => {
-      const agentItems = store.agentItems[agentTypeName]
-      const num = agentItems.length + 1
-      let newAgent = createAgentObject(
-        null,
-        store.agentTypes[agentTypeName],
-        position,
-        num,
-        store.GlobalSettings
-      )
-      agentHandler.useSpriteSheet('idle', newAgent)
-
-      // do not save agents created or deleted during scene runtime, i.e. scene will revert
-      // to setup positions once finish playing.
-      if (store.sceneIsPlaying !== true) {
-        const newItem = await api.createAgent({agentType: agentTypeName, position: position})
-        newAgent.id = newItem.id
-        agentItems.push(newAgent)
-        await store.saveScene()
-      }
-      // if scene is playing, don't call API; use dummy ID and don't save
-      // created/deleted/updated to database.
-      else {
-        newAgent.id = generateFakeIdString()
-        agentItems.push(newAgent)
-      }
-    }
-
-    const endDay = () => {
-      store.dayNumber += 1
     }
 
     const cloneActionForAgent = (action, agent) => {
@@ -751,7 +735,6 @@ export default {
       store.sceneIsPlaying = true
       store.sceneIsPaused = false
 
-      // eslint-disable-next-line
       Object.keys(store.agentTypes).forEach(atName => {
         const firstActionId = store.firstActions[atName]
         if (firstActionId) {
@@ -813,16 +796,18 @@ export default {
       agentTypeNames.forEach(agentTypeName => {
         store.agentItems[agentTypeName].forEach(ag => {
           const agentArea = {x: ag.position.x, y: ag.position.y, width: ag.width, height: ag.height}
-
           if (agent.id !== ag.id) {  // don't add own id to vicinity knowledge
             if (rectanglesOverlap(vicinityArea, agentArea)) {
               agent.knowledge.vicinity.agents.push(ag.id)
             }
           }
-
         })
       })
 
+    }
+
+    const endDay = () => {
+      store.dayNumber += 1
     }
 
     onMounted(() => {
@@ -926,7 +911,6 @@ export default {
       showSceneMenu,
       deleteCondition,
       conditionReadableFormat,
-      updateThumbnailFileInput,
       cloneActionForSelectedAgent,
       saveScene,
       playScene,
