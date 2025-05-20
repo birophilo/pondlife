@@ -171,7 +171,14 @@ import { pointIsInArea, rectanglesOverlap, generateFakeIdString } from '@/utils.
 import { createAgentObject, AgentHandler } from '@/classes/Agent.js'
 import { ConditionHandler } from '@/classes/Condition.js'
 import { AgentMenu, AgentMenuIcon, DeleteButton, AgentPreview } from '@/classes/SelectionMenu.js'
-import { ActionHandler, ACTION_HANDLERS } from '@/classes/Action.js'
+import {
+  ActionHandler,
+  ActionGoToHandler,
+  ActionPropertyChangesHandler,
+  ActionIntervalHandler,
+  ActionSpawnAgentHandler,
+  ActionRemoveAgentHandler,
+} from '@/classes/Action.js'
 import api from '@/apiCrud.js'
 import SceneMenu from '@/components/SceneMenu.vue'
 import CreateAgentTypeForm from '@/components/CreateAgentTypeForm.vue'
@@ -299,8 +306,7 @@ export default {
 
             store.agentItems[agentTypeName].push(newAgent)
 
-            const handler = new AgentHandler()
-            handler.useSpriteSheet('idle', newAgent)
+            agentHandler.useSpriteSheet('idle', newAgent)
           })
         }
 
@@ -409,6 +415,13 @@ export default {
     }
 
     const agentHandler = new AgentHandler()
+    const actionHandlers = {
+      'goTo': new ActionGoToHandler(),
+      'change': new ActionPropertyChangesHandler(),
+      'interval': new ActionIntervalHandler(),
+      'spawnAgent': new ActionSpawnAgentHandler(),
+      'removeAgent': new ActionRemoveAgentHandler()
+    }
 
     /* ANIMATE */
 
@@ -443,50 +456,44 @@ export default {
         })
       })
 
+      let emissions = {agentsToDelete: [], agentsToSpawn: []}
+
       // update each agent of each agent type
       agentTypeNames.forEach(agentTypeName => {
         store.agentItems[agentTypeName].forEach(agent => {
           agentHandler.update(c, {}, store.GlobalSettings, agent)
 
-          let emissions = {agentsToDelete: [], agentsToSpawn: []}
-
           if (agent.currentAction) {
-            const handlerClass = ACTION_HANDLERS[agent.currentAction.actionType]
-            const handler = new handlerClass()
+            const handler = actionHandlers[agent.currentAction.actionType]
             if (handler.defaultCompletionCheckPasses(agent.currentAction, agentHandler) === true) {
               setNextActionOrNull(agent)
             }
 
             // if unstarted Action in action list, start it; if already doing action, check if complete
-            if (agent.currentAction) {
-              if (agent.currentAction.isComplete === false) {
-                if (agent.currentAction.inProgress === true) {
-                  // console.log('checking')
-                  const handlerClass = ACTION_HANDLERS[agent.currentAction.actionType]
-                  const handler = new handlerClass()
-                  handler.check(
-                    agent.currentAction,
-                    agent.stateData,
-                    store.GlobalSettings,
-                    agentHandler
-                  )
-                } else {
-                  agent.currentAction.inProgress = true
-                  const handlerClass = ACTION_HANDLERS[agent.currentAction.actionType]
-                  const handler = new handlerClass()
-                  const emissionsFromAction = handler.start(
-                    agent.currentAction,
-                    store.GlobalSettings,
-                    agentHandler,
-                    store
-                  ) // globals = {}?
-                  if (emissionsFromAction) {
-                    if (emissionsFromAction.agentsToDelete) {
-                      emissions.agentsToDelete = emissions.agentsToDelete.concat(emissionsFromAction.agentsToDelete)
-                    }
-                    if (emissionsFromAction.agentsToSpawn) {
-                      emissions.agentsToSpawn = emissions.agentsToSpawn.concat(emissionsFromAction.agentsToSpawn)
-                    }
+            if (agent.currentAction && agent.currentAction.isComplete === false) {
+              const handler = actionHandlers[agent.currentAction.actionType]
+              if (agent.currentAction.inProgress === true) {
+                // console.log('checking')
+                handler.check(
+                  agent.currentAction,
+                  agent.stateData,
+                  store.GlobalSettings,
+                  agentHandler
+                )
+              } else {
+                agent.currentAction.inProgress = true
+                const emissionsFromAction = handler.start(
+                  agent.currentAction,
+                  store.GlobalSettings,
+                  agentHandler,
+                  store
+                ) // globals = {}?
+                if (emissionsFromAction) {
+                  if (emissionsFromAction.agentsToDelete) {
+                    emissions.agentsToDelete = emissions.agentsToDelete.concat(emissionsFromAction.agentsToDelete)
+                  }
+                  if (emissionsFromAction.agentsToSpawn) {
+                    emissions.agentsToSpawn = emissions.agentsToSpawn.concat(emissionsFromAction.agentsToSpawn)
                   }
                 }
               }
@@ -498,37 +505,12 @@ export default {
             agentHandler.idle(agent)
           }
 
-          if (emissions) {
-            if (emissions.agentsToDelete?.length > 0) {
-              emissions.agentsToDelete.forEach(agent => {
-                const agentTypeName = agent.agentType.name
-                const agentItems = store.agentItems[agentTypeName]
-                const agentToDelete = agentItems.find(ag => ag.id === agent.id)
-                const i = agentItems.indexOf(agentToDelete)
-                deleteAgent(agentToDelete, agentItems, i)
-              })
-            }
-            if (emissions.agentsToSpawn?.length > 0) {
-              emissions.agentsToSpawn.forEach(args => {
-                const agentTypeName = args.agentType.name
-
-                let newAgent = createAgentObject(
-                  null,
-                  store.agentTypes[agentTypeName],  // agentType
-                  args.position,  // position
-                  store.agentItems[agentTypeName].length + 1,  // num
-                  store.GlobalSettings  // globals
-                )
-                addAgent(agentTypeName, args.position)
-                store.agentItems[agentTypeName].push(newAgent)
-              })
-            }
-          }
-
           const isInArea = pointIsInArea(store.mouse, agent.collisionArea)
           if (isInArea) store.hover = true
         })
       })
+
+      handleEmissions(emissions)
 
       store.itemMenu.update(c, store.agentMenuButtons.length + 1)
 
@@ -580,7 +562,6 @@ export default {
     const deleteAgent = async (agent, agentItems, i) => {
       // do not save agents created or deleted during scene runtime, i.e. scene will revert
       // to setup positions once finish playing.
-      // agent.labelElement.remove()
       if (store.sceneIsPlaying !== true) {
         await api.deleteAgent(agent.id)
         agentItems.splice(i, 1)
@@ -589,6 +570,36 @@ export default {
       // if scene is playing, don't call API
       else {
         agentItems.splice(i, 1)
+      }
+    }
+
+    const handleEmissions = (emissions) => {
+
+      const areAgentsToCreate = emissions.agentsToSpawn?.length > 0
+      const areAgentsToDelete = emissions.agentsToDelete?.length > 0
+
+      if (areAgentsToDelete) {
+        emissions.agentsToDelete.forEach(agent => {
+          const agentTypeName = agent.agentType.name
+          const agentItems = store.agentItems[agentTypeName]
+          const agentToDelete = agentItems.find(ag => ag.id === agent.id)
+          const i = agentItems.indexOf(agentToDelete)
+          deleteAgent(agentToDelete, agentItems, i)
+        })
+      }
+      if (areAgentsToCreate) {
+        emissions.agentsToSpawn.forEach(args => {
+          const agentTypeName = args.agentType.name
+          let newAgent = createAgentObject(
+            null,
+            store.agentTypes[agentTypeName],  // agentType
+            args.position,  // position
+            store.agentItems[agentTypeName].length + 1,  // num
+            store.GlobalSettings  // globals
+          )
+          addAgent(agentTypeName, args.position)
+          store.agentItems[agentTypeName].push(newAgent)
+        })
       }
     }
 
@@ -697,8 +708,7 @@ export default {
         num,
         store.GlobalSettings
       )
-      const handler = new AgentHandler()
-      handler.useSpriteSheet('idle', newAgent)
+      agentHandler.useSpriteSheet('idle', newAgent)
 
       // do not save agents created or deleted during scene runtime, i.e. scene will revert
       // to setup positions once finish playing.
@@ -724,8 +734,7 @@ export default {
       // general clone action
       const ok = setDynamicActionTargetAgents(action, agent)
       if (!ok) return
-      const handlerClass = ACTION_HANDLERS[action.actionType]
-      const handler = new handlerClass()
+      const handler = actionHandlers[action.actionType]
       agent.currentAction = handler.clone(action, agent)
     }
 
@@ -733,8 +742,7 @@ export default {
       // this function only used for live trigger via button for selected agent
       const ok = setDynamicActionTargetAgents(action, store.selectedAgent)
       if (!ok) return
-      const handlerClass = ACTION_HANDLERS[action.actionType]
-      const handler = new handlerClass()
+      const handler = actionHandlers[action.actionType]
       store.selectedAgent.currentAction = handler.clone(action, store.selectedAgent)
     }
 
