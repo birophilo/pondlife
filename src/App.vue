@@ -400,6 +400,23 @@ export default {
       agent.currentAction = null
     }
 
+    const ySortAgents = (agentTypeNames) => {
+
+      let ySortArray = []
+
+      // sort all agents by position.y value
+      agentTypeNames.forEach(agentTypeName => {
+        ySortArray = ySortArray.concat(store.agentItems[agentTypeName])
+      })
+      ySortArray.sort((a, b) => a.position.y - b.position.y);
+
+      // paint agent on canvas
+      ySortArray.forEach(agent => {
+        agentHandler.update(c, {}, store.GlobalSettings, agent)
+      })
+
+    }
+
     const agentHandler = new AgentHandler()
     const actionHandlers = {
       'goTo': new ActionGoToHandler(),
@@ -444,12 +461,11 @@ export default {
 
       let emissions = {agentsToDelete: [], agentsToSpawn: []}
 
+      ySortAgents(agentTypeNames)
+
       // update each agent of each agent type
       agentTypeNames.forEach(agentTypeName => {
         store.agentItems[agentTypeName].forEach(agent => {
-
-          // paint agent on canvas
-          agentHandler.update(c, {}, store.GlobalSettings, agent)
 
           // set agent action
           if (agent.currentAction) {
