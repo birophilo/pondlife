@@ -130,7 +130,7 @@
       <summary class="menu-section-heading">Start action</summary>
       <div v-if="store.actions.length > 0">
         <div v-for="action in store.actions">
-          <button @click="cloneActionForSelectedAgent(action)">{{ action.actionName }}</button>
+          <button @click="cloneActionForAgent(action, store.selectedAgent)">{{ action.actionName }}</button>
         </div>
       </div>
       <div v-else>
@@ -650,79 +650,101 @@ export default {
       */
 
       if (action.agentChoiceMethod === 'nearest' && action.destinationType === 'agent') {
+
         const agentTypeName = action.agentType.name
         // get agents excluding self
         const agentItems = store.agentItems[agentTypeName].filter(ag => ag.id !== agent.id)
+
         if (agentItems.length === 0) {
+
           console.log(`No ${agentTypeName} exists - cannot choose nearest.`)
           agentHandler.idle(agent)
           return false
+
         }
+
         const targetAgent = agentHandler.getClosestAgent(agent, agentItems)
 
         action.target = targetAgent
         action.destination = targetAgent
+
       } else if (action.agentChoiceMethod === 'all') {
-        const agentTypeName = action.agentType.name
-        const agentItems = store.agentItems[agentTypeName]
-        action.target = agentItems
+
+        action.target = store.agentItems[action.agentType.name]
+
       }
 
       if (action.agentChoiceMethod === 'random' && action.destinationType === 'agent') {
+
         const agentTypeName = action.agentType.name
         // get agents excluding self
         const agentItems = store.agentItems[agentTypeName].filter(ag => ag.id !== agent.id)
+
         if (agentItems.length === 0) {
+
           console.log(`No ${agentTypeName} exists - cannot choose random.`)
           agentHandler.idle(agent)
           return false
+
         }
+
         const targetAgent = agentHandler.getRandomAgent(agentItems)
         action.target = targetAgent
         action.destination = targetAgent
+
       }
 
       // if action involves property changes, set target for each change based on
       // agentChoiceMethod ('nearest' etc)
       if (action.actionType === 'change') {
+
         const changeObjs = store.propertyChanges.filter(ch => action.propertyChanges.includes(ch.id))
 
         changeObjs.forEach(change => {
+
           if (change.agentType !== 'self') {
+
             if (change.agentChoiceMethod === 'nearest') {
-              const agentTypeName = change.agentType
-              const agentItems = store.agentItems[agentTypeName]
+
+              const agentItems = store.agentItems[change.agentType]
               const targetAgent = agentHandler.getClosestAgent(agent, agentItems)
               change.target = targetAgent
+
             } else if (change.agentChoiceMethod === 'all') {
-              const agentTypeName = change.agentType
-              const agentItems = store.agentItems[agentTypeName]
-              change.target = agentItems
+
+              change.target = store.agentItems[change.agentType]
+
             }
           }
         })
       }
 
       if (action.actionType === 'interval' && lastAction) {
+
         action.target = lastAction.target
+
       }
 
       if (action.actionType === 'removeAgent') {
 
         if (action.agentType === 'currentTarget' && lastAction) {
+
           action.target = lastAction.target
+
         }
 
         else if (action.agentType !== 'self') {
+
           if (action.agentChoiceMethod === 'nearest') {
-            const agentTypeName = action.agentType.name
-            const targetAgents = store.agentItems[agentTypeName]
+
+            const targetAgents = store.agentItems[action.agentType.name]
             const targetAgent = agentHandler.getClosestAgent(agent, targetAgents)
             action.target = targetAgent
+
           } else if (action.agentChoiceMethod === 'all') {
-            const agentTypeName = action.agentType.name
-            const agentItems = store.agentItems[agentTypeName]
-            action.target = agentItems
+
+            action.target = store.agentItems[action.agentType.name]
+
           }
         }
       }
@@ -736,14 +758,6 @@ export default {
       if (!ok) return
       const handler = actionHandlers[action.actionType]
       agent.currentAction = handler.clone(action, agent)
-    }
-
-    const cloneActionForSelectedAgent = (action) => {
-      // this function only used for live trigger via button for selected agent
-      const ok = setDynamicActionTargetAgents(action, store.selectedAgent)
-      if (!ok) return
-      const handler = actionHandlers[action.actionType]
-      store.selectedAgent.currentAction = handler.clone(action, store.selectedAgent)
     }
 
     const playScene = () => {
@@ -927,7 +941,7 @@ export default {
       showSceneMenu,
       deleteCondition,
       conditionReadableFormat,
-      cloneActionForSelectedAgent,
+      cloneActionForAgent,
       saveScene,
       playScene,
       pauseScene,
