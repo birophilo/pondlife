@@ -130,7 +130,7 @@
       <summary class="menu-section-heading">Start action</summary>
       <div v-if="store.actions.length > 0">
         <div v-for="action in store.actions">
-          <button @click="cloneActionForAgent(action, store.selectedAgent)">{{ action.actionName }}</button>
+          <button @click="cloneAction(action, store.selectedAgent)">{{ action.actionName }}</button>
         </div>
       </div>
       <div v-else>
@@ -252,6 +252,18 @@ export default {
       name: "day",
       frames: 1000
     }
+
+    const agentHandler = new AgentHandler()
+    // for non-action specific base action methods
+    const actionHandler = new ActionHandler()
+    const actionHandlers = {
+      'goTo': new ActionGoToHandler(),
+      'change': new ActionPropertyChangesHandler(),
+      'interval': new ActionIntervalHandler(),
+      'spawnAgent': new ActionSpawnAgentHandler(),
+      'removeAgent': new ActionRemoveAgentHandler()
+    }
+    const conditionHandler = new ConditionHandler()
 
     const loadAgentsAndFixtures = () => {
 
@@ -375,24 +387,22 @@ export default {
     }
 
     const conditionReadableFormat = (condition) => {
-      const readable = `${ condition.property } ${ condition.comparison } ${ condition.value }`
-      return readable
+      return `${ condition.property } ${ condition.comparison } ${ condition.value }`
     }
 
-    const setNextActionOrNull = (agent) => {
+    const setNextAction = (agent) => {
       // check for state transitions and set next action if complete
       for (let transition of agent.currentAction.transitions) {
-        const conditionId = transition.condition
-        const condition = store.conditions.find(cond => cond.id === conditionId)
-        const conditionHandler = new ConditionHandler()
+
+        const condition = store.conditions.find(cond => cond.id === transition.condition)
         const result = conditionHandler.evaluateCondition(condition, agent, store)
+
         if (result === true) {
-          const nextActionId = transition.nextAction
-          const nextAction = store.actions.find(action => action.id === nextActionId)
+          const nextAction = store.actions.find(action => action.id === transition.nextAction)
           const ok = setDynamicActionTargetAgents(nextAction, agent, agent.currentAction)
-          if (!ok) return
-          let actionHandler = new ActionHandler()
-          agent.currentAction = actionHandler.clone(nextAction, agent)
+          if (ok) {
+            agent.currentAction = actionHandler.clone(nextAction, agent)
+          }
           return
         }
       }
@@ -415,15 +425,6 @@ export default {
         agentHandler.update(c, {}, store.GlobalSettings, agent)
       })
 
-    }
-
-    const agentHandler = new AgentHandler()
-    const actionHandlers = {
-      'goTo': new ActionGoToHandler(),
-      'change': new ActionPropertyChangesHandler(),
-      'interval': new ActionIntervalHandler(),
-      'spawnAgent': new ActionSpawnAgentHandler(),
-      'removeAgent': new ActionRemoveAgentHandler()
     }
 
     /* ANIMATE */
@@ -471,29 +472,25 @@ export default {
           if (agent.currentAction) {
             const handler = actionHandlers[agent.currentAction.actionType]
             if (handler.defaultCompletionCheckPasses(agent.currentAction, agentHandler) === true) {
-              setNextActionOrNull(agent)
+              setNextAction(agent)
             }
 
             // start and check actions
             // if unstarted Action in action list, start it; if already doing action, check if complete
             if (agent.currentAction && agent.currentAction.isComplete === false) {
+
               const handler = actionHandlers[agent.currentAction.actionType]
-              if (agent.currentAction.inProgress === true) {
-                // console.log('checking')
-                handler.check(
-                  agent.currentAction,
-                  agent.stateData,
-                  store.GlobalSettings,
-                  agentHandler
-                )
-              } else {
+
+              if (agent.currentAction.inProgress === false) {
+
                 agent.currentAction.inProgress = true
                 const emissionsFromAction = handler.start(
                   agent.currentAction,
                   store.GlobalSettings,
                   agentHandler,
                   store
-                ) // globals = {}?
+                )
+
                 if (emissionsFromAction) {
                   if (emissionsFromAction.agentsToDelete) {
                     emissions.agentsToDelete = emissions.agentsToDelete.concat(emissionsFromAction.agentsToDelete)
@@ -502,6 +499,16 @@ export default {
                     emissions.agentsToSpawn = emissions.agentsToSpawn.concat(emissionsFromAction.agentsToSpawn)
                   }
                 }
+
+              } else {
+
+                handler.check(
+                  agent.currentAction,
+                  agent.stateData,
+                  store.GlobalSettings,
+                  agentHandler
+                )
+
               }
             }
           }
@@ -752,12 +759,13 @@ export default {
       return true  // 'ok' used by outer function, circuit breaker if not
     }
 
-    const cloneActionForAgent = (action, agent) => {
-      // general clone action
+    const cloneAction = (action, agent) => {
       const ok = setDynamicActionTargetAgents(action, agent)
-      if (!ok) return
-      const handler = actionHandlers[action.actionType]
-      agent.currentAction = handler.clone(action, agent)
+      if (ok) {
+        const handler = actionHandlers[action.actionType]
+        agent.currentAction = handler.clone(action, agent)
+      }
+
     }
 
     const playScene = () => {
@@ -775,7 +783,7 @@ export default {
           }
 
           store.agentItems[atName].forEach(agent => {
-            cloneActionForAgent(action, agent)
+            cloneAction(action, agent)
           })
         }
       })
@@ -941,7 +949,7 @@ export default {
       showSceneMenu,
       deleteCondition,
       conditionReadableFormat,
-      cloneActionForAgent,
+      cloneAction,
       saveScene,
       playScene,
       pauseScene,
