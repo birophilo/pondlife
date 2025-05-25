@@ -441,6 +441,36 @@ export default {
       ]
     }
 
+    store.agentUtilityFunctions = {
+      'customer': [
+        {}
+      ]
+    },
+
+    chooseNextActionByUtility = (agent) => {
+
+      // utility functions currently specific to agent type
+      const utilityFunctionsForAgent = store.agentUtilityFunctions[agent.agentType]
+     
+      let highestScore = null
+      let highestScoreAction = null
+
+      utilityScores = utilityFunctionsForAgent.forEach(option => {
+        const score = calculateActionUtility(option.property, option.func)
+        if ((score) > highestScore) {
+          highestScoreAction = option.action
+        }
+      })
+
+      return highestScoreAction
+    }
+
+    function calculateActionUtility(property, func) {
+      const propValue = agent.stateData[property]
+      const utilityScore = func(propValue)
+      return utilityScore
+    }
+
     /* ANIMATE */
 
     const animate = () => {
@@ -496,6 +526,11 @@ export default {
       // update each agent of each agent type
       agentTypeNames.forEach(agentTypeName => {
         store.agentItems[agentTypeName].forEach(agent => {
+
+          // utility system
+          if (agent.currentStateName === 'idle' || agent.currentAction === null) {
+            agent.currentAction = chooseNextActionByUtility()
+          }
 
           // set agent action
           if (agent.currentAction) {
