@@ -55,6 +55,8 @@ export const useStore = defineStore({
 
     firstActions: {},
 
+    scheduledEffects: {},
+
     // hard-coded 8-way list (9 including 'idle') for basic 2D directional sprite movements
     directionList: [
       ['upLeft', 'up', 'upRight'],

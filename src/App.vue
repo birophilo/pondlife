@@ -69,7 +69,10 @@
       </summary>
       <div v-if="store.selectedAgent !== null">
         {{ store.selectedAgent.name }}<br/>
-        current action: {{ store.selectedAgent.currentAction?.actionName }}
+        current action: {{ store.selectedAgent.currentAction?.actionName }}<br/><br/>
+        <span v-for="prop in Object.entries(store.selectedAgent.stateData)">
+          {{ prop[0] }}: {{ prop[1] }}
+        </span>
       </div>
       <div v-else>none</div>
     </details>
@@ -427,6 +430,17 @@ export default {
 
     }
 
+    store.scheduledEffects = {
+      60: [
+        {
+          agentType: 'customer',
+          property: 'hunger',
+          frameInterval: 60,
+          change: 1
+        }
+      ]
+    }
+
     /* ANIMATE */
 
     const animate = () => {
@@ -458,6 +472,21 @@ export default {
             // }
           }
         })
+      })
+
+      Object.entries(store.scheduledEffects).forEach(scheduledEffect => {
+        const [frameInterval, effectArray] = scheduledEffect
+
+        if (animationId % frameInterval == 0) {
+          console.log("FRAME MATCHES")
+
+          effectArray.forEach(effect => {
+            const agents = store.agentItems[effect.agentType]
+            agents.forEach(agent => {
+              agent.stateData[effect.property] += effect.change
+            })
+          })
+        }
       })
 
       let emissions = {agentsToDelete: [], agentsToSpawn: []}
