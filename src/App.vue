@@ -69,9 +69,10 @@
       </summary>
       <div v-if="store.selectedAgent !== null">
         {{ store.selectedAgent.name }}<br/>
-        current action: {{ store.selectedAgent.currentAction?.actionName }}<br/><br/>
+        current action: {{ store.selectedAgent.currentStateName }}<br/>
+        current state name: {{ store.selectedAgent.currentAction?.actionName }}<br/><br/>
         <span v-for="prop in Object.entries(store.selectedAgent.stateData)">
-          {{ prop[0] }}: {{ prop[1] }}
+          {{ prop[0] }}: {{ prop[1] }}<br/>
         </span>
       </div>
       <div v-else>none</div>
@@ -377,7 +378,9 @@ export default {
       store.clearAllData()
       await store.fetchSceneData(scene.id)
       loadAgentsAndFixtures()
-      animate()
+      const agentTypeNames = Object.keys(store.agentTypes)
+      renderAgents(agentTypeNames, 'draw')
+      // animate()
     }
 
     const createScene = async (sceneName) => {
@@ -413,7 +416,7 @@ export default {
       agent.currentAction = null
     }
 
-    const ySortAgents = (agentTypeNames) => {
+    const renderAgents = (agentTypeNames, drawOrUpdate) => {
 
       let ySortArray = []
 
@@ -425,47 +428,70 @@ export default {
 
       // paint agent on canvas
       ySortArray.forEach(agent => {
-        agentHandler.update(c, {}, store.GlobalSettings, agent)
+        if (drawOrUpdate === 'draw') {
+          agentHandler.draw(c, agent)
+        } else {
+          agentHandler.update(c, {}, store.GlobalSettings, agent)
+        }
+
       })
 
     }
 
     store.scheduledEffects = {
-      60: [
+      5: [
         {
           agentType: 'customer',
           property: 'hunger',
           frameInterval: 60,
           change: 1
         }
+      ],
+      150: [
+        {
+          agentType: 'customer',
+          property: 'tiredness',
+          frameInterval: 150,
+          change: 2
+        }
       ]
     }
 
     store.agentUtilityFunctions = {
       'customer': [
-        {}
-      ]
-    },
+        {
+          actionId: '68336c81c48f492b82a87815',
+          property: 'hunger',
+          func: (num) => num  // or e.g. num * 2
+        },
+        {
+          actionId: '68336d0cc48f492b82a8781b',
+          property: 'tiredness',
+          func: (num) => num
+        }
+      ],
+      'lemonadeStall': []
+    }
 
-    chooseNextActionByUtility = (agent) => {
+    const chooseNextActionByUtility = (agent) => {
 
       // utility functions currently specific to agent type
-      const utilityFunctionsForAgent = store.agentUtilityFunctions[agent.agentType]
+      const utilityFunctionsForAgent = store.agentUtilityFunctions[agent.agentType.name]
      
       let highestScore = null
-      let highestScoreAction = null
+      let highestScoreActionId = null
 
-      utilityScores = utilityFunctionsForAgent.forEach(option => {
-        const score = calculateActionUtility(option.property, option.func)
-        if ((score) > highestScore) {
-          highestScoreAction = option.action
+      utilityFunctionsForAgent.forEach(option => {
+        const score = calculateActionUtility(agent, option.property, option.func)
+        if (score > highestScore) {
+          highestScoreActionId = option.actionId
         }
       })
 
-      return highestScoreAction
+      return highestScoreActionId
     }
 
-    function calculateActionUtility(property, func) {
+    function calculateActionUtility(agent, property, func) {
       const propValue = agent.stateData[property]
       const utilityScore = func(propValue)
       return utilityScore
@@ -508,8 +534,6 @@ export default {
         const [frameInterval, effectArray] = scheduledEffect
 
         if (animationId % frameInterval == 0) {
-          console.log("FRAME MATCHES")
-
           effectArray.forEach(effect => {
             const agents = store.agentItems[effect.agentType]
             agents.forEach(agent => {
@@ -521,16 +545,21 @@ export default {
 
       let emissions = {agentsToDelete: [], agentsToSpawn: []}
 
-      ySortAgents(agentTypeNames)
+      renderAgents(agentTypeNames, 'update')
 
       // update each agent of each agent type
       agentTypeNames.forEach(agentTypeName => {
         store.agentItems[agentTypeName].forEach(agent => {
 
           // utility system
-          if (agent.currentStateName === 'idle' || agent.currentAction === null) {
-            agent.currentAction = chooseNextActionByUtility()
+          if (agent.agentType.name === 'customer') {
+            if (agent.currentStateName === 'idle' || agent.currentAction === null) {
+              const nextActionId = chooseNextActionByUtility(agent)
+              const action = store.actions.find(action => action.id === nextActionId)
+              cloneAction(action, agent)
+            }
           }
+
 
           // set agent action
           if (agent.currentAction) {
@@ -851,6 +880,8 @@ export default {
           })
         }
       })
+
+      animate()
     }
 
     const pauseScene = () => {

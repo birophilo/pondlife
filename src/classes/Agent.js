@@ -34,7 +34,7 @@ export function createAgentObject (
     stateData: {},  // stateful configurable properties/parameters/variables, e.g. money: 100
     currentAction: null,
     currentActionName: '',
-    currentStateName: '',
+    currentStateName: 'idle',
     currentDirection: null  // temporary approach?
   }
 
