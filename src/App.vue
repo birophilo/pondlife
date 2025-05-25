@@ -352,6 +352,41 @@ export default {
       // populate actions
       store.actions = [...store.sceneData.actions]
 
+      store.scheduledEffects = {
+        140: [
+          {
+            agentType: 'customer',
+            property: 'hunger',
+            frameInterval: 60,
+            change: 1
+          }
+        ],
+        150: [
+          {
+            agentType: 'customer',
+            property: 'tiredness',
+            frameInterval: 150,
+            change: 2
+          }
+        ]
+      }
+
+      store.agentUtilityFunctions = {
+        'customer': [
+          {
+            actionId: '68336c81c48f492b82a87815',
+            property: 'hunger',
+            func: (num) => num  // or e.g. num * 2
+          },
+          {
+            actionId: '68336d0cc48f492b82a8781b',
+            property: 'tiredness',
+            func: (num) => num
+          }
+        ],
+        'lemonadeStall': []
+      }
+
       store.itemMenu = new AgentMenu()
 
       const agentTypeButtonNames = agentTypeNames.filter(name => name !== 'world')
@@ -438,46 +473,11 @@ export default {
 
     }
 
-    store.scheduledEffects = {
-      5: [
-        {
-          agentType: 'customer',
-          property: 'hunger',
-          frameInterval: 60,
-          change: 1
-        }
-      ],
-      150: [
-        {
-          agentType: 'customer',
-          property: 'tiredness',
-          frameInterval: 150,
-          change: 2
-        }
-      ]
-    }
-
-    store.agentUtilityFunctions = {
-      'customer': [
-        {
-          actionId: '68336c81c48f492b82a87815',
-          property: 'hunger',
-          func: (num) => num  // or e.g. num * 2
-        },
-        {
-          actionId: '68336d0cc48f492b82a8781b',
-          property: 'tiredness',
-          func: (num) => num
-        }
-      ],
-      'lemonadeStall': []
-    }
-
     const chooseNextActionByUtility = (agent) => {
 
       // utility functions currently specific to agent type
       const utilityFunctionsForAgent = store.agentUtilityFunctions[agent.agentType.name]
-     
+
       let highestScore = null
       let highestScoreActionId = null
 
@@ -555,11 +555,13 @@ export default {
           if (agent.agentType.name === 'customer') {
             if (agent.currentStateName === 'idle' || agent.currentAction === null) {
               const nextActionId = chooseNextActionByUtility(agent)
-              const action = store.actions.find(action => action.id === nextActionId)
-              cloneAction(action, agent)
+              if (nextActionId !== null) {
+                const action = store.actions.find(action => action.id === nextActionId)
+                cloneAction(action, agent)
+              }
+
             }
           }
-
 
           // set agent action
           if (agent.currentAction) {
