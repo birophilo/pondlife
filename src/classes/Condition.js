@@ -29,6 +29,7 @@ export class ConditionHandler {
     if (item.conditionType === 'preset') {
       const agentHandler = new AgentHandler()
       agentValue = agentHandler[item.classMethod](agent)
+
     } else if (item.conditionType === 'property') {
       agentValue = agent.stateData[item.property]
     } else if (item.conditionType === 'vicinity') {

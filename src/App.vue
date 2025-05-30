@@ -124,6 +124,7 @@
       <summary class="menu-section-heading">Actions</summary>
       <div class="item-list">
         <div v-for="action in store.actions" class="created-item">
+          {{ action.id }}
           <MenuAction :action="action"/>
         </div>
         <ActionCreateForm />
@@ -353,7 +354,7 @@ export default {
       store.actions = [...store.sceneData.actions]
 
       store.scheduledEffects = {
-        140: [
+        60: [
           {
             agentType: 'customer',
             property: 'hunger',
@@ -361,11 +362,11 @@ export default {
             change: 1
           }
         ],
-        150: [
+        90: [
           {
             agentType: 'customer',
             property: 'tiredness',
-            frameInterval: 150,
+            frameInterval: 90,
             change: 2
           }
         ]
@@ -382,6 +383,11 @@ export default {
             actionId: '68336d0cc48f492b82a8781b',
             property: 'tiredness',
             func: (num) => num
+          },
+          {
+            actionId: null,
+            property: 'idle',
+            func: () => 15
           }
         ],
         'lemonadeStall': []
@@ -423,14 +429,6 @@ export default {
       loadScene(newScene)
     }
 
-    const deleteCondition = (index) => {
-      store.conditions.splice(index, 1)
-    }
-
-    const conditionReadableFormat = (condition) => {
-      return `${ condition.property } ${ condition.comparison } ${ condition.value }`
-    }
-
     const setNextAction = (agent) => {
       // check for state transitions and set next action if complete
       for (let transition of agent.currentAction.transitions) {
@@ -468,9 +466,7 @@ export default {
         } else {
           agentHandler.update(c, {}, store.GlobalSettings, agent)
         }
-
       })
-
     }
 
     const chooseNextActionByUtility = (agent) => {
@@ -484,6 +480,7 @@ export default {
       utilityFunctionsForAgent.forEach(option => {
         const score = calculateActionUtility(agent, option.property, option.func)
         if (score > highestScore) {
+          highestScore = score
           highestScoreActionId = option.actionId
         }
       })
@@ -497,43 +494,13 @@ export default {
       return utilityScore
     }
 
-    /* ANIMATE */
-
-    const animate = () => {
-
-      let animationId
-
-      if (store.sceneIsPaused === true) {
-        animationId = requestAnimationFrame(() => console.log("PAUSED"))
-      } else {
-        animationId = requestAnimationFrame(animate)
-      }
-
-      store.hover = null
-
-      c.fillStyle = backgroundColor
-      c.fillRect(0, 0, canvas.width, canvas.height)
-
-      store.GlobalSettings.animationFrameId = animationId
-
-      const agentTypeNames = Object.keys(store.agentItems)
-
-      // update agent knowledge via sensory input
-      agentTypeNames.forEach(agentTypeName => {
-        store.agentItems[agentTypeName].forEach(agent => {
-          if (animationId % UPDATE_AGENT_KNOWLEDGE_EVERY_X_FRAMES === 0) {
-            updateAgentKnowledge(agent)
-            // if (animationId % 60 === 0) {
-            //   console.log(agent.knowledge)
-            // }
-          }
-        })
-      })
+    const applyScheduledEffects = (frameId) => {
 
       Object.entries(store.scheduledEffects).forEach(scheduledEffect => {
+
         const [frameInterval, effectArray] = scheduledEffect
 
-        if (animationId % frameInterval == 0) {
+        if (frameId % frameInterval == 0) {
           effectArray.forEach(effect => {
             const agents = store.agentItems[effect.agentType]
             agents.forEach(agent => {
@@ -542,12 +509,50 @@ export default {
           })
         }
       })
+    }
+
+    /* ANIMATE */
+
+    const animate = () => {
+
+      let frameId
+
+      if (store.sceneIsPaused === true) {
+        frameId = requestAnimationFrame(() => console.log("PAUSED"))
+      } else {
+        frameId = requestAnimationFrame(animate)
+      }
+
+      store.hover = null
+
+      c.fillStyle = backgroundColor
+      c.fillRect(0, 0, canvas.width, canvas.height)
+
+      store.GlobalSettings.animationFrameId = frameId
+
+      const agentTypeNames = Object.keys(store.agentItems)
+
+      // update agent knowledge via sensory input
+      agentTypeNames.forEach(agentTypeName => {
+        store.agentItems[agentTypeName].forEach(agent => {
+          if (frameId % UPDATE_AGENT_KNOWLEDGE_EVERY_X_FRAMES === 0) {
+            updateAgentKnowledge(agent)
+            // if (frameId % 60 === 0) {
+            //   console.log(agent.knowledge)
+            // }
+          }
+        })
+      })
+
+
+      // apply time-based/frame-based property updates
+      applyScheduledEffects(frameId)
+
+      // update agent state and draw sprites on board
+      renderAgents(agentTypeNames, 'update')
 
       let emissions = {agentsToDelete: [], agentsToSpawn: []}
 
-      renderAgents(agentTypeNames, 'update')
-
-      // update each agent of each agent type
       agentTypeNames.forEach(agentTypeName => {
         store.agentItems[agentTypeName].forEach(agent => {
 
@@ -558,6 +563,8 @@ export default {
               if (nextActionId !== null) {
                 const action = store.actions.find(action => action.id === nextActionId)
                 cloneAction(action, agent)
+              } else {
+                agentHandler.idle(agent)
               }
 
             }
@@ -639,7 +646,7 @@ export default {
 
       canvas.style.cursor = store.hover ? 'pointer' : 'auto'
 
-      if (animationId % dayLength === 0) endDay()
+      if (frameId % dayLength === 0) endDay()
 
       // if (store.GlobalSettings.animationFrameId % 32 === 0) {
       //   const customerActions = store.agentItems['customer'].map(cust =>
@@ -857,8 +864,8 @@ export default {
     const cloneAction = (action, agent) => {
       const ok = setDynamicActionTargetAgents(action, agent)
       if (ok) {
-        const handler = actionHandlers[action.actionType]
-        agent.currentAction = handler.clone(action, agent)
+        // const handler = actionHandlers[action.actionType]
+        agent.currentAction = actionHandler.clone(action, agent)
       }
 
     }
@@ -1044,8 +1051,6 @@ export default {
       loadScene,
       createScene,
       showSceneMenu,
-      deleteCondition,
-      conditionReadableFormat,
       cloneAction,
       saveScene,
       playScene,
