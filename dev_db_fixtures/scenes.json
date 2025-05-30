@@ -11,7 +11,10 @@
             ],
             "agentInstances": [
                 "67a3c9f7d07eeff9455b50ac",
-                "67a3c906d07eeff9455b509e"
+                "6802972297a6a6c8c304927b",
+                "6802972697a6a6c8c304927e",
+                "67a3c906d07eeff9455b509e",
+                "6802971e97a6a6c8c3049278"
             ],
             "conditions": [
                 "67a250f70370e42b011a2ba6",
@@ -20,7 +23,8 @@
             "actions": [
                 "67a3bccb522293bc6cda2b39",
                 "67a3bcd8522293bc6cda2b3b",
-                "67a3c29d86f328910e053fe9"
+                "67a3c29d86f328910e053fe9",
+                "68332946c48f492b82a877fb"
             ],
             "agentProperties": [
                 "67a3bc33522293bc6cda2b2d",
@@ -55,27 +59,38 @@
                 "67b8db4895db79bed5777966",
                 "67b8db6495db79bed577796a",
                 "67b8db7e95db79bed577796d",
-                "67b8df5e95db79bed57779c5"
+                "67b8df5e95db79bed57779c5",
+                "67d5ea643037477e16938685",
+                "67d5ea803037477e16938688",
+                "67d5f3d63037477e169386da",
+                "67d5f7993037477e169386fb"
             ],
             "animationSets": [
                 "67a2525d0370e42b011a2bb9",
                 "67a80db26dae6de3690c5f43",
                 "67ace7a0036d42b4a049435d",
                 "67b122019d33fa0fab203b33",
-                "67b8d4ad95db79bed5777923"
+                "67b8d4ad95db79bed5777923",
+                "67d5eaae3037477e1693868b",
+                "67d5eadc3037477e1693868e",
+                "67d5f4003037477e169386dd",
+                "67d5f7c13037477e169386fe"
             ],
             "propertyChanges": [
                 "67a3c4d386f328910e053ffa",
                 "67a3c55d86f328910e054001"
             ],
             "sensors": [
-                "67c8b65b4cddd06e53b258e7",
-                "67c8b73c4cddd06e53b258ee"
+                "67c8b73c4cddd06e53b258ee",
+                "67d896fe9a9eb09732f7e48a",
+                "67d897089a9eb09732f7e48d"
             ],
-            "firstActions": {}
+            "firstActions": {
+                "customer": "67a3bccb522293bc6cda2b39"
+            }
         },
         "createdAt": 1738690057295,
-        "lastModified": 1741835202065,
+        "lastModified": 1748183366927,
         "resource": "scene"
     },
     {
@@ -90,14 +105,17 @@
                 "67b8d38895db79bed5777911"
             ],
             "agentInstances": [
-                "67b9288e8b51703c50f56047",
-                "67b92da38b51703c50f560a0",
-                "67b930edb059a3df7f04201e",
-                "67b9311af6cc71d586b49ad6",
-                "67b92a818b51703c50f5606f",
                 "67b92b688b51703c50f56087",
-                "67b92d9a8b51703c50f5609b",
-                "67b8ed972118a2b40ed5bcbf"
+                "67ea819f1e183109edc6457b",
+                "67ea81a01e183109edc6457e",
+                "67ea81a01e183109edc64581",
+                "67ea81a11e183109edc64584",
+                "67ea81a11e183109edc64587",
+                "6802968897a6a6c8c304925f",
+                "6802968997a6a6c8c3049262",
+                "6802968997a6a6c8c3049265",
+                "6802968a97a6a6c8c304926b",
+                "6802968b97a6a6c8c304926e"
             ],
             "conditions": [
                 "67a250f70370e42b011a2ba6",
@@ -148,22 +166,31 @@
                 "67b8db4895db79bed5777966",
                 "67b8db6495db79bed577796a",
                 "67b8db7e95db79bed577796d",
-                "67b8df5e95db79bed57779c5"
+                "67b8df5e95db79bed57779c5",
+                "67d5ea643037477e16938685",
+                "67d5ea803037477e16938688",
+                "67d5f3d63037477e169386da",
+                "67d5f7993037477e169386fb"
             ],
             "animationSets": [
                 "67a2525d0370e42b011a2bb9",
                 "67a80db26dae6de3690c5f43",
                 "67ace7a0036d42b4a049435d",
                 "67b122019d33fa0fab203b33",
-                "67b8d4ad95db79bed5777923"
+                "67b8d4ad95db79bed5777923",
+                "67d5eaae3037477e1693868b",
+                "67d5eadc3037477e1693868e",
+                "67d5f4003037477e169386dd",
+                "67d5f7c13037477e169386fe"
             ],
             "propertyChanges": [
                 "67ad230f8ed4af6b4da868a7",
                 "67ad258d8ed4af6b4da868df"
             ],
             "sensors": [
-                "67c8b65b4cddd06e53b258e7",
-                "67c8b73c4cddd06e53b258ee"
+                "67c8b73c4cddd06e53b258ee",
+                "67d896fe9a9eb09732f7e48a",
+                "67d897089a9eb09732f7e48d"
             ],
             "firstActions": {
                 "lemonadeStall": null,
@@ -176,7 +203,7 @@
             }
         },
         "createdAt": 1738690074561,
-        "lastModified": 1741210160442,
+        "lastModified": 1748030259705,
         "resource": "scene"
     },
     {
@@ -416,7 +443,8 @@
                 "67d8a5c00095e333c848fe92",
                 "67d8a5d60095e333c848fe95",
                 "67d8a81c0095e333c848fe98",
-                "67d8a8360095e333c848fe9b"
+                "67d8a8360095e333c848fe9b",
+                "67e8cb150c11014766fa524b"
             ],
             "agentProperties": [],
             "spritesheets": [
@@ -479,7 +507,96 @@
             }
         },
         "createdAt": 1741229943600,
-        "lastModified": 1742600170903,
+        "lastModified": 1743309589803,
+        "resource": "scene"
+    },
+    {
+        "_id": "68330765c48f492b82a877cf",
+        "name": "Simple Utility system",
+        "data": {
+            "agentTypes": [
+                "67a252bb0370e42b011a2bbb",
+                "67a252bb0370e42b011a2bbc"
+            ],
+            "agentInstances": [
+                "6833078ec48f492b82a877d6",
+                "68336c85c48f492b82a87818"
+            ],
+            "conditions": [
+                "683479e3c48f492b82a878db",
+                "683479eec48f492b82a878de"
+            ],
+            "actions": [
+                "68336c81c48f492b82a87815",
+                "68336d0cc48f492b82a8781b",
+                "683479b8c48f492b82a878d8",
+                "68347cd4c48f492b82a878fa",
+                "68347d2ec48f492b82a87901",
+                "6838bf44c48f492b82a8794a"
+            ],
+            "agentProperties": [
+                "683307c3c48f492b82a877d9",
+                "683368fcc48f492b82a87804"
+            ],
+            "spritesheets": [
+                "67a251fa0370e42b011a2bae",
+                "67a251fa0370e42b011a2baf",
+                "67a251fa0370e42b011a2bb0",
+                "67a251fa0370e42b011a2bb1",
+                "67a251fa0370e42b011a2bb2",
+                "67a251fa0370e42b011a2bb3",
+                "67a251fa0370e42b011a2bb4",
+                "67a251fa0370e42b011a2bb5",
+                "67a251fa0370e42b011a2bb6",
+                "67a80c9c6dae6de3690c5f27",
+                "67a80cc26dae6de3690c5f2b",
+                "67a80cf46dae6de3690c5f2e",
+                "67a80d0a6dae6de3690c5f31",
+                "67a80d546dae6de3690c5f3a",
+                "67a80d696dae6de3690c5f3d",
+                "67a80d766dae6de3690c5f40",
+                "67ace794036d42b4a049435a",
+                "67ae4e7981ec1100c68d63db",
+                "67b121e99d33fa0fab203b30",
+                "67b129c59d33fa0fab203ccd",
+                "67b8d41395db79bed577791c",
+                "67b8dae795db79bed577795a",
+                "67b8db0695db79bed577795d",
+                "67b8db1595db79bed5777960",
+                "67b8db3695db79bed5777963",
+                "67b8db4895db79bed5777966",
+                "67b8db6495db79bed577796a",
+                "67b8db7e95db79bed577796d",
+                "67b8df5e95db79bed57779c5",
+                "67d5ea643037477e16938685",
+                "67d5ea803037477e16938688",
+                "67d5f3d63037477e169386da",
+                "67d5f7993037477e169386fb"
+            ],
+            "animationSets": [
+                "67a2525d0370e42b011a2bb9",
+                "67a80db26dae6de3690c5f43",
+                "67ace7a0036d42b4a049435d",
+                "67b122019d33fa0fab203b33",
+                "67b8d4ad95db79bed5777923",
+                "67d5eaae3037477e1693868b",
+                "67d5eadc3037477e1693868e",
+                "67d5f4003037477e169386dd",
+                "67d5f7c13037477e169386fe"
+            ],
+            "propertyChanges": [
+                "68347d00c48f492b82a878fd",
+                "6838bf59c48f492b82a8794d"
+            ],
+            "sensors": [
+                "67c8b73c4cddd06e53b258ee",
+                "67d896fe9a9eb09732f7e48a",
+                "67d897089a9eb09732f7e48d"
+            ],
+            "firstActions": {}
+        },
+        "createdAt": 1748174693077,
+        "lastModified": 1748549465067,
         "resource": "scene"
     }
 ]

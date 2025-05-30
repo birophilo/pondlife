@@ -64,12 +64,12 @@
         "height": 50,
         "width": 50,
         "animationSet": "67a80db26dae6de3690c5f43",
-        "nominalSpeed": 0.02,
+        "thumbnail": "img/thumbnails/dog-thumbnail.png",
+        "nominalSpeed": 0.04,
         "offset": {
             "x": 100,
             "y": 100
         },
-        "thumbnail": "img/thumbnails/dog-thumbnail.png",
         "sensor": null
     },
     {

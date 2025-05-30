@@ -128,67 +128,11 @@
         }
     },
     {
-        "_id": "67b8ed972118a2b40ed5bcbf",
-        "agentType": "someOtherVan",
-        "position": {
-            "x": 341,
-            "y": 317
-        }
-    },
-    {
-        "_id": "67b9288e8b51703c50f56047",
-        "agentType": "customer",
-        "position": {
-            "x": 234,
-            "y": 249
-        }
-    },
-    {
-        "_id": "67b92a818b51703c50f5606f",
-        "agentType": "dog",
-        "position": {
-            "x": 88,
-            "y": 355
-        }
-    },
-    {
         "_id": "67b92b688b51703c50f56087",
         "agentType": "dog",
         "position": {
             "x": 46,
             "y": 96
-        }
-    },
-    {
-        "_id": "67b92d9a8b51703c50f5609b",
-        "agentType": "dog",
-        "position": {
-            "x": 582,
-            "y": 364
-        }
-    },
-    {
-        "_id": "67b92da38b51703c50f560a0",
-        "agentType": "customer",
-        "position": {
-            "x": 322,
-            "y": 91
-        }
-    },
-    {
-        "_id": "67b930edb059a3df7f04201e",
-        "agentType": "lemonadeStall",
-        "position": {
-            "x": 779,
-            "y": 186
-        }
-    },
-    {
-        "_id": "67b9311af6cc71d586b49ad6",
-        "agentType": "lemonadeStall",
-        "position": {
-            "x": 390,
-            "y": 416
         }
     },
     {
@@ -2157,6 +2101,126 @@
         "position": {
             "x": 427.5,
             "y": 367.5
+        }
+    },
+    {
+        "_id": "67ea819f1e183109edc6457b",
+        "agentType": "Carrot",
+        "position": {
+            "x": 557,
+            "y": 92
+        }
+    },
+    {
+        "_id": "67ea81a01e183109edc6457e",
+        "agentType": "Carrot",
+        "position": {
+            "x": 635,
+            "y": 149
+        }
+    },
+    {
+        "_id": "67ea81a01e183109edc64581",
+        "agentType": "Carrot",
+        "position": {
+            "x": 394,
+            "y": 150
+        }
+    },
+    {
+        "_id": "67ea81a11e183109edc64584",
+        "agentType": "Carrot",
+        "position": {
+            "x": 443,
+            "y": 206
+        }
+    },
+    {
+        "_id": "67ea81a11e183109edc64587",
+        "agentType": "Carrot",
+        "position": {
+            "x": 489,
+            "y": 235
+        }
+    },
+    {
+        "_id": "6802968897a6a6c8c304925f",
+        "agentType": "Carrot",
+        "position": {
+            "x": 859,
+            "y": 263
+        }
+    },
+    {
+        "_id": "6802968997a6a6c8c3049262",
+        "agentType": "Carrot",
+        "position": {
+            "x": 778,
+            "y": 462
+        }
+    },
+    {
+        "_id": "6802968997a6a6c8c3049265",
+        "agentType": "Carrot",
+        "position": {
+            "x": 511,
+            "y": 473
+        }
+    },
+    {
+        "_id": "6802968a97a6a6c8c304926b",
+        "agentType": "Carrot",
+        "position": {
+            "x": 828,
+            "y": 45
+        }
+    },
+    {
+        "_id": "6802968b97a6a6c8c304926e",
+        "agentType": "Carrot",
+        "position": {
+            "x": 268,
+            "y": 439
+        }
+    },
+    {
+        "_id": "6802971e97a6a6c8c3049278",
+        "agentType": "lemonadeStall",
+        "position": {
+            "x": 352,
+            "y": 256
+        }
+    },
+    {
+        "_id": "6802972297a6a6c8c304927b",
+        "agentType": "customer",
+        "position": {
+            "x": 828,
+            "y": 418
+        }
+    },
+    {
+        "_id": "6802972697a6a6c8c304927e",
+        "agentType": "customer",
+        "position": {
+            "x": 412,
+            "y": 474
+        }
+    },
+    {
+        "_id": "6833078ec48f492b82a877d6",
+        "agentType": "customer",
+        "position": {
+            "x": 223,
+            "y": 183
+        }
+    },
+    {
+        "_id": "68336c85c48f492b82a87818",
+        "agentType": "lemonadeStall",
+        "position": {
+            "x": 606,
+            "y": 255
         }
     }
 ]

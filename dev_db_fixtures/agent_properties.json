@@ -36,7 +36,7 @@
         "_id": "67ad22df8ed4af6b4da8689f",
         "name": "water",
         "valueType": "int",
-        "initialValue": 50,
+        "initialValue": 150,
         "applyTo": "agentType",
         "agentTypes": [
             "dog"
@@ -52,5 +52,27 @@
             "someOtherVan"
         ],
         "description": "supply van water"
+    },
+    {
+        "_id": "683307c3c48f492b82a877d9",
+        "name": "hunger",
+        "valueType": "int",
+        "initialValue": 10,
+        "applyTo": "agentType",
+        "agentTypes": [
+            "customer"
+        ],
+        "description": "hunger"
+    },
+    {
+        "_id": "683368fcc48f492b82a87804",
+        "name": "tiredness",
+        "valueType": "int",
+        "initialValue": 0,
+        "applyTo": "agentType",
+        "agentTypes": [
+            "customer"
+        ],
+        "description": "tiredness"
     }
 ]

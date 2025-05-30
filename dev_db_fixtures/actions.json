@@ -40,7 +40,12 @@
         "inProgress": false,
         "isComplete": false,
         "conditions": [],
-        "transitions": [],
+        "transitions": [
+            {
+                "condition": "67a250f70370e42b011a2ba6",
+                "nextAction": "68332946c48f492b82a877fb"
+            }
+        ],
         "spriteSheet": "",
         "duration": 120,
         "intervalType": "frames"
@@ -257,8 +262,374 @@
             }
         ],
         "spriteSheet": "",
-        "duration": 100,
-        "intervalType": "frames"
+        "duration": 70,
+        "intervalType": "frames",
+        "target": {
+            "num": 4,
+            "name": "Carrot 4",
+            "agentType": {
+                "name": "Carrot",
+                "height": 50,
+                "width": 50,
+                "animationSet": {
+                    "name": "Carrot",
+                    "scale": 0.5,
+                    "offset": {
+                        "x": 0,
+                        "y": 0
+                    },
+                    "sheets": {
+                        "idle": {
+                            "name": "Carrot",
+                            "src": "spritesheet-spritesheet-5220517364.png",
+                            "columns": 1,
+                            "rows": 1,
+                            "numImages": 1,
+                            "refreshInterval": 1,
+                            "id": "67ace794036d42b4a049435a"
+                        },
+                        "upLeft": {
+                            "name": "Carrot",
+                            "src": "spritesheet-spritesheet-5220517364.png",
+                            "columns": 1,
+                            "rows": 1,
+                            "numImages": 1,
+                            "refreshInterval": 1,
+                            "id": "67ace794036d42b4a049435a"
+                        },
+                        "left": {
+                            "name": "Carrot",
+                            "src": "spritesheet-spritesheet-5220517364.png",
+                            "columns": 1,
+                            "rows": 1,
+                            "numImages": 1,
+                            "refreshInterval": 1,
+                            "id": "67ace794036d42b4a049435a"
+                        },
+                        "downLeft": {
+                            "name": "Carrot",
+                            "src": "spritesheet-spritesheet-5220517364.png",
+                            "columns": 1,
+                            "rows": 1,
+                            "numImages": 1,
+                            "refreshInterval": 1,
+                            "id": "67ace794036d42b4a049435a"
+                        },
+                        "down": {
+                            "name": "Carrot",
+                            "src": "spritesheet-spritesheet-5220517364.png",
+                            "columns": 1,
+                            "rows": 1,
+                            "numImages": 1,
+                            "refreshInterval": 1,
+                            "id": "67ace794036d42b4a049435a"
+                        },
+                        "up": {
+                            "name": "Carrot",
+                            "src": "spritesheet-spritesheet-5220517364.png",
+                            "columns": 1,
+                            "rows": 1,
+                            "numImages": 1,
+                            "refreshInterval": 1,
+                            "id": "67ace794036d42b4a049435a"
+                        },
+                        "downRight": {
+                            "name": "Carrot",
+                            "src": "spritesheet-spritesheet-5220517364.png",
+                            "columns": 1,
+                            "rows": 1,
+                            "numImages": 1,
+                            "refreshInterval": 1,
+                            "id": "67ace794036d42b4a049435a"
+                        },
+                        "right": {
+                            "name": "Carrot",
+                            "src": "spritesheet-spritesheet-5220517364.png",
+                            "columns": 1,
+                            "rows": 1,
+                            "numImages": 1,
+                            "refreshInterval": 1,
+                            "id": "67ace794036d42b4a049435a"
+                        },
+                        "upRight": {
+                            "name": "Carrot",
+                            "src": "spritesheet-spritesheet-5220517364.png",
+                            "columns": 1,
+                            "rows": 1,
+                            "numImages": 1,
+                            "refreshInterval": 1,
+                            "id": "67ace794036d42b4a049435a"
+                        }
+                    },
+                    "id": "67ace7a0036d42b4a049435d"
+                },
+                "thumbnail": "img/thumbnails/carrot.png",
+                "nominalSpeed": 0.02,
+                "offset": {
+                    "x": 100,
+                    "y": 100
+                },
+                "sensor": null,
+                "id": "67ace7ba036d42b4a0494360"
+            },
+            "width": 50,
+            "height": 50,
+            "position": {
+                "x": 443,
+                "y": 206
+            },
+            "config": {
+                "name": "Carrot",
+                "height": 50,
+                "width": 50,
+                "animationSet": {
+                    "name": "Carrot",
+                    "scale": 0.5,
+                    "offset": {
+                        "x": 0,
+                        "y": 0
+                    },
+                    "sheets": {
+                        "idle": {
+                            "name": "Carrot",
+                            "src": "spritesheet-spritesheet-5220517364.png",
+                            "columns": 1,
+                            "rows": 1,
+                            "numImages": 1,
+                            "refreshInterval": 1,
+                            "id": "67ace794036d42b4a049435a"
+                        },
+                        "upLeft": {
+                            "name": "Carrot",
+                            "src": "spritesheet-spritesheet-5220517364.png",
+                            "columns": 1,
+                            "rows": 1,
+                            "numImages": 1,
+                            "refreshInterval": 1,
+                            "id": "67ace794036d42b4a049435a"
+                        },
+                        "left": {
+                            "name": "Carrot",
+                            "src": "spritesheet-spritesheet-5220517364.png",
+                            "columns": 1,
+                            "rows": 1,
+                            "numImages": 1,
+                            "refreshInterval": 1,
+                            "id": "67ace794036d42b4a049435a"
+                        },
+                        "downLeft": {
+                            "name": "Carrot",
+                            "src": "spritesheet-spritesheet-5220517364.png",
+                            "columns": 1,
+                            "rows": 1,
+                            "numImages": 1,
+                            "refreshInterval": 1,
+                            "id": "67ace794036d42b4a049435a"
+                        },
+                        "down": {
+                            "name": "Carrot",
+                            "src": "spritesheet-spritesheet-5220517364.png",
+                            "columns": 1,
+                            "rows": 1,
+                            "numImages": 1,
+                            "refreshInterval": 1,
+                            "id": "67ace794036d42b4a049435a"
+                        },
+                        "up": {
+                            "name": "Carrot",
+                            "src": "spritesheet-spritesheet-5220517364.png",
+                            "columns": 1,
+                            "rows": 1,
+                            "numImages": 1,
+                            "refreshInterval": 1,
+                            "id": "67ace794036d42b4a049435a"
+                        },
+                        "downRight": {
+                            "name": "Carrot",
+                            "src": "spritesheet-spritesheet-5220517364.png",
+                            "columns": 1,
+                            "rows": 1,
+                            "numImages": 1,
+                            "refreshInterval": 1,
+                            "id": "67ace794036d42b4a049435a"
+                        },
+                        "right": {
+                            "name": "Carrot",
+                            "src": "spritesheet-spritesheet-5220517364.png",
+                            "columns": 1,
+                            "rows": 1,
+                            "numImages": 1,
+                            "refreshInterval": 1,
+                            "id": "67ace794036d42b4a049435a"
+                        },
+                        "upRight": {
+                            "name": "Carrot",
+                            "src": "spritesheet-spritesheet-5220517364.png",
+                            "columns": 1,
+                            "rows": 1,
+                            "numImages": 1,
+                            "refreshInterval": 1,
+                            "id": "67ace794036d42b4a049435a"
+                        }
+                    },
+                    "id": "67ace7a0036d42b4a049435d"
+                },
+                "thumbnail": "img/thumbnails/carrot.png",
+                "nominalSpeed": 0.02,
+                "offset": {
+                    "x": 100,
+                    "y": 100
+                },
+                "sensor": null,
+                "id": "67ace7ba036d42b4a0494360"
+            },
+            "destination": null,
+            "reachedDestination": false,
+            "nominalSpeed": 0.02,
+            "speed": 2,
+            "stateData": {},
+            "currentAction": null,
+            "currentActionName": "",
+            "currentStateName": "idle",
+            "currentDirection": null,
+            "id": "67ea81a11e183109edc64584",
+            "image": {},
+            "defaultFrames": {
+                "max": 1,
+                "columns": 1,
+                "rows": 1,
+                "current": 0,
+                "elapsed": 0,
+                "hold": 3
+            },
+            "animationSet": {
+                "name": "Carrot",
+                "scale": 0.5,
+                "offset": {
+                    "x": 0,
+                    "y": 0
+                },
+                "sheets": {
+                    "idle": {
+                        "name": "Carrot",
+                        "src": "spritesheet-spritesheet-5220517364.png",
+                        "columns": 1,
+                        "rows": 1,
+                        "numImages": 1,
+                        "refreshInterval": 1,
+                        "id": "67ace794036d42b4a049435a"
+                    },
+                    "upLeft": {
+                        "name": "Carrot",
+                        "src": "spritesheet-spritesheet-5220517364.png",
+                        "columns": 1,
+                        "rows": 1,
+                        "numImages": 1,
+                        "refreshInterval": 1,
+                        "id": "67ace794036d42b4a049435a"
+                    },
+                    "left": {
+                        "name": "Carrot",
+                        "src": "spritesheet-spritesheet-5220517364.png",
+                        "columns": 1,
+                        "rows": 1,
+                        "numImages": 1,
+                        "refreshInterval": 1,
+                        "id": "67ace794036d42b4a049435a"
+                    },
+                    "downLeft": {
+                        "name": "Carrot",
+                        "src": "spritesheet-spritesheet-5220517364.png",
+                        "columns": 1,
+                        "rows": 1,
+                        "numImages": 1,
+                        "refreshInterval": 1,
+                        "id": "67ace794036d42b4a049435a"
+                    },
+                    "down": {
+                        "name": "Carrot",
+                        "src": "spritesheet-spritesheet-5220517364.png",
+                        "columns": 1,
+                        "rows": 1,
+                        "numImages": 1,
+                        "refreshInterval": 1,
+                        "id": "67ace794036d42b4a049435a"
+                    },
+                    "up": {
+                        "name": "Carrot",
+                        "src": "spritesheet-spritesheet-5220517364.png",
+                        "columns": 1,
+                        "rows": 1,
+                        "numImages": 1,
+                        "refreshInterval": 1,
+                        "id": "67ace794036d42b4a049435a"
+                    },
+                    "downRight": {
+                        "name": "Carrot",
+                        "src": "spritesheet-spritesheet-5220517364.png",
+                        "columns": 1,
+                        "rows": 1,
+                        "numImages": 1,
+                        "refreshInterval": 1,
+                        "id": "67ace794036d42b4a049435a"
+                    },
+                    "right": {
+                        "name": "Carrot",
+                        "src": "spritesheet-spritesheet-5220517364.png",
+                        "columns": 1,
+                        "rows": 1,
+                        "numImages": 1,
+                        "refreshInterval": 1,
+                        "id": "67ace794036d42b4a049435a"
+                    },
+                    "upRight": {
+                        "name": "Carrot",
+                        "src": "spritesheet-spritesheet-5220517364.png",
+                        "columns": 1,
+                        "rows": 1,
+                        "numImages": 1,
+                        "refreshInterval": 1,
+                        "id": "67ace794036d42b4a049435a"
+                    }
+                },
+                "id": "67ace7a0036d42b4a049435d"
+            },
+            "frames": {
+                "max": 1,
+                "columns": 1,
+                "rows": 1,
+                "current": 0,
+                "elapsed": 865,
+                "hold": 1
+            },
+            "collisionArea": {
+                "x": 443,
+                "y": 206,
+                "width": 50,
+                "height": 50
+            },
+            "center": {
+                "x": 443,
+                "y": 206
+            },
+            "spawnPointPosition": {
+                "x": 443,
+                "y": 206
+            },
+            "spawnPoint": {
+                "position": {
+                    "x": 443,
+                    "y": 206
+                },
+                "width": 80,
+                "height": 80,
+                "name": "spawn point"
+            },
+            "globals": {
+                "globalSpeed": 100,
+                "animationFrameId": 1196
+            }
+        }
     },
     {
         "_id": "67ad1d4a036d42b4a04943c4",
@@ -1417,5 +1788,510 @@
             "y": 0
         },
         "spawnAgentPlacement": "selfPosition"
+    },
+    {
+        "_id": "67e8cb150c11014766fa524b",
+        "agent": null,
+        "actionName": "test",
+        "actionType": "change",
+        "inProgress": false,
+        "isComplete": false,
+        "conditions": [],
+        "transitions": [],
+        "propertyChanges": []
+    },
+    {
+        "_id": "68332946c48f492b82a877fb",
+        "agent": null,
+        "actionName": "go home",
+        "actionType": "goTo",
+        "inProgress": false,
+        "isComplete": false,
+        "conditions": [],
+        "transitions": [],
+        "agentType": "",
+        "destinationType": "point",
+        "agentChoiceMethod": "nearest",
+        "target": {
+            "name": "spawnPoint"
+        },
+        "destination": {
+            "name": "spawnPoint"
+        },
+        "pointType": "defined",
+        "definedPoint": "spawnPoint"
+    },
+    {
+        "_id": "68336c81c48f492b82a87815",
+        "agent": null,
+        "actionName": "go to shop",
+        "actionType": "goTo",
+        "inProgress": false,
+        "isComplete": false,
+        "conditions": [],
+        "transitions": [
+            {
+                "condition": "683479e3c48f492b82a878db",
+                "nextAction": "683479b8c48f492b82a878d8"
+            }
+        ],
+        "agentType": {
+            "name": "lemonadeStall",
+            "height": 104,
+            "width": 130,
+            "animationSet": {
+                "name": "LemonadeStall",
+                "scale": 1,
+                "offset": {
+                    "x": 0,
+                    "y": 0
+                },
+                "sheets": {
+                    "idle": {
+                        "name": "LemonadeStallIdle",
+                        "src": "spritesheet-spritesheet-5220569774.png",
+                        "columns": 1,
+                        "rows": 1,
+                        "numImages": 1,
+                        "refreshInterval": 1,
+                        "id": "67b121e99d33fa0fab203b30"
+                    }
+                },
+                "id": "67b122019d33fa0fab203b33"
+            },
+            "thumbnail": "img/thumbnails/lemonade-stall-thumbnail.png",
+            "nominalSpeed": 0.02,
+            "offset": {
+                "x": 0,
+                "y": 0
+            },
+            "sensor": null,
+            "id": "67a252bb0370e42b011a2bbc"
+        },
+        "destinationType": "agent",
+        "agentChoiceMethod": "nearest",
+        "target": {
+            "num": 1,
+            "name": "lemonadeStall 1",
+            "agentType": {
+                "name": "lemonadeStall",
+                "height": 104,
+                "width": 130,
+                "animationSet": {
+                    "name": "LemonadeStall",
+                    "scale": 1,
+                    "offset": {
+                        "x": 0,
+                        "y": 0
+                    },
+                    "sheets": {
+                        "idle": {
+                            "name": "LemonadeStallIdle",
+                            "src": "spritesheet-spritesheet-5220569774.png",
+                            "columns": 1,
+                            "rows": 1,
+                            "numImages": 1,
+                            "refreshInterval": 1,
+                            "id": "67b121e99d33fa0fab203b30"
+                        }
+                    },
+                    "id": "67b122019d33fa0fab203b33"
+                },
+                "thumbnail": "img/thumbnails/lemonade-stall-thumbnail.png",
+                "nominalSpeed": 0.02,
+                "offset": {
+                    "x": 0,
+                    "y": 0
+                },
+                "sensor": null,
+                "id": "67a252bb0370e42b011a2bbc"
+            },
+            "width": 130,
+            "height": 104,
+            "position": {
+                "x": 606,
+                "y": 255
+            },
+            "config": {
+                "name": "lemonadeStall",
+                "height": 104,
+                "width": 130,
+                "animationSet": {
+                    "name": "LemonadeStall",
+                    "scale": 1,
+                    "offset": {
+                        "x": 0,
+                        "y": 0
+                    },
+                    "sheets": {
+                        "idle": {
+                            "name": "LemonadeStallIdle",
+                            "src": "spritesheet-spritesheet-5220569774.png",
+                            "columns": 1,
+                            "rows": 1,
+                            "numImages": 1,
+                            "refreshInterval": 1,
+                            "id": "67b121e99d33fa0fab203b30"
+                        }
+                    },
+                    "id": "67b122019d33fa0fab203b33"
+                },
+                "thumbnail": "img/thumbnails/lemonade-stall-thumbnail.png",
+                "nominalSpeed": 0.02,
+                "offset": {
+                    "x": 0,
+                    "y": 0
+                },
+                "sensor": null,
+                "id": "67a252bb0370e42b011a2bbc"
+            },
+            "destination": null,
+            "reachedDestination": false,
+            "nominalSpeed": 0.02,
+            "speed": 2,
+            "stateData": {},
+            "currentAction": null,
+            "currentActionName": "",
+            "currentStateName": "idle",
+            "currentDirection": null,
+            "id": "68336c85c48f492b82a87818",
+            "image": {},
+            "defaultFrames": {
+                "max": 1,
+                "columns": 1,
+                "rows": 1,
+                "current": 0,
+                "elapsed": 0,
+                "hold": 3
+            },
+            "animationSet": {
+                "name": "LemonadeStall",
+                "scale": 1,
+                "offset": {
+                    "x": 0,
+                    "y": 0
+                },
+                "sheets": {
+                    "idle": {
+                        "name": "LemonadeStallIdle",
+                        "src": "spritesheet-spritesheet-5220569774.png",
+                        "columns": 1,
+                        "rows": 1,
+                        "numImages": 1,
+                        "refreshInterval": 1,
+                        "id": "67b121e99d33fa0fab203b30"
+                    }
+                },
+                "id": "67b122019d33fa0fab203b33"
+            },
+            "frames": {
+                "max": 1,
+                "columns": 1,
+                "rows": 1,
+                "current": 0,
+                "elapsed": 2321,
+                "hold": 1
+            },
+            "collisionArea": {
+                "x": 606,
+                "y": 255,
+                "width": 130,
+                "height": 104
+            },
+            "center": {
+                "x": 606,
+                "y": 255
+            },
+            "spawnPointPosition": {
+                "x": 606,
+                "y": 255
+            },
+            "spawnPoint": {
+                "position": {
+                    "x": 606,
+                    "y": 255
+                },
+                "width": 80,
+                "height": 80,
+                "name": "spawn point"
+            },
+            "globals": {
+                "globalSpeed": 100,
+                "animationFrameId": 2321
+            }
+        },
+        "destination": {
+            "num": 1,
+            "name": "lemonadeStall 1",
+            "agentType": {
+                "name": "lemonadeStall",
+                "height": 104,
+                "width": 130,
+                "animationSet": {
+                    "name": "LemonadeStall",
+                    "scale": 1,
+                    "offset": {
+                        "x": 0,
+                        "y": 0
+                    },
+                    "sheets": {
+                        "idle": {
+                            "name": "LemonadeStallIdle",
+                            "src": "spritesheet-spritesheet-5220569774.png",
+                            "columns": 1,
+                            "rows": 1,
+                            "numImages": 1,
+                            "refreshInterval": 1,
+                            "id": "67b121e99d33fa0fab203b30"
+                        }
+                    },
+                    "id": "67b122019d33fa0fab203b33"
+                },
+                "thumbnail": "img/thumbnails/lemonade-stall-thumbnail.png",
+                "nominalSpeed": 0.02,
+                "offset": {
+                    "x": 0,
+                    "y": 0
+                },
+                "sensor": null,
+                "id": "67a252bb0370e42b011a2bbc"
+            },
+            "width": 130,
+            "height": 104,
+            "position": {
+                "x": 606,
+                "y": 255
+            },
+            "config": {
+                "name": "lemonadeStall",
+                "height": 104,
+                "width": 130,
+                "animationSet": {
+                    "name": "LemonadeStall",
+                    "scale": 1,
+                    "offset": {
+                        "x": 0,
+                        "y": 0
+                    },
+                    "sheets": {
+                        "idle": {
+                            "name": "LemonadeStallIdle",
+                            "src": "spritesheet-spritesheet-5220569774.png",
+                            "columns": 1,
+                            "rows": 1,
+                            "numImages": 1,
+                            "refreshInterval": 1,
+                            "id": "67b121e99d33fa0fab203b30"
+                        }
+                    },
+                    "id": "67b122019d33fa0fab203b33"
+                },
+                "thumbnail": "img/thumbnails/lemonade-stall-thumbnail.png",
+                "nominalSpeed": 0.02,
+                "offset": {
+                    "x": 0,
+                    "y": 0
+                },
+                "sensor": null,
+                "id": "67a252bb0370e42b011a2bbc"
+            },
+            "destination": null,
+            "reachedDestination": false,
+            "nominalSpeed": 0.02,
+            "speed": 2,
+            "stateData": {},
+            "currentAction": null,
+            "currentActionName": "",
+            "currentStateName": "idle",
+            "currentDirection": null,
+            "id": "68336c85c48f492b82a87818",
+            "image": {},
+            "defaultFrames": {
+                "max": 1,
+                "columns": 1,
+                "rows": 1,
+                "current": 0,
+                "elapsed": 0,
+                "hold": 3
+            },
+            "animationSet": {
+                "name": "LemonadeStall",
+                "scale": 1,
+                "offset": {
+                    "x": 0,
+                    "y": 0
+                },
+                "sheets": {
+                    "idle": {
+                        "name": "LemonadeStallIdle",
+                        "src": "spritesheet-spritesheet-5220569774.png",
+                        "columns": 1,
+                        "rows": 1,
+                        "numImages": 1,
+                        "refreshInterval": 1,
+                        "id": "67b121e99d33fa0fab203b30"
+                    }
+                },
+                "id": "67b122019d33fa0fab203b33"
+            },
+            "frames": {
+                "max": 1,
+                "columns": 1,
+                "rows": 1,
+                "current": 0,
+                "elapsed": 2321,
+                "hold": 1
+            },
+            "collisionArea": {
+                "x": 606,
+                "y": 255,
+                "width": 130,
+                "height": 104
+            },
+            "center": {
+                "x": 606,
+                "y": 255
+            },
+            "spawnPointPosition": {
+                "x": 606,
+                "y": 255
+            },
+            "spawnPoint": {
+                "position": {
+                    "x": 606,
+                    "y": 255
+                },
+                "width": 80,
+                "height": 80,
+                "name": "spawn point"
+            },
+            "globals": {
+                "globalSpeed": 100,
+                "animationFrameId": 2321
+            }
+        }
+    },
+    {
+        "_id": "68336d0cc48f492b82a8781b",
+        "agent": null,
+        "actionName": "go home",
+        "actionType": "goTo",
+        "inProgress": false,
+        "isComplete": false,
+        "conditions": [],
+        "transitions": [
+            {
+                "condition": "683479e3c48f492b82a878db",
+                "nextAction": "68347d2ec48f492b82a87901"
+            }
+        ],
+        "agentType": {
+            "name": "lemonadeStall",
+            "height": 104,
+            "width": 130,
+            "animationSet": {
+                "name": "LemonadeStall",
+                "scale": 1,
+                "offset": {
+                    "x": 0,
+                    "y": 0
+                },
+                "sheets": {
+                    "idle": {
+                        "name": "LemonadeStallIdle",
+                        "src": "spritesheet-spritesheet-5220569774.png",
+                        "columns": 1,
+                        "rows": 1,
+                        "numImages": 1,
+                        "refreshInterval": 1,
+                        "id": "67b121e99d33fa0fab203b30"
+                    }
+                },
+                "id": "67b122019d33fa0fab203b33"
+            },
+            "thumbnail": "img/thumbnails/lemonade-stall-thumbnail.png",
+            "nominalSpeed": 0.02,
+            "offset": {
+                "x": 0,
+                "y": 0
+            },
+            "sensor": null,
+            "id": "67a252bb0370e42b011a2bbc"
+        },
+        "destinationType": "point",
+        "agentChoiceMethod": "nearest",
+        "target": {
+            "name": "spawnPoint"
+        },
+        "destination": {
+            "name": "spawnPoint"
+        },
+        "pointType": "defined",
+        "definedPoint": "spawnPoint"
+    },
+    {
+        "_id": "683479b8c48f492b82a878d8",
+        "agent": null,
+        "actionName": "drink",
+        "actionType": "interval",
+        "inProgress": false,
+        "isComplete": false,
+        "conditions": [],
+        "transitions": [
+            {
+                "condition": "683479eec48f492b82a878de",
+                "nextAction": "68347cd4c48f492b82a878fa"
+            }
+        ],
+        "spriteSheet": "",
+        "duration": 300,
+        "intervalType": "frames"
+    },
+    {
+        "_id": "68347cd4c48f492b82a878fa",
+        "agent": null,
+        "actionName": "eat",
+        "actionType": "change",
+        "inProgress": false,
+        "isComplete": false,
+        "conditions": [],
+        "transitions": [],
+        "propertyChanges": [
+            "68347d00c48f492b82a878fd"
+        ]
+    },
+    {
+        "_id": "68347d2ec48f492b82a87901",
+        "agent": null,
+        "actionName": "sleep",
+        "actionType": "interval",
+        "inProgress": false,
+        "isComplete": false,
+        "conditions": [],
+        "transitions": [
+            {
+                "condition": "683479eec48f492b82a878de",
+                "nextAction": "6838bf44c48f492b82a8794a"
+            }
+        ],
+        "spriteSheet": "",
+        "duration": 500,
+        "intervalType": "frames",
+        "target": {
+            "name": "spawnPoint"
+        }
+    },
+    {
+        "_id": "6838bf44c48f492b82a8794a",
+        "agent": null,
+        "actionName": "sleepRecoverEnergy",
+        "actionType": "change",
+        "inProgress": false,
+        "isComplete": false,
+        "conditions": [],
+        "transitions": [],
+        "propertyChanges": [
+            "6838bf59c48f492b82a8794d"
+        ]
     }
 ]

@@ -53,5 +53,27 @@
         "agentType": "self",
         "agentChoiceMethod": "nearest",
         "actionId": "67ad25818ed4af6b4da868dc"
+    },
+    {
+        "_id": "68347d00c48f492b82a878fd",
+        "agent": null,
+        "property": "hunger",
+        "change": "decrease",
+        "value": 25,
+        "target": "",
+        "agentType": "self",
+        "agentChoiceMethod": "nearest",
+        "actionId": "68347cd4c48f492b82a878fa"
+    },
+    {
+        "_id": "6838bf59c48f492b82a8794d",
+        "agent": null,
+        "property": "tiredness",
+        "change": "decrease",
+        "value": 30,
+        "target": "",
+        "agentType": "self",
+        "agentChoiceMethod": "nearest",
+        "actionId": "6838bf44c48f492b82a8794a"
     }
 ]

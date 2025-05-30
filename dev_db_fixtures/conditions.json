@@ -55,7 +55,8 @@
         "conditionType": "vicinity",
         "agentType": "67d5ef8a3037477e169386c6",
         "property": "",
-        "propertyValue": 0
+        "propertyValue": 0,
+        "agent": null
     },
     {
         "_id": "67d71f859a9eb09732f7e464",
@@ -66,6 +67,24 @@
         "agentType": "67d5ebc73037477e169386a2",
         "property": "",
         "propertyValue": 0,
+        "agent": null
+    },
+    {
+        "_id": "683479e3c48f492b82a878db",
+        "name": "at destination",
+        "comparison": "isIdentical",
+        "conditionValue": true,
+        "conditionType": "preset",
+        "classMethod": "atDestination",
+        "agent": null
+    },
+    {
+        "_id": "683479eec48f492b82a878de",
+        "name": "is complete",
+        "comparison": "isIdentical",
+        "conditionValue": true,
+        "conditionType": "preset",
+        "classMethod": "actionIsComplete",
         "agent": null
     }
 ]
