@@ -112,7 +112,7 @@
       </div>
     </details>
 
-    <details class="menu-section" id="properties-section">
+    <details class="menu-section" id="agent-properties-section">
       <summary class="menu-section-heading">Agent Properties</summary>
       <div v-for="(agentProperty, i) in store.agentProperties" class="item-list">
         <MenuAgentInitialProperty :agentProperty="agentProperty" :index="i" />
@@ -143,7 +143,7 @@
       </div>
     </details>
 
-    <details class="menu-section" id="actions-section">
+    <details class="menu-section" id="conditions-section">
       <summary class="menu-section-heading">Conditions</summary>
       <div class="item-list">
         <div v-for="(item, index) in store.conditions" class="created-item">
@@ -153,7 +153,7 @@
       <ConditionCreateForm />
     </details>
 
-    <details class="menu-section" id="actions-section">
+    <details class="menu-section" id="sensors-section">
       <summary class="menu-section-heading">Sensors</summary>
       <div class="item-list">
         <div v-for="(sensor, index) in store.sensors" class="created-item">
@@ -161,6 +161,16 @@
         </div>
       </div>
       <SensorCreateForm />
+    </details>
+
+    <details class="menu-section" id="utility-functions-section">
+      <summary class="menu-section-heading">Utility Functions</summary>
+      <div class="item-list">
+        <div v-for="(utilityFunction, index) in store.agentUtilityFunctions" class="created-item">
+          <MenuUtilityFunction :utilityFunction="utilityFunction" :i="index" />
+        </div>
+      </div>
+      <!-- <UtilityFunctionCreateForm /> -->
     </details>
 
   </div>
@@ -205,6 +215,8 @@ import AgentTypeFirstActionMenu from '@/components/AgentTypeFirstActionMenu.vue'
 import NavTopLogin from '@/components/NavTopLogin.vue'
 import SensorCreateForm from '@/components/CreateSensorForm.vue'
 import MenuSensor from '@/components/MenuSensor.vue'
+import MenuUtilityFunction from './components/MenuUtilityFunction.vue'
+// import UtilityFunctionCreateForm from './components/UtilityFunctionCreateForm.vue'
 
 
 let canvas;
@@ -237,7 +249,9 @@ export default {
     AgentTypeFirstActionMenu,
     NavTopLogin,
     SensorCreateForm,
-    MenuSensor
+    MenuSensor,
+    MenuUtilityFunction,
+    // UtilityFunctionCreateForm
   },
   setup() {
     const store = useStore()
@@ -372,27 +386,6 @@ export default {
         ]
       }
 
-      store.agentUtilityFunctions = {
-        'customer': [
-          {
-            actionId: '68336c81c48f492b82a87815',
-            property: 'hunger',
-            func: (num) => num  // or e.g. num * 2
-          },
-          {
-            actionId: '68336d0cc48f492b82a8781b',
-            property: 'tiredness',
-            func: (num) => num
-          },
-          {
-            actionId: null,
-            property: 'idle',
-            func: () => 15
-          }
-        ],
-        'lemonadeStall': []
-      }
-
       store.itemMenu = new AgentMenu()
 
       const agentTypeButtonNames = agentTypeNames.filter(name => name !== 'world')
@@ -472,7 +465,7 @@ export default {
     const chooseNextActionByUtility = (agent) => {
 
       // utility functions currently specific to agent type
-      const utilityFunctionsForAgent = store.agentUtilityFunctions[agent.agentType.name]
+      const utilityFunctionsForAgent = store.agentUtilityFunctions.filter(uf => uf.agentType === agent.agentType.name)
 
       let highestScore = null
       let highestScoreActionId = null

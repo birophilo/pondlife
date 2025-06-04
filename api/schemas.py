@@ -90,6 +90,14 @@ class AgentProperty(BaseModel):
     model_config = ConfigDict(alias_generator=to_camel)
 
 
+class UtilityFunction(BaseModel):
+    id: str
+    agent_type: str
+    property: str
+    action_id: str
+    func: str
+
+
 # ACTIONS
 
 
