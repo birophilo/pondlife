@@ -36,6 +36,7 @@ async def get_scene_data(scene_id):
             "agentProperties": [],
             "propertyChanges": [],
             "sensors": [],
+            "utilityFunctions": [],
             "firstActions": scene["data"]["firstActions"]
         },
         "createdAt": scene["createdAt"],
@@ -79,6 +80,9 @@ async def get_scene_data(scene_id):
 
     sensors = mongo_client.list_documents("sensors")
     payload["data"]["sensors"] = sensors
+
+    utility_functions = mongo_client.list_documents("utility_functions")
+    payload["data"]["utilityFunctions"] = utility_functions
 
     return payload
 

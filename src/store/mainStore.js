@@ -53,30 +53,11 @@ export const useStore = defineStore({
 
     sensors: [],
 
+    agentUtilityFunctions: [],
+
     firstActions: {},
 
     scheduledEffects: {},
-
-    agentUtilityFunctions: [
-      {
-        agentType: 'customer',
-        actionId: '68336c81c48f492b82a87815',
-        property: 'hunger',
-        func: (num) => num  // or e.g. num * 2
-      },
-      {
-        agentType: 'customer',
-        actionId: '68336d0cc48f492b82a8781b',
-        property: 'tiredness',
-        func: (num) => num
-      },
-      {
-        agentType: 'customer',
-        actionId: null,
-        property: 'idle',
-        func: () => 15
-      }
-    ],
 
     // hard-coded 8-way list (9 including 'idle') for basic 2D directional sprite movements
     directionList: [
@@ -144,6 +125,7 @@ export const useStore = defineStore({
         animationSets: this.animationSets.map(i => i.id),
         propertyChanges: this.propertyChanges.map(i => i.id),
         sensors: this.sensors.map(i => i.id),
+        utilityFunctions: this.agentUtilityFunctions.map(i => i.id),
         firstActions: {...this.firstActions}
       }
 

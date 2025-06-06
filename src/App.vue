@@ -218,6 +218,11 @@ import MenuSensor from '@/components/MenuSensor.vue'
 import MenuUtilityFunction from './components/MenuUtilityFunction.vue'
 // import UtilityFunctionCreateForm from './components/UtilityFunctionCreateForm.vue'
 
+const UTILITY_FUNCS = {
+  linear: (num) => num,
+  constant15: () => 15
+}
+
 
 let canvas;
 let c;  // canvas context
@@ -344,6 +349,9 @@ export default {
       store.firstActions = {...store.sceneData.firstActions}
       store.agentProperties = [...store.sceneData.agentProperties]
       store.propertyChanges = [...store.sceneData.propertyChanges]
+      store.agentUtilityFunctions = store.sceneData.utilityFunctions.map(fn => {
+          return {...fn, func: UTILITY_FUNCS[fn.func]}
+      })
 
       // set initial properties, for each agent, of each agent type, for each property
       store.agentProperties.forEach(property => {
@@ -467,11 +475,11 @@ export default {
       // utility functions currently specific to agent type
       const utilityFunctionsForAgent = store.agentUtilityFunctions.filter(uf => uf.agentType === agent.agentType.name)
 
-      let highestScore = null
-      let highestScoreActionId = null
+      var highestScore = 0
+      var highestScoreActionId = null
 
       utilityFunctionsForAgent.forEach(option => {
-        const score = calculateActionUtility(agent, option.property, option.func)
+        var score = calculateActionUtility(agent, option.property, option.func)
         if (score > highestScore) {
           highestScore = score
           highestScoreActionId = option.actionId
