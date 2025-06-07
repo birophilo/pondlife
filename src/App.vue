@@ -216,12 +216,8 @@ import NavTopLogin from '@/components/NavTopLogin.vue'
 import SensorCreateForm from '@/components/CreateSensorForm.vue'
 import MenuSensor from '@/components/MenuSensor.vue'
 import MenuUtilityFunction from './components/MenuUtilityFunction.vue'
+import UTILITY_FUNCS from './UTILITY_FUNCS.js'
 // import UtilityFunctionCreateForm from './components/UtilityFunctionCreateForm.vue'
-
-const UTILITY_FUNCS = {
-  linear: (num) => num,
-  constant15: () => 15
-}
 
 
 let canvas;
@@ -349,9 +345,10 @@ export default {
       store.firstActions = {...store.sceneData.firstActions}
       store.agentProperties = [...store.sceneData.agentProperties]
       store.propertyChanges = [...store.sceneData.propertyChanges]
-      store.agentUtilityFunctions = store.sceneData.utilityFunctions.map(fn => {
-          return {...fn, func: UTILITY_FUNCS[fn.func]}
-      })
+      // store.agentUtilityFunctions = store.sceneData.utilityFunctions.map(fn => {
+      //     return {...fn, func: UTILITY_FUNCS[fn.func]}
+      // })
+      store.agentUtilityFunctions = [...store.sceneData.utilityFunctions]
 
       // set initial properties, for each agent, of each agent type, for each property
       store.agentProperties.forEach(property => {
@@ -479,7 +476,7 @@ export default {
       var highestScoreActionId = null
 
       utilityFunctionsForAgent.forEach(option => {
-        var score = calculateActionUtility(agent, option.property, option.func)
+        var score = calculateActionUtility(agent, option.property, UTILITY_FUNCS[option.func])
         if (score > highestScore) {
           highestScore = score
           highestScoreActionId = option.actionId

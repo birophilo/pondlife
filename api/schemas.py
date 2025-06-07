@@ -97,6 +97,8 @@ class UtilityFunction(BaseModel):
     action_id: str
     func: str
 
+    model_config = ConfigDict(alias_generator=to_camel)
+
 
 # ACTIONS
 

@@ -1,16 +1,31 @@
 <template>
   <div>
     <div v-if="isEditing === true">
-      property: <input v-model="itemForm.property" type="text" placeholder="property" /><br />
-      function: <input v-model="itemForm.func" type="text" placeholder="func" /><br />
-      action: <input v-model="itemForm.actionId" type="text" placeholder="actionId" /><br />
+      property
+      <select v-model="itemForm.property">
+        <option>--- select property ---</option>
+        <option v-for="prop in store.agentProperties" :value="prop.name">{{ prop.name }}</option>
+      </select>
+      function
+      <select v-model="itemForm.func">
+        <option>--- select function ---</option>
+        <option v-for="func in Object.keys(UTILITY_FUNCS)" :value="func">{{ func }}</option>
+      </select>
+      action
+      <select v-model="itemForm.actionId">
+        <option>--- select action ---</option>
+        <option v-for="action in store.actions" :value="action.id">{{ action.actionName }}</option>
+      </select>
+
+      <!-- <input v-model="itemForm.func" type="text" placeholder="func" /><br />
+      action: <input v-model="itemForm.actionId" type="text" placeholder="actionId" /><br /> -->
       <button @click="saveItem">save</button>
       <button @click="cancelEdit">cancel</button>
     </div>
     <div v-else>
-      <div>{{ utilityFunction.property }}</div>
-      <div>{{ utilityFunction.func }}</div>
-      <div>{{ utilityFunction.actionId }}</div>
+      <div>{{ utilityFunction.agentType }}: {{ utilityFunction.property }}</div>
+      <div>function: {{ utilityFunction.func }}</div>
+      <div>action: {{ store.actions.find(a => a.id === utilityFunction.actionId).actionName }}</div>
 
       <button @click="editItem">edit</button>
       <!-- <button @click="deleteItem">delete</button> -->
@@ -22,6 +37,7 @@
 import { ref } from 'vue'
 import api from '../apiCrud.js'
 import { useStore } from '../store/mainStore.js'
+import UTILITY_FUNCS from '../UTILITY_FUNCS.js'
 
 export default {
   name: 'MenuUtilityFunction',
@@ -47,7 +63,7 @@ export default {
 
     const deleteItem = () => {
       api.deleteUtilityFunction(props.utilityFunction.id)
-      store.utilityFunctions.splice(props.i, 1)
+      store.agentUtilityFunctions.splice(props.i, 1)
     }
 
     const editItem = () => {
@@ -61,12 +77,14 @@ export default {
     }
 
     return {
+      store,
       itemForm,
       isEditing,
       saveItem,
       deleteItem,
       editItem,
-      cancelEdit
+      cancelEdit,
+      UTILITY_FUNCS
     }
   }
 
