@@ -287,44 +287,44 @@ export default {
 
     const loadAgentsAndFixtures = () => {
 
-      store.sceneData.conditions.forEach(condition => {
+      for (let condition of store.sceneData.conditions) {
         let newCondition = {...condition}
         newCondition.agent = null
         store.conditions.push(newCondition)
-      })
+      }
 
       // populate spriteSheets and animationSets
       store.animationSets = store.sceneData.animationSets
       store.spriteSheets = store.sceneData.spritesheets
 
       // replace animationSet spriteSheet ID references with spriteSheet objects
-      store.animationSets.forEach(animSet => {
-        const sheetNames = Object.keys(animSet.sheets)
-        sheetNames.forEach(sheet => {
+      for (let animSet of store.animationSets) {
+        for (let sheet in animSet.sheets) {
           const spriteSheet = store.spriteSheets.find(sh => sh.id === animSet.sheets[sheet])
           animSet.sheets[sheet] = spriteSheet
-        })
-      })
+        }
+      }
 
       store.sensors = [...store.sceneData.sensors]
 
-      store.sceneData.agentTypes.forEach(agentType => {
+      for (let agentType of store.sceneData.agentTypes) {
         store.agentTypes[agentType.name] = agentType
-      })
+      }
 
-      const agentTypeNames = Object.keys(store.agentTypes)
-
-      agentTypeNames.forEach(agentTypeName => {
+      for (let agentTypeName of Object.keys(store.agentTypes)) {
         const animationSetId = store.agentTypes[agentTypeName].animationSet
         const animationSet = store.animationSets.find(a => a.id === animationSetId)
         store.agentTypes[agentTypeName].animationSet = animationSet
-      })
+      }
 
       // populate agents from initial data
-      agentTypeNames.forEach(agentTypeName => {
+      for (let agentTypeName of Object.keys(store.agentTypes)) {
+        console.log(agentTypeName)
         store.agentItems[agentTypeName] = []
         if (store.sceneData.agentInstances[agentTypeName] !== undefined) {
-          store.sceneData.agentInstances[agentTypeName].forEach((item, i) => {
+          for (let i = 0; i < store.sceneData.agentInstances[agentTypeName].length; i++) {
+
+            const item = store.sceneData.agentInstances[agentTypeName][i]
 
             let newAgent = createAgentObject(
               item.id,
@@ -335,39 +335,33 @@ export default {
             )
 
             store.agentItems[agentTypeName].push(newAgent)
-
             agentHandler.useSpriteSheet('idle', newAgent)
-          })
+          }
         }
-
-      })
+      }
 
       store.firstActions = {...store.sceneData.firstActions}
       store.agentProperties = [...store.sceneData.agentProperties]
       store.propertyChanges = [...store.sceneData.propertyChanges]
-      // store.agentUtilityFunctions = store.sceneData.utilityFunctions.map(fn => {
-      //     return {...fn, func: UTILITY_FUNCS[fn.func]}
-      // })
       store.agentUtilityFunctions = [...store.sceneData.utilityFunctions]
 
       // set initial properties, for each agent, of each agent type, for each property
-      store.agentProperties.forEach(property => {
-        const agentTypeNames = property.agentTypes
-        agentTypeNames.forEach(agentTypeName => {
+      for (let property of store.agentProperties) {
 
+        for (let agentTypeName of property.agentTypes) {
           // set initial property values for each agent
           const agentItems = store.agentItems[agentTypeName]
-          agentItems.forEach(agent => {
+          for (let agent of agentItems) {
             agent.stateData[property.name] = property.initialValue
-          })
+          }
 
           // add properties to agentType model (this currently only in memory, not a DB field)
           if (!store.agentTypes[agentTypeName].properties) {
             store.agentTypes[agentTypeName].properties = []
           }
           store.agentTypes[agentTypeName].properties.push(property.name)
-        })
-      })
+        }
+      }
 
       // populate actions
       store.actions = [...store.sceneData.actions]
@@ -393,8 +387,10 @@ export default {
 
       store.itemMenu = new AgentMenu()
 
-      const agentTypeButtonNames = agentTypeNames.filter(name => name !== 'world')
-      agentTypeButtonNames.forEach((agentName, i) => {
+      const agentTypeButtonNames = Object.keys(store.agentTypes).filter(name => name !== 'world')
+
+      for (let i = 0; i < agentTypeButtonNames.length; i++) {
+        const agentName = agentTypeButtonNames[i]
         store.agentMenuButtons.push(
           new AgentMenuIcon({
             menu: store.itemMenu,
@@ -403,7 +399,8 @@ export default {
             agentType: store.agentTypes[agentName]
           })
         )
-      })
+      }
+
       store.deleteButton = new DeleteButton({
         menu: store.itemMenu,
         i: store.agentMenuButtons.length
@@ -417,8 +414,7 @@ export default {
       store.clearAllData()
       await store.fetchSceneData(scene.id)
       loadAgentsAndFixtures()
-      const agentTypeNames = Object.keys(store.agentTypes)
-      renderAgents(agentTypeNames, 'draw')
+      renderAgents('draw')
       // animate()
     }
 
@@ -447,24 +443,24 @@ export default {
       agent.currentAction = null
     }
 
-    const renderAgents = (agentTypeNames, drawOrUpdate) => {
+    const renderAgents = (drawOrUpdate) => {
 
       let ySortArray = []
 
       // sort all agents by position.y value
-      agentTypeNames.forEach(agentTypeName => {
-        ySortArray = ySortArray.concat(store.agentItems[agentTypeName])
-      })
+      for (let agentTypeName of Object.keys(store.agentItems)) {
+         ySortArray = ySortArray.concat(store.agentItems[agentTypeName])
+      }
       ySortArray.sort((a, b) => a.position.y - b.position.y);
 
       // paint agent on canvas
-      ySortArray.forEach(agent => {
+      for (let agent of ySortArray) {
         if (drawOrUpdate === 'draw') {
           agentHandler.draw(c, agent)
         } else {
           agentHandler.update(c, {}, store.GlobalSettings, agent)
         }
-      })
+      }
     }
 
     const chooseNextActionByUtility = (agent) => {
@@ -475,13 +471,13 @@ export default {
       var highestScore = 0
       var highestScoreActionId = null
 
-      utilityFunctionsForAgent.forEach(option => {
+      for (let option of utilityFunctionsForAgent) {
         var score = calculateActionUtility(agent, option.property, UTILITY_FUNCS[option.func])
         if (score > highestScore) {
           highestScore = score
           highestScoreActionId = option.actionId
         }
-      })
+      }
 
       return highestScoreActionId
     }
@@ -493,20 +489,15 @@ export default {
     }
 
     const applyScheduledEffects = (frameId) => {
-
-      Object.entries(store.scheduledEffects).forEach(scheduledEffect => {
-
-        const [frameInterval, effectArray] = scheduledEffect
-
+      for (let [frameInterval, effectArray] of Object.entries(store.scheduledEffects)) {
         if (frameId % frameInterval == 0) {
-          effectArray.forEach(effect => {
-            const agents = store.agentItems[effect.agentType]
-            agents.forEach(agent => {
+          for (let effect of effectArray) {
+            for (let agent of store.agentItems[effect.agentType]) {
               agent.stateData[effect.property] += effect.change
-            })
-          })
+            }
+          }
         }
-      })
+      }
     }
 
     /* ANIMATE */
@@ -528,31 +519,29 @@ export default {
 
       store.GlobalSettings.animationFrameId = frameId
 
-      const agentTypeNames = Object.keys(store.agentItems)
-
       // update agent knowledge via sensory input
-      agentTypeNames.forEach(agentTypeName => {
-        store.agentItems[agentTypeName].forEach(agent => {
+      for (let agentTypeName of Object.keys(store.agentItems)) {
+        for (let agent of store.agentItems[agentTypeName]) {
           if (frameId % UPDATE_AGENT_KNOWLEDGE_EVERY_X_FRAMES === 0) {
             updateAgentKnowledge(agent)
             // if (frameId % 60 === 0) {
             //   console.log(agent.knowledge)
             // }
           }
-        })
-      })
-
+        }
+      }
 
       // apply time-based/frame-based property updates
       applyScheduledEffects(frameId)
 
       // update agent state and draw sprites on board
-      renderAgents(agentTypeNames, 'update')
+      renderAgents('update')
 
       let emissions = {agentsToDelete: [], agentsToSpawn: []}
 
-      agentTypeNames.forEach(agentTypeName => {
-        store.agentItems[agentTypeName].forEach(agent => {
+      for (let agentTypeName of Object.keys(store.agentTypes)) {
+
+        for (let agent of store.agentItems[agentTypeName]) {
 
           // utility system
           if (agent.agentType.name === 'customer') {
@@ -621,18 +610,20 @@ export default {
           // move this?
           const isInArea = pointIsInArea(store.mouse, agent.collisionArea)
           if (isInArea) store.hover = true
-        })
-      })
+
+        }
+      }
 
       handleEmissions(emissions)
 
       store.itemMenu.update(c, store.agentMenuButtons.length + 1)
 
-      store.agentMenuButtons.forEach((button, i) => {
+      for (let i = 0; i < store.agentMenuButtons.length; i++) {
+        const button = store.agentMenuButtons[i]
         button.update(c, i)
         const isInArea = pointIsInArea(store.mouse, button.area)
         if (isInArea) store.hover = true
-      })
+      }
 
       if (store.agentPreview) store.agentPreview.update(c, store.mouse)
 
@@ -656,7 +647,8 @@ export default {
 
     const selectOrDeleteAgent = (agentTypeName, point) => {
       const agentItems = store.agentItems[agentTypeName]
-      agentItems.forEach((agent, i) => {
+      for (let i = 0; i < agentItems.length; i++) {
+        const agent = agentItems[i]
         const isInArea = pointIsInArea(point, agent.collisionArea)
 
         // SELECT AGENT
@@ -670,7 +662,7 @@ export default {
           const agent = agentItems[i]
           deleteAgent(agent, agentItems, i)
         }
-      })
+      }
     }
 
     const addAgent = async (agentTypeName, position) => {
@@ -721,16 +713,16 @@ export default {
       const areAgentsToDelete = emissions.agentsToDelete?.length > 0
 
       if (areAgentsToDelete) {
-        emissions.agentsToDelete.forEach(agent => {
+        for (let agent of emissions.agentsToDelete) {
           const agentTypeName = agent.agentType.name
           const agentItems = store.agentItems[agentTypeName]
           const agentToDelete = agentItems.find(ag => ag.id === agent.id)
           const i = agentItems.indexOf(agentToDelete)
           deleteAgent(agentToDelete, agentItems, i)
-        })
+        }
       }
       if (areAgentsToCreate) {
-        emissions.agentsToSpawn.forEach(args => {
+        for (let args of emissions.agentsToSpawn) {
           const agentTypeName = args.agentType.name
           let newAgent = createAgentObject(
             null,
@@ -741,7 +733,7 @@ export default {
           )
           addAgent(agentTypeName, args.position)
           store.agentItems[agentTypeName].push(newAgent)
-        })
+        }
       }
     }
 
@@ -807,51 +799,35 @@ export default {
 
         const changeObjs = store.propertyChanges.filter(ch => action.propertyChanges.includes(ch.id))
 
-        changeObjs.forEach(change => {
-
+        for (let change of changeObjs) {
           if (change.agentType !== 'self') {
-
             if (change.agentChoiceMethod === 'nearest') {
-
               const agentItems = store.agentItems[change.agentType]
               const targetAgent = agentHandler.getClosestAgent(agent, agentItems)
               change.target = targetAgent
-
             } else if (change.agentChoiceMethod === 'all') {
-
               change.target = store.agentItems[change.agentType]
-
             }
           }
-        })
+        }
       }
 
       if (action.actionType === 'interval' && lastAction) {
-
         action.target = lastAction.target
-
       }
 
       if (action.actionType === 'removeAgent') {
-
         if (action.agentType === 'currentTarget' && lastAction) {
-
           action.target = lastAction.target
-
         }
 
         else if (action.agentType !== 'self') {
-
           if (action.agentChoiceMethod === 'nearest') {
-
             const targetAgents = store.agentItems[action.agentType.name]
             const targetAgent = agentHandler.getClosestAgent(agent, targetAgents)
             action.target = targetAgent
-
           } else if (action.agentChoiceMethod === 'all') {
-
             action.target = store.agentItems[action.agentType.name]
-
           }
         }
       }
@@ -873,7 +849,7 @@ export default {
       store.sceneIsPlaying = true
       store.sceneIsPaused = false
 
-      Object.keys(store.agentTypes).forEach(atName => {
+      for (let atName of Object.keys(store.agentTypes)) {
         const firstActionId = store.firstActions[atName]
         if (firstActionId) {
           const action = store.actions.find(a => a.id === firstActionId)
@@ -882,11 +858,11 @@ export default {
             throw "Play scene: Can't find action"
           }
 
-          store.agentItems[atName].forEach(agent => {
+          for (let agent of store.agentItems[atName]) {
             cloneAction(action, agent)
-          })
+          }
         }
-      })
+      }
 
       animate()
     }
@@ -933,16 +909,16 @@ export default {
 
       agent.knowledge.vicinity.agents = []
 
-      agentTypeNames.forEach(agentTypeName => {
-        store.agentItems[agentTypeName].forEach(ag => {
+      for (let agentTypeName of agentTypeNames) {
+        for (let ag of store.agentItems[agentTypeName]) {
           const agentArea = {x: ag.position.x, y: ag.position.y, width: ag.width, height: ag.height}
           if (agent.id !== ag.id) {  // don't add own id to vicinity knowledge
             if (rectanglesOverlap(vicinityArea, agentArea)) {
               agent.knowledge.vicinity.agents.push(ag.id)
             }
           }
-        })
-      })
+        }
+      }
 
     }
 
@@ -992,9 +968,9 @@ export default {
           }
         }
 
-        const agentTypeNames = Object.keys(store.agentTypes)
-
-        agentTypeNames.forEach(agentTypeName => selectOrDeleteAgent(agentTypeName, point))
+        for (let agentTypeName of Object.keys(store.agentTypes)) {
+          selectOrDeleteAgent(agentTypeName, point)
+        }
 
         // SELECT AGENT BUTTON TO CREATE CURSOR PREVIEW (to place new agent on board)
         for (let i = 0; i < store.agentMenuButtons.length; i++) {
