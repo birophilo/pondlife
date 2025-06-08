@@ -81,10 +81,10 @@
     <details class="menu-section" id="agent-types-section">
       <summary class="menu-section-heading">Agent Types</summary>
       <div v-for="(agentType) in store.agentTypes" class="agent-type-menu-container">
-        <MenuAgentType :agentType="agentType" />
-        <AgentTypeFirstActionMenu :agentType="agentType" />
+        <AgentTypeEdit :agentType="agentType" />
+        <AgentTypeFirstActionEdit :agentType="agentType" />
       </div>
-      <CreateAgentTypeForm />
+      <AgentTypeCreate />
       <button @click="loadAgentTypesModal">load agent type</button>
     </details>
 
@@ -92,22 +92,22 @@
       <summary>Sprites</summary>
       <h3 class="menu-section-heading">Sprite Sheets</h3>
       <div v-for="(spriteSheet, index) in store.spriteSheets">
-        <MenuSpriteSheet :spriteSheet="spriteSheet" :i="index" />
+        <SpriteSheetEdit :spriteSheet="spriteSheet" :i="index" />
       </div>
-      <SpriteSheetForm />
+      <SpriteSheetCreate />
 
       <div class="agent-type-menu-container"></div>
       <h3 class="menu-section-heading">Animation Sets</h3>
       <div v-for="(animationSet, index) in store.animationSets">
-        <MenuAnimationSet :animationSet="animationSet" :i="index" />
+        <AnimationSetEdit :animationSet="animationSet" :i="index" />
       </div>
-      <AnimationSetForm />
+      <AnimationSetCreate />
     </details>
 
     <details class="menu-section" id="properties-section">
       <summary class="menu-section-heading">Properties</summary>
       <div v-if="store.selectedAgent !== null" class="item-list">
-        <MenuProperty :agentProperties="store.selectedAgent.stateData"/>
+        <PropertyEdit :agentProperties="store.selectedAgent.stateData"/>
         <SetPropertyForm />
       </div>
     </details>
@@ -115,9 +115,9 @@
     <details class="menu-section" id="agent-properties-section">
       <summary class="menu-section-heading">Agent Properties</summary>
       <div v-for="(agentProperty, i) in store.agentProperties" class="item-list">
-        <MenuAgentInitialProperty :agentProperty="agentProperty" :index="i" />
+        <AgentInitialPropertyEdit :agentProperty="agentProperty" :index="i" />
       </div>
-      <CreateAgentPropertyForm />
+      <AgentPropertyCreate />
     </details>
 
     <details class="menu-section" id="actions-section">
@@ -125,9 +125,9 @@
       <div class="item-list">
         <div v-for="action in store.actions" class="created-item">
           {{ action.id }}
-          <MenuAction :action="action"/>
+          <ActionEdit :action="action"/>
         </div>
-        <ActionCreateForm />
+        <ActionCreate />
       </div>
     </details>
 
@@ -147,27 +147,27 @@
       <summary class="menu-section-heading">Conditions</summary>
       <div class="item-list">
         <div v-for="(item, index) in store.conditions" class="created-item">
-          <MenuCondition :item="item" :index="index" />
+          <ConditionEdit :item="item" :index="index" />
         </div>
       </div>
-      <ConditionCreateForm />
+      <ConditionCreate />
     </details>
 
     <details class="menu-section" id="sensors-section">
       <summary class="menu-section-heading">Sensors</summary>
       <div class="item-list">
         <div v-for="(sensor, index) in store.sensors" class="created-item">
-          <MenuSensor :sensor="sensor" :i="index" />
+          <SensorEdit :sensor="sensor" :i="index" />
         </div>
       </div>
-      <SensorCreateForm />
+      <SensorCreate />
     </details>
 
     <details class="menu-section" id="utility-functions-section">
       <summary class="menu-section-heading">Utility Functions</summary>
       <div class="item-list">
         <div v-for="(utilityFunction, index) in store.agentUtilityFunctions" class="created-item">
-          <MenuUtilityFunction :utilityFunction="utilityFunction" :i="index" />
+          <UtilityFunctionEdit :utilityFunction="utilityFunction" :i="index" />
         </div>
       </div>
       <!-- <UtilityFunctionCreateForm /> -->
@@ -196,28 +196,28 @@ import {
 } from '@/classes/Action.js'
 import api from '@/apiCrud.js'
 import SceneMenu from '@/components/SceneMenu.vue'
-import CreateAgentTypeForm from '@/components/CreateAgentTypeForm.vue'
-import MenuAgentType from '@/components/MenuAgentType.vue'
-import SetPropertyForm from '@/components/SetPropertyForm.vue'
-import MenuProperty from '@/components/MenuProperty.vue'
-import ActionCreateForm from '@/components/ActionCreateForm.vue'
-import MenuAction from '@/components/MenuAction.vue'
-import ConditionCreateForm from '@/components/ConditionCreateForm.vue'
-import MenuCondition from '@/components/MenuCondition.vue'
-import SpriteSheetForm from '@/components/SpriteSheetForm.vue'
-import MenuSpriteSheet from '@/components/MenuSpriteSheet.vue'
-import AnimationSetForm from '@/components/AnimationSetForm.vue'
-import MenuAnimationSet from '@/components/MenuAnimationSet.vue'
-import CreateAgentPropertyForm from '@/components/CreateAgentPropertyForm.vue'
-import MenuAgentInitialProperty from '@/components/MenuAgentInitialProperty.vue'
+import AgentTypeCreate from '@/components/simUiForms/AgentTypeCreate.vue'
+import AgentTypeEdit from '@/components/simUiForms/AgentTypeEdit.vue'
+import SetPropertyForm from '@/components/simUiForms/SetPropertyForm.vue'
+import PropertyEdit from '@/components/simUiForms/PropertyEdit.vue'
+import ActionCreate from '@/components/simUiForms/ActionCreate.vue'
+import ActionEdit from '@/components/simUiForms/ActionEdit.vue'
+import ConditionCreate from '@/components/simUiForms/ConditionCreate.vue'
+import ConditionEdit from '@/components/simUiForms/ConditionEdit.vue'
+import SpriteSheetCreate from '@/components/simUiForms/SpriteSheetCreate.vue'
+import SpriteSheetEdit from '@/components/simUiForms/SpriteSheetEdit.vue'
+import AnimationSetCreate from '@/components/simUiForms/AnimationSetCreate.vue'
+import AnimationSetEdit from '@/components/simUiForms/AnimationSetEdit.vue'
+import AgentPropertyCreate from '@/components/simUiForms/AgentPropertyCreate.vue'
+import AgentInitialPropertyEdit from '@/components/simUiForms/AgentInitialPropertyEdit.vue'
 import ModalLoadObject from '@/components/ModalLoadObject.vue'
-import AgentTypeFirstActionMenu from '@/components/AgentTypeFirstActionMenu.vue'
+import AgentTypeFirstActionEdit from '@/components/simUiForms/AgentTypeFirstActionEdit.vue'
 import NavTopLogin from '@/components/NavTopLogin.vue'
-import SensorCreateForm from '@/components/CreateSensorForm.vue'
-import MenuSensor from '@/components/MenuSensor.vue'
-import MenuUtilityFunction from './components/MenuUtilityFunction.vue'
+import SensorCreate from '@/components/simUiForms/SensorCreate.vue'
+import SensorEdit from '@/components/simUiForms/SensorEdit.vue'
+import UtilityFunctionEdit from './components/simUiForms/UtilityFunctionEdit.vue'
+// import UtilityFunctionCreate from './components/UtilityFunctionCreate.vue'
 import UTILITY_FUNCS from './UTILITY_FUNCS.js'
-// import UtilityFunctionCreateForm from './components/UtilityFunctionCreateForm.vue'
 
 
 let canvas;
@@ -232,27 +232,27 @@ export default {
   name: 'App',
   components: {
     SceneMenu,
-    CreateAgentTypeForm,
-    MenuAgentType,
+    AgentTypeCreate,
+    AgentTypeEdit,
     SetPropertyForm,
-    MenuProperty,
-    ActionCreateForm,
-    MenuAction,
-    ConditionCreateForm,
-    MenuCondition,
-    MenuSpriteSheet,
-    SpriteSheetForm,
-    MenuAnimationSet,
-    AnimationSetForm,
-    CreateAgentPropertyForm,
-    MenuAgentInitialProperty,
+    PropertyEdit,
+    ActionCreate,
+    ActionEdit,
+    ConditionCreate,
+    ConditionEdit,
+    SpriteSheetEdit,
+    SpriteSheetCreate,
+    AnimationSetEdit,
+    AnimationSetCreate,
+    AgentPropertyCreate,
+    AgentInitialPropertyEdit,
     ModalLoadObject,
-    AgentTypeFirstActionMenu,
+    AgentTypeFirstActionEdit,
     NavTopLogin,
-    SensorCreateForm,
-    MenuSensor,
-    MenuUtilityFunction,
-    // UtilityFunctionCreateForm
+    SensorCreate,
+    SensorEdit,
+    UtilityFunctionEdit,
+    // UtilityFunctionCreate
   },
   setup() {
     const store = useStore()
@@ -755,11 +755,9 @@ export default {
         const agentItems = store.agentItems[agentTypeName].filter(ag => ag.id !== agent.id)
 
         if (agentItems.length === 0) {
-
           console.log(`No ${agentTypeName} exists - cannot choose nearest.`)
           agentHandler.idle(agent)
           return false
-
         }
 
         const targetAgent = agentHandler.getClosestAgent(agent, agentItems)
@@ -768,9 +766,7 @@ export default {
         action.destination = targetAgent
 
       } else if (action.agentChoiceMethod === 'all') {
-
         action.target = store.agentItems[action.agentType.name]
-
       }
 
       if (action.agentChoiceMethod === 'random' && action.destinationType === 'agent') {
@@ -780,11 +776,9 @@ export default {
         const agentItems = store.agentItems[agentTypeName].filter(ag => ag.id !== agent.id)
 
         if (agentItems.length === 0) {
-
           console.log(`No ${agentTypeName} exists - cannot choose random.`)
           agentHandler.idle(agent)
           return false
-
         }
 
         const targetAgent = agentHandler.getRandomAgent(agentItems)

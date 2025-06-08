@@ -281,15 +281,15 @@
 
 <script>
 import { ref } from 'vue'
-import { useStore } from '../store/mainStore.js'
-import api from '../apiCrud.js'
+import { useStore } from '@/store/mainStore.js'
+import api from '@/apiCrud.js'
 import {
   createActionGoTo,
   createActionPropertyChanges,
   createActionInterval,
   createActionSpawnAgent,
   createActionRemoveAgent
-} from "../classes/Action.js"
+} from "@/classes/Action.js"
 
 
 const DEFAULT_ACTION_TYPE = 'goTo'
@@ -304,7 +304,7 @@ const CREATE_ACTION_FUNCTIONS = {
 }
 
 export default {
-  name: 'ActionCreateForm',
+  name: 'ActionCreate',
   setup() {
     const store = useStore()
 

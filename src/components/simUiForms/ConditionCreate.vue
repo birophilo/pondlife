@@ -111,15 +111,15 @@
 
 <script>
 import { ref } from 'vue'
-import { useStore } from '../store/mainStore.js'
-import api from '../apiCrud.js'
+import { useStore } from '@/store/mainStore.js'
+import api from '@/apiCrud.js'
 
 
 const DEFAULT_CONDITION_TYPE = 'property'
 
 
 export default {
-  name: 'ConditionCreateForm',
+  name: 'ConditionCreate',
   setup: function () {
     const store = useStore()
 

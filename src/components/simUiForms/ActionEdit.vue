@@ -147,13 +147,13 @@
     <!-- (ACTION) PROPERTY CHANGE ITEM EDIT FORM -->
     <div v-if="action.actionType === 'change'">
       <div v-for="(propertyChangeId, index) in action.propertyChanges">
-        <MenuActionPropertyChange
+        <ActionPropertyChangeEdit
           :action="action"
           :propertyChangeId="propertyChangeId"
           :index="index"
         />
       </div>
-      <ActionPropertyChangeForm :action="action"/>
+      <ActionPropertyChangeCreate :action="action"/>
     </div>
 
     <!-- INTERVAL EDIT FORM -->
@@ -272,28 +272,28 @@
     </div>
 
     <h4>Action transitions</h4>
-    <CreateActionTransitionForm :action="action" />
+    <ActionTransitionCreate :action="action" />
     <!-- ACTION TRANSITIONS -->
-    <MenuActionTransition :action="action" />
+    <ActionTransitionEdit :action="action" />
   </div>
 </template>
 
 <script>
 import { ref, computed } from 'vue'
-import { useStore } from '../store/mainStore.js'
-import api from '../apiCrud.js'
-import ActionPropertyChangeForm from './ActionPropertyChangeForm.vue'
-import MenuActionPropertyChange from './MenuActionPropertyChange.vue'
-import MenuActionTransition from './MenuActionTransition.vue'
-import CreateActionTransitionForm from './CreateActionTransitionForm.vue'
+import { useStore } from '@/store/mainStore.js'
+import api from '@/apiCrud.js'
+import ActionPropertyChangeCreate from './ActionPropertyChangeCreate.vue'
+import ActionPropertyChangeEdit from './ActionPropertyChangeEdit.vue'
+import ActionTransitionEdit from './ActionTransitionEdit.vue'
+import ActionTransitionCreate from './ActionTransitionCreate.vue'
 
 export default {
-  name: 'MenuAction',
+  name: 'ActionEdit',
   components: {    
-    ActionPropertyChangeForm,
-    MenuActionPropertyChange,
-    CreateActionTransitionForm,
-    MenuActionTransition
+    ActionPropertyChangeCreate,
+    ActionPropertyChangeEdit,
+    ActionTransitionCreate,
+    ActionTransitionEdit
   },
   props: {
     action: Object

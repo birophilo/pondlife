@@ -77,12 +77,12 @@
 
 <script>
 import { ref } from 'vue'
-import api from '../apiCrud.js'
+import api from '@/apiCrud.js'
 // import { createPropertyChange } from '../classes/Action.js'
-import { useStore } from '../store/mainStore.js'
+import { useStore } from '@/store/mainStore.js'
 
 export default {
-  name: 'ActionPropertyChangeForm',
+  name: 'ActionPropertyChangeCreate',
   props: {
     action: Object
   },

@@ -23,11 +23,11 @@
 
 <script>
 import { ref } from 'vue'
-import { useStore } from '../store/mainStore.js'
-import api from '../apiCrud'
+import { useStore } from '@/store/mainStore.js'
+import api from '@/apiCrud'
 
 export default {
-  name: 'CreateActionTransitionForm',
+  name: 'ActionTransitionCreate',
   props: {
     action: Object
   },

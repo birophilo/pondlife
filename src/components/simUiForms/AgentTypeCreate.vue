@@ -23,12 +23,12 @@
 
 <script>
 import { ref } from 'vue'
-import { AgentMenuIcon } from '../classes/SelectionMenu.js'
-import { useStore } from '../store/mainStore.js'
-import api from '../apiCrud.js'
+import { AgentMenuIcon } from '@/classes/SelectionMenu.js'
+import { useStore } from '@/store/mainStore.js'
+import api from '@/apiCrud.js'
 
 export default {
-  name: 'CreateAgentTypeForm',
+  name: 'AgentTypeCreate',
   setup: function () {
     const store = useStore()
 

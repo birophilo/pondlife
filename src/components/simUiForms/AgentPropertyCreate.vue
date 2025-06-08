@@ -80,12 +80,12 @@
 
 <script>
 import { ref } from 'vue'
-import { useStore } from '../store/mainStore.js'
-import api from '../apiCrud.js'
+import { useStore } from '@/store/mainStore.js'
+import api from '@/apiCrud.js'
 
 
 export default {
-  name: 'CreateAgentPropertyForm',
+  name: 'AgentPropertyCreate',
   setup: function () {
     const store = useStore()
 

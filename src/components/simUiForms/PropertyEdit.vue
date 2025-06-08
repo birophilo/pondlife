@@ -20,7 +20,7 @@
 
 <script>
 import { ref } from 'vue'
-import { useStore } from '../store/mainStore.js'
+import { useStore } from '@/store/mainStore.js'
 
 export default {
   props: {

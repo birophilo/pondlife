@@ -24,7 +24,7 @@ import { ref } from 'vue'
 import { useStore } from '@/store/mainStore.js'
 
 export default {
-  name: 'AgentTypeSensorMenu',
+  name: 'AgentTypeSensorEdit',
   props: {
     agentType: Object
   },

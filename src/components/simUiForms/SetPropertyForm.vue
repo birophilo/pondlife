@@ -14,8 +14,8 @@
 
 <script>
 import { ref } from 'vue'
-import { useStore } from '../store/mainStore.js'
-import { AgentHandler } from '../classes/Agent'
+import { useStore } from '@/store/mainStore.js'
+import { AgentHandler } from '@/classes/Agent'
 
 export default {
   name: 'SetPropertyForm',

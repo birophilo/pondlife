@@ -59,12 +59,12 @@
 
 <script>
 import { ref } from 'vue'
-import api from '../apiCrud.js'
-import { PropertyChangeHandler } from '../classes/Action.js'
-import { useStore } from '../store/mainStore.js'
+import api from '@/apiCrud.js'
+import { PropertyChangeHandler } from '@/classes/Action.js'
+import { useStore } from '@/store/mainStore.js'
 
 export default {
-  name: 'MenuActionPropertyChange',
+  name: 'ActionPropertyChangeEdit',
   props: {
     action: Object,
     propertyChangeId: String,

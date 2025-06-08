@@ -35,12 +35,12 @@
 
 <script>
 import { ref } from 'vue'
-import api from '../apiCrud.js'
-import { useStore } from '../store/mainStore.js'
-import UTILITY_FUNCS from '../UTILITY_FUNCS.js'
+import api from '@/apiCrud.js'
+import { useStore } from '@/store/mainStore.js'
+import UTILITY_FUNCS from '@/UTILITY_FUNCS.js'
 
 export default {
-  name: 'MenuUtilityFunction',
+  name: 'UtilityFunctionEdit',
   props: {
     utilityFunction: Object,
     index: Number

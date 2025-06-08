@@ -33,12 +33,12 @@
 
 <script>
 import { ref } from 'vue'
-import { useStore } from '../store/mainStore.js'
-import api from '../apiCrud.js'
+import { useStore } from '@/store/mainStore.js'
+import api from '@/apiCrud.js'
 
 
 export default {
-  name: 'MenuAnimationSet',
+  name: 'AnimationSetEdit',
   props: {
     animationSet: Object,
     i: Number

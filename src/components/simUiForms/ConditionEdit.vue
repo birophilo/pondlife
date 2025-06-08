@@ -123,12 +123,12 @@
 
 <script>
 import { ref } from 'vue'
-import { useStore } from '../store/mainStore.js'
-import api from '../apiCrud.js'
+import { useStore } from '@/store/mainStore.js'
+import api from '@/apiCrud.js'
 
 
 export default {
-  name: 'MenuCondition',
+  name: 'ConditionEdit',
   props: {
     item: Object,
     index: Number
