@@ -345,6 +345,28 @@ export default {
       store.propertyChanges = [...store.sceneData.propertyChanges]
       store.agentUtilityFunctions = [...store.sceneData.utilityFunctions]
 
+      console.log(store.sceneData.recurringChanges)
+
+      for (let change of store.sceneData.recurringChanges) {
+        if (store.recurringChanges[change.frameInterval] == undefined) {
+          store.recurringChanges[change.frameInterval] = [
+            {
+              agentType: change.agentType,
+              property: change.property,
+              change: change.change
+            }
+          ]
+        } else {
+          store.recurringChanges[change.frameInterval].concat[
+            {
+              agentType: change.agentType,
+              property: change.property,
+              change: change.change
+            }
+          ]
+        }
+      }
+
       // set initial properties, for each agent, of each agent type, for each property
       for (let property of store.agentProperties) {
 
@@ -365,25 +387,6 @@ export default {
 
       // populate actions
       store.actions = [...store.sceneData.actions]
-
-      store.scheduledEffects = {
-        60: [
-          {
-            agentType: 'customer',
-            property: 'hunger',
-            frameInterval: 60,
-            change: 1
-          }
-        ],
-        90: [
-          {
-            agentType: 'customer',
-            property: 'tiredness',
-            frameInterval: 90,
-            change: 2
-          }
-        ]
-      }
 
       store.itemMenu = new AgentMenu()
 
@@ -489,7 +492,7 @@ export default {
     }
 
     const applyScheduledEffects = (frameId) => {
-      for (let [frameInterval, effectArray] of Object.entries(store.scheduledEffects)) {
+      for (let [frameInterval, effectArray] of Object.entries(store.recurringChanges)) {
         if (frameId % frameInterval == 0) {
           for (let effect of effectArray) {
             for (let agent of store.agentItems[effect.agentType]) {

@@ -100,6 +100,16 @@ class UtilityFunction(BaseModel):
     model_config = ConfigDict(alias_generator=to_camel)
 
 
+class RecurringChange(BaseModel):
+    id: str
+    agent_type: str
+    property: str
+    frame_interval: float
+    change: float
+
+    model_config = ConfigDict(alias_generator=to_camel)
+
+
 # ACTIONS
 
 

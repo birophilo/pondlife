@@ -37,6 +37,7 @@ async def get_scene_data(scene_id):
             "propertyChanges": [],
             "sensors": [],
             "utilityFunctions": [],
+            "recurringChanges": [],
             "firstActions": scene["data"]["firstActions"]
         },
         "createdAt": scene["createdAt"],
@@ -84,6 +85,9 @@ async def get_scene_data(scene_id):
     utility_functions = mongo_client.list_documents("utility_functions")
     payload["data"]["utilityFunctions"] = utility_functions
 
+    recurring_changes = mongo_client.list_documents("recurring_changes")
+    payload["data"]["recurringChanges"] = recurring_changes
+
     return payload
 
 
@@ -121,6 +125,8 @@ async def create_scene(request: Request):
             "agentProperties": [],
             "propertyChanges": [],
             "sensors": [],
+            "utilityFunctions": [],
+            "recurringChanges": [],
             "firstActions": {}
         },
         "resource": "scene"

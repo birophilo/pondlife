@@ -55,6 +55,8 @@ export const useStore = defineStore({
 
     agentUtilityFunctions: [],
 
+    recurringChanges: [],
+
     firstActions: {},
 
     scheduledEffects: {},
@@ -126,6 +128,7 @@ export const useStore = defineStore({
         propertyChanges: this.propertyChanges.map(i => i.id),
         sensors: this.sensors.map(i => i.id),
         utilityFunctions: this.agentUtilityFunctions.map(i => i.id),
+        recurringChanges: this.recurringChanges.map(i => i.id),
         firstActions: {...this.firstActions}
       }
 
