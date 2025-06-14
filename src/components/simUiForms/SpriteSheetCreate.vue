@@ -6,7 +6,7 @@
     columns: <input v-model="itemForm.columns" type="number" placeholder="columns" /><br />
     numImages: <input v-model="itemForm.numImages" type="number" placeholder="number of images" /><br />
     refreshInterval: <input v-model="itemForm.refreshInterval" type="number" placeholder="refresh interval" /><br />
-    <button @click="createSpriteSheet()">create sprite sheet</button>
+    <button @click="createSpriteSheet">create sprite sheet</button>
     <button @click="isAdding = false">cancel</button>
   </div>
   <div v-else class="spritesheet-form">

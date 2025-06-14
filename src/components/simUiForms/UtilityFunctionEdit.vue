@@ -16,6 +16,11 @@
         <option>--- select action ---</option>
         <option v-for="action in store.actions" :value="action.id">{{ action.actionName }}</option>
       </select>
+      agent type
+      <select v-model="itemForm.agentType">
+        <option>--- select agent type ---</option>
+        <option v-for="agentType in Object.keys(store.agentTypes)" :value="agentType">{{ agentType }}</option>
+      </select>
 
       <!-- <input v-model="itemForm.func" type="text" placeholder="func" /><br />
       action: <input v-model="itemForm.actionId" type="text" placeholder="actionId" /><br /> -->
@@ -28,7 +33,7 @@
       <div>action: {{ store.actions.find(a => a.id === utilityFunction.actionId).actionName }}</div>
 
       <button @click="editItem">edit</button>
-      <!-- <button @click="deleteItem">delete</button> -->
+      <button @click="deleteItem">delete</button>
     </div>
   </div>
 </template>
@@ -58,12 +63,16 @@ export default {
     const saveItem = () => {
       isEditing.value = false
       const payload = {...itemForm.value}
+      store.agentUtilityFunctions.splice(props.index, 1, {
+        ...store.agentUtilityFunctions[props.index],
+        ...itemForm.value
+      })
       api.updateUtilityFunction(payload)
     }
 
     const deleteItem = () => {
       api.deleteUtilityFunction(props.utilityFunction.id)
-      store.agentUtilityFunctions.splice(props.i, 1)
+      store.agentUtilityFunctions.splice(props.index, 1)
     }
 
     const editItem = () => {

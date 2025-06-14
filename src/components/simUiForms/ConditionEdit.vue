@@ -147,9 +147,13 @@ export default {
 
     const saveItem = () => {
       isEditing.value = false
-      const keys = Object.keys(itemForm.value)
       api.updateCondition(itemForm.value)
-      keys.forEach(key => store.conditions[props.index][key] = itemForm.value[key])
+      // const keys = Object.keys(itemForm.value)
+      store.conditions.splice(props.index, 1, {
+        ...store.conditions[props.index],
+        ...itemForm.value
+      })
+      // keys.forEach(key => store.conditions[props.index][key] = itemForm.value[key])
     }
 
     const deleteItem = () => {

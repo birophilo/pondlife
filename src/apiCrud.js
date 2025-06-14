@@ -126,7 +126,7 @@ export default {
     return baseApiClient.deleteItem('sensor', id)
   },
   createUtilityFunction (data) {
-    return baseApiClient.createItem('utility_functions', data)
+    return baseApiClient.createItem('utilityFunctions', data)
   },
   getUtilityFunction (id) {
     return baseApiClient.getItem('utilityFunction', id)

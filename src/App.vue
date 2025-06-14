@@ -167,10 +167,10 @@
       <summary class="menu-section-heading">Utility Functions</summary>
       <div class="item-list">
         <div v-for="(utilityFunction, index) in store.agentUtilityFunctions" class="created-item">
-          <UtilityFunctionEdit :utilityFunction="utilityFunction" :i="index" />
+          <UtilityFunctionEdit :utilityFunction="utilityFunction" :index="index" />
         </div>
       </div>
-      <!-- <UtilityFunctionCreateForm /> -->
+      <UtilityFunctionCreate />
     </details>
 
   </div>
@@ -215,8 +215,8 @@ import AgentTypeFirstActionEdit from '@/components/simUiForms/AgentTypeFirstActi
 import NavTopLogin from '@/components/NavTopLogin.vue'
 import SensorCreate from '@/components/simUiForms/SensorCreate.vue'
 import SensorEdit from '@/components/simUiForms/SensorEdit.vue'
-import UtilityFunctionEdit from './components/simUiForms/UtilityFunctionEdit.vue'
-// import UtilityFunctionCreate from './components/UtilityFunctionCreate.vue'
+import UtilityFunctionEdit from '@/components/simUiForms/UtilityFunctionEdit.vue'
+import UtilityFunctionCreate from '@/components/simUiForms/UtilityFunctionCreate.vue'
 import UTILITY_FUNCS from './UTILITY_FUNCS.js'
 
 
@@ -252,7 +252,7 @@ export default {
     SensorCreate,
     SensorEdit,
     UtilityFunctionEdit,
-    // UtilityFunctionCreate
+    UtilityFunctionCreate
   },
   setup() {
     const store = useStore()
