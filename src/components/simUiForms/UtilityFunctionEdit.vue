@@ -4,22 +4,22 @@
       property
       <select v-model="itemForm.property">
         <option>--- select property ---</option>
-        <option v-for="prop in store.agentProperties" :value="prop.name">{{ prop.name }}</option>
+        <option v-for="prop in store.agentProperties" :value="prop.name" :key="prop.name">{{ prop.name }}</option>
       </select>
       function
       <select v-model="itemForm.func">
         <option>--- select function ---</option>
-        <option v-for="func in Object.keys(UTILITY_FUNCS)" :value="func">{{ func }}</option>
+        <option v-for="func in Object.keys(UTILITY_FUNCS)" :value="func" :key="func">{{ func }}</option>
       </select>
       action
       <select v-model="itemForm.actionId">
         <option>--- select action ---</option>
-        <option v-for="action in store.actions" :value="action.id">{{ action.actionName }}</option>
+        <option v-for="action in store.actions" :value="action.id" :key="action.id">{{ action.actionName }}</option>
       </select>
       agent type
       <select v-model="itemForm.agentType">
         <option>--- select agent type ---</option>
-        <option v-for="agentType in Object.keys(store.agentTypes)" :value="agentType">{{ agentType }}</option>
+        <option v-for="agentType in Object.keys(store.agentTypes)" :value="agentType" :key="agentType">{{ agentType }}</option>
       </select>
 
       <!-- <input v-model="itemForm.func" type="text" placeholder="func" /><br />

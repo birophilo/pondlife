@@ -136,5 +136,17 @@ export default {
   },
   deleteUtilityFunction (id) {
     return baseApiClient.deleteItem('utilityFunction', id)
+  },
+  createRecurringChange (data) {
+    return baseApiClient.createItem('recurringChanges', data)
+  },
+  getRecurringChange (id) {
+    return baseApiClient.getItem('recurringChange', id)
+  },
+  updateRecurringChange (data) {
+    return baseApiClient.updateItem('recurringChange', data)
+  },
+  deleteRecurringChange (id) {
+    return baseApiClient.deleteItem('recurringChange', id)
   }
 }

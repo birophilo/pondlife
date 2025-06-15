@@ -55,7 +55,8 @@ export const useStore = defineStore({
 
     agentUtilityFunctions: [],
 
-    recurringChanges: [],
+    ungroupedRecurringChanges: [],
+    groupedRecurringChanges: {},
 
     firstActions: {},
 
@@ -128,7 +129,7 @@ export const useStore = defineStore({
         propertyChanges: this.propertyChanges.map(i => i.id),
         sensors: this.sensors.map(i => i.id),
         utilityFunctions: this.agentUtilityFunctions.map(i => i.id),
-        recurringChanges: this.recurringChanges.map(i => i.id),
+        recurringChanges: this.ungroupedRecurringChanges.map(i => i.id),
         firstActions: {...this.firstActions}
       }
 
@@ -169,6 +170,28 @@ export const useStore = defineStore({
         console.log('Saved scene')
       } catch (error) {
         this.error = error.message
+      }
+    },
+
+    groupRecurringChanges() {
+      for (let change of this.ungroupedRecurringChanges) {
+        if (this.groupedRecurringChanges[change.frameInterval] == undefined) {
+          this.groupedRecurringChanges[change.frameInterval] = [
+            {
+              agentType: change.agentType,
+              property: change.property,
+              change: change.change
+            }
+          ]
+        } else {
+          this.groupedRecurringChanges[change.frameInterval].concat[
+            {
+              agentType: change.agentType,
+              property: change.property,
+              change: change.change
+            }
+          ]
+        }
       }
     }
   }

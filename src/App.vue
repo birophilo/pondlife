@@ -71,7 +71,7 @@
         {{ store.selectedAgent.name }}<br/>
         current action: {{ store.selectedAgent.currentStateName }}<br/>
         current state name: {{ store.selectedAgent.currentAction?.actionName }}<br/><br/>
-        <span v-for="prop in Object.entries(store.selectedAgent.stateData)">
+        <span v-for="prop in Object.entries(store.selectedAgent.stateData)" :key="prop[0]">
           {{ prop[0] }}: {{ prop[1] }}<br/>
         </span>
       </div>
@@ -80,7 +80,7 @@
 
     <details class="menu-section" id="agent-types-section">
       <summary class="menu-section-heading">Agent Types</summary>
-      <div v-for="(agentType) in store.agentTypes" class="agent-type-menu-container">
+      <div v-for="(agentType, index) in store.agentTypes" :key="index" class="agent-type-menu-container">
         <AgentTypeEdit :agentType="agentType" />
         <AgentTypeFirstActionEdit :agentType="agentType" />
       </div>
@@ -91,14 +91,14 @@
     <details class="menu-section" id="sprite-sheets-section">
       <summary>Sprites</summary>
       <h3 class="menu-section-heading">Sprite Sheets</h3>
-      <div v-for="(spriteSheet, index) in store.spriteSheets">
+      <div v-for="(spriteSheet, index) in store.spriteSheets" :key="index">
         <SpriteSheetEdit :spriteSheet="spriteSheet" :i="index" />
       </div>
       <SpriteSheetCreate />
 
       <div class="agent-type-menu-container"></div>
       <h3 class="menu-section-heading">Animation Sets</h3>
-      <div v-for="(animationSet, index) in store.animationSets">
+      <div v-for="(animationSet, index) in store.animationSets" :key="index">
         <AnimationSetEdit :animationSet="animationSet" :i="index" />
       </div>
       <AnimationSetCreate />
@@ -112,9 +112,17 @@
       </div>
     </details>
 
+    <details class="menu-section" id="recurring-changes-section">
+      <summary class="menu-section-heading">Recurring Changes</summary>
+      <div v-for="(recurringChange, index) in store.ungroupedRecurringChanges" :key="index">
+        <RecurringChangeEdit :recurringChange="recurringChange" :index="index" />
+      </div>
+      <RecurringChangeCreate />
+    </details>
+
     <details class="menu-section" id="agent-properties-section">
       <summary class="menu-section-heading">Agent Properties</summary>
-      <div v-for="(agentProperty, i) in store.agentProperties" class="item-list">
+      <div v-for="(agentProperty, i) in store.agentProperties" :key="i" class="item-list">
         <AgentInitialPropertyEdit :agentProperty="agentProperty" :index="i" />
       </div>
       <AgentPropertyCreate />
@@ -123,7 +131,7 @@
     <details class="menu-section" id="actions-section">
       <summary class="menu-section-heading">Actions</summary>
       <div class="item-list">
-        <div v-for="action in store.actions" class="created-item">
+        <div v-for="action in store.actions" :key="action.id" class="created-item">
           {{ action.id }}
           <ActionEdit :action="action"/>
         </div>
@@ -134,7 +142,7 @@
     <details class="menu-section" id="start-actions-section" :open="store.actions.length > 0">
       <summary class="menu-section-heading">Start action</summary>
       <div v-if="store.actions.length > 0">
-        <div v-for="action in store.actions">
+        <div v-for="action in store.actions" :key="action.id">
           <button @click="cloneAction(action, store.selectedAgent)">{{ action.actionName }}</button>
         </div>
       </div>
@@ -146,7 +154,7 @@
     <details class="menu-section" id="conditions-section">
       <summary class="menu-section-heading">Conditions</summary>
       <div class="item-list">
-        <div v-for="(item, index) in store.conditions" class="created-item">
+        <div v-for="(item, index) in store.conditions" :key="index" class="created-item">
           <ConditionEdit :item="item" :index="index" />
         </div>
       </div>
@@ -156,7 +164,7 @@
     <details class="menu-section" id="sensors-section">
       <summary class="menu-section-heading">Sensors</summary>
       <div class="item-list">
-        <div v-for="(sensor, index) in store.sensors" class="created-item">
+        <div v-for="(sensor, index) in store.sensors" :key="index" class="created-item">
           <SensorEdit :sensor="sensor" :i="index" />
         </div>
       </div>
@@ -166,7 +174,7 @@
     <details class="menu-section" id="utility-functions-section">
       <summary class="menu-section-heading">Utility Functions</summary>
       <div class="item-list">
-        <div v-for="(utilityFunction, index) in store.agentUtilityFunctions" class="created-item">
+        <div v-for="(utilityFunction, index) in store.agentUtilityFunctions" :key="index" class="created-item">
           <UtilityFunctionEdit :utilityFunction="utilityFunction" :index="index" />
         </div>
       </div>
@@ -217,6 +225,8 @@ import SensorCreate from '@/components/simUiForms/SensorCreate.vue'
 import SensorEdit from '@/components/simUiForms/SensorEdit.vue'
 import UtilityFunctionEdit from '@/components/simUiForms/UtilityFunctionEdit.vue'
 import UtilityFunctionCreate from '@/components/simUiForms/UtilityFunctionCreate.vue'
+import RecurringChangeEdit from '@/components/simUiForms/RecurringChangeEdit.vue'
+import RecurringChangeCreate from '@/components/simUiForms/RecurringChangeCreate.vue'
 import UTILITY_FUNCS from './UTILITY_FUNCS.js'
 
 
@@ -252,7 +262,9 @@ export default {
     SensorCreate,
     SensorEdit,
     UtilityFunctionEdit,
-    UtilityFunctionCreate
+    UtilityFunctionCreate,
+    RecurringChangeEdit,
+    RecurringChangeCreate
   },
   setup() {
     const store = useStore()
@@ -347,25 +359,9 @@ export default {
 
       console.log(store.sceneData.recurringChanges)
 
-      for (let change of store.sceneData.recurringChanges) {
-        if (store.recurringChanges[change.frameInterval] == undefined) {
-          store.recurringChanges[change.frameInterval] = [
-            {
-              agentType: change.agentType,
-              property: change.property,
-              change: change.change
-            }
-          ]
-        } else {
-          store.recurringChanges[change.frameInterval].concat[
-            {
-              agentType: change.agentType,
-              property: change.property,
-              change: change.change
-            }
-          ]
-        }
-      }
+      store.ungroupedRecurringChanges = [...store.sceneData.recurringChanges]
+
+      store.groupRecurringChanges()
 
       // set initial properties, for each agent, of each agent type, for each property
       for (let property of store.agentProperties) {
@@ -492,7 +488,7 @@ export default {
     }
 
     const applyScheduledEffects = (frameId) => {
-      for (let [frameInterval, effectArray] of Object.entries(store.recurringChanges)) {
+      for (let [frameInterval, effectArray] of Object.entries(store.groupedRecurringChanges)) {
         if (frameId % frameInterval == 0) {
           for (let effect of effectArray) {
             for (let agent of store.agentItems[effect.agentType]) {
