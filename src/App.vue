@@ -71,6 +71,7 @@
         {{ store.selectedAgent.name }}<br/>
         current action: {{ store.selectedAgent.currentStateName }}<br/>
         current state name: {{ store.selectedAgent.currentAction?.actionName }}<br/><br/>
+        current action sequence: {{ store.selectedAgent.currentActionSequence?.name }}<br/><br/>
         <span v-for="prop in Object.entries(store.selectedAgent.stateData)" :key="prop[0]">
           {{ prop[0] }}: {{ prop[1] }}<br/>
         </span>
@@ -438,6 +439,16 @@ export default {
           return
         }
       }
+
+      // if using an actionSequence and this was last action in sequence, set to null
+      if (agent.currentActionSequence !== null && agent.currentActionSequence !== undefined) {
+        const arrLength = agent.currentActionSequence.actions.length
+        const finalSequenceAction = agent.currentActionSequence.actions[arrLength - 1]
+        if (finalSequenceAction.actionName === agent.currentAction.actionName) {
+          agent.currentActionSequence = null
+        }
+      }
+
       // no further action if no transitions
       agent.currentAction = null
     }
@@ -463,22 +474,26 @@ export default {
     }
 
     const chooseNextActionByUtility = (agent) => {
+      /* Returns the ID of the Action or ActionSequence with the highest utility */
 
       // utility functions currently specific to agent type
       const utilityFunctionsForAgent = store.agentUtilityFunctions.filter(uf => uf.agentType === agent.agentType.name)
 
       var highestScore = 0
-      var highestScoreActionId = null
+      // var highestScoreActionId = null
+      var selected = null
 
       for (let option of utilityFunctionsForAgent) {
         var score = calculateActionUtility(agent, option.property, UTILITY_FUNCS[option.func])
+
         if (score > highestScore) {
           highestScore = score
-          highestScoreActionId = option.actionId
+          // highestScoreActionId = option.actionId
+          selected = {...option}
         }
       }
 
-      return highestScoreActionId
+      return [selected.actionId, selected.actionObjectType]
     }
 
     function calculateActionUtility(agent, property, func) {
@@ -545,10 +560,22 @@ export default {
           // utility system
           if (agent.agentType.name === 'customer') {
             if (agent.currentStateName === 'idle' || agent.currentAction === null) {
-              const nextActionId = chooseNextActionByUtility(agent)
+              const [nextActionId, actionObjectType] = chooseNextActionByUtility(agent)
               if (nextActionId !== null) {
-                const action = store.actions.find(action => action.id === nextActionId)
-                cloneAction(action, agent)
+                let matchingAction
+                if (actionObjectType === 'actionSequence') {
+
+                  matchingAction = store.actionSequences.find(actSeq => actSeq.id === nextActionId)
+                  const nextAction = matchingAction.actions[0]
+                  agent.currentActionSequence = matchingAction
+                  cloneAction(nextAction, agent)
+                } else {
+
+                  matchingAction = store.actions.find(action => action.id === nextActionId)
+                  cloneAction(matchingAction, agent)
+
+                }
+
               } else {
                 agentHandler.idle(agent)
               }

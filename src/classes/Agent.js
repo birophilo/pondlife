@@ -35,6 +35,7 @@ export function createAgentObject (
     currentAction: null,
     currentActionName: '',
     currentStateName: 'idle',
+    currentActionSequence: null,
     currentDirection: null  // temporary approach?
   }
 
