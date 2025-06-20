@@ -46,6 +46,7 @@ export const useStore = defineStore({
     agentItems: {},
 
     actions: [],
+    actionSequences: [],
 
     conditions: [],
 
@@ -123,6 +124,7 @@ export const useStore = defineStore({
         agentInstances: [],
         conditions: this.conditions.map(i => i.id),
         actions: this.actions.map(i => i.id),
+        actionSequences: this.actionSequences.map(i => i.id),
         agentProperties: this.agentProperties.map(i => i.id),
         spritesheets: this.spriteSheets.map(i => i.id),
         animationSets: this.animationSets.map(i => i.id),

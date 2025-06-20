@@ -154,6 +154,16 @@ class ActionTransition(BaseModel):
     pass
 
 
+class ActionSequence(BaseModel):
+    id: str
+    name: str
+    object_type: str
+    action: list
+    agent_type: str
+
+    model_config = ConfigDict(alias_generator=to_camel)
+
+
 class PropertyChange(BaseModel):
     # NOTE: these are items that comprise the ActionPropertyChangeSet
     id: str

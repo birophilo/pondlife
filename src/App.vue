@@ -332,7 +332,6 @@ export default {
 
       // populate agents from initial data
       for (let agentTypeName of Object.keys(store.agentTypes)) {
-        console.log(agentTypeName)
         store.agentItems[agentTypeName] = []
         if (store.sceneData.agentInstances[agentTypeName] !== undefined) {
           for (let i = 0; i < store.sceneData.agentInstances[agentTypeName].length; i++) {
@@ -357,8 +356,7 @@ export default {
       store.agentProperties = [...store.sceneData.agentProperties]
       store.propertyChanges = [...store.sceneData.propertyChanges]
       store.agentUtilityFunctions = [...store.sceneData.utilityFunctions]
-
-      console.log(store.sceneData.recurringChanges)
+      store.actionSequences = [...store.sceneData.actionSequences]
 
       store.ungroupedRecurringChanges = [...store.sceneData.recurringChanges]
 
@@ -443,14 +441,16 @@ export default {
       // if using an actionSequence and this was last action in sequence, set to null
       if (agent.currentActionSequence !== null && agent.currentActionSequence !== undefined) {
         const arrLength = agent.currentActionSequence.actions.length
-        const finalSequenceAction = agent.currentActionSequence.actions[arrLength - 1]
-        if (finalSequenceAction.actionName === agent.currentAction.actionName) {
+        const finalSequenceActionName = agent.currentActionSequence.actions[arrLength - 1]
+        const action = store.actions.find(a => a.actionName === finalSequenceActionName)
+        if (action.actionName === agent.currentAction.actionName) {
           agent.currentActionSequence = null
         }
       }
 
       // no further action if no transitions
       agent.currentAction = null
+      agent.currentActionName = null
     }
 
     const renderAgents = (drawOrUpdate) => {
@@ -566,7 +566,8 @@ export default {
                 if (actionObjectType === 'actionSequence') {
 
                   matchingAction = store.actionSequences.find(actSeq => actSeq.id === nextActionId)
-                  const nextAction = matchingAction.actions[0]
+                  const nextActionName = matchingAction.actions[0]
+                  const nextAction = store.actions.find(a => a.actionName === nextActionName)
                   agent.currentActionSequence = matchingAction
                   cloneAction(nextAction, agent)
                 } else {

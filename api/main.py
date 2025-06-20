@@ -18,6 +18,7 @@ from routers import (
     utility_functions,
     recurring_changes,
     spritesheets,
+    action_sequences,
     upload_file
 )
 
@@ -39,6 +40,7 @@ def create_app() -> FastAPI:
     app.include_router(spritesheets.router)
     app.include_router(upload_file.router)
     app.include_router(recurring_changes.router)
+    app.include_router(action_sequences.router)
     return app
 
 

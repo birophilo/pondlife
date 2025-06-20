@@ -12,11 +12,13 @@
         <option v-for="func in Object.keys(UTILITY_FUNCS)" :value="func" :key="func">{{ func }}</option>
       </select>
       action
+
       <select v-model="itemForm.actionId">
         <option>--- select action ---</option>
         <option v-for="action in store.actions" :value="action.id" :key="action.id">{{ action.actionName }}</option>
+        <option v-for="actionSequence in store.actionSequences" :value="actionSequence.id" :key="actionSequence.id">{{ actionSequence.name }}</option>
       </select>
-      agent type
+      agent type :::{{ itemForm.agentType }}
       <select v-model="itemForm.agentType">
         <option>--- select agent type ---</option>
         <option v-for="agentType in Object.keys(store.agentTypes)" :value="agentType" :key="agentType">{{ agentType }}</option>
@@ -30,7 +32,12 @@
     <div v-else>
       <div>{{ utilityFunction.agentType }}: {{ utilityFunction.property }}</div>
       <div>function: {{ utilityFunction.func }}</div>
-      <div>action: {{ store.actions.find(a => a.id === utilityFunction.actionId).actionName }}</div>
+      <div v-if="utilityFunction.actionObjectType === 'actionSequence'">
+        <div>action sequence: {{ store.actionSequences.find(a => a.id === utilityFunction.actionId)?.name }}</div>
+      </div>
+      <div v-else>
+        <div>action: {{ store.actions.find(a => a.id === utilityFunction.actionId)?.actionName }}</div>
+      </div>
 
       <button @click="editItem">edit</button>
       <button @click="deleteItem">delete</button>

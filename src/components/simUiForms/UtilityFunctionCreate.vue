@@ -14,6 +14,7 @@
       <select v-model="itemForm.actionId">
         <option value="null">--- select action ---</option>
         <option v-for="action in store.actions" :value="action.id" :key="action.id">{{ action.actionName }}</option>
+        <option v-for="actionSequence in store.actionSequences" :value="actionSequence.id" :key="actionSequence.id">{{ actionSequence.name }}</option>
       </select>
       agent type
       <select v-model="itemForm.agentType">
@@ -54,6 +55,13 @@ export default {
         actionId: itemForm.value.actionId,
         func: itemForm.value.func,
         agentType: itemForm.value.agentType
+      }
+
+      const sequenceIds = store.actionSequences.map(as => as.id)
+      if (sequenceIds.includes(itemForm.value.actionId)) {
+        newUtilityFunction.actionObjectType = 'actionSequence'
+      } else {
+        newUtilityFunction.actionObjectType = 'action'
       }
 
       const createdItem = await api.createUtilityFunction(newUtilityFunction)
