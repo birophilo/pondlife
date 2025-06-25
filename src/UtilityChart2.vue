@@ -17,7 +17,7 @@
         x2="250"
         :y2="lineEndY"
         stroke="blue"
-        stroke-width="8"
+        stroke-width="5"
         class="utility-line"
         @mouseenter="onLineHover"
         @mouseleave="onLineLeave"
@@ -31,6 +31,13 @@
       <!-- Circle at line end -->
       <circle :cx="250" :cy="lineEndY" :r="CIRCLE_R" fill="green" stroke="darkgreen" stroke-width="1" />
     </svg>
+  </div>
+  <div>
+    <!-- Start: {{ lineStartY - 250 }}<br/>
+    End: {{ (lineEndY - 250) * -1 }} -->
+    Line slope: {{ (lineEndY - lineStartY) * -1 / (250 - 50) }}<br/>
+    Intercept: {{ (lineStartY - 250) * -1 }}<br/>
+    set line slope <input type="number" v-model="lineStartY" />
   </div>
 </template>
 
