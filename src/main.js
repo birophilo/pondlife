@@ -1,8 +1,8 @@
 import { createApp } from 'vue'
-import UtilityChart from './UtilityChart2.vue'
+import App from './App.vue'
 // import UiMockups from './UiMockups.vue'
 import { createPinia } from 'pinia'
 
-createApp(UtilityChart)
+createApp(App)
   .use(createPinia())
   .mount('#app')

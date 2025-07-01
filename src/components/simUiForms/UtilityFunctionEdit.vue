@@ -24,6 +24,16 @@
         <option v-for="agentType in Object.keys(store.agentTypes)" :value="agentType" :key="agentType">{{ agentType }}</option>
       </select>
 
+      <div>
+        <UtilityChart
+          :functionType="utilityFunction.functionType"
+          :slope="itemForm.slope"
+          :intercept="itemForm.intercept"
+          @update:intercept="(newIntercept) => itemForm.intercept = newIntercept"
+          @update:slope="(newSlope) => itemForm.slope = newSlope"
+        />
+      </div>
+
       <!-- <input v-model="itemForm.func" type="text" placeholder="func" /><br />
       action: <input v-model="itemForm.actionId" type="text" placeholder="actionId" /><br /> -->
       <button @click="saveItem">save</button>
@@ -49,6 +59,7 @@
 import { ref } from 'vue'
 import api from '@/apiCrud.js'
 import { useStore } from '@/store/mainStore.js'
+import UtilityChart from '@/components/UtilityChart.vue'
 import UTILITY_FUNCS from '@/UTILITY_FUNCS.js'
 
 export default {
@@ -56,6 +67,9 @@ export default {
   props: {
     utilityFunction: Object,
     index: Number
+  },
+  components: {
+    UtilityChart,
   },
   setup(props) {
     const store = useStore()
@@ -100,7 +114,8 @@ export default {
       deleteItem,
       editItem,
       cancelEdit,
-      UTILITY_FUNCS
+      UtilityChart,
+      UTILITY_FUNCS,
     }
   }
 
