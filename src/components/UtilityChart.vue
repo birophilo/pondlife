@@ -17,20 +17,6 @@
       <line x1="50" y1="50" x2="50" y2="450" stroke="black" stroke-width="1" />
       
       <!-- Utility line -->
-      <!-- <line
-        :x1="chartLeftPageX"
-        :y1="computedLineStartY"
-        :x2="chartLeftPageX + 250"
-        :y2="computedLineEndY"
-        stroke="blue"
-        stroke-width="5"
-        class="utility-line"
-        @mouseenter="onUtilityLineHover"
-        @mouseleave="onUtilityLineLeave"
-        @mousedown="startDrag($event, 'utilityLine')"
-        style="cursor: pointer;"
-      /> -->
-
       <line
         x1="50"
         :y1="computedLineStartY"
@@ -53,13 +39,10 @@
     </svg>
   </div>
   <div>
-    <!-- Start: {{ computedLineStartY - 250 }}<br/>
-    End: {{ (lineEndY - 250) * -1 }} -->
     Line slope: {{ slope }}<br/>
     Intercept: {{ intercept }}<br/>
     set intercept <input type="number" :value="intercept" @input="emit('update:intercept', $event.target.value)" /><br/>
     set line slope <input type="number" :value="slope" @input="emit('update:slope', $event.target.value)" />
-    <!-- lock line angle <input type="checkbox" v-model="lockLineAngle" /> -->
   </div>
 </template>
 
@@ -83,10 +66,8 @@ export default {
     const CHART_HEIGHT_ABOVE_ORIGIN = 200
     const CHART_HEIGHT_BELOW_ORIGIN = 200
     const ORIGIN_Y = CHART_OFFSET_TOP + CHART_HEIGHT_ABOVE_ORIGIN
-    // const CHART_BOTTOM_POS = CHART_OFFSET_TOP + CHART_HEIGHT_ABOVE_ORIGIN + CHART_HEIGHT_BELOW_ORIGIN
 
     const isDragging = ref(false)
-    // const lockLineAngle = ref(false)
     const currentLineStartYDiff = ref(0)
     const currentLineEndYDiff = ref(0)
 
@@ -97,16 +78,9 @@ export default {
 
     onMounted(() => {
       if (chartContainer.value) {
-        console.log("HAS VALUE")
-        console.log(chartContainer.value.getBoundingClientRect().top, window.pageYOffset)
-        console.log('')
         chartLeftPageX.value = chartContainer.value.getBoundingClientRect().left + window.pageXOffset
         chartTopPageY.value = chartContainer.value.getBoundingClientRect().top
         chartBottomPos.value = chartTopPageY.value + CHART_HEIGHT_ABOVE_ORIGIN + CHART_HEIGHT_BELOW_ORIGIN
-
-        console.log(chartLeftPageX.value)
-        console.log(chartTopPageY.value)
-        console.log(chartBottomPos.value)
       }
     })
 
@@ -120,17 +94,12 @@ export default {
 
     const startDrag = (event, type) => {
       const cursorPoint = event.clientY - chartContainer.value.getBoundingClientRect().top
-      console.log(111)
       // Check if click is near the circle
-      console.log(cursorPoint, computedLineStartY.value)
-      console.log('----')
       if (Math.abs(cursorPoint - computedLineStartY.value) <= CIRCLE_R) {
-        console.log(222)
         isDragging.value = 'lineStart'
       }
       if (Math.abs(cursorPoint - computedLineEndY.value) <= CIRCLE_R) {
         isDragging.value = 'lineEnd'
-        console.log('dragging line end', cursorPoint)
       }
       if (type === 'utilityLine') {
         isDragging.value = 'utilityLine'
@@ -146,8 +115,7 @@ export default {
       const cursorPoint = event.clientY - chartContainer.value.getBoundingClientRect().top
 
       if (isDragging.value === 'lineStart') {
-        // Constrain to Y axis only (x = 50) and bounds
-        console.log('line start')
+        // Constrain to chart upper and lower bounds
         const newPos = Math.max(50, Math.min(chartBottomPos.value, cursorPoint))
         emit('update:intercept', ORIGIN_Y - newPos)
       } else if (isDragging.value === 'lineEnd') {
@@ -156,7 +124,6 @@ export default {
       } else if (isDragging.value === 'utilityLine') {
         const newVal = Math.max(50, Math.min(chartBottomPos.value, currentLineEndYDiff.value + cursorPoint))
         emit('update:intercept', 250 - newVal)
-        console.log('dragging utility line', currentLineStartYDiff, currentLineEndYDiff)
       }
     }
 
