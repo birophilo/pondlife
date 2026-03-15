@@ -253,6 +253,9 @@ let fpsFrameCountThisSecond = 0
 let fpsTotalFrames = 0
 let fpsLastDisplayUpdate = 0
 
+// Cursor state for pointer/auto: kept outside reactive store, updated only when value changes
+let currentCursor = 'auto'
+
 let dayLength = 1000 // frames
 const backgroundColor = 'rgb(220, 220, 220)'
 
@@ -561,7 +564,7 @@ export default {
         frameId = requestAnimationFrame(animate)
       }
 
-      store.hover = null
+      let hover = false
 
       c.fillStyle = backgroundColor
       c.fillRect(0, 0, canvas.width, canvas.height)
@@ -669,9 +672,8 @@ export default {
             agentHandler.idle(agent)
           }
 
-          // move this?
           const isInArea = pointIsInArea(store.mouse, agent.collisionArea)
-          if (isInArea) store.hover = true
+          if (isInArea) hover = true
 
         }
       }
@@ -684,18 +686,22 @@ export default {
         const button = store.agentMenuButtons[i]
         button.update(c, i)
         const isInArea = pointIsInArea(store.mouse, button.area)
-        if (isInArea) store.hover = true
+        if (isInArea) hover = true
       }
 
       if (store.agentPreview) store.agentPreview.update(c, store.mouse)
 
-      if (pointIsInArea(store.mouse, store.deleteButton.area)) store.hover = true
+      if (pointIsInArea(store.mouse, store.deleteButton.area)) hover = true
 
-      if (store.selectionMode === true) store.hover = true
+      if (store.selectionMode === true) hover = true
 
       store.deleteButton.update(c, store.agentMenuButtons.length, store.deleteMode)
 
-      canvas.style.cursor = store.hover ? 'pointer' : 'auto'
+      const nextCursor = hover ? 'pointer' : 'auto'
+      if (nextCursor !== currentCursor) {
+        currentCursor = nextCursor
+        canvas.style.cursor = currentCursor
+      }
 
       if (showFrameRateDiagnostics.value) {
         const now = performance.now()
@@ -737,7 +743,6 @@ export default {
         // SELECT AGENT
         if (isInArea) {
           store.selectedAgent = agent
-          store.hover = true
           if (store.selectionMode === true) store.selectedTargetAgent = agent
         }
         // DELETE AGENT (in delete mode)
@@ -1040,8 +1045,6 @@ export default {
 
             addAgent(agentTypeName, position)
 
-          } else {
-            store.hover = true
           }
         }
 
@@ -1053,8 +1056,6 @@ export default {
         for (let i = 0; i < store.agentMenuButtons.length; i++) {
 
           const isInArea = pointIsInArea(point, store.agentMenuButtons[i].area)
-
-          if (isInArea) store.hover = 'true'
 
           if (isInArea && !store.agentPreview) {
             const agentTypeName = store.agentMenuButtons[i].name
@@ -1073,7 +1074,6 @@ export default {
         const isInArea = pointIsInArea(point, store.deleteButton.area)
 
         if (isInArea) {
-          store.hover = true
           store.deleteMode = !store.deleteMode
         }
 

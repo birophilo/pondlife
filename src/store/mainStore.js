@@ -32,7 +32,6 @@ export const useStore = defineStore({
     itemMenu: null,
 
     mouse: {x: 0, y: 0},
-    hover: null,
 
     agentMenuButtons: [],
 
