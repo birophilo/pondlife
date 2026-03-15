@@ -60,6 +60,17 @@
           type="range" min="0" max="200" value="100"
         >
       </div>
+
+      <div class="fps-diagnostics-container">
+        <label>
+          <input type="checkbox" v-model="showFrameRateDiagnostics" @change="onFrameRateDiagnosticsChange" />
+          frame rate diagnostics
+        </label>
+        <div v-if="showFrameRateDiagnostics" class="fps-readings">
+          <div>cumulative avg: {{ cumulativeAverageFps.toFixed(1) }} FPS</div>
+          <div>current: {{ currentFps.toFixed(1) }} FPS</div>
+        </div>
+      </div>
     </div>
 
     <details class="menu-section" id="agent-types-section">
@@ -235,6 +246,13 @@ import UTILITY_FUNCS from './UTILITY_FUNCS.js'
 let canvas;
 let c;  // canvas context
 
+// Frame rate diagnostics (clock time, module-level to avoid reactive writes every frame)
+let fpsStartTime = 0
+let fpsLastSecondStart = 0
+let fpsFrameCountThisSecond = 0
+let fpsTotalFrames = 0
+let fpsLastDisplayUpdate = 0
+
 let dayLength = 1000 // frames
 const backgroundColor = 'rgb(220, 220, 220)'
 
@@ -285,6 +303,22 @@ export default {
     const defaultInterval = {
       name: "day",
       frames: 1000
+    }
+
+    const showFrameRateDiagnostics = ref(false)
+    const cumulativeAverageFps = ref(0)
+    const currentFps = ref(0)
+
+    const onFrameRateDiagnosticsChange = () => {
+      if (!showFrameRateDiagnostics.value) {
+        fpsStartTime = 0
+        fpsLastSecondStart = 0
+        fpsFrameCountThisSecond = 0
+        fpsTotalFrames = 0
+        fpsLastDisplayUpdate = 0
+        cumulativeAverageFps.value = 0
+        currentFps.value = 0
+      }
     }
 
     const agentHandler = new AgentHandler()
@@ -662,6 +696,27 @@ export default {
       store.deleteButton.update(c, store.agentMenuButtons.length, store.deleteMode)
 
       canvas.style.cursor = store.hover ? 'pointer' : 'auto'
+
+      if (showFrameRateDiagnostics.value) {
+        const now = performance.now()
+        if (fpsTotalFrames === 0) {
+          fpsStartTime = now
+          fpsLastSecondStart = now
+          fpsLastDisplayUpdate = now
+        }
+        fpsTotalFrames++
+        fpsFrameCountThisSecond++
+        if (now - fpsLastSecondStart >= 1000) {
+          currentFps.value = fpsFrameCountThisSecond
+          fpsFrameCountThisSecond = 0
+          fpsLastSecondStart = now
+        }
+        if (now - fpsLastDisplayUpdate >= 500) {
+          const elapsedSec = (now - fpsStartTime) / 1000
+          cumulativeAverageFps.value = elapsedSec > 0 ? fpsTotalFrames / elapsedSec : 0
+          fpsLastDisplayUpdate = now
+        }
+      }
 
       if (frameId % dayLength === 0) endDay()
 
@@ -1056,7 +1111,11 @@ export default {
       loadAgentTypesModal,
       agentTypeList,
       isEditingDefaultInterval,
-      defaultInterval
+      defaultInterval,
+      showFrameRateDiagnostics,
+      cumulativeAverageFps,
+      currentFps,
+      onFrameRateDiagnosticsChange
     }
   },
 
