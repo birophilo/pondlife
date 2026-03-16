@@ -1,0 +1,20 @@
+[
+    {
+        "_id": "683c7205d35e5e92e09efa92",
+        "property": "idle",
+        "func": "constant15",
+        "agentType": "customer",
+        "actionId": "68336d0cc48f492b82a8781b",
+        "value": 15.0
+    },
+    {
+        "_id": "684c86deebee3667ec0f8457",
+        "property": "hunger",
+        "actionId": "683c6cf2d35e5e92e09efa8b",
+        "func": "linear",
+        "agentType": "customer",
+        "actionObjectType": "actionSequence",
+        "intercept": 29,
+        "slope": 0.76
+    }
+]

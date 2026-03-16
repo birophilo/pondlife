@@ -534,6 +534,9 @@
                 "68347d2ec48f492b82a87901",
                 "6838bf44c48f492b82a8794a"
             ],
+            "actionSequences": [
+                "683c6cf2d35e5e92e09efa8b"
+            ],
             "agentProperties": [
                 "683307c3c48f492b82a877d9",
                 "683368fcc48f492b82a87804"
@@ -593,10 +596,21 @@
                 "67d896fe9a9eb09732f7e48a",
                 "67d897089a9eb09732f7e48d"
             ],
+            "utilityFunctions": [
+                "683c6db2d35e5e92e09efa90",
+                "683c71f2d35e5e92e09efa91",
+                "683c7205d35e5e92e09efa92",
+                "684c86deebee3667ec0f8457",
+                "6855c9a5f45356176830623b"
+            ],
+            "recurringChanges": [
+                "68472a4ad35e5e92e09efa9e",
+                "68472a66d35e5e92e09efaa0"
+            ],
             "firstActions": {}
         },
         "createdAt": 1748174693077,
-        "lastModified": 1748549465067,
+        "lastModified": 1750452645624,
         "resource": "scene"
     }
 ]

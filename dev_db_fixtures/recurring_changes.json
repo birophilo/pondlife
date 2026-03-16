@@ -1,0 +1,16 @@
+[
+    {
+        "_id": "68472a4ad35e5e92e09efa9e",
+        "agentType": "customer",
+        "property": "hunger",
+        "frameInterval": 70,
+        "change": 1
+    },
+    {
+        "_id": "68472a66d35e5e92e09efaa0",
+        "agentType": "customer",
+        "property": "tiredness",
+        "frameInterval": 90,
+        "change": 2
+    }
+]

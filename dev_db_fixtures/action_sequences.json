@@ -1,0 +1,13 @@
+[
+    {
+        "_id": "683c6cf2d35e5e92e09efa8b",
+        "actions": [
+            "go to shop",
+            "drink",
+            "eat"
+        ],
+        "name": "go to shop and drink",
+        "objectType": "actionSequence",
+        "agentType": "customer"
+    }
+]

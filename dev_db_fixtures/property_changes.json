@@ -59,7 +59,7 @@
         "agent": null,
         "property": "hunger",
         "change": "decrease",
-        "value": 25,
+        "value": 15,
         "target": "",
         "agentType": "self",
         "agentChoiceMethod": "nearest",
