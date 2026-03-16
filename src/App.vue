@@ -256,6 +256,9 @@ let fpsLastDisplayUpdate = 0
 // Cursor state for pointer/auto: kept outside reactive store, updated only when value changes
 let currentCursor = 'auto'
 
+// Current animation frame id: kept outside reactive store, passed to action handlers via getGlobals()
+let currentAnimationFrameId = 0
+
 let dayLength = 1000 // frames
 const backgroundColor = 'rgb(220, 220, 220)'
 
@@ -307,6 +310,11 @@ export default {
       name: "day",
       frames: 1000
     }
+
+    const getGlobals = () => ({
+      globalSpeed: store.GlobalSettings.globalSpeed,
+      animationFrameId: currentAnimationFrameId
+    })
 
     const showFrameRateDiagnostics = ref(false)
     const cumulativeAverageFps = ref(0)
@@ -381,7 +389,7 @@ export default {
               store.agentTypes[agentTypeName],  // agentType object
               {x: item.position.x, y: item.position.y},  // position
               i + 1,  // num
-              store.GlobalSettings, // globals
+              getGlobals(), // globals
             )
 
             store.agentItems[agentTypeName].push(newAgent)
@@ -506,7 +514,7 @@ export default {
         if (drawOrUpdate === 'draw') {
           agentHandler.draw(c, agent)
         } else {
-          agentHandler.update(c, {}, store.GlobalSettings, agent)
+          agentHandler.update(c, {}, getGlobals(), agent)
         }
       }
     }
@@ -569,7 +577,7 @@ export default {
       c.fillStyle = backgroundColor
       c.fillRect(0, 0, canvas.width, canvas.height)
 
-      store.GlobalSettings.animationFrameId = frameId
+      currentAnimationFrameId = frameId
 
       // update agent knowledge via sensory input
       for (let agentTypeName of Object.keys(store.agentItems)) {
@@ -640,7 +648,7 @@ export default {
                 agent.currentAction.inProgress = true
                 const emissionsFromAction = handler.start(
                   agent.currentAction,
-                  store.GlobalSettings,
+                  getGlobals(),
                   agentHandler,
                   store
                 )
@@ -659,7 +667,7 @@ export default {
                 handler.check(
                   agent.currentAction,
                   agent.stateData,
-                  store.GlobalSettings,
+                  getGlobals(),
                   agentHandler
                 )
 
@@ -726,7 +734,7 @@ export default {
 
       if (frameId % dayLength === 0) endDay()
 
-      // if (store.GlobalSettings.animationFrameId % 32 === 0) {
+      // if (currentAnimationFrameId % 32 === 0) {
       //   const customerActions = store.agentItems['customer'].map(cust =>
       //     `${cust.name}, action: ${cust.currentAction ? cust.currentAction.actionName : 'none'}`
       //   )
@@ -761,7 +769,7 @@ export default {
         store.agentTypes[agentTypeName],
         position,
         num,
-        store.GlobalSettings
+        getGlobals()
       )
       agentHandler.useSpriteSheet('idle', newAgent)
 
@@ -817,7 +825,7 @@ export default {
             store.agentTypes[agentTypeName],  // agentType
             args.position,  // position
             store.agentItems[agentTypeName].length + 1,  // num
-            store.GlobalSettings  // globals
+            getGlobals()  // globals
           )
           addAgent(agentTypeName, args.position)
           store.agentItems[agentTypeName].push(newAgent)

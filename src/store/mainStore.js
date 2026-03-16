@@ -9,8 +9,7 @@ export const useStore = defineStore({
   state: () => ({
 
     GlobalSettings: {
-      globalSpeed: 100,
-      animationFrameId: 1
+      globalSpeed: 100
     },
 
     sceneIsPlaying: false,
