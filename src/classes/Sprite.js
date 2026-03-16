@@ -83,11 +83,14 @@ export class SpriteHandler {
   update(globals, item) {
 
     const frameSpeedMultiple = globals.globalSpeed / 100
-    const hold = Number(item.frames.hold)
-    item.frames.hold = hold / frameSpeedMultiple
+    const baseHold = Number(item.frames.hold)
+    const effectiveHold = baseHold / frameSpeedMultiple
 
     item.frames.elapsed++
-    if (item.frames.elapsed % item.frames.hold === 0) {
+    if (effectiveHold <= 0) return
+    const previousQuotient = Math.floor((item.frames.elapsed - 1) / effectiveHold)
+    const currentQuotient = Math.floor(item.frames.elapsed / effectiveHold)
+    if (currentQuotient > previousQuotient) {
       item.frames.current++
       if (item.frames.current >= item.frames.max) {
         item.frames.current = 0
