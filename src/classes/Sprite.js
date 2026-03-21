@@ -15,7 +15,7 @@ export function createSpriteObject (
       rows: 1,
       current: 0,
       elapsed: 0,
-      hold: 3
+      refreshInterval: 3
     },
     animationSet: animationSet,
     frames: {
@@ -24,7 +24,7 @@ export function createSpriteObject (
       rows: 1,
       current: 0,
       elapsed: 0,
-      hold: 3
+      refreshInterval: 3
     }
   }
 
@@ -83,13 +83,13 @@ export class SpriteHandler {
   update(globals, item) {
 
     const frameSpeedMultiple = globals.globalSpeed / 100
-    const baseHold = Number(item.frames.hold)
-    const effectiveHold = baseHold / frameSpeedMultiple
+    const baseRefreshInterval = Number(item.frames.refreshInterval)
+    const effectiveRefreshInterval = baseRefreshInterval / frameSpeedMultiple
 
     item.frames.elapsed++
-    if (effectiveHold <= 0) return
-    const previousQuotient = Math.floor((item.frames.elapsed - 1) / effectiveHold)
-    const currentQuotient = Math.floor(item.frames.elapsed / effectiveHold)
+    if (effectiveRefreshInterval <= 0) return
+    const previousQuotient = Math.floor((item.frames.elapsed - 1) / effectiveRefreshInterval)
+    const currentQuotient = Math.floor(item.frames.elapsed / effectiveRefreshInterval)
     if (currentQuotient > previousQuotient) {
       item.frames.current++
       if (item.frames.current >= item.frames.max) {
@@ -108,7 +108,7 @@ export class SpriteHandler {
         max: spriteSheet.numImages,
         columns: spriteSheet.columns,
         rows: spriteSheet.rows,
-        hold: spriteSheet.refreshInterval
+        refreshInterval: spriteSheet.refreshInterval
       }
     }
   }

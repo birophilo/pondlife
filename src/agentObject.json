@@ -11,7 +11,7 @@
     "rows": 1,
     "current": 0,
     "elapsed": 0,
-    "hold": 3
+    "refreshInterval": 3
   },
   "frames": {
     "max": 1,
@@ -19,7 +19,7 @@
     "rows": 3,
     "current": 0,
     "elapsed": 2252,
-    "hold": 3
+    "refreshInterval": 3
   },
   "animationSet": {
     "name": "Customer",

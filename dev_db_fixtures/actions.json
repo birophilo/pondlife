@@ -500,7 +500,7 @@
                 "rows": 1,
                 "current": 0,
                 "elapsed": 0,
-                "hold": 3
+                "refreshInterval": 3
             },
             "animationSet": {
                 "name": "Carrot",
@@ -600,7 +600,7 @@
                 "rows": 1,
                 "current": 0,
                 "elapsed": 865,
-                "hold": 1
+                "refreshInterval": 1
             },
             "collisionArea": {
                 "x": 443,
@@ -1962,7 +1962,7 @@
                 "rows": 1,
                 "current": 0,
                 "elapsed": 0,
-                "hold": 3
+                "refreshInterval": 3
             },
             "animationSet": {
                 "name": "LemonadeStall",
@@ -1990,7 +1990,7 @@
                 "rows": 1,
                 "current": 0,
                 "elapsed": 2321,
-                "hold": 1
+                "refreshInterval": 1
             },
             "collisionArea": {
                 "x": 606,
@@ -2112,7 +2112,7 @@
                 "rows": 1,
                 "current": 0,
                 "elapsed": 0,
-                "hold": 3
+                "refreshInterval": 3
             },
             "animationSet": {
                 "name": "LemonadeStall",
@@ -2140,7 +2140,7 @@
                 "rows": 1,
                 "current": 0,
                 "elapsed": 2321,
-                "hold": 1
+                "refreshInterval": 1
             },
             "collisionArea": {
                 "x": 606,
