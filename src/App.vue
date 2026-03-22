@@ -217,7 +217,7 @@ import {
 } from '@/classes/Action.js'
 import api from '@/apiCrud.js'
 import { loadAgentsAndFixtures as loadAgentsAndFixturesFromScene } from '@/sim/sceneLoader.js'
-import { setDynamicActionTargetAgents } from '@/sim/agentActions.js'
+import { setDynamicActionTargetAgents, setNextAction, chooseNextActionByUtility } from '@/sim/agentActions.js'
 import SceneMenu from '@/components/SceneMenu.vue'
 import AgentTypeCreate from '@/components/simUiForms/AgentTypeCreate.vue'
 import AgentTypeEdit from '@/components/simUiForms/AgentTypeEdit.vue'
@@ -242,7 +242,6 @@ import UtilityFunctionEdit from '@/components/simUiForms/UtilityFunctionEdit.vue
 import UtilityFunctionCreate from '@/components/simUiForms/UtilityFunctionCreate.vue'
 import RecurringChangeEdit from '@/components/simUiForms/RecurringChangeEdit.vue'
 import RecurringChangeCreate from '@/components/simUiForms/RecurringChangeCreate.vue'
-import UTILITY_FUNCS from './UTILITY_FUNCS.js'
 
 
 let canvas;
@@ -366,44 +365,6 @@ export default {
       loadScene(newScene)
     }
 
-    const setNextAction = (agent) => {
-      // check for state transitions and set next action if complete
-      for (let transition of agent.currentAction.transitions) {
-
-        const condition = store.conditions.find(cond => cond.id === transition.condition)
-        const result = conditionHandler.evaluateCondition(condition, agent, store)
-
-        if (result === true) {
-          const nextAction = store.actions.find(action => action.id === transition.nextAction)
-          const ok = setDynamicActionTargetAgents({
-            store,
-            action: nextAction,
-            agent,
-            agentHandler,
-            lastAction: agent.currentAction
-          })
-          if (ok) {
-            agent.currentAction = actionHandler.clone(nextAction, agent)
-          }
-          return
-        }
-      }
-
-      // if using an actionSequence and this was last action in sequence, set to null
-      if (agent.currentActionSequence !== null && agent.currentActionSequence !== undefined) {
-        const arrLength = agent.currentActionSequence.actions.length
-        const finalSequenceActionName = agent.currentActionSequence.actions[arrLength - 1]
-        const action = store.actions.find(a => a.actionName === finalSequenceActionName)
-        if (action.actionName === agent.currentAction.actionName) {
-          agent.currentActionSequence = null
-        }
-      }
-
-      // no further action if no transitions
-      agent.currentAction = null
-      agent.currentActionName = null
-    }
-
     const renderAgents = (drawOrUpdate) => {
 
       let ySortArray = []
@@ -422,35 +383,6 @@ export default {
           agentHandler.update(c, {}, getGlobals(), agent)
         }
       }
-    }
-
-    const chooseNextActionByUtility = (agent) => {
-      /* Returns the ID of the Action or ActionSequence with the highest utility */
-
-      // utility functions currently specific to agent type
-      const utilityFunctionsForAgent = store.agentUtilityFunctions.filter(uf => uf.agentType === agent.agentType.name)
-
-      var highestScore = 0
-      // var highestScoreActionId = null
-      var selected = null
-
-      for (let option of utilityFunctionsForAgent) {
-        var score = calculateActionUtility(agent, option.property, UTILITY_FUNCS[option.func])
-
-        if (score > highestScore) {
-          highestScore = score
-          // highestScoreActionId = option.actionId
-          selected = {...option}
-        }
-      }
-
-      return [selected.actionId, selected.actionObjectType]
-    }
-
-    function calculateActionUtility(agent, property, func) {
-      const propValue = agent.stateData[property]
-      const utilityScore = func(propValue)
-      return utilityScore
     }
 
     const applyScheduledEffects = (frameId) => {
@@ -538,7 +470,13 @@ export default {
           if (agent.currentAction) {
             const handler = actionHandlers[agent.currentAction.actionType]
             if (handler.defaultCompletionCheckPasses(agent.currentAction, agentHandler) === true) {
-              setNextAction(agent)
+              setNextAction({
+                agent,
+                store,
+                conditionHandler,
+                actionHandler,
+                agentHandler
+              })
             }
 
             // start and check actions
