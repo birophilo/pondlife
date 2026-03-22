@@ -76,14 +76,15 @@
     <details class="menu-section" id="agent-types-section">
       <summary class="menu-section-heading">
         Selected Agent: &nbsp;
-        <span class="body-small">{{ store.selectedAgent !== null ? store.selectedAgent.name : 'none' }}</span>
+        <span class="body-small">{{ selectedAgentDisplay !== null ? selectedAgentDisplay.name : 'none' }}</span>
       </summary>
-      <div v-if="store.selectedAgent !== null">
-        {{ store.selectedAgent.name }}<br/>
-        current action: {{ store.selectedAgent.currentStateName }}<br/>
-        current state name: {{ store.selectedAgent.currentAction?.actionName }}<br/><br/>
-        current action sequence: {{ store.selectedAgent.currentActionSequence?.name }}<br/><br/>
-        <span v-for="prop in Object.entries(store.selectedAgent.stateData)" :key="prop[0]">
+      <div v-if="selectedAgentDisplay !== null">
+        {{ selectedAgentDisplay.name }}<br/>
+        position: {{ selectedAgentDisplay.position.x.toFixed(0) }}, {{ selectedAgentDisplay.position.y.toFixed(0) }}<br/>
+        current action: {{ selectedAgentDisplay.currentStateName }}<br/>
+        current state name: {{ selectedAgentDisplay.currentActionName }}<br/><br/>
+        current action sequence: {{ selectedAgentDisplay.currentActionSequenceName }}<br/><br/>
+        <span v-for="prop in Object.entries(selectedAgentDisplay.stateData)" :key="prop[0]">
           {{ prop[0] }}: {{ prop[1] }}<br/>
         </span>
       </div>
@@ -118,7 +119,11 @@
 
     <details class="menu-section" id="properties-section">
       <summary class="menu-section-heading">Properties</summary>
-      <div v-if="store.selectedAgent !== null" class="item-list">
+      <div
+        v-if="store.selectedAgent !== null"
+        :key="`${store.inspectorRevision}-${store.selectedAgent.id}`"
+        class="item-list"
+      >
         <PropertyEdit :agentProperties="store.selectedAgent.stateData"/>
         <SetPropertyForm />
       </div>
@@ -261,13 +266,17 @@ let currentCursor = 'auto'
 // Current animation frame id: kept outside reactive store, passed to action handlers via getGlobals()
 let currentAnimationFrameId = 0
 
+/** Inspector snapshot sync from rAF: 5 Hz to limit Vue re-renders (immediate sync on select/load resets this). */
+const INSPECTOR_SYNC_INTERVAL_MS = 1000 / 1
+let lastInspectorSyncTime = 0
+
 let dayLength = 1000 // frames
 const backgroundColor = 'rgb(220, 220, 220)'
 
 const UPDATE_AGENT_KNOWLEDGE_EVERY_X_FRAMES = 10
 
 export default {
-  name: 'App',
+  name: 'SimView',
   components: {
     SceneMenu,
     AgentTypeCreate,
@@ -334,6 +343,33 @@ export default {
       }
     }
 
+    /**
+     * Plain snapshot updated from the animation loop so the inspector stays live
+     * without relying on reactive agent objects (agents are markRaw).
+     */
+    const selectedAgentDisplay = ref(null)
+
+    const syncSelectedAgentDisplay = () => {
+      const ag = store.selectedAgent
+      if (!ag) {
+        selectedAgentDisplay.value = null
+        return
+      }
+      selectedAgentDisplay.value = {
+        name: ag.name,
+        position: { x: ag.position.x, y: ag.position.y },
+        currentStateName: ag.currentStateName,
+        currentActionName: ag.currentAction?.actionName ?? '',
+        currentActionSequenceName: ag.currentActionSequence?.name ?? '',
+        stateData: { ...ag.stateData }
+      }
+    }
+
+    const syncSelectedAgentDisplayImmediate = () => {
+      syncSelectedAgentDisplay()
+      lastInspectorSyncTime = performance.now()
+    }
+
     const agentHandler = new AgentHandler()
     // for non-action specific base action methods
     const actionHandler = new ActionHandler()
@@ -358,6 +394,7 @@ export default {
       await store.fetchSceneData(scene.id)
       loadAgentsAndFixtures()
       renderAgents('draw')
+      syncSelectedAgentDisplayImmediate()
     }
 
     const createScene = async (sceneName) => {
@@ -573,6 +610,12 @@ export default {
 
       if (frameId % dayLength === 0) endDay()
 
+      const nowInspector = performance.now()
+      if (nowInspector - lastInspectorSyncTime >= INSPECTOR_SYNC_INTERVAL_MS) {
+        lastInspectorSyncTime = nowInspector
+        syncSelectedAgentDisplay()
+      }
+
       // if (currentAnimationFrameId % 32 === 0) {
       //   const customerActions = store.agentItems['customer'].map(cust =>
       //     `${cust.name}, action: ${cust.currentAction ? cust.currentAction.actionName : 'none'}`
@@ -591,6 +634,7 @@ export default {
         if (isInArea) {
           store.selectedAgent = agent
           if (store.selectionMode === true) store.selectedTargetAgent = agent
+          syncSelectedAgentDisplayImmediate()
         }
         // DELETE AGENT (in delete mode)
         if (isInArea && store.deleteMode === true) {
@@ -629,6 +673,7 @@ export default {
     }
 
     const deleteAgent = async (agent, agentItems, i) => {
+      const wasSelected = store.selectedAgent && store.selectedAgent.id === agent.id
       // do not save agents created or deleted during scene runtime, i.e. scene will revert
       // to setup positions once finish playing.
       if (store.sceneIsPlaying !== true) {
@@ -639,6 +684,11 @@ export default {
       // if scene is playing, don't call API
       else {
         agentItems.splice(i, 1)
+      }
+      if (wasSelected) {
+        store.selectedAgent = null
+        store.selectedTargetAgent = null
+        selectedAgentDisplay.value = null
       }
     }
 
@@ -825,6 +875,7 @@ export default {
 
     return {
       store,
+      selectedAgentDisplay,
       loadAgentsAndFixtures,
       loadScene,
       createScene,

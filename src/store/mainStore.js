@@ -77,7 +77,10 @@ export const useStore = defineStore({
     api: apiCrud,
 
     displaySceneMenu: false,
-    displayLoadObjectModal: false
+    displayLoadObjectModal: false,
+
+    /** Incremented after user edits to raw agent state so PropertyEdit etc. re-sync. */
+    inspectorRevision: 0
 
   }),
   actions: {
@@ -114,6 +117,8 @@ export const useStore = defineStore({
       this.agentItems = {}
       this.agentTypes = {}
       this.agentMenuButtons = []
+      this.selectedAgent = null
+      this.selectedTargetAgent = null
     },
 
     async saveScene () {
@@ -171,6 +176,10 @@ export const useStore = defineStore({
       } catch (error) {
         this.error = error.message
       }
+    },
+
+    bumpInspector () {
+      this.inspectorRevision++
     },
 
     groupRecurringChanges() {

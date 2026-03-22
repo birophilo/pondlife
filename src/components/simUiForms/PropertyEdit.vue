@@ -35,6 +35,7 @@ export default {
     const setProperty = (property) => {
       store.selectedAgent.stateData[property] = propertiesForm.value[property]
       editFlags.value[property] = false
+      store.bumpInspector()
     }
 
     const cancelSetProperty = (property) => {
@@ -54,6 +55,7 @@ export default {
 
     const deleteProperty = (property) => {
       delete store.selectedAgent.stateData[property]
+      store.bumpInspector()
     }
 
     const populatePropertiesForm = () => {

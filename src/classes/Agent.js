@@ -1,3 +1,4 @@
+import { markRaw } from 'vue'
 import { createSpriteObject, SpriteHandler } from './Sprite.js'
 import { ACTION_HANDLERS } from './Action.js'
 import { get8WayDirection } from '../utils.js'
@@ -67,7 +68,8 @@ export function createAgentObject (
   // const canvasContainer = document.getElementsByClassName('canvas-container')[0]
   // canvasContainer.appendChild(item.labelElement)
 
-  return item
+  /* Agents mutate every frame; keep them non-reactive so Vue does not track writes. */
+  return markRaw(item)
 }
 
 

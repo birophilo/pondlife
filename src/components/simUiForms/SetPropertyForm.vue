@@ -38,6 +38,7 @@ export default {
       propertyForm.value.propertyName = ''
       propertyForm.value.propertyValue = 0
       isAdding.value = false
+      store.bumpInspector()
     }
 
     const cancelSetAgentProperty = () => {
@@ -50,4 +51,4 @@ export default {
   }
 }
 
-</script>9
+</script>
