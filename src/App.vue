@@ -218,6 +218,7 @@ import {
 import api from '@/apiCrud.js'
 import { loadAgentsAndFixtures as loadAgentsAndFixturesFromScene } from '@/sim/sceneLoader.js'
 import { setDynamicActionTargetAgents, setNextAction, chooseNextActionByUtility } from '@/sim/agentActions.js'
+import { applyTickEffects } from '@/sim/tickEffects.js'
 import SceneMenu from '@/components/SceneMenu.vue'
 import AgentTypeCreate from '@/components/simUiForms/AgentTypeCreate.vue'
 import AgentTypeEdit from '@/components/simUiForms/AgentTypeEdit.vue'
@@ -434,7 +435,11 @@ export default {
       // update agent state and draw sprites on board
       renderAgents('update')
 
-      let emissions = {agentsToDelete: [], agentsToSpawn: []}
+      // Phase 1 — collect: deferred world mutations (handlers must not mutate agent lists during this loop)
+      const tickEffects = []
+      const emitTickEffect = (effect) => {
+        tickEffects.push(effect)
+      }
 
       for (let agentTypeName of Object.keys(store.agentTypes)) {
 
@@ -443,7 +448,7 @@ export default {
           // utility system
           if (agent.agentType.name === 'customer') {
             if (agent.currentStateName === 'idle' || agent.currentAction === null) {
-              const [nextActionId, actionObjectType] = chooseNextActionByUtility(agent)
+              const [nextActionId, actionObjectType] = chooseNextActionByUtility({ store, agent })
               if (nextActionId !== null) {
                 let matchingAction
                 if (actionObjectType === 'actionSequence') {
@@ -488,21 +493,13 @@ export default {
               if (agent.currentAction.inProgress === false) {
 
                 agent.currentAction.inProgress = true
-                const emissionsFromAction = handler.start(
+                handler.start(
                   agent.currentAction,
                   getGlobals(),
                   agentHandler,
-                  store
+                  store,
+                  emitTickEffect
                 )
-
-                if (emissionsFromAction) {
-                  if (emissionsFromAction.agentsToDelete) {
-                    emissions.agentsToDelete = emissions.agentsToDelete.concat(emissionsFromAction.agentsToDelete)
-                  }
-                  if (emissionsFromAction.agentsToSpawn) {
-                    emissions.agentsToSpawn = emissions.agentsToSpawn.concat(emissionsFromAction.agentsToSpawn)
-                  }
-                }
 
               } else {
 
@@ -528,7 +525,8 @@ export default {
         }
       }
 
-      handleEmissions(emissions)
+      // Phase 2 — apply: removals first, then spawns (shared helper; keeps iteration safe)
+      applyTickEffects(tickEffects, { store, deleteAgent, addAgent })
 
       store.itemMenu.update(c, store.agentMenuButtons.length + 1)
 
@@ -642,36 +640,6 @@ export default {
       // if scene is playing, don't call API
       else {
         agentItems.splice(i, 1)
-      }
-    }
-
-    const handleEmissions = (emissions) => {
-
-      const areAgentsToCreate = emissions.agentsToSpawn?.length > 0
-      const areAgentsToDelete = emissions.agentsToDelete?.length > 0
-
-      if (areAgentsToDelete) {
-        for (let agent of emissions.agentsToDelete) {
-          const agentTypeName = agent.agentType.name
-          const agentItems = store.agentItems[agentTypeName]
-          const agentToDelete = agentItems.find(ag => ag.id === agent.id)
-          const i = agentItems.indexOf(agentToDelete)
-          deleteAgent(agentToDelete, agentItems, i)
-        }
-      }
-      if (areAgentsToCreate) {
-        for (let args of emissions.agentsToSpawn) {
-          const agentTypeName = args.agentType.name
-          let newAgent = createAgentObject(
-            null,
-            store.agentTypes[agentTypeName],  // agentType
-            args.position,  // position
-            store.agentItems[agentTypeName].length + 1,  // num
-            getGlobals()  // globals
-          )
-          addAgent(agentTypeName, args.position)
-          store.agentItems[agentTypeName].push(newAgent)
-        }
       }
     }
 

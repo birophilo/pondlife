@@ -1,3 +1,8 @@
+import {
+  TICK_EFFECT_REMOVE_AGENT,
+  TICK_EFFECT_SPAWN_AGENT
+} from '@/sim/tickEffects.js'
+
 export function createActionObject (agent = null, data) {
 
   const item = {
@@ -67,7 +72,6 @@ export function createActionSpawnAgent (agent = null, data) {
 
   return item
 }
-
 
 export function createActionRemoveAgent (agent = null, data) {
   const item = createActionObject(agent, data)
@@ -247,21 +251,19 @@ export class ActionSpawnAgentHandler extends ActionHandler {
   }
 
   // eslint-disable-next-line
-  start(item, globals) {
-
+  start(item, globals, _agentHandler, _store, emit) {
     // 'selfPosition'- -> use agent's current position; 'specific' -> predefined XY position
     const position = item.spawnAgentPlacement === 'selfPosition'
       ? {...item.agent.position}
       : {...item.position}
 
-    const spawnArgs = {
-      agentType: item.agentType,
-      position: position
-    }
-
     item.isComplete = true
 
-    return {agentsToSpawn: [spawnArgs]}
+    emit({
+      type: TICK_EFFECT_SPAWN_AGENT,
+      agentType: item.agentType,
+      position
+    })
   }
 
   defaultCompletionCheckPasses(item) {
@@ -278,21 +280,23 @@ export class ActionRemoveAgentHandler extends ActionHandler {
   }
 
   // eslint-disable-next-line
-  start(item, globals) {
-    let emissions = {agentsToDelete: []}
+  start(item, globals, _agentHandler, _store, emit) {
+    let agentsToDelete = []
 
     if (item.agentType === 'self') {
-      emissions.agentsToDelete = [item.agent]
+      agentsToDelete = [item.agent]
     } else if (item.agentType === 'currentTarget') {
-      emissions.agentsToDelete = [item.target]
+      agentsToDelete = [item.target]
     } else if (item.agentChoiceMethod === 'specific' || item.agentChoiceMethod === 'nearest') {
-      emissions.agentsToDelete = [item.target]
+      agentsToDelete = [item.target]
     } else if (item.agentChoiceMethod === 'all') {
-      emissions.agentsToDelete = [...item.target]
+      agentsToDelete = [...item.target]
     }
 
     item.isComplete = true
-    return emissions
+    for (const agent of agentsToDelete) {
+      emit({ type: TICK_EFFECT_REMOVE_AGENT, agent })
+    }
   }
 
   defaultCompletionCheckPasses(item) {
