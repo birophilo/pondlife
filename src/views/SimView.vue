@@ -1,9 +1,10 @@
 <template>
 <!--
-  Plan 3 — phase A boundaries (see src/store/mainStore.js for Pinia split):
-  • Hot path (→ simRuntime in phase B): canvas + rAF + listeners on canvas ref
-  • liveHudHost: empty mount for imperative DOM (phase D); Vue must not put {{ }} inside
-  • Slow / Vue: modals, info-container, forms — reactive OK; avoid per-frame store writes
+  Plan 3 — phase A/B/C (see src/store/mainStore.js, src/sim/simRuntime.js):
+  • Hot path: canvas + rAF + listeners; simRuntime reads canvasRef once in onMounted — do not assign canvasRef from script.
+  • Phase C: keep <canvas> and liveHudHost always in the tree (no v-if); use v-show on overlays (modals) so the canvas is not destroyed/recreated.
+  • liveHudHost: empty mount for imperative DOM (phase D); Vue must not put {{ }} inside.
+  • Slow / Vue: modals, info-container, forms — reactive OK; avoid per-frame store writes.
 -->
 
 <NavTopLogin />
@@ -19,7 +20,7 @@
   </div>
 
   <div class="canvas-container">
-
+    <!-- Always mounted (Phase C); never v-if — simRuntime holds a native element reference. -->
     <canvas ref="canvasRef" />
 
     <!-- Imperative HUD mount (phase D). Keep empty; sim code will own children. -->

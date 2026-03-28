@@ -355,6 +355,7 @@ export function createSimRuntime ({ store, fpsRefs }) {
     }
   }
 
+  /** Call once with the mounted <canvas> from SimView; Phase C — avoid reassigning the element from Vue without destroy + re-attach. */
   const attachCanvas = (canvasEl) => {
     if (!canvasEl) {
       console.error('simRuntime: canvas element is missing')

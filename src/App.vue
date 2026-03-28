@@ -1,8 +1,10 @@
 <template>
-  <!-- Sim + canvas live in SimView; router can wrap this later (phase G). -->
-  <SimView />
+  <!--
+    Plan 3 Phase C: no :key on router-view — a key forces remount and would tear
+    down SimView’s canvas + simRuntime. Use a key only when you want that reset.
+  -->
+  <router-view />
 </template>
 
 <script setup>
-import SimView from './views/SimView.vue'
 </script>
