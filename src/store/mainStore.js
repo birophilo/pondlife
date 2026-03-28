@@ -3,6 +3,22 @@ import apiCrud from '../apiCrud'
 
 const BASE_URL = 'http://localhost:8000'
 
+/**
+ * Plan 3 Phase A — Pinia vs sim/canvas boundaries
+ *
+ * Reactive shell (Vue forms, menus, routing): sceneList, sceneData, sceneId/sceneName,
+ * displaySceneMenu, displayLoadObjectModal, entity defs (agentTypes, actions, conditions,
+ * spriteSheets, animationSets, …), UI flags (sceneIsPlaying, sceneIsPaused, placingAgent,
+ * deleteMode, selectionMode), GlobalSettings.globalSpeed, dayNumber, selectedAgent /
+ * selectedTargetAgent (selection + editors; agent instances should be markRaw),
+ * agentMenuButtons, deleteButton, itemMenu, api reference.
+ *
+ * Canvas/sim reads (mutate only on plain markRaw agent objects during rAF, not per-frame
+ * reactive churn): agentItems, groupedRecurringChanges, mouse (mousemove → store; phase F
+ * may move off Pinia), store passed into handlers/tickEffects.
+ *
+ * Later phases: thin store further; imperative HUD may replace some selected-agent bindings.
+ */
 
 export const useStore = defineStore({
   id: 'storeState',

@@ -1,4 +1,10 @@
 <template>
+<!--
+  Plan 3 — phase A boundaries (see src/store/mainStore.js for Pinia split):
+  • Hot path (→ simRuntime in phase B): canvas + rAF + listeners on canvas ref
+  • liveHudHost: empty mount for imperative DOM (phase D); Vue must not put {{ }} inside
+  • Slow / Vue: modals, info-container, forms — reactive OK; avoid per-frame store writes
+-->
 
 <NavTopLogin />
 
@@ -14,7 +20,10 @@
 
   <div class="canvas-container">
 
-    <canvas></canvas>
+    <canvas ref="canvasRef" />
+
+    <!-- Imperative HUD mount (phase D). Keep empty; sim code will own children. -->
+    <div ref="liveHudHost" class="sim-live-hud-host" />
 
     <div class="scene-heading">
       {{ sceneName }}
@@ -267,7 +276,7 @@ const backgroundColor = 'rgb(220, 220, 220)'
 const UPDATE_AGENT_KNOWLEDGE_EVERY_X_FRAMES = 10
 
 export default {
-  name: 'App',
+  name: 'SimView',
   components: {
     SceneMenu,
     AgentTypeCreate,
@@ -296,6 +305,11 @@ export default {
   },
   setup() {
     const store = useStore()
+
+    /** Canvas element from template (phase B will pass this into simRuntime). */
+    const canvasRef = ref(null)
+    /** Empty host for imperative live HUD (phase D). */
+    const liveHudHost = ref(null)
 
     const sceneName = ref('')
 
@@ -741,7 +755,12 @@ export default {
 
       store.displaySceneMenu = true
 
-      canvas = document.querySelector('canvas')
+      const el = canvasRef.value
+      if (!el) {
+        console.error('SimView: canvas ref is missing')
+        return
+      }
+      canvas = el
       c = canvas.getContext('2d')
 
       canvas.width = 1000
@@ -825,6 +844,8 @@ export default {
 
     return {
       store,
+      canvasRef,
+      liveHudHost,
       loadAgentsAndFixtures,
       loadScene,
       createScene,
@@ -908,6 +929,11 @@ canvas {
   width: 1000px;
   height: 600px;
   position: relative;
+}
+
+/* Phase D: imperative HUD under .sim-live-hud-host; hide empty host */
+.sim-live-hud-host:empty {
+  display: none;
 }
 
 details {
