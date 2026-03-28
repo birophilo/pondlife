@@ -1,10 +1,10 @@
 <template>
 <!--
-  Plan 3 — phase A/B/C (see src/store/mainStore.js, src/sim/simRuntime.js):
-  • Hot path: canvas + rAF + listeners; simRuntime reads canvasRef once in onMounted — do not assign canvasRef from script.
-  • Phase C: keep <canvas> and liveHudHost always in the tree (no v-if); use v-show on overlays (modals) so the canvas is not destroyed/recreated.
-  • liveHudHost: empty mount for imperative DOM (phase D); Vue must not put {{ }} inside.
-  • Slow / Vue: modals, info-container, forms — reactive OK; avoid per-frame store writes.
+  Plan 3 — phase A–D (mainStore, simRuntime, src/hud/imperativeHud.js):
+  • Hot path: canvas + rAF; live HUD updates from simRuntime (rAF + pointer) — see Phase D.
+  • Phase C: canvas + liveHudHost always mounted; overlays use v-show.
+  • liveHudHost: empty in template; imperativeHud.js owns children — no {{ }} / v-* inside host.
+  • Slow UI: modals, info-panel forms — reactive OK; avoid per-frame store writes.
 -->
 
 <NavTopLogin />
@@ -23,7 +23,7 @@
     <!-- Always mounted (Phase C); never v-if — simRuntime holds a native element reference. -->
     <canvas ref="canvasRef" />
 
-    <!-- Imperative HUD mount (phase D). Keep empty; sim code will own children. -->
+    <!-- Phase D: empty host; initLiveHud() appends panel; scoped styles do not apply to those nodes — see global block below. -->
     <div ref="liveHudHost" class="sim-live-hud-host" />
 
     <div class="scene-heading">
@@ -84,10 +84,7 @@
     </div>
 
     <details class="menu-section" id="agent-types-section">
-      <summary class="menu-section-heading">
-        Selected Agent: &nbsp;
-        <span class="body-small">{{ store.selectedAgent !== null ? store.selectedAgent.name : 'none' }}</span>
-      </summary>
+      <summary class="menu-section-heading">Selected Agent</summary>
       <div v-if="store.selectedAgent !== null">
         {{ store.selectedAgent.name }}<br/>
         current action: {{ store.selectedAgent.currentStateName }}<br/>
@@ -214,6 +211,7 @@ import { onMounted, onBeforeUnmount, ref } from 'vue'
 import { useStore } from '@/store/mainStore.js'
 import api from '@/apiCrud.js'
 import { createSimRuntime } from '@/sim/simRuntime.js'
+import { initLiveHud } from '@/hud/imperativeHud.js'
 import SceneMenu from '@/components/SceneMenu.vue'
 import AgentTypeCreate from '@/components/simUiForms/AgentTypeCreate.vue'
 import AgentTypeEdit from '@/components/simUiForms/AgentTypeEdit.vue'
@@ -319,6 +317,7 @@ export default {
       await store.fetchSceneData(scene.id)
       sim.loadAgentsAndFixtures()
       sim.renderAgents('draw')
+      sim.refreshLiveHud()
     }
 
     const createScene = async (sceneNameParam) => {
@@ -333,10 +332,33 @@ export default {
       agentTypeList.value = await api.listAgentTypes()
     }
 
+    const getLiveHudSnapshot = () => {
+      const a = store.selectedAgent
+      let simMode = 'edit'
+      if (store.sceneIsPlaying) {
+        simMode = store.sceneIsPaused ? 'paused' : 'playing'
+      } else if (store.sceneIsPaused) {
+        simMode = 'paused'
+      }
+      return {
+        simMode,
+        dayNumber: store.dayNumber,
+        selectedName: a ? a.name : null,
+        currentStateName: a ? a.currentStateName : null,
+        currentActionName: a?.currentAction?.actionName ?? null,
+        currentActionSequenceName: a?.currentActionSequence?.name ?? null,
+        mouseX: store.mouse.x,
+        mouseY: store.mouse.y
+      }
+    }
+
     onMounted(() => {
       store.displaySceneMenu = true
       sim.attachCanvas(canvasRef.value)
       sim.attachDocumentListeners()
+      const hud = initLiveHud(liveHudHost.value, getLiveHudSnapshot)
+      sim.attachLiveHud(hud)
+      hud.update()
     })
 
     onBeforeUnmount(() => {
@@ -432,9 +454,52 @@ canvas {
   position: relative;
 }
 
-/* Phase D: imperative HUD under .sim-live-hud-host; hide empty host */
-.sim-live-hud-host:empty {
-  display: none;
+.canvas-container {
+  position: relative;
+}
+
+/* Phase D: imperative nodes under .sim-live-hud-host use these classes only (global — not scoped). */
+.sim-live-hud-host {
+  position: absolute;
+  left: 8px;
+  top: 8px;
+  z-index: 2;
+  pointer-events: none;
+  font-size: 12px;
+  color: #1a1a1a;
+  text-shadow: 0 0 3px #efeee8, 0 0 6px #efeee8;
+}
+
+.sim-live-hud__panel {
+  background: rgba(239, 238, 232, 0.9);
+  border: 1px solid #c8c4bc;
+  border-radius: 4px;
+  padding: 8px 10px;
+  min-width: 210px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.sim-live-hud__row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 4px;
+  line-height: 1.35;
+}
+
+.sim-live-hud__row:last-child {
+  margin-bottom: 0;
+}
+
+.sim-live-hud__label {
+  flex: 0 0 56px;
+  font-weight: 500;
+  color: #a03622;
+}
+
+.sim-live-hud__value {
+  flex: 1;
+  font-variant-numeric: tabular-nums;
+  word-break: break-word;
 }
 
 details {

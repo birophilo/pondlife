@@ -1,6 +1,6 @@
 /**
- * Plan 3 Phase B — imperative sim + canvas + rAF. No Vue imports.
- * Vue calls createSimRuntime() from SimView setup, then attachCanvas / destroy from lifecycle hooks.
+ * Plan 3 Phase B/D — imperative sim + canvas + rAF; optional Phase D live HUD tick from this loop.
+ * No Vue imports. Vue calls createSimRuntime(), attachCanvas / attachLiveHud / destroy from lifecycle hooks.
  */
 
 import { pointIsInArea, rectanglesOverlap, generateFakeIdString } from '@/utils.js'
@@ -48,6 +48,9 @@ export function createSimRuntime ({ store, fpsRefs }) {
   let onCanvasClick
   let onDocumentKeydown
 
+  /** @type {{ update: () => void, destroy: () => void } | null} */
+  let liveHud = null
+
   const agentHandler = new AgentHandler()
   const actionHandler = new ActionHandler()
   const actionHandlers = {
@@ -58,6 +61,14 @@ export function createSimRuntime ({ store, fpsRefs }) {
     removeAgent: new ActionRemoveAgentHandler()
   }
   const conditionHandler = new ConditionHandler()
+
+  const tickLiveHud = () => {
+    liveHud?.update()
+  }
+
+  const attachLiveHud = (api) => {
+    liveHud = api
+  }
 
   const getGlobals = () => ({
     globalSpeed: store.GlobalSettings.globalSpeed,
@@ -341,6 +352,8 @@ export function createSimRuntime ({ store, fpsRefs }) {
     }
 
     if (frameId % dayLength === 0) endDay()
+
+    tickLiveHud()
   }
 
   const startAnimationLoop = () => {
@@ -373,6 +386,7 @@ export function createSimRuntime ({ store, fpsRefs }) {
     onMouseMove = (event) => {
       store.mouse.x = event.offsetX
       store.mouse.y = event.offsetY
+      tickLiveHud()
     }
 
     onCanvasClick = (event) => {
@@ -419,6 +433,8 @@ export function createSimRuntime ({ store, fpsRefs }) {
           y: store.mouse.y
         }
       }
+
+      tickLiveHud()
     }
 
     canvas.addEventListener('mousemove', onMouseMove)
@@ -453,17 +469,20 @@ export function createSimRuntime ({ store, fpsRefs }) {
     }
 
     startAnimationLoop()
+    tickLiveHud()
   }
 
   const pauseScene = () => {
     store.sceneIsPlaying = false
     store.sceneIsPaused = true
+    tickLiveHud()
   }
 
   const unPauseScene = () => {
     store.sceneIsPlaying = true
     store.sceneIsPaused = false
     startAnimationLoop()
+    tickLiveHud()
   }
 
   const resetFpsDiagnostics = () => {
@@ -479,6 +498,10 @@ export function createSimRuntime ({ store, fpsRefs }) {
   const destroy = () => {
     destroyed = true
     cancelAnimationLoop()
+    if (liveHud) {
+      liveHud.destroy()
+      liveHud = null
+    }
     if (canvas && onMouseMove) {
       canvas.removeEventListener('mousemove', onMouseMove)
       canvas.removeEventListener('click', onCanvasClick)
@@ -496,6 +519,8 @@ export function createSimRuntime ({ store, fpsRefs }) {
   return {
     attachCanvas,
     attachDocumentListeners,
+    attachLiveHud,
+    refreshLiveHud: tickLiveHud,
     destroy,
     loadAgentsAndFixtures,
     renderAgents,
