@@ -1,10 +1,9 @@
 <template>
 <!--
-  Plan 3 — phase A–D (mainStore, simRuntime, src/hud/imperativeHud.js):
-  • Hot path: canvas + rAF; live HUD updates from simRuntime (rAF + pointer) — see Phase D.
-  • Phase C: canvas + liveHudHost always mounted; overlays use v-show.
-  • liveHudHost: empty in template; imperativeHud.js owns children — no {{ }} / v-* inside host.
-  • Slow UI: modals, info-panel forms — reactive OK; avoid per-frame store writes.
+  Plan 3 — phase A–E (mainStore, simRuntime, imperativeHud):
+  • Phase E: agents + canvas menu widgets are markRaw in Pinia — sim mutates without Vue proxy cost.
+  • Selected-agent {{ }} details may lag during play; live HUD reads the same objects each tick.
+  • Hot path: canvas + rAF; HUD from simRuntime. Phase C: canvas + liveHudHost always mounted.
 -->
 
 <NavTopLogin />

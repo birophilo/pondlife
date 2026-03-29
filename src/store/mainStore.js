@@ -4,20 +4,25 @@ import apiCrud from '../apiCrud'
 const BASE_URL = 'http://localhost:8000'
 
 /**
- * Plan 3 Phase A — Pinia vs sim/canvas boundaries
+ * Plan 3 — Pinia boundaries (Phases A + E)
  *
- * Reactive shell (Vue forms, menus, routing): sceneList, sceneData, sceneId/sceneName,
- * displaySceneMenu, displayLoadObjectModal, entity defs (agentTypes, actions, conditions,
+ * Reactive shell (forms, menus, routing): sceneList, sceneData, sceneId / sceneName,
+ * displaySceneMenu, displayLoadObjectModal, defs (agentTypes, actions, conditions,
  * spriteSheets, animationSets, …), UI flags (sceneIsPlaying, sceneIsPaused, placingAgent,
  * deleteMode, selectionMode), GlobalSettings.globalSpeed, dayNumber, selectedAgent /
- * selectedTargetAgent (selection + editors; agent instances should be markRaw),
- * agentMenuButtons, deleteButton, itemMenu, api reference.
+ * selectedTargetAgent, api reference.
  *
- * Canvas/sim reads (mutate only on plain markRaw agent objects during rAF, not per-frame
- * reactive churn): agentItems, groupedRecurringChanges, mouse (mousemove → store; phase F
- * may move off Pinia), store passed into handlers/tickEffects.
+ * Phase E — Sim-hot data (no per-frame reactive writes):
+ * • Agent instances from createAgentObject() are markRaw — not deep-tracked; rAF mutates
+ *   position, frames, stateData, etc. without Vue proxy overhead.
+ * • Canvas menu chrome (itemMenu, deleteButton, agentMenuButtons icons, agentPreview)
+ *   are markRaw class instances updated every frame from simRuntime.
+ * • Vue templates bound to store.selectedAgent nested fields may not auto-refresh on every
+ *   sim tick while playing; the imperative live HUD + pause/edit flows use plain reads.
+ * • sceneLoader.js, tickEffects.js, agentActions.js — run from simRuntime (or scene load),
+ *   not from per-frame Vue logic.
  *
- * Later phases: thin store further; imperative HUD may replace some selected-agent bindings.
+ * Phase F (optional): move store.mouse off Pinia to cut mousemove churn.
  */
 
 export const useStore = defineStore({

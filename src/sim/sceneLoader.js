@@ -1,3 +1,4 @@
+import { markRaw } from 'vue'
 import { createAgentObject } from '@/classes/Agent.js'
 import { AgentMenu, AgentMenuIcon, DeleteButton } from '@/classes/SelectionMenu.js'
 
@@ -86,25 +87,29 @@ export function loadAgentsAndFixtures({ store, getGlobals, agentHandler}) {
   // populate actions
   store.actions = [...store.sceneData.actions]
 
-  store.itemMenu = new AgentMenu()
+  store.itemMenu = markRaw(new AgentMenu())
 
   const agentTypeButtonNames = Object.keys(store.agentTypes).filter(name => name !== 'world')
 
   for (let i = 0; i < agentTypeButtonNames.length; i++) {
     const agentName = agentTypeButtonNames[i]
     store.agentMenuButtons.push(
-      new AgentMenuIcon({
-        menu: store.itemMenu,
-        i: i,
-        name: agentName,
-        agentType: store.agentTypes[agentName]
-      })
+      markRaw(
+        new AgentMenuIcon({
+          menu: store.itemMenu,
+          i: i,
+          name: agentName,
+          agentType: store.agentTypes[agentName]
+        })
+      )
     )
   }
 
-  store.deleteButton = new DeleteButton({
-    menu: store.itemMenu,
-    i: store.agentMenuButtons.length
-  })
+  store.deleteButton = markRaw(
+    new DeleteButton({
+      menu: store.itemMenu,
+      i: store.agentMenuButtons.length
+    })
+  )
 
 }

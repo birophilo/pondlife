@@ -3,6 +3,7 @@
  * No Vue imports. Vue calls createSimRuntime(), attachCanvas / attachLiveHud / destroy from lifecycle hooks.
  */
 
+import { markRaw } from 'vue'
 import { pointIsInArea, rectanglesOverlap, generateFakeIdString } from '@/utils.js'
 import { createAgentObject, AgentHandler } from '@/classes/Agent.js'
 import { ConditionHandler } from '@/classes/Condition.js'
@@ -413,7 +414,7 @@ export function createSimRuntime ({ store, fpsRefs }) {
 
         if (isInArea && !store.agentPreview) {
           const agentTypeName = store.agentMenuButtons[i].name
-          store.agentPreview = new AgentPreview(store.agentTypes[agentTypeName])
+          store.agentPreview = markRaw(new AgentPreview(store.agentTypes[agentTypeName]))
           store.placingAgent = true
           break
         } else if (isInArea && store.agentPreview) {
