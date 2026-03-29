@@ -1,20 +1,32 @@
 <template>
-  <nav v-if="authStore.isAuthenticated">
-    {{ authStore.user }} - logged in
-    <button @click="authStore.logout">log out</button>
+  <nav v-if="authStore.isAuthenticated" class="top-nav-bar top-nav-bar--split">
+    <span class="top-nav-links">
+      <router-link to="/">Home</router-link>
+      <router-link :to="{ name: 'sim' }">Simulation</router-link>
+    </span>
+    <span>
+      {{ authStore.user }} - logged in
+      <button @click="authStore.logout">log out</button>
+    </span>
   </nav>
-  <nav v-else-if="isLoggingIn">
-    <form @submit.prevent="handleLogin" class="top-nav-bar">
+  <nav v-else-if="isLoggingIn" class="top-nav-bar top-nav-bar--split">
+    <span class="top-nav-links">
+      <router-link to="/">Home</router-link>
+      <router-link :to="{ name: 'sim' }">Simulation</router-link>
+    </span>
+    <form @submit.prevent="handleLogin" class="login-form-inline">
       <input v-model="username" type="text" placeholder="username" />
       <input v-model="password" type="password" placeholder="password" />
       <button type="submit">Log in</button>
-      <div>reset password</div>
+      <span class="login-form-meta">reset password</span>
     </form>
   </nav>
-  <nav v-else>
-    <div class="top-nav-bar">
-      <button @click="isLoggingIn = true">log in</button>
-    </div>
+  <nav v-else class="top-nav-bar top-nav-bar--split">
+    <span class="top-nav-links">
+      <router-link to="/">Home</router-link>
+      <router-link :to="{ name: 'sim' }">Simulation</router-link>
+    </span>
+    <button @click="isLoggingIn = true">log in</button>
   </nav>
 </template>
 
@@ -68,6 +80,37 @@ nav {
   display: flex;
   align-items: center;
   justify-content: right;
+}
+
+.top-nav-bar--split {
+  justify-content: space-between;
+}
+
+.top-nav-links {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.top-nav-links a {
+  color: inherit;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.top-nav-links a.router-link-active {
+  text-decoration: underline;
+}
+
+.login-form-inline {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.login-form-meta {
+  font-size: 0.85rem;
 }
 
 </style>

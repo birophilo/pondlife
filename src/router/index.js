@@ -1,14 +1,21 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import HomeView from '@/views/HomeView.vue'
 import SimView from '@/views/SimView.vue'
 
 /**
- * Plan 3 Phase C — single sim route keeps SimView (and its canvas ref) mounted
- * across in-route UI updates. Add :key on <router-view> only when a full remount
- * is intentional; a keyed view would destroy the canvas and sim runtime.
+ * Plan 3 Phase C + G
+ * • No :key on <router-view> unless you intend a full sim remount.
+ * • Sim lives at /sim; SimView onBeforeUnmount calls stopSimRuntime (sim.destroy) so rAF
+ *   and listeners stop when navigating away (Phase I: leave and return = no duplicate loops).
  */
 const routes = [
   {
     path: '/',
+    name: 'home',
+    component: HomeView
+  },
+  {
+    path: '/sim',
     name: 'sim',
     component: SimView
   }

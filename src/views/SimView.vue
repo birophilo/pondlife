@@ -1,8 +1,7 @@
 <template>
 <!--
-  Plan 3 — phase A–F (mainStore, simRuntime, imperativeHud, simPointer):
-  • Phase F: canvas mouse → simPointer (plain); store.mouse only when selectionMode (action forms).
-  • Phase E: markRaw agents + menu chrome. Hot path: canvas + rAF; Phase C: stable refs.
+  Plan 3 — phases A–G: route /sim; onBeforeRouteLeave + onBeforeUnmount → stopSimRuntime.
+  Phase F: simPointer. Phase E: markRaw sim objects.
 -->
 
 <NavTopLogin />
@@ -206,6 +205,7 @@
 
 <script>
 import { onMounted, onBeforeUnmount, ref, watch } from 'vue'
+import { onBeforeRouteLeave } from 'vue-router'
 import { useStore } from '@/store/mainStore.js'
 import api from '@/apiCrud.js'
 import { createSimRuntime } from '@/sim/simRuntime.js'
@@ -370,8 +370,13 @@ export default {
       hud.update()
     })
 
+    /* Phase G: stop sim as soon as we leave /sim (covers keep-alive + normal unmount). */
+    onBeforeRouteLeave(() => {
+      sim.stopSimRuntime()
+    })
+
     onBeforeUnmount(() => {
-      sim.destroy()
+      sim.stopSimRuntime()
     })
 
     return {

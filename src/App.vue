@@ -1,8 +1,5 @@
 <template>
-  <!--
-    Plan 3 Phase C: no :key on router-view — a key forces remount and would tear
-    down SimView’s canvas + simRuntime. Use a key only when you want that reset.
-  -->
+  <!-- Plan 3 Phase G: SimView unmounts on leave → stopSimRuntime in onBeforeUnmount. -->
   <router-view />
 </template>
 

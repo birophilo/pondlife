@@ -502,6 +502,7 @@ export function createSimRuntime ({ store, fpsRefs }) {
   }
 
   const destroy = () => {
+    if (destroyed) return
     destroyed = true
     cancelAnimationLoop()
     if (liveHud) {
@@ -520,6 +521,9 @@ export function createSimRuntime ({ store, fpsRefs }) {
     onDocumentKeydown = null
     canvas = null
     c = null
+
+    store.sceneIsPlaying = false
+    store.sceneIsPaused = false
   }
 
   return {
@@ -527,6 +531,8 @@ export function createSimRuntime ({ store, fpsRefs }) {
     attachDocumentListeners,
     attachLiveHud,
     refreshLiveHud: tickLiveHud,
+    /** Plan 3 Phase G — same as destroy; stops rAF, removes listeners, resets play flags. */
+    stopSimRuntime: destroy,
     destroy,
     loadAgentsAndFixtures,
     renderAgents,
