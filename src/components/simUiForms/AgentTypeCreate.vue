@@ -22,7 +22,7 @@
 
 
 <script>
-import { ref } from 'vue'
+import { ref, markRaw } from 'vue'
 import { AgentMenuIcon } from '@/classes/SelectionMenu.js'
 import { useStore } from '@/store/mainStore.js'
 import api from '@/apiCrud.js'
@@ -82,12 +82,14 @@ export default {
 
       await store.saveScene()
 
-      let newIcon = new AgentMenuIcon({
-        menu: store.itemMenu,
-        i: store.agentMenuButtons.length + 1,
-        name: agentTypeName,
-        agentType: newAgentType
-      })
+      const newIcon = markRaw(
+        new AgentMenuIcon({
+          menu: store.itemMenu,
+          i: store.agentMenuButtons.length + 1,
+          name: agentTypeName,
+          agentType: newAgentType
+        })
+      )
       store.agentMenuButtons.push(newIcon)
 
       isAdding.value = false

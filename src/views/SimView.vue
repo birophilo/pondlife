@@ -1,4 +1,8 @@
 <template>
+<!--
+  Plan 3: keep-alive SimView — onDeactivated suspends (pause + detach input); onActivated resumes listeners.
+  True unmount → stopSimRuntime. Phase F: simPointer. Phase E: markRaw.
+-->
 
 <NavTopLogin />
 
@@ -13,8 +17,11 @@
   </div>
 
   <div class="canvas-container">
+    <!-- Always mounted (Phase C); never v-if — simRuntime holds a native element reference. -->
+    <canvas ref="canvasRef" />
 
-    <canvas></canvas>
+    <!-- Phase D: empty host; initLiveHud() appends panel; scoped styles do not apply to those nodes — see global block below. -->
+    <div ref="liveHudHost" class="sim-live-hud-host" />
 
     <div class="scene-heading">
       {{ sceneName }}
@@ -74,10 +81,7 @@
     </div>
 
     <details class="menu-section" id="agent-types-section">
-      <summary class="menu-section-heading">
-        Selected Agent: &nbsp;
-        <span class="body-small">{{ store.selectedAgent !== null ? store.selectedAgent.name : 'none' }}</span>
-      </summary>
+      <summary class="menu-section-heading">Selected Agent</summary>
       <div v-if="store.selectedAgent !== null">
         {{ store.selectedAgent.name }}<br/>
         current action: {{ store.selectedAgent.currentStateName }}<br/>
@@ -200,25 +204,12 @@
 
 
 <script>
-import { onMounted, ref } from 'vue'
+import { onMounted, onBeforeUnmount, onActivated, onDeactivated, ref, watch } from 'vue'
 import { useStore } from '@/store/mainStore.js'
-
-import { pointIsInArea, rectanglesOverlap, generateFakeIdString } from '@/utils.js'
-import { createAgentObject, AgentHandler } from '@/classes/Agent.js'
-import { ConditionHandler } from '@/classes/Condition.js'
-import { AgentPreview } from '@/classes/SelectionMenu.js'
-import {
-  ActionHandler,
-  ActionGoToHandler,
-  ActionPropertyChangesHandler,
-  ActionIntervalHandler,
-  ActionSpawnAgentHandler,
-  ActionRemoveAgentHandler,
-} from '@/classes/Action.js'
 import api from '@/apiCrud.js'
-import { loadAgentsAndFixtures as loadAgentsAndFixturesFromScene } from '@/sim/sceneLoader.js'
-import { setDynamicActionTargetAgents, setNextAction, chooseNextActionByUtility } from '@/sim/agentActions.js'
-import { applyTickEffects } from '@/sim/tickEffects.js'
+import { createSimRuntime } from '@/sim/simRuntime.js'
+import { simPointer } from '@/sim/simPointer.js'
+import { initLiveHud } from '@/hud/imperativeHud.js'
 import SceneMenu from '@/components/SceneMenu.vue'
 import AgentTypeCreate from '@/components/simUiForms/AgentTypeCreate.vue'
 import AgentTypeEdit from '@/components/simUiForms/AgentTypeEdit.vue'
@@ -244,30 +235,8 @@ import UtilityFunctionCreate from '@/components/simUiForms/UtilityFunctionCreate
 import RecurringChangeEdit from '@/components/simUiForms/RecurringChangeEdit.vue'
 import RecurringChangeCreate from '@/components/simUiForms/RecurringChangeCreate.vue'
 
-
-let canvas;
-let c;  // canvas context
-
-// Frame rate diagnostics (clock time, module-level to avoid reactive writes every frame)
-let fpsStartTime = 0
-let fpsLastSecondStart = 0
-let fpsFrameCountThisSecond = 0
-let fpsTotalFrames = 0
-let fpsLastDisplayUpdate = 0
-
-// Cursor state for pointer/auto: kept outside reactive store, updated only when value changes
-let currentCursor = 'auto'
-
-// Current animation frame id: kept outside reactive store, passed to action handlers via getGlobals()
-let currentAnimationFrameId = 0
-
-let dayLength = 1000 // frames
-const backgroundColor = 'rgb(220, 220, 220)'
-
-const UPDATE_AGENT_KNOWLEDGE_EVERY_X_FRAMES = 10
-
 export default {
-  name: 'App',
+  name: 'SimView',
   components: {
     SceneMenu,
     AgentTypeCreate,
@@ -294,10 +263,25 @@ export default {
     RecurringChangeEdit,
     RecurringChangeCreate
   },
-  setup() {
+  setup () {
     const store = useStore()
 
+    const canvasRef = ref(null)
+    const liveHudHost = ref(null)
     const sceneName = ref('')
+
+    const showFrameRateDiagnostics = ref(false)
+    const cumulativeAverageFps = ref(0)
+    const currentFps = ref(0)
+
+    const sim = createSimRuntime({
+      store,
+      fpsRefs: {
+        showFrameRateDiagnostics,
+        cumulativeAverageFps,
+        currentFps
+      }
+    })
 
     const saveScene = async (sceneId) => {
       await store.saveScene(sceneId)
@@ -309,45 +293,18 @@ export default {
 
     const isEditingDefaultInterval = ref(false)
     const defaultInterval = {
-      name: "day",
+      name: 'day',
       frames: 1000
     }
 
-    const getGlobals = () => ({
-      globalSpeed: store.GlobalSettings.globalSpeed,
-      animationFrameId: currentAnimationFrameId
-    })
-
-    const showFrameRateDiagnostics = ref(false)
-    const cumulativeAverageFps = ref(0)
-    const currentFps = ref(0)
-
     const onFrameRateDiagnosticsChange = () => {
       if (!showFrameRateDiagnostics.value) {
-        fpsStartTime = 0
-        fpsLastSecondStart = 0
-        fpsFrameCountThisSecond = 0
-        fpsTotalFrames = 0
-        fpsLastDisplayUpdate = 0
-        cumulativeAverageFps.value = 0
-        currentFps.value = 0
+        sim.resetFpsDiagnostics()
       }
     }
 
-    const agentHandler = new AgentHandler()
-    // for non-action specific base action methods
-    const actionHandler = new ActionHandler()
-    const actionHandlers = {
-      'goTo': new ActionGoToHandler(),
-      'change': new ActionPropertyChangesHandler(),
-      'interval': new ActionIntervalHandler(),
-      'spawnAgent': new ActionSpawnAgentHandler(),
-      'removeAgent': new ActionRemoveAgentHandler()
-    }
-    const conditionHandler = new ConditionHandler()
-
     const loadAgentsAndFixtures = () => {
-      loadAgentsAndFixturesFromScene({ store, getGlobals, agentHandler })
+      sim.loadAgentsAndFixtures()
     }
 
     const loadScene = async (scene) => {
@@ -356,484 +313,93 @@ export default {
       store.displaySceneMenu = false
       store.clearAllData()
       await store.fetchSceneData(scene.id)
-      loadAgentsAndFixtures()
-      renderAgents('draw')
+      sim.loadAgentsAndFixtures()
+      sim.renderAgents('draw')
+      sim.refreshLiveHud()
     }
 
-    const createScene = async (sceneName) => {
-      const newScene = await api.createScene({ name: sceneName })
+    const createScene = async (sceneNameParam) => {
+      const newScene = await api.createScene({ name: sceneNameParam })
       loadScene(newScene)
     }
 
-    const renderAgents = (drawOrUpdate) => {
-
-      let ySortArray = []
-
-      // sort all agents by position.y value
-      for (let agentTypeName of Object.keys(store.agentItems)) {
-         ySortArray = ySortArray.concat(store.agentItems[agentTypeName])
-      }
-      ySortArray.sort((a, b) => a.position.y - b.position.y);
-
-      // paint agent on canvas
-      for (let agent of ySortArray) {
-        if (drawOrUpdate === 'draw') {
-          agentHandler.draw(c, agent)
-        } else {
-          agentHandler.update(c, {}, getGlobals(), agent)
-        }
-      }
-    }
-
-    const applyScheduledEffects = (frameId) => {
-      for (let [frameInterval, effectArray] of Object.entries(store.groupedRecurringChanges)) {
-        if (frameId % frameInterval == 0) {
-          for (let effect of effectArray) {
-            for (let agent of store.agentItems[effect.agentType]) {
-              agent.stateData[effect.property] += effect.change
-            }
-          }
-        }
-      }
-    }
-
-    /* ANIMATE */
-
-    const animate = () => {
-
-      let frameId
-
-      if (store.sceneIsPaused === true) {
-        frameId = requestAnimationFrame(() => console.log("PAUSED"))
-      } else {
-        frameId = requestAnimationFrame(animate)
-      }
-
-      let hover = false
-
-      c.fillStyle = backgroundColor
-      c.fillRect(0, 0, canvas.width, canvas.height)
-
-      currentAnimationFrameId = frameId
-
-      // update agent knowledge via sensory input
-      for (let agentTypeName of Object.keys(store.agentItems)) {
-        for (let agent of store.agentItems[agentTypeName]) {
-          if (frameId % UPDATE_AGENT_KNOWLEDGE_EVERY_X_FRAMES === 0) {
-            updateAgentKnowledge(agent)
-            // if (frameId % 60 === 0) {
-            //   console.log(agent.knowledge)
-            // }
-          }
-        }
-      }
-
-      // apply time-based/frame-based property updates
-      applyScheduledEffects(frameId)
-
-      // update agent state and draw sprites on board
-      renderAgents('update')
-
-      // Phase 1 — collect: deferred world mutations (handlers must not mutate agent lists during this loop)
-      const tickEffects = []
-      const emitTickEffect = (effect) => {
-        tickEffects.push(effect)
-      }
-
-      for (let agentTypeName of Object.keys(store.agentTypes)) {
-
-        for (let agent of store.agentItems[agentTypeName]) {
-
-          // utility system
-          if (agent.agentType.name === 'customer') {
-            if (agent.currentStateName === 'idle' || agent.currentAction === null) {
-              const [nextActionId, actionObjectType] = chooseNextActionByUtility({ store, agent })
-              if (nextActionId !== null) {
-                let matchingAction
-                if (actionObjectType === 'actionSequence') {
-
-                  matchingAction = store.actionSequences.find(actSeq => actSeq.id === nextActionId)
-                  const nextActionName = matchingAction.actions[0]
-                  const nextAction = store.actions.find(a => a.actionName === nextActionName)
-                  agent.currentActionSequence = matchingAction
-                  cloneAction(nextAction, agent)
-                } else {
-
-                  matchingAction = store.actions.find(action => action.id === nextActionId)
-                  cloneAction(matchingAction, agent)
-                }
-
-              } else {
-                agentHandler.idle(agent)
-              }
-
-            }
-          }
-
-          // set agent action
-          if (agent.currentAction) {
-            const handler = actionHandlers[agent.currentAction.actionType]
-            if (handler.defaultCompletionCheckPasses(agent.currentAction, agentHandler) === true) {
-              setNextAction({
-                agent,
-                store,
-                conditionHandler,
-                actionHandler,
-                agentHandler
-              })
-            }
-
-            // start and check actions
-            // if unstarted Action in action list, start it; if already doing action, check if complete
-            if (agent.currentAction && agent.currentAction.isComplete === false) {
-
-              const handler = actionHandlers[agent.currentAction.actionType]
-
-              if (agent.currentAction.inProgress === false) {
-
-                agent.currentAction.inProgress = true
-                handler.start(
-                  agent.currentAction,
-                  getGlobals(),
-                  agentHandler,
-                  store,
-                  emitTickEffect
-                )
-
-              } else {
-
-                handler.check(
-                  agent.currentAction,
-                  agent.stateData,
-                  getGlobals(),
-                  agentHandler
-                )
-
-              }
-            }
-          }
-
-          // go into 'idle' mode if no more actions
-          if (agent.currentAction === null && agent.currentStateName !== 'idle') {
-            agentHandler.idle(agent)
-          }
-
-          const isInArea = pointIsInArea(store.mouse, agent.collisionArea)
-          if (isInArea) hover = true
-
-        }
-      }
-
-      // Phase 2 — apply: removals first, then spawns (shared helper; keeps iteration safe)
-      applyTickEffects(tickEffects, { store, deleteAgent, addAgent })
-
-      store.itemMenu.update(c, store.agentMenuButtons.length + 1)
-
-      for (let i = 0; i < store.agentMenuButtons.length; i++) {
-        const button = store.agentMenuButtons[i]
-        button.update(c, i)
-        const isInArea = pointIsInArea(store.mouse, button.area)
-        if (isInArea) hover = true
-      }
-
-      if (store.agentPreview) store.agentPreview.update(c, store.mouse)
-
-      if (pointIsInArea(store.mouse, store.deleteButton.area)) hover = true
-
-      if (store.selectionMode === true) hover = true
-
-      store.deleteButton.update(c, store.agentMenuButtons.length, store.deleteMode)
-
-      const nextCursor = hover ? 'pointer' : 'auto'
-      if (nextCursor !== currentCursor) {
-        currentCursor = nextCursor
-        canvas.style.cursor = currentCursor
-      }
-
-      if (showFrameRateDiagnostics.value) {
-        const now = performance.now()
-        if (fpsTotalFrames === 0) {
-          fpsStartTime = now
-          fpsLastSecondStart = now
-          fpsLastDisplayUpdate = now
-        }
-        fpsTotalFrames++
-        fpsFrameCountThisSecond++
-        if (now - fpsLastSecondStart >= 1000) {
-          currentFps.value = fpsFrameCountThisSecond
-          fpsFrameCountThisSecond = 0
-          fpsLastSecondStart = now
-        }
-        if (now - fpsLastDisplayUpdate >= 500) {
-          const elapsedSec = (now - fpsStartTime) / 1000
-          cumulativeAverageFps.value = elapsedSec > 0 ? fpsTotalFrames / elapsedSec : 0
-          fpsLastDisplayUpdate = now
-        }
-      }
-
-      if (frameId % dayLength === 0) endDay()
-
-      // if (currentAnimationFrameId % 32 === 0) {
-      //   const customerActions = store.agentItems['customer'].map(cust =>
-      //     `${cust.name}, action: ${cust.currentAction ? cust.currentAction.actionName : 'none'}`
-      //   )
-      //   console.log(JSON.stringify(customerActions, null, 2))
-      // }
-    }
-
-    const selectOrDeleteAgent = (agentTypeName, point) => {
-      const agentItems = store.agentItems[agentTypeName]
-      for (let i = 0; i < agentItems.length; i++) {
-        const agent = agentItems[i]
-        const isInArea = pointIsInArea(point, agent.collisionArea)
-
-        // SELECT AGENT
-        if (isInArea) {
-          store.selectedAgent = agent
-          if (store.selectionMode === true) store.selectedTargetAgent = agent
-        }
-        // DELETE AGENT (in delete mode)
-        if (isInArea && store.deleteMode === true) {
-          const agent = agentItems[i]
-          deleteAgent(agent, agentItems, i)
-        }
-      }
-    }
-
-    const addAgent = async (agentTypeName, position) => {
-      const agentItems = store.agentItems[agentTypeName]
-      const num = agentItems.length + 1
-      let newAgent = createAgentObject(
-        null,
-        store.agentTypes[agentTypeName],
-        position,
-        num,
-        getGlobals()
-      )
-      agentHandler.useSpriteSheet('idle', newAgent)
-
-      // do not save agents created or deleted during scene runtime, i.e. scene will revert
-      // to setup positions once finish playing.
-      if (store.sceneIsPlaying !== true) {
-        const newItem = await api.createAgent({agentType: agentTypeName, position: position})
-        newAgent.id = newItem.id
-        agentItems.push(newAgent)
-        await store.saveScene()
-      }
-      // if scene is playing, don't call API; use dummy ID and don't save
-      // created/deleted/updated to database.
-      else {
-        newAgent.id = generateFakeIdString()
-        agentItems.push(newAgent)
-      }
-    }
-
-    const deleteAgent = async (agent, agentItems, i) => {
-      // do not save agents created or deleted during scene runtime, i.e. scene will revert
-      // to setup positions once finish playing.
-      if (store.sceneIsPlaying !== true) {
-        await api.deleteAgent(agent.id)
-        agentItems.splice(i, 1)
-        await store.saveScene()
-      }
-      // if scene is playing, don't call API
-      else {
-        agentItems.splice(i, 1)
-      }
-    }
-
-    const cloneAction = (action, agent) => {
-      const ok = setDynamicActionTargetAgents({
-        store,
-        action,
-        agent,
-        agentHandler,
-        lastAction: agent.currentAction ?? null
-      })
-      if (ok) {
-        agent.currentAction = actionHandler.clone(action, agent)
-      }
-    }
-
-    const playScene = () => {
-
-      store.sceneIsPlaying = true
-      store.sceneIsPaused = false
-
-      for (let atName of Object.keys(store.agentTypes)) {
-        const firstActionId = store.firstActions[atName]
-        if (firstActionId) {
-          const action = store.actions.find(a => a.id === firstActionId)
-
-          if (action === undefined) {
-            throw "Play scene: Can't find action"
-          }
-
-          for (let agent of store.agentItems[atName]) {
-            cloneAction(action, agent)
-          }
-        }
-      }
-
-      animate()
-    }
-
-    const pauseScene = () => {
-      store.sceneIsPlaying = false
-      store.sceneIsPaused = true
-    }
-
-    const unPauseScene = () => {
-      store.sceneIsPlaying = true
-      store.sceneIsPaused = false
-      requestAnimationFrame(animate)
-    }
-
-    let agentTypeList = ref([])
+    const agentTypeList = ref([])
 
     const loadAgentTypesModal = async () => {
       store.displayLoadObjectModal = true
       agentTypeList.value = await api.listAgentTypes()
     }
 
-    const updateAgentKnowledge = (agent) => {
-      const agentTypeNames = Object.keys(store.agentTypes)
-
-      const sensor = store.sensors.find(sensor => sensor.id === agent.agentType.sensor)
-      if (!sensor) return
-
-      const len = sensor.radius
-      const vicinityArea = {
-        x: agent.center.x - len,
-        y: agent.center.y - len,
-        width: len * 2,
-        height: len * 2
+    const getLiveHudSnapshot = () => {
+      const a = store.selectedAgent
+      let simMode = 'edit'
+      if (store.sceneIsPlaying) {
+        simMode = store.sceneIsPaused ? 'paused' : 'playing'
+      } else if (store.sceneIsPaused) {
+        simMode = 'paused'
       }
-
-      if (!agent.knowledge) {
-        agent.knowledge = {
-          vicinity: {
-            agents: []
-          }
-        }
+      return {
+        simMode,
+        dayNumber: store.dayNumber,
+        selectedName: a ? a.name : null,
+        currentStateName: a ? a.currentStateName : null,
+        currentActionName: a?.currentAction?.actionName ?? null,
+        currentActionSequenceName: a?.currentActionSequence?.name ?? null,
+        mouseX: simPointer.x,
+        mouseY: simPointer.y
       }
-
-      agent.knowledge.vicinity.agents = []
-
-      for (let agentTypeName of agentTypeNames) {
-        for (let ag of store.agentItems[agentTypeName]) {
-          const agentArea = {x: ag.position.x, y: ag.position.y, width: ag.width, height: ag.height}
-          if (agent.id !== ag.id) {  // don't add own id to vicinity knowledge
-            if (rectanglesOverlap(vicinityArea, agentArea)) {
-              agent.knowledge.vicinity.agents.push(ag.id)
-            }
-          }
-        }
-      }
-
     }
 
-    const endDay = () => {
-      store.dayNumber += 1
-    }
+    watch(
+      () => store.selectionMode,
+      (on) => {
+        if (on) {
+          store.mouse.x = simPointer.x
+          store.mouse.y = simPointer.y
+        }
+      }
+    )
+
+    const isFirstActivation = ref(true)
 
     onMounted(() => {
-
       store.displaySceneMenu = true
+      sim.attachCanvas(canvasRef.value)
+      sim.attachDocumentListeners()
+      const hud = initLiveHud(liveHudHost.value, getLiveHudSnapshot)
+      sim.attachLiveHud(hud)
+      hud.update()
+    })
 
-      canvas = document.querySelector('canvas')
-      c = canvas.getContext('2d')
+    onDeactivated(() => {
+      sim.suspendForRouteLeave()
+    })
 
-      canvas.width = 1000
-      canvas.height = 600
+    onActivated(() => {
+      if (isFirstActivation.value) {
+        isFirstActivation.value = false
+        return
+      }
+      sim.resumeAfterRouteEnter()
+    })
 
-      c.fillStyle = backgroundColor
-      c.fillRect(0, 0, canvas.width, canvas.height)
-
-      /* --- CLICK ACTIONS / EVENT LISTENERS --- */
-
-      canvas.addEventListener('mousemove', (event) => {
-        store.mouse.x = event.offsetX
-        store.mouse.y = event.offsetY
-      })
-
-      canvas.addEventListener('click', (event) => {
-
-        const point = {x: event.offsetX, y: event.offsetY}
-
-        // PLACE NEW AGENT ON BOARD
-        if (store.placingAgent) {
-          const isInMenuArea = pointIsInArea(point, store.itemMenu.area)
-
-          if (isInMenuArea === false) {
-            const agentTypeName = store.agentPreview.agentType.name
-            const position = {
-              x: store.mouse.x - store.agentTypes[agentTypeName].width / 2,
-              y: store.mouse.y - store.agentTypes[agentTypeName].height / 2
-            }
-            addAgent(agentTypeName, position)
-          }
-        }
-
-        for (let agentTypeName of Object.keys(store.agentTypes)) {
-          selectOrDeleteAgent(agentTypeName, point)
-        }
-
-        // SELECT AGENT BUTTON TO CREATE CURSOR PREVIEW (to place new agent on board)
-        for (let i = 0; i < store.agentMenuButtons.length; i++) {
-
-          const isInArea = pointIsInArea(point, store.agentMenuButtons[i].area)
-
-          if (isInArea && !store.agentPreview) {
-            const agentTypeName = store.agentMenuButtons[i].name
-            store.agentPreview = new AgentPreview(store.agentTypes[agentTypeName])
-            store.placingAgent = true
-            break
-
-          } else if (isInArea && store.agentPreview) {
-            // if have active agent preview (tracking cursor), clicking on the agent menu again cancels the selection
-            store.placingAgent = false
-            store.agentPreview = null
-          }
-        }
-
-        // TOGGLE DELETE MODE
-        const isInArea = pointIsInArea(point, store.deleteButton.area)
-
-        if (isInArea) {
-          store.deleteMode = !store.deleteMode
-        }
-
-        // POINT/AGENT SELECTION MODE
-        if (store.selectionMode === true) {
-          store.selectedPoint = {
-            x: store.mouse.x,
-            y: store.mouse.y
-          }
-        }
-
-      })
-
-      // cancel agent placement mode with Escape button
-      document.addEventListener('keydown', (e) => {
-        if (e.code === 'Escape' && store.placingAgent === true) {
-          store.placingAgent = false
-          store.agentPreview = null
-        }
-      })
+    onBeforeUnmount(() => {
+      sim.stopSimRuntime()
     })
 
     return {
       store,
+      canvasRef,
+      liveHudHost,
       loadAgentsAndFixtures,
       loadScene,
       createScene,
       showSceneMenu,
-      cloneAction,
+      cloneAction: sim.cloneAction,
       saveScene,
-      playScene,
-      pauseScene,
-      unPauseScene,
+      playScene: sim.playScene,
+      pauseScene: sim.pauseScene,
+      unPauseScene: sim.unPauseScene,
       sceneName,
       loadAgentTypesModal,
       agentTypeList,
@@ -908,6 +474,54 @@ canvas {
   width: 1000px;
   height: 600px;
   position: relative;
+}
+
+.canvas-container {
+  position: relative;
+}
+
+/* Phase D: imperative nodes under .sim-live-hud-host use these classes only (global — not scoped). */
+.sim-live-hud-host {
+  position: absolute;
+  left: 8px;
+  top: 8px;
+  z-index: 2;
+  pointer-events: none;
+  font-size: 12px;
+  color: #1a1a1a;
+  text-shadow: 0 0 3px #efeee8, 0 0 6px #efeee8;
+}
+
+.sim-live-hud__panel {
+  background: rgba(239, 238, 232, 0.9);
+  border: 1px solid #c8c4bc;
+  border-radius: 4px;
+  padding: 8px 10px;
+  min-width: 210px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.sim-live-hud__row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 4px;
+  line-height: 1.35;
+}
+
+.sim-live-hud__row:last-child {
+  margin-bottom: 0;
+}
+
+.sim-live-hud__label {
+  flex: 0 0 56px;
+  font-weight: 500;
+  color: #a03622;
+}
+
+.sim-live-hud__value {
+  flex: 1;
+  font-variant-numeric: tabular-nums;
+  word-break: break-word;
 }
 
 details {

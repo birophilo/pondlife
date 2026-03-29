@@ -3,6 +3,29 @@ import apiCrud from '../apiCrud'
 
 const BASE_URL = 'http://localhost:8000'
 
+/**
+ * Plan 3 — Pinia boundaries (Phases A + E)
+ *
+ * Reactive shell (forms, menus, routing): sceneList, sceneData, sceneId / sceneName,
+ * displaySceneMenu, displayLoadObjectModal, defs (agentTypes, actions, conditions,
+ * spriteSheets, animationSets, …), UI flags (sceneIsPlaying, sceneIsPaused, placingAgent,
+ * deleteMode, selectionMode), GlobalSettings.globalSpeed, dayNumber, selectedAgent /
+ * selectedTargetAgent, api reference.
+ *
+ * Phase E — Sim-hot data (no per-frame reactive writes):
+ * • Agent instances from createAgentObject() are markRaw — not deep-tracked; rAF mutates
+ *   position, frames, stateData, etc. without Vue proxy overhead.
+ * • Canvas menu chrome (itemMenu, deleteButton, agentMenuButtons icons, agentPreview)
+ *   are markRaw class instances updated every frame from simRuntime.
+ * • Vue templates bound to store.selectedAgent nested fields may not auto-refresh on every
+ *   sim tick while playing; the imperative live HUD + pause/edit flows use plain reads.
+ * • sceneLoader.js, tickEffects.js, agentActions.js — run from simRuntime (or scene load),
+ *   not from per-frame Vue logic.
+ *
+ * Phase F — sim pointer: src/sim/simPointer.js (plain { x, y }) updated every mousemove in
+ * simRuntime. store.mouse is synced only when selectionMode (Vue action forms) needs
+ * reactive coords, plus once when selectionMode is turned on (watch in SimView).
+ */
 
 export const useStore = defineStore({
   id: 'storeState',

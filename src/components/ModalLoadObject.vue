@@ -25,7 +25,7 @@
 </template>
 
 <script>
-import { ref } from 'vue'
+import { ref, markRaw } from 'vue'
 import { useStore } from '@/store/mainStore.js'
 import { AgentMenuIcon } from '@/classes/SelectionMenu.js'
 
@@ -47,12 +47,14 @@ export default {
       store.displayLoadObjectModal = false
 
       store.agentMenuButtons.push(
-        new AgentMenuIcon({
-          menu: store.itemMenu,
-          i: store.agentMenuButtons.length,
-          name: atName,
-          agentType: store.agentTypes[atName]
-        })
+        markRaw(
+          new AgentMenuIcon({
+            menu: store.itemMenu,
+            i: store.agentMenuButtons.length,
+            name: atName,
+            agentType: store.agentTypes[atName]
+          })
+        )
       )
 
       await store.saveScene()
