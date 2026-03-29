@@ -1,7 +1,7 @@
 <template>
 <!--
-  Plan 3 — phases A–G: route /sim; onBeforeRouteLeave + onBeforeUnmount → stopSimRuntime.
-  Phase F: simPointer. Phase E: markRaw sim objects.
+  Plan 3: keep-alive SimView — onDeactivated suspends (pause + detach input); onActivated resumes listeners.
+  True unmount → stopSimRuntime. Phase F: simPointer. Phase E: markRaw.
 -->
 
 <NavTopLogin />
@@ -204,8 +204,7 @@
 
 
 <script>
-import { onMounted, onBeforeUnmount, ref, watch } from 'vue'
-import { onBeforeRouteLeave } from 'vue-router'
+import { onMounted, onBeforeUnmount, onActivated, onDeactivated, ref, watch } from 'vue'
 import { useStore } from '@/store/mainStore.js'
 import api from '@/apiCrud.js'
 import { createSimRuntime } from '@/sim/simRuntime.js'
@@ -361,6 +360,8 @@ export default {
       }
     )
 
+    const isFirstActivation = ref(true)
+
     onMounted(() => {
       store.displaySceneMenu = true
       sim.attachCanvas(canvasRef.value)
@@ -370,9 +371,16 @@ export default {
       hud.update()
     })
 
-    /* Phase G: stop sim as soon as we leave /sim (covers keep-alive + normal unmount). */
-    onBeforeRouteLeave(() => {
-      sim.stopSimRuntime()
+    onDeactivated(() => {
+      sim.suspendForRouteLeave()
+    })
+
+    onActivated(() => {
+      if (isFirstActivation.value) {
+        isFirstActivation.value = false
+        return
+      }
+      sim.resumeAfterRouteEnter()
     })
 
     onBeforeUnmount(() => {

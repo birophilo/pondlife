@@ -1,6 +1,7 @@
 /**
  * Plan 3 Phase B/D/F — imperative sim + canvas + rAF; live HUD tick; pointer via simPointer (Phase F).
- * Vue calls createSimRuntime(), attachCanvas / attachLiveHud / destroy from lifecycle hooks.
+ * Vue calls createSimRuntime(); attachCanvas / attachLiveHud; suspend when leaving /sim (keep-alive);
+ * stopSimRuntime on true unmount.
  */
 
 import { markRaw } from 'vue'
@@ -49,6 +50,9 @@ export function createSimRuntime ({ store, fpsRefs }) {
   let onMouseMove
   let onCanvasClick
   let onDocumentKeydown
+
+  let canvasPointerListenersAttached = false
+  let documentListenerAttached = false
 
   /** @type {{ update: () => void, destroy: () => void } | null} */
   let liveHud = null
@@ -370,21 +374,8 @@ export function createSimRuntime ({ store, fpsRefs }) {
     }
   }
 
-  /** Call once with the mounted <canvas> from SimView; Phase C — avoid reassigning the element from Vue without destroy + re-attach. */
-  const attachCanvas = (canvasEl) => {
-    if (!canvasEl) {
-      console.error('simRuntime: canvas element is missing')
-      return
-    }
-    canvas = canvasEl
-    c = canvas.getContext('2d')
-
-    canvas.width = 1000
-    canvas.height = 600
-
-    c.fillStyle = backgroundColor
-    c.fillRect(0, 0, canvas.width, canvas.height)
-
+  const ensurePointerHandlers = () => {
+    if (onMouseMove) return
     onMouseMove = (event) => {
       simPointer.x = event.offsetX
       simPointer.y = event.offsetY
@@ -442,12 +433,43 @@ export function createSimRuntime ({ store, fpsRefs }) {
 
       tickLiveHud()
     }
+  }
 
+  const attachCanvasPointerListeners = () => {
+    if (!canvas || canvasPointerListenersAttached) return
+    ensurePointerHandlers()
     canvas.addEventListener('mousemove', onMouseMove)
     canvas.addEventListener('click', onCanvasClick)
+    canvasPointerListenersAttached = true
+  }
+
+  const detachCanvasPointerListeners = () => {
+    if (!canvas || !canvasPointerListenersAttached) return
+    canvas.removeEventListener('mousemove', onMouseMove)
+    canvas.removeEventListener('click', onCanvasClick)
+    canvasPointerListenersAttached = false
+  }
+
+  /** Call once with the mounted <canvas> from SimView; Phase C — avoid reassigning the element from Vue without destroy + re-attach. */
+  const attachCanvas = (canvasEl) => {
+    if (!canvasEl) {
+      console.error('simRuntime: canvas element is missing')
+      return
+    }
+    canvas = canvasEl
+    c = canvas.getContext('2d')
+
+    canvas.width = 1000
+    canvas.height = 600
+
+    c.fillStyle = backgroundColor
+    c.fillRect(0, 0, canvas.width, canvas.height)
+
+    attachCanvasPointerListeners()
   }
 
   const attachDocumentListeners = () => {
+    if (documentListenerAttached) return
     onDocumentKeydown = (e) => {
       if (e.code === 'Escape' && store.placingAgent === true) {
         store.placingAgent = false
@@ -455,6 +477,34 @@ export function createSimRuntime ({ store, fpsRefs }) {
       }
     }
     document.addEventListener('keydown', onDocumentKeydown)
+    documentListenerAttached = true
+  }
+
+  const detachDocumentListeners = () => {
+    if (!documentListenerAttached || !onDocumentKeydown) return
+    document.removeEventListener('keydown', onDocumentKeydown)
+    documentListenerAttached = false
+  }
+
+  /** Leave /sim (keep-alive): stop rAF, detach input, pause if mid-play — scene + agents stay in memory. */
+  const suspendForRouteLeave = () => {
+    if (destroyed) return
+    cancelAnimationLoop()
+    detachCanvasPointerListeners()
+    detachDocumentListeners()
+    if (store.sceneIsPlaying === true) {
+      store.sceneIsPlaying = false
+      store.sceneIsPaused = true
+    }
+    tickLiveHud()
+  }
+
+  /** Return to /sim after keep-alive cache: reattach listeners only (canvas + context unchanged). */
+  const resumeAfterRouteEnter = () => {
+    if (destroyed || !canvas) return
+    attachCanvasPointerListeners()
+    attachDocumentListeners()
+    tickLiveHud()
   }
 
   const playScene = () => {
@@ -509,13 +559,8 @@ export function createSimRuntime ({ store, fpsRefs }) {
       liveHud.destroy()
       liveHud = null
     }
-    if (canvas && onMouseMove) {
-      canvas.removeEventListener('mousemove', onMouseMove)
-      canvas.removeEventListener('click', onCanvasClick)
-    }
-    if (onDocumentKeydown) {
-      document.removeEventListener('keydown', onDocumentKeydown)
-    }
+    detachCanvasPointerListeners()
+    detachDocumentListeners()
     onMouseMove = null
     onCanvasClick = null
     onDocumentKeydown = null
@@ -531,7 +576,9 @@ export function createSimRuntime ({ store, fpsRefs }) {
     attachDocumentListeners,
     attachLiveHud,
     refreshLiveHud: tickLiveHud,
-    /** Plan 3 Phase G — same as destroy; stops rAF, removes listeners, resets play flags. */
+    suspendForRouteLeave,
+    resumeAfterRouteEnter,
+    /** Plan 3 Phase G — full teardown (true unmount). */
     stopSimRuntime: destroy,
     destroy,
     loadAgentsAndFixtures,
