@@ -1,6 +1,6 @@
 /**
- * Plan 3 Phase B/D — imperative sim + canvas + rAF; optional Phase D live HUD tick from this loop.
- * No Vue imports. Vue calls createSimRuntime(), attachCanvas / attachLiveHud / destroy from lifecycle hooks.
+ * Plan 3 Phase B/D/F — imperative sim + canvas + rAF; live HUD tick; pointer via simPointer (Phase F).
+ * Vue calls createSimRuntime(), attachCanvas / attachLiveHud / destroy from lifecycle hooks.
  */
 
 import { markRaw } from 'vue'
@@ -20,6 +20,7 @@ import api from '@/apiCrud.js'
 import { loadAgentsAndFixtures as loadAgentsAndFixturesFromScene } from '@/sim/sceneLoader.js'
 import { setDynamicActionTargetAgents, setNextAction, chooseNextActionByUtility } from '@/sim/agentActions.js'
 import { applyTickEffects } from '@/sim/tickEffects.js'
+import { simPointer } from '@/sim/simPointer.js'
 
 const backgroundColor = 'rgb(220, 220, 220)'
 const dayLength = 1000
@@ -301,7 +302,7 @@ export function createSimRuntime ({ store, fpsRefs }) {
           agentHandler.idle(agent)
         }
 
-        const isInArea = pointIsInArea(store.mouse, agent.collisionArea)
+        const isInArea = pointIsInArea(simPointer, agent.collisionArea)
         if (isInArea) hover = true
       }
     }
@@ -313,13 +314,13 @@ export function createSimRuntime ({ store, fpsRefs }) {
     for (let i = 0; i < store.agentMenuButtons.length; i++) {
       const button = store.agentMenuButtons[i]
       button.update(c, i)
-      const isInArea = pointIsInArea(store.mouse, button.area)
+      const isInArea = pointIsInArea(simPointer, button.area)
       if (isInArea) hover = true
     }
 
-    if (store.agentPreview) store.agentPreview.update(c, store.mouse)
+    if (store.agentPreview) store.agentPreview.update(c, simPointer)
 
-    if (pointIsInArea(store.mouse, store.deleteButton.area)) hover = true
+    if (pointIsInArea(simPointer, store.deleteButton.area)) hover = true
 
     if (store.selectionMode === true) hover = true
 
@@ -385,8 +386,12 @@ export function createSimRuntime ({ store, fpsRefs }) {
     c.fillRect(0, 0, canvas.width, canvas.height)
 
     onMouseMove = (event) => {
-      store.mouse.x = event.offsetX
-      store.mouse.y = event.offsetY
+      simPointer.x = event.offsetX
+      simPointer.y = event.offsetY
+      if (store.selectionMode === true) {
+        store.mouse.x = event.offsetX
+        store.mouse.y = event.offsetY
+      }
       tickLiveHud()
     }
 
@@ -398,8 +403,8 @@ export function createSimRuntime ({ store, fpsRefs }) {
         if (isInMenuArea === false) {
           const agentTypeName = store.agentPreview.agentType.name
           const position = {
-            x: store.mouse.x - store.agentTypes[agentTypeName].width / 2,
-            y: store.mouse.y - store.agentTypes[agentTypeName].height / 2
+            x: simPointer.x - store.agentTypes[agentTypeName].width / 2,
+            y: simPointer.y - store.agentTypes[agentTypeName].height / 2
           }
           addAgent(agentTypeName, position)
         }
@@ -430,8 +435,8 @@ export function createSimRuntime ({ store, fpsRefs }) {
 
       if (store.selectionMode === true) {
         store.selectedPoint = {
-          x: store.mouse.x,
-          y: store.mouse.y
+          x: simPointer.x,
+          y: simPointer.y
         }
       }
 

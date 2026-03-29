@@ -22,7 +22,9 @@ const BASE_URL = 'http://localhost:8000'
  * • sceneLoader.js, tickEffects.js, agentActions.js — run from simRuntime (or scene load),
  *   not from per-frame Vue logic.
  *
- * Phase F (optional): move store.mouse off Pinia to cut mousemove churn.
+ * Phase F — sim pointer: src/sim/simPointer.js (plain { x, y }) updated every mousemove in
+ * simRuntime. store.mouse is synced only when selectionMode (Vue action forms) needs
+ * reactive coords, plus once when selectionMode is turned on (watch in SimView).
  */
 
 export const useStore = defineStore({

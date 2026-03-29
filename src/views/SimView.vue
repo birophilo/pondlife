@@ -1,9 +1,8 @@
 <template>
 <!--
-  Plan 3 — phase A–E (mainStore, simRuntime, imperativeHud):
-  • Phase E: agents + canvas menu widgets are markRaw in Pinia — sim mutates without Vue proxy cost.
-  • Selected-agent {{ }} details may lag during play; live HUD reads the same objects each tick.
-  • Hot path: canvas + rAF; HUD from simRuntime. Phase C: canvas + liveHudHost always mounted.
+  Plan 3 — phase A–F (mainStore, simRuntime, imperativeHud, simPointer):
+  • Phase F: canvas mouse → simPointer (plain); store.mouse only when selectionMode (action forms).
+  • Phase E: markRaw agents + menu chrome. Hot path: canvas + rAF; Phase C: stable refs.
 -->
 
 <NavTopLogin />
@@ -206,10 +205,11 @@
 
 
 <script>
-import { onMounted, onBeforeUnmount, ref } from 'vue'
+import { onMounted, onBeforeUnmount, ref, watch } from 'vue'
 import { useStore } from '@/store/mainStore.js'
 import api from '@/apiCrud.js'
 import { createSimRuntime } from '@/sim/simRuntime.js'
+import { simPointer } from '@/sim/simPointer.js'
 import { initLiveHud } from '@/hud/imperativeHud.js'
 import SceneMenu from '@/components/SceneMenu.vue'
 import AgentTypeCreate from '@/components/simUiForms/AgentTypeCreate.vue'
@@ -346,10 +346,20 @@ export default {
         currentStateName: a ? a.currentStateName : null,
         currentActionName: a?.currentAction?.actionName ?? null,
         currentActionSequenceName: a?.currentActionSequence?.name ?? null,
-        mouseX: store.mouse.x,
-        mouseY: store.mouse.y
+        mouseX: simPointer.x,
+        mouseY: simPointer.y
       }
     }
+
+    watch(
+      () => store.selectionMode,
+      (on) => {
+        if (on) {
+          store.mouse.x = simPointer.x
+          store.mouse.y = simPointer.y
+        }
+      }
+    )
 
     onMounted(() => {
       store.displaySceneMenu = true
