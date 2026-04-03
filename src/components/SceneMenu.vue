@@ -1,12 +1,10 @@
 <template>
   <div id="scene-menu-content-container">
-    <div class="close-menu-button">
-      <p>
-        <small @click="store.displaySceneMenu = false">close</small>
-      </p>
-    </div>
+    <p class="scene-menu-back">
+      <router-link :to="{ name: 'sim' }">Back to simulation</router-link>
+    </p>
 
-    <div>Simulation Menu</div>
+    <h1 class="scene-menu-title">Simulations</h1>
 
     <div class="scene-menu-item">
       <div class="scene-name">Name</div>
@@ -14,7 +12,7 @@
       <div class="scene-load-button"></div>
     </div>
 
-    <div v-for="scene in store.sceneList" class="scene-menu-item">
+    <div v-for="scene in store.sceneList" :key="scene.id" class="scene-menu-item">
       <div class="scene-name">{{ scene.name }}</div>
       <div class="scene-last-modified">{{ formatDate(scene.lastModified) }}</div>
       <div class="scene-load-button">
@@ -83,8 +81,17 @@ export default {
   border: 1px solid black;
 }
 
-.close-menu-button {
-  cursor: pointer
+.scene-menu-back {
+  margin: 0 0 12px 0;
+}
+.scene-menu-back a {
+  color: inherit;
+  font-weight: 500;
+}
+.scene-menu-title {
+  margin: 0 0 16px 0;
+  font-size: 1.25rem;
+  font-weight: 600;
 }
 
 .scene-menu-item {

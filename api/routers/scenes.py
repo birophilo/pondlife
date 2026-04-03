@@ -19,6 +19,12 @@ async def get_scene_data(scene_id):
 
     scene = mongo_client.get_document("scenes", scene_id)
 
+    if scene is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Scene with ID {scene_id} not found",
+        )
+
     scene = transform_doc_id(scene)
 
     scene_data = scene["data"]
@@ -93,6 +99,12 @@ async def get_scene_data(scene_id):
     payload["data"]["actionSequences"] = action_sequences
 
     return payload
+
+
+@router.get("/simulation/{scene_id}", status_code=200)
+async def get_simulation_data(scene_id: str):
+    """Same response as GET /scene/{scene_id}; preferred REST path for loading a simulation by id."""
+    return await get_scene_data(scene_id)
 
 
 @router.get("/scenes", status_code=200)

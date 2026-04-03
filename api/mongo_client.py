@@ -1,6 +1,7 @@
 import json
 import time
 from bson import ObjectId
+from bson.errors import InvalidId
 from bson.json_util import dumps
 
 from database import get_database
@@ -63,7 +64,13 @@ class MongoCRUDClient:
         return created_item
 
     def get_document(self, collection: str, id: str):
-        item = self.db[collection].find_one({"_id": ObjectId(id)})
+        try:
+            oid = ObjectId(id)
+        except InvalidId:
+            return None
+        item = self.db[collection].find_one({"_id": oid})
+        if item is None:
+            return None
         item = flatten_object_id(item)
         item = stringify_objectid_list_fields(item, collection)
 

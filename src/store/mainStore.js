@@ -7,7 +7,7 @@ const BASE_URL = 'http://localhost:8000'
  * Plan 3 — Pinia boundaries (Phases A + E)
  *
  * Reactive shell (forms, menus, routing): sceneList, sceneData, sceneId / sceneName,
- * displaySceneMenu, displayLoadObjectModal, defs (agentTypes, actions, conditions,
+ * needsSimHydration (load scene on Sim route after fetch), displayLoadObjectModal, defs (agentTypes, actions, conditions,
  * spriteSheets, animationSets, …), UI flags (sceneIsPlaying, sceneIsPaused, placingAgent,
  * deleteMode, selectionMode), GlobalSettings.globalSpeed, dayNumber, selectedAgent /
  * selectedTargetAgent, api reference.
@@ -99,11 +99,56 @@ export const useStore = defineStore({
 
     api: apiCrud,
 
-    displaySceneMenu: false,
+    /** Set true after fetchSceneData from Simulations page; SimView runs sim hydration once. */
+    needsSimHydration: false,
+
     displayLoadObjectModal: false
 
   }),
   actions: {
+    /**
+     * Load a scene's data into the store for the canvas (used from Simulations route).
+     * Navigate to `sim` after; SimView will call loadAgentsAndFixtures when needsSimHydration is set.
+     */
+    async loadSceneForSimulation (scene) {
+      this.clearSceneFixtureState()
+      this.resetSimulationSessionState()
+      await this.fetchSceneData(scene.id)
+      if (this.error) {
+        this.needsSimHydration = false
+        return
+      }
+      this.needsSimHydration = true
+    },
+
+    /**
+     * Playback + editor UI when switching to another simulation (or fresh load).
+     * Does not clear fixture lists — use with clearSceneFixtureState.
+     */
+    resetSimulationSessionState () {
+      this.sceneIsPlaying = false
+      this.sceneIsPaused = false
+      this.dayNumber = 1
+      this.selectedAgent = null
+      this.selectedTargetAgent = null
+      this.selectionMode = false
+      this.deleteMode = false
+      this.placingAgent = false
+      this.selectedPoint = { x: null, y: null }
+    },
+
+    /** Wipe in-memory scene payload before fetch+hydrate (avoids stale agents / recurring state). */
+    clearSceneFixtureState () {
+      this.clearAllData()
+      this.animationSets = []
+      this.spriteSheets = []
+      this.sensors = []
+      this.agentUtilityFunctions = []
+      this.ungroupedRecurringChanges = []
+      this.groupedRecurringChanges = {}
+      this.firstActions = {}
+      this.actionSequences = []
+    },
     async fetchSceneList() {
       this.loading = true
       this.error = null
@@ -119,16 +164,32 @@ export const useStore = defineStore({
       this.loading = true
       this.error = null
       try {
-        const response = await fetch(`${BASE_URL}/scene/${sceneId}`)
+        const response = await fetch(`${BASE_URL}/simulation/${encodeURIComponent(sceneId)}`)
         const data = await response.json()
+        if (!response.ok) {
+          const detail = data?.detail
+          this.error =
+            typeof detail === 'string'
+              ? detail
+              : Array.isArray(detail)
+                ? detail.map((d) => d.msg || d).join('; ')
+                : `HTTP ${response.status}`
+          this.sceneData = {}
+          return
+        }
+        if (!data || typeof data !== 'object' || data.data == null || typeof data.data !== 'object') {
+          this.error = 'Invalid simulation payload (missing data)'
+          this.sceneData = {}
+          return
+        }
         this.sceneData = data.data
         this.sceneId = data.id
         this.sceneName = data.name
         this.createdAt = data.createdAt
         this.lastModified = data.lastModified
-
       } catch (error) {
         this.error = error.message
+        this.sceneData = {}
       }
     },
     clearAllData () {
@@ -137,6 +198,9 @@ export const useStore = defineStore({
       this.agentItems = {}
       this.agentTypes = {}
       this.agentMenuButtons = []
+      this.itemMenu = null
+      this.deleteButton = null
+      this.agentPreview = null
     },
 
     async saveScene () {

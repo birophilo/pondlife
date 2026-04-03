@@ -313,22 +313,28 @@ export function createSimRuntime ({ store, fpsRefs }) {
 
     applyTickEffects(tickEffects, { store, deleteAgent, addAgent })
 
-    store.itemMenu.update(c, store.agentMenuButtons.length + 1)
+    if (store.itemMenu && store.deleteButton) {
+      store.itemMenu.update(c, store.agentMenuButtons.length + 1)
 
-    for (let i = 0; i < store.agentMenuButtons.length; i++) {
-      const button = store.agentMenuButtons[i]
-      button.update(c, i)
-      const isInArea = pointIsInArea(simPointer, button.area)
-      if (isInArea) hover = true
+      for (let i = 0; i < store.agentMenuButtons.length; i++) {
+        const button = store.agentMenuButtons[i]
+        button.update(c, i)
+        const isInArea = pointIsInArea(simPointer, button.area)
+        if (isInArea) hover = true
+      }
+
+      if (store.agentPreview) store.agentPreview.update(c, simPointer)
+
+      if (store.deleteButton.area && pointIsInArea(simPointer, store.deleteButton.area)) {
+        hover = true
+      }
+
+      if (store.selectionMode === true) hover = true
+
+      store.deleteButton.update(c, store.agentMenuButtons.length, store.deleteMode)
+    } else if (store.selectionMode === true) {
+      hover = true
     }
-
-    if (store.agentPreview) store.agentPreview.update(c, simPointer)
-
-    if (pointIsInArea(simPointer, store.deleteButton.area)) hover = true
-
-    if (store.selectionMode === true) hover = true
-
-    store.deleteButton.update(c, store.agentMenuButtons.length, store.deleteMode)
 
     const nextCursor = hover ? 'pointer' : 'auto'
     if (nextCursor !== currentCursor) {
@@ -389,7 +395,7 @@ export function createSimRuntime ({ store, fpsRefs }) {
     onCanvasClick = (event) => {
       const point = { x: event.offsetX, y: event.offsetY }
 
-      if (store.placingAgent) {
+      if (store.placingAgent && store.itemMenu) {
         const isInMenuArea = pointIsInArea(point, store.itemMenu.area)
         if (isInMenuArea === false) {
           const agentTypeName = store.agentPreview.agentType.name
@@ -419,9 +425,11 @@ export function createSimRuntime ({ store, fpsRefs }) {
         }
       }
 
-      const isInArea = pointIsInArea(point, store.deleteButton.area)
-      if (isInArea) {
-        store.deleteMode = !store.deleteMode
+      if (store.deleteButton?.area) {
+        const isInArea = pointIsInArea(point, store.deleteButton.area)
+        if (isInArea) {
+          store.deleteMode = !store.deleteMode
+        }
       }
 
       if (store.selectionMode === true) {
@@ -486,6 +494,13 @@ export function createSimRuntime ({ store, fpsRefs }) {
     documentListenerAttached = false
   }
 
+  /** Before loading a different simulation id while this runtime stays mounted: stop rAF only. */
+  const stopPlaybackForSceneChange = () => {
+    if (destroyed) return
+    cancelAnimationLoop()
+    tickLiveHud()
+  }
+
   /** Leave /sim (keep-alive): stop rAF, detach input, pause if mid-play — scene + agents stay in memory. */
   const suspendForRouteLeave = () => {
     if (destroyed) return
@@ -508,6 +523,8 @@ export function createSimRuntime ({ store, fpsRefs }) {
   }
 
   const playScene = () => {
+    if (!store.itemMenu || !store.deleteButton) return
+
     store.sceneIsPlaying = true
     store.sceneIsPaused = false
 
@@ -535,6 +552,8 @@ export function createSimRuntime ({ store, fpsRefs }) {
   }
 
   const unPauseScene = () => {
+    if (!store.itemMenu || !store.deleteButton) return
+
     store.sceneIsPlaying = true
     store.sceneIsPaused = false
     startAnimationLoop()
@@ -577,6 +596,7 @@ export function createSimRuntime ({ store, fpsRefs }) {
     attachLiveHud,
     refreshLiveHud: tickLiveHud,
     suspendForRouteLeave,
+    stopPlaybackForSceneChange,
     resumeAfterRouteEnter,
     /** Plan 3 Phase G — full teardown (true unmount). */
     stopSimRuntime: destroy,

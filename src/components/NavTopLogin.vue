@@ -3,6 +3,7 @@
     <span class="top-nav-links">
       <router-link to="/">Home</router-link>
       <router-link :to="{ name: 'sim' }">Simulation</router-link>
+      <router-link :to="{ name: 'simulations' }">Simulations</router-link>
     </span>
     <span>
       {{ authStore.user }} - logged in
@@ -13,6 +14,7 @@
     <span class="top-nav-links">
       <router-link to="/">Home</router-link>
       <router-link :to="{ name: 'sim' }">Simulation</router-link>
+      <router-link :to="{ name: 'simulations' }">Simulations</router-link>
     </span>
     <form @submit.prevent="handleLogin" class="login-form-inline">
       <input v-model="username" type="text" placeholder="username" />
@@ -25,6 +27,7 @@
     <span class="top-nav-links">
       <router-link to="/">Home</router-link>
       <router-link :to="{ name: 'sim' }">Simulation</router-link>
+      <router-link :to="{ name: 'simulations' }">Simulations</router-link>
     </span>
     <button @click="isLoggingIn = true">log in</button>
   </nav>

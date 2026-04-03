@@ -3,16 +3,34 @@ import { createAgentObject } from '@/classes/Agent.js'
 import { AgentMenu, AgentMenuIcon, DeleteButton } from '@/classes/SelectionMenu.js'
 
 export function loadAgentsAndFixtures({ store, getGlobals, agentHandler}) {
+  const raw = store.sceneData
+  if (raw == null || typeof raw !== 'object') {
+    return
+  }
 
-  for (let condition of store.sceneData.conditions) {
+  const conditions = raw.conditions ?? []
+  const animationSets = raw.animationSets ?? []
+  const spritesheets = raw.spritesheets ?? []
+  const sensors = raw.sensors ?? []
+  const agentTypes = raw.agentTypes ?? []
+  const agentInstances = raw.agentInstances ?? {}
+  const firstActions = { ...(raw.firstActions ?? {}) }
+  const agentProperties = raw.agentProperties ?? []
+  const propertyChanges = raw.propertyChanges ?? []
+  const utilityFunctions = raw.utilityFunctions ?? []
+  const actionSequences = raw.actionSequences ?? []
+  const recurringChanges = raw.recurringChanges ?? []
+  const actions = raw.actions ?? []
+
+  for (let condition of conditions) {
     let newCondition = {...condition}
     newCondition.agent = null
     store.conditions.push(newCondition)
   }
 
   // populate spriteSheets and animationSets
-  store.animationSets = store.sceneData.animationSets
-  store.spriteSheets = store.sceneData.spritesheets
+  store.animationSets = animationSets
+  store.spriteSheets = spritesheets
 
   // replace animationSet spriteSheet ID references with spriteSheet objects
   for (let animSet of store.animationSets) {
@@ -22,9 +40,9 @@ export function loadAgentsAndFixtures({ store, getGlobals, agentHandler}) {
     }
   }
 
-  store.sensors = [...store.sceneData.sensors]
+  store.sensors = [...sensors]
 
-  for (let agentType of store.sceneData.agentTypes) {
+  for (let agentType of agentTypes) {
     store.agentTypes[agentType.name] = agentType
   }
 
@@ -37,10 +55,10 @@ export function loadAgentsAndFixtures({ store, getGlobals, agentHandler}) {
   // populate agents from initial data
   for (let agentTypeName of Object.keys(store.agentTypes)) {
     store.agentItems[agentTypeName] = []
-    if (store.sceneData.agentInstances[agentTypeName] !== undefined) {
-      for (let i = 0; i < store.sceneData.agentInstances[agentTypeName].length; i++) {
+    if (agentInstances[agentTypeName] !== undefined) {
+      for (let i = 0; i < agentInstances[agentTypeName].length; i++) {
 
-        const item = store.sceneData.agentInstances[agentTypeName][i]
+        const item = agentInstances[agentTypeName][i]
 
         let newAgent = createAgentObject(
           item.id,
@@ -56,13 +74,13 @@ export function loadAgentsAndFixtures({ store, getGlobals, agentHandler}) {
     }
   }
 
-  store.firstActions = {...store.sceneData.firstActions}
-  store.agentProperties = [...store.sceneData.agentProperties]
-  store.propertyChanges = [...store.sceneData.propertyChanges]
-  store.agentUtilityFunctions = [...store.sceneData.utilityFunctions]
-  store.actionSequences = [...store.sceneData.actionSequences]
+  store.firstActions = firstActions
+  store.agentProperties = [...agentProperties]
+  store.propertyChanges = [...propertyChanges]
+  store.agentUtilityFunctions = [...utilityFunctions]
+  store.actionSequences = [...actionSequences]
 
-  store.ungroupedRecurringChanges = [...store.sceneData.recurringChanges]
+  store.ungroupedRecurringChanges = [...recurringChanges]
 
   store.groupRecurringChanges()
 
@@ -85,7 +103,7 @@ export function loadAgentsAndFixtures({ store, getGlobals, agentHandler}) {
   }
 
   // populate actions
-  store.actions = [...store.sceneData.actions]
+  store.actions = [...actions]
 
   store.itemMenu = markRaw(new AgentMenu())
 

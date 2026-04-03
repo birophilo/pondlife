@@ -6,29 +6,29 @@
           <th>if condition met</th>
           <th>transition to</th>
         </tr>
-        <tr v-for="(transition, index) in action.transitions">
+        <tr v-for="(transition, index) in (action.transitions || [])" :key="index">
           <td v-if="isEditing === true && editingIndex === index">
             <select v-model="itemForm.condition">
               <option value="">-- select condition --</option>
-              <option v-for="condition in store.conditions" :value="condition">
+              <option v-for="condition in store.conditions" :key="condition.id" :value="condition">
                 {{ condition.name }}
               </option>
             </select>
           </td>
           <td v-else>
-            {{ getCondition(transition).name }}
+            {{ conditionLabel(transition) }}
           </td>
 
           <td v-if="isEditing === true && editingIndex === index">
             <select v-model="itemForm.nextAction">
               <option value="">-- select next action --</option>
-              <option v-for="action in store.actions" :value="action">
-                {{ action.actionName }}
+              <option v-for="act in store.actions" :key="act.id" :value="act">
+                {{ act.actionName }}
               </option>
             </select>
           </td>
           <td v-else>
-            {{ getNextAction(transition).actionName }}
+            {{ nextActionLabel(transition) }}
           </td>
 
           <td v-if="isEditing === true && editingIndex === index">
@@ -69,8 +69,15 @@ export default {
 
     const itemForm = ref({})
 
-    const getCondition = (transition) => store.conditions.find(cond => cond.id === transition.condition)
-    const getNextAction = (transition) => store.actions.find(a => a.id === transition.nextAction)
+    const getCondition = (transition) =>
+      store.conditions.find((cond) => cond.id === transition.condition)
+
+    const getNextAction = (transition) =>
+      store.actions.find((a) => a.id === transition.nextAction)
+
+    const conditionLabel = (transition) => getCondition(transition)?.name ?? '—'
+
+    const nextActionLabel = (transition) => getNextAction(transition)?.actionName ?? '—'
 
     const populateItemForm = (index) => {
       isEditing.value = false
@@ -115,6 +122,8 @@ export default {
       itemForm,
       getCondition,
       getNextAction,
+      conditionLabel,
+      nextActionLabel,
       populateItemForm,
       saveItem,
       deleteItem,

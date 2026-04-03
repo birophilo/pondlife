@@ -8,10 +8,6 @@
 
 <div id="container">
 
-  <div v-show="store.displaySceneMenu" class="scene-menu-modal">
-    <SceneMenu @load-scene="loadScene" @create-new-scene="createScene" />
-  </div>
-
   <div v-show="store.displayLoadObjectModal" class="load-object-modal">
     <ModalLoadObject :agentTypeList="agentTypeList" />
   </div>
@@ -38,7 +34,7 @@
         <button @click="playScene">play scene</button>
       </span>
       <button @click="saveScene">save scene</button>
-      <button @click="showSceneMenu">scene menu</button>
+      <button type="button" @click="goToSimulations">Simulations</button>
     </div>
   </div>
 
@@ -205,12 +201,12 @@
 
 <script>
 import { onMounted, onBeforeUnmount, onActivated, onDeactivated, ref, watch } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 import { useStore } from '@/store/mainStore.js'
 import api from '@/apiCrud.js'
 import { createSimRuntime } from '@/sim/simRuntime.js'
 import { simPointer } from '@/sim/simPointer.js'
 import { initLiveHud } from '@/hud/imperativeHud.js'
-import SceneMenu from '@/components/SceneMenu.vue'
 import AgentTypeCreate from '@/components/simUiForms/AgentTypeCreate.vue'
 import AgentTypeEdit from '@/components/simUiForms/AgentTypeEdit.vue'
 import SetPropertyForm from '@/components/simUiForms/SetPropertyForm.vue'
@@ -238,7 +234,6 @@ import RecurringChangeCreate from '@/components/simUiForms/RecurringChangeCreate
 export default {
   name: 'SimView',
   components: {
-    SceneMenu,
     AgentTypeCreate,
     AgentTypeEdit,
     SetPropertyForm,
@@ -265,6 +260,8 @@ export default {
   },
   setup () {
     const store = useStore()
+    const router = useRouter()
+    const route = useRoute()
 
     const canvasRef = ref(null)
     const liveHudHost = ref(null)
@@ -287,8 +284,8 @@ export default {
       await store.saveScene(sceneId)
     }
 
-    const showSceneMenu = () => {
-      store.displaySceneMenu = true
+    const goToSimulations = () => {
+      router.push({ name: 'simulations' })
     }
 
     const isEditingDefaultInterval = ref(false)
@@ -307,20 +304,29 @@ export default {
       sim.loadAgentsAndFixtures()
     }
 
-    const loadScene = async (scene) => {
-      sceneName.value = scene.name
-      store.sceneId = scene.id
-      store.displaySceneMenu = false
-      store.clearAllData()
-      await store.fetchSceneData(scene.id)
+    const hydrateSimIfNeeded = () => {
+      if (!store.needsSimHydration) return
+      sceneName.value = store.sceneName
       sim.loadAgentsAndFixtures()
       sim.renderAgents('draw')
       sim.refreshLiveHud()
+      store.needsSimHydration = false
     }
 
-    const createScene = async (sceneNameParam) => {
-      const newScene = await api.createScene({ name: sceneNameParam })
-      loadScene(newScene)
+    /** Load scene from `/simulation/:sceneId` (or refresh with that URL). */
+    const syncRouteScene = async () => {
+      const rawId = route.params.sceneId
+      if (rawId === undefined || rawId === null || String(rawId).length === 0) {
+        hydrateSimIfNeeded()
+        return
+      }
+      const id = String(rawId)
+      if (id !== String(store.sceneId ?? '')) {
+        sim.stopPlaybackForSceneChange()
+        sim.resetFpsDiagnostics()
+        await store.loadSceneForSimulation({ id })
+      }
+      hydrateSimIfNeeded()
     }
 
     const agentTypeList = ref([])
@@ -360,27 +366,35 @@ export default {
       }
     )
 
+    watch(
+      () => route.params.sceneId,
+      async () => {
+        await syncRouteScene()
+      }
+    )
+
     const isFirstActivation = ref(true)
 
-    onMounted(() => {
-      store.displaySceneMenu = true
+    onMounted(async () => {
       sim.attachCanvas(canvasRef.value)
       sim.attachDocumentListeners()
       const hud = initLiveHud(liveHudHost.value, getLiveHudSnapshot)
       sim.attachLiveHud(hud)
       hud.update()
+      await syncRouteScene()
     })
 
     onDeactivated(() => {
       sim.suspendForRouteLeave()
     })
 
-    onActivated(() => {
+    onActivated(async () => {
       if (isFirstActivation.value) {
         isFirstActivation.value = false
         return
       }
       sim.resumeAfterRouteEnter()
+      await syncRouteScene()
     })
 
     onBeforeUnmount(() => {
@@ -392,9 +406,7 @@ export default {
       canvasRef,
       liveHudHost,
       loadAgentsAndFixtures,
-      loadScene,
-      createScene,
-      showSceneMenu,
+      goToSimulations,
       cloneAction: sim.cloneAction,
       saveScene,
       playScene: sim.playScene,
@@ -444,19 +456,6 @@ body {
   display: flex;
   width: 100%;
   justify-content: left;
-}
-
-.scene-menu-modal {
-  position: absolute;
-  z-index: 2;
-  top: 0px;
-  left: 0px;
-  height: 100%;
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: #efeee8;;
 }
 
 .load-object-modal {
