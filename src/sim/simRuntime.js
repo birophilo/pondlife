@@ -1,6 +1,6 @@
 /**
  * Plan 3 Phase B/D/F — imperative sim + canvas + rAF; live HUD tick; pointer via simPointer (Phase F).
- * Vue calls createSimRuntime(); attachCanvas / attachLiveHud; suspend when leaving /sim (keep-alive);
+ * Vue calls createSimRuntime({ store, world, fpsRefs }); attachCanvas / attachLiveHud; rAF reads `world`.
  * stopSimRuntime on true unmount.
  */
 
@@ -27,7 +27,7 @@ const backgroundColor = 'rgb(220, 220, 220)'
 const dayLength = 1000
 const UPDATE_AGENT_KNOWLEDGE_EVERY_X_FRAMES = 10
 
-export function createSimRuntime ({ store, fpsRefs }) {
+export function createSimRuntime ({ store, world, fpsRefs }) {
   const showFrameRateDiagnostics = fpsRefs.showFrameRateDiagnostics
   const cumulativeAverageFps = fpsRefs.cumulativeAverageFps
   const currentFps = fpsRefs.currentFps
@@ -84,13 +84,13 @@ export function createSimRuntime ({ store, fpsRefs }) {
   })
 
   const loadAgentsAndFixtures = () => {
-    loadAgentsAndFixturesFromScene({ store, getGlobals, agentHandler })
+    loadAgentsAndFixturesFromScene({ store, world, getGlobals, agentHandler })
   }
 
   const renderAgents = (drawOrUpdate) => {
     let ySortArray = []
-    for (let agentTypeName of Object.keys(store.agentItems)) {
-      ySortArray = ySortArray.concat(store.agentItems[agentTypeName])
+    for (let agentTypeName of Object.keys(world.agentItems)) {
+      ySortArray = ySortArray.concat(world.agentItems[agentTypeName])
     }
     ySortArray.sort((a, b) => a.position.y - b.position.y)
 
@@ -104,10 +104,10 @@ export function createSimRuntime ({ store, fpsRefs }) {
   }
 
   const applyScheduledEffects = (frameId) => {
-    for (let [frameInterval, effectArray] of Object.entries(store.groupedRecurringChanges)) {
+    for (let [frameInterval, effectArray] of Object.entries(world.groupedRecurringChanges)) {
       if (frameId % frameInterval === 0) {
         for (let effect of effectArray) {
-          for (let agent of store.agentItems[effect.agentType]) {
+          for (let agent of world.agentItems[effect.agentType]) {
             agent.stateData[effect.property] += effect.change
           }
         }
@@ -116,8 +116,8 @@ export function createSimRuntime ({ store, fpsRefs }) {
   }
 
   const updateAgentKnowledge = (agent) => {
-    const agentTypeNames = Object.keys(store.agentTypes)
-    const sensor = store.sensors.find((s) => s.id === agent.agentType.sensor)
+    const agentTypeNames = Object.keys(world.agentTypes)
+    const sensor = world.sensors.find((s) => s.id === agent.agentType.sensor)
     if (!sensor) return
 
     const len = sensor.radius
@@ -134,7 +134,7 @@ export function createSimRuntime ({ store, fpsRefs }) {
     agent.knowledge.vicinity.agents = []
 
     for (let agentTypeName of agentTypeNames) {
-      for (let ag of store.agentItems[agentTypeName]) {
+      for (let ag of world.agentItems[agentTypeName]) {
         const agentArea = { x: ag.position.x, y: ag.position.y, width: ag.width, height: ag.height }
         if (agent.id !== ag.id) {
           if (rectanglesOverlap(vicinityArea, agentArea)) {
@@ -146,7 +146,8 @@ export function createSimRuntime ({ store, fpsRefs }) {
   }
 
   const endDay = () => {
-    store.dayNumber += 1
+    world.dayNumber += 1
+    store.dayNumber = world.dayNumber
   }
 
   const deleteAgent = async (agent, agentItems, i) => {
@@ -160,11 +161,11 @@ export function createSimRuntime ({ store, fpsRefs }) {
   }
 
   const addAgent = async (agentTypeName, position) => {
-    const agentItems = store.agentItems[agentTypeName]
+    const agentItems = world.agentItems[agentTypeName]
     const num = agentItems.length + 1
     let newAgent = createAgentObject(
       null,
-      store.agentTypes[agentTypeName],
+      world.agentTypes[agentTypeName],
       position,
       num,
       getGlobals()
@@ -184,7 +185,7 @@ export function createSimRuntime ({ store, fpsRefs }) {
 
   const cloneAction = (action, agent) => {
     const ok = setDynamicActionTargetAgents({
-      store,
+      world,
       action,
       agent,
       agentHandler,
@@ -196,7 +197,7 @@ export function createSimRuntime ({ store, fpsRefs }) {
   }
 
   const selectOrDeleteAgent = (agentTypeName, point) => {
-    const agentItems = store.agentItems[agentTypeName]
+    const agentItems = world.agentItems[agentTypeName]
     for (let i = 0; i < agentItems.length; i++) {
       const agent = agentItems[i]
       const isInArea = pointIsInArea(point, agent.collisionArea)
@@ -230,8 +231,8 @@ export function createSimRuntime ({ store, fpsRefs }) {
     c.fillStyle = backgroundColor
     c.fillRect(0, 0, canvas.width, canvas.height)
 
-    for (let agentTypeName of Object.keys(store.agentItems)) {
-      for (let agent of store.agentItems[agentTypeName]) {
+    for (let agentTypeName of Object.keys(world.agentItems)) {
+      for (let agent of world.agentItems[agentTypeName]) {
         if (frameId % UPDATE_AGENT_KNOWLEDGE_EVERY_X_FRAMES === 0) {
           updateAgentKnowledge(agent)
         }
@@ -246,21 +247,21 @@ export function createSimRuntime ({ store, fpsRefs }) {
       tickEffects.push(effect)
     }
 
-    for (let agentTypeName of Object.keys(store.agentTypes)) {
-      for (let agent of store.agentItems[agentTypeName]) {
+    for (let agentTypeName of Object.keys(world.agentTypes)) {
+      for (let agent of world.agentItems[agentTypeName]) {
         if (agent.agentType.name === 'customer') {
           if (agent.currentStateName === 'idle' || agent.currentAction === null) {
-            const [nextActionId, actionObjectType] = chooseNextActionByUtility({ store, agent })
+            const [nextActionId, actionObjectType] = chooseNextActionByUtility({ world, agent })
             if (nextActionId !== null) {
               let matchingAction
               if (actionObjectType === 'actionSequence') {
-                matchingAction = store.actionSequences.find((actSeq) => actSeq.id === nextActionId)
+                matchingAction = world.actionSequences.find((actSeq) => actSeq.id === nextActionId)
                 const nextActionName = matchingAction.actions[0]
-                const nextAction = store.actions.find((a) => a.actionName === nextActionName)
+                const nextAction = world.actions.find((a) => a.actionName === nextActionName)
                 agent.currentActionSequence = matchingAction
                 cloneAction(nextAction, agent)
               } else {
-                matchingAction = store.actions.find((action) => action.id === nextActionId)
+                matchingAction = world.actions.find((action) => action.id === nextActionId)
                 cloneAction(matchingAction, agent)
               }
             } else {
@@ -274,7 +275,7 @@ export function createSimRuntime ({ store, fpsRefs }) {
           if (handler.defaultCompletionCheckPasses(agent.currentAction, agentHandler) === true) {
             setNextAction({
               agent,
-              store,
+              world,
               conditionHandler,
               actionHandler,
               agentHandler
@@ -290,7 +291,7 @@ export function createSimRuntime ({ store, fpsRefs }) {
                 agent.currentAction,
                 getGlobals(),
                 agentHandler,
-                store,
+                world,
                 emitTickEffect
               )
             } else {
@@ -313,13 +314,13 @@ export function createSimRuntime ({ store, fpsRefs }) {
       }
     }
 
-    applyTickEffects(tickEffects, { store, deleteAgent, addAgent })
+    applyTickEffects(tickEffects, { world, deleteAgent, addAgent })
 
-    if (store.itemMenu && store.deleteButton) {
-      store.itemMenu.update(c, store.agentMenuButtons.length + 1)
+    if (world.itemMenu && world.deleteButton) {
+      world.itemMenu.update(c, world.agentMenuButtons.length + 1)
 
-      for (let i = 0; i < store.agentMenuButtons.length; i++) {
-        const button = store.agentMenuButtons[i]
+      for (let i = 0; i < world.agentMenuButtons.length; i++) {
+        const button = world.agentMenuButtons[i]
         button.update(c, i)
         const isInArea = pointIsInArea(simPointer, button.area)
         if (isInArea) hover = true
@@ -327,13 +328,13 @@ export function createSimRuntime ({ store, fpsRefs }) {
 
       if (store.agentPreview) store.agentPreview.update(c, simPointer)
 
-      if (store.deleteButton.area && pointIsInArea(simPointer, store.deleteButton.area)) {
+      if (world.deleteButton.area && pointIsInArea(simPointer, world.deleteButton.area)) {
         hover = true
       }
 
       if (store.selectionMode === true) hover = true
 
-      store.deleteButton.update(c, store.agentMenuButtons.length, store.deleteMode)
+      world.deleteButton.update(c, world.agentMenuButtons.length, store.deleteMode)
     } else if (store.selectionMode === true) {
       hover = true
     }
@@ -403,28 +404,28 @@ export function createSimRuntime ({ store, fpsRefs }) {
     onCanvasClick = (event) => {
       const point = { x: event.offsetX, y: event.offsetY }
 
-      if (store.placingAgent && store.itemMenu) {
-        const isInMenuArea = pointIsInArea(point, store.itemMenu.area)
+      if (store.placingAgent && world.itemMenu) {
+        const isInMenuArea = pointIsInArea(point, world.itemMenu.area)
         if (isInMenuArea === false) {
           const agentTypeName = store.agentPreview.agentType.name
           const position = {
-            x: simPointer.x - store.agentTypes[agentTypeName].width / 2,
-            y: simPointer.y - store.agentTypes[agentTypeName].height / 2
+            x: simPointer.x - world.agentTypes[agentTypeName].width / 2,
+            y: simPointer.y - world.agentTypes[agentTypeName].height / 2
           }
           addAgent(agentTypeName, position)
         }
       }
 
-      for (let agentTypeName of Object.keys(store.agentTypes)) {
+      for (let agentTypeName of Object.keys(world.agentTypes)) {
         selectOrDeleteAgent(agentTypeName, point)
       }
 
-      for (let i = 0; i < store.agentMenuButtons.length; i++) {
-        const isInArea = pointIsInArea(point, store.agentMenuButtons[i].area)
+      for (let i = 0; i < world.agentMenuButtons.length; i++) {
+        const isInArea = pointIsInArea(point, world.agentMenuButtons[i].area)
 
         if (isInArea && !store.agentPreview) {
-          const agentTypeName = store.agentMenuButtons[i].name
-          store.agentPreview = markRaw(new AgentPreview(store.agentTypes[agentTypeName]))
+          const agentTypeName = world.agentMenuButtons[i].name
+          store.agentPreview = markRaw(new AgentPreview(world.agentTypes[agentTypeName]))
           store.placingAgent = true
           break
         } else if (isInArea && store.agentPreview) {
@@ -433,8 +434,8 @@ export function createSimRuntime ({ store, fpsRefs }) {
         }
       }
 
-      if (store.deleteButton?.area) {
-        const isInArea = pointIsInArea(point, store.deleteButton.area)
+      if (world.deleteButton?.area) {
+        const isInArea = pointIsInArea(point, world.deleteButton.area)
         if (isInArea) {
           store.deleteMode = !store.deleteMode
         }
@@ -531,20 +532,20 @@ export function createSimRuntime ({ store, fpsRefs }) {
   }
 
   const playScene = () => {
-    if (!store.itemMenu || !store.deleteButton) return
+    if (!world.itemMenu || !world.deleteButton) return
 
     store.sceneIsPlaying = true
     store.sceneIsPaused = false
     simFrameIndex = 0
 
-    for (let atName of Object.keys(store.agentTypes)) {
-      const firstActionId = store.firstActions[atName]
+    for (let atName of Object.keys(world.agentTypes)) {
+      const firstActionId = world.firstActions[atName]
       if (firstActionId) {
-        const action = store.actions.find((a) => a.id === firstActionId)
+        const action = world.actions.find((a) => a.id === firstActionId)
         if (action === undefined) {
           throw new Error("Play scene: Can't find action")
         }
-        for (let agent of store.agentItems[atName]) {
+        for (let agent of world.agentItems[atName]) {
           cloneAction(action, agent)
         }
       }
@@ -562,7 +563,7 @@ export function createSimRuntime ({ store, fpsRefs }) {
   }
 
   const unPauseScene = () => {
-    if (!store.itemMenu || !store.deleteButton) return
+    if (!world.itemMenu || !world.deleteButton) return
 
     store.sceneIsPlaying = true
     store.sceneIsPaused = false

@@ -24,7 +24,7 @@ const COMPARISONS = {
 
 export class ConditionHandler {
 
-  evaluateCondition(item, agent, store) {
+  evaluateCondition (item, agent, world) {
     var agentValue
     if (item.conditionType === 'preset') {
       const agentHandler = new AgentHandler()
@@ -35,11 +35,11 @@ export class ConditionHandler {
     } else if (item.conditionType === 'vicinity') {
       // get number of agents of given property value in vicinity
       // eslint-disable-next-line
-      const [agentTypeName, _] = Object.entries(store.agentTypes).find(([name, obj]) => obj.id === item.agentType)
+      const [agentTypeName, _] = Object.entries(world.agentTypes).find(([name, obj]) => obj.id === item.agentType)
       const agentIdsInVicinity = agent.knowledge.vicinity.agents
 
       // count agents of given type in vicinity
-      let agentsInVicinity = store.agentItems[agentTypeName].filter(agent =>
+      let agentsInVicinity = world.agentItems[agentTypeName].filter(agent =>
         agentIdsInVicinity.includes(agent.id)
       )
 

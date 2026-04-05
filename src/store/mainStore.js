@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import apiCrud from '../apiCrud'
+import { groupRecurringChangesOnWorld } from '@/sim/world.js'
 
 const BASE_URL = 'http://localhost:8000'
 
@@ -260,26 +261,8 @@ export const useStore = defineStore({
       }
     },
 
-    groupRecurringChanges() {
-      for (let change of this.ungroupedRecurringChanges) {
-        if (this.groupedRecurringChanges[change.frameInterval] == undefined) {
-          this.groupedRecurringChanges[change.frameInterval] = [
-            {
-              agentType: change.agentType,
-              property: change.property,
-              change: change.change
-            }
-          ]
-        } else {
-          this.groupedRecurringChanges[change.frameInterval].concat[
-            {
-              agentType: change.agentType,
-              property: change.property,
-              change: change.change
-            }
-          ]
-        }
-      }
+    groupRecurringChanges () {
+      groupRecurringChangesOnWorld(this)
     }
   }
 })

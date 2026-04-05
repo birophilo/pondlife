@@ -1,6 +1,6 @@
 import UTILITY_FUNCS from '@/UTILITY_FUNCS.js'
 
-export function setDynamicActionTargetAgents  ({ store, action, agent, agentHandler, lastAction }) {
+export function setDynamicActionTargetAgents ({ world, action, agent, agentHandler, lastAction }) {
   /*
   Some target agent/s need to be set dynamically according to criteria that can
   only be determined when the action starts:
@@ -15,7 +15,7 @@ export function setDynamicActionTargetAgents  ({ store, action, agent, agentHand
 
     const agentTypeName = action.agentType.name
     // get agents excluding self
-    const agentItems = store.agentItems[agentTypeName].filter(ag => ag.id !== agent.id)
+    const agentItems = world.agentItems[agentTypeName].filter(ag => ag.id !== agent.id)
 
     if (agentItems.length === 0) {
       console.log(`No ${agentTypeName} exists - cannot choose nearest.`)
@@ -29,14 +29,14 @@ export function setDynamicActionTargetAgents  ({ store, action, agent, agentHand
     action.destination = targetAgent
 
   } else if (action.agentChoiceMethod === 'all') {
-    action.target = store.agentItems[action.agentType.name]
+    action.target = world.agentItems[action.agentType.name]
   }
 
   if (action.agentChoiceMethod === 'random' && action.destinationType === 'agent') {
 
     const agentTypeName = action.agentType.name
     // get agents excluding self
-    const agentItems = store.agentItems[agentTypeName].filter(ag => ag.id !== agent.id)
+    const agentItems = world.agentItems[agentTypeName].filter(ag => ag.id !== agent.id)
 
     if (agentItems.length === 0) {
       console.log(`No ${agentTypeName} exists - cannot choose random.`)
@@ -54,16 +54,16 @@ export function setDynamicActionTargetAgents  ({ store, action, agent, agentHand
   // agentChoiceMethod ('nearest' etc)
   if (action.actionType === 'change') {
 
-    const changeObjs = store.propertyChanges.filter(ch => action.propertyChanges.includes(ch.id))
+    const changeObjs = world.propertyChanges.filter(ch => action.propertyChanges.includes(ch.id))
 
     for (let change of changeObjs) {
       if (change.agentType !== 'self') {
         if (change.agentChoiceMethod === 'nearest') {
-          const agentItems = store.agentItems[change.agentType]
+          const agentItems = world.agentItems[change.agentType]
           const targetAgent = agentHandler.getClosestAgent(agent, agentItems)
           change.target = targetAgent
         } else if (change.agentChoiceMethod === 'all') {
-          change.target = store.agentItems[change.agentType]
+          change.target = world.agentItems[change.agentType]
         }
       }
     }
@@ -80,11 +80,11 @@ export function setDynamicActionTargetAgents  ({ store, action, agent, agentHand
 
     else if (action.agentType !== 'self') {
       if (action.agentChoiceMethod === 'nearest') {
-        const targetAgents = store.agentItems[action.agentType.name]
+        const targetAgents = world.agentItems[action.agentType.name]
         const targetAgent = agentHandler.getClosestAgent(agent, targetAgents)
         action.target = targetAgent
       } else if (action.agentChoiceMethod === 'all') {
-        action.target = store.agentItems[action.agentType.name]
+        action.target = world.agentItems[action.agentType.name]
       }
     }
   }
@@ -98,7 +98,7 @@ export function setDynamicActionTargetAgents  ({ store, action, agent, agentHand
  */
 export function setNextAction ({
   agent,
-  store,
+  world,
   conditionHandler,
   actionHandler,
   agentHandler
@@ -106,13 +106,13 @@ export function setNextAction ({
   // check for state transitions and set next action if complete
   for (let transition of agent.currentAction.transitions) {
 
-    const condition = store.conditions.find(cond => cond.id === transition.condition)
-    const result = conditionHandler.evaluateCondition(condition, agent, store)
+    const condition = world.conditions.find(cond => cond.id === transition.condition)
+    const result = conditionHandler.evaluateCondition(condition, agent, world)
 
     if (result === true) {
-      const nextAction = store.actions.find(action => action.id === transition.nextAction)
+      const nextAction = world.actions.find(action => action.id === transition.nextAction)
       const ok = setDynamicActionTargetAgents({
-        store,
+        world,
         action: nextAction,
         agent,
         agentHandler,
@@ -129,7 +129,7 @@ export function setNextAction ({
   if (agent.currentActionSequence !== null && agent.currentActionSequence !== undefined) {
     const arrLength = agent.currentActionSequence.actions.length
     const finalSequenceActionName = agent.currentActionSequence.actions[arrLength - 1]
-    const action = store.actions.find(a => a.actionName === finalSequenceActionName)
+    const action = world.actions.find(a => a.actionName === finalSequenceActionName)
     if (action.actionName === agent.currentAction.actionName) {
       agent.currentActionSequence = null
     }
@@ -141,11 +141,11 @@ export function setNextAction ({
 }
 
 
-export function chooseNextActionByUtility ({ store, agent }) {
+export function chooseNextActionByUtility ({ world, agent }) {
   /* Returns the ID of the Action or ActionSequence with the highest utility */
 
   // utility functions currently specific to agent type
-  const utilityFunctionsForAgent = store.agentUtilityFunctions.filter(uf => uf.agentType === agent.agentType.name)
+  const utilityFunctionsForAgent = world.agentUtilityFunctions.filter(uf => uf.agentType === agent.agentType.name)
 
   var highestScore = 0
   // var highestScoreActionId = null

@@ -205,6 +205,7 @@ import { useRouter, useRoute } from 'vue-router'
 import { useStore } from '@/store/mainStore.js'
 import api from '@/apiCrud.js'
 import { createSimRuntime } from '@/sim/simRuntime.js'
+import { createWorld } from '@/sim/world.js'
 import { simPointer } from '@/sim/simPointer.js'
 import { initLiveHud } from '@/hud/imperativeHud.js'
 import AgentTypeCreate from '@/components/simUiForms/AgentTypeCreate.vue'
@@ -271,8 +272,11 @@ export default {
     const cumulativeAverageFps = ref(0)
     const currentFps = ref(0)
 
+    const world = createWorld()
+
     const sim = createSimRuntime({
       store,
+      world,
       fpsRefs: {
         showFrameRateDiagnostics,
         cumulativeAverageFps,

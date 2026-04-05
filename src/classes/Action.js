@@ -167,10 +167,10 @@ export class ActionPropertyChangesHandler extends ActionHandler {
   }
 
   // eslint-disable-next-line
-  start(item, globals, agentHandler, store) {
+  start (item, globals, agentHandler, world) {
     item.propertyChanges.forEach(changeId => {
 
-      const change = store.propertyChanges.find(ch => ch.id === changeId)
+      const change = world.propertyChanges.find(ch => ch.id === changeId)
 
       const value = change.value
       const changeValue = change.change === 'increase' ? Number(value) : 0 - Number(value)
