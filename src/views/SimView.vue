@@ -40,55 +40,8 @@
 
   <div class="info-container">
 
-    <div class="menu-section">
-      <div class="day-container">
-        <div v-if="isEditingDefaultInterval">
-          Default time interval:<br />
-          name: <input v-model="defaultInterval.name" type="text" />
-          frames per interval: <input v-model="defaultInterval.frames" type="number" />
-        </div>
-        <div v-else>
-          <div>{{ defaultInterval.name }}: <span id="day-number">{{ store.dayNumber }}</span></div>
-          <button @click="isEditingDefaultInterval = true">edit</button>
-        </div>
-      </div>
-
-      <div class="speed-slide-container">
-        <div>
-          <span>speed: {{ store.GlobalSettings.globalSpeed / 100 }}</span>
-        </div>
-        <input
-          v-model="store.GlobalSettings.globalSpeed"
-          id="sim-speed-slider"
-          type="range" min="0" max="200" value="100"
-        >
-      </div>
-
-      <div class="fps-diagnostics-container">
-        <label>
-          <input type="checkbox" v-model="showFrameRateDiagnostics" @change="onFrameRateDiagnosticsChange" />
-          frame rate diagnostics
-        </label>
-        <div v-if="showFrameRateDiagnostics" class="fps-readings">
-          <div>cumulative avg: {{ cumulativeAverageFps.toFixed(1) }} FPS</div>
-          <div>current: {{ currentFps.toFixed(1) }} FPS</div>
-        </div>
-      </div>
-    </div>
-
-    <details class="menu-section" id="agent-types-section">
-      <summary class="menu-section-heading">Selected Agent</summary>
-      <div v-if="store.selectedAgent !== null">
-        {{ store.selectedAgent.name }}<br/>
-        current action: {{ store.selectedAgent.currentStateName }}<br/>
-        current state name: {{ store.selectedAgent.currentAction?.actionName }}<br/><br/>
-        current action sequence: {{ store.selectedAgent.currentActionSequence?.name }}<br/><br/>
-        <span v-for="prop in Object.entries(store.selectedAgent.stateData)" :key="prop[0]">
-          {{ prop[0] }}: {{ prop[1] }}<br/>
-        </span>
-      </div>
-      <div v-else>none</div>
-    </details>
+    <!-- Phase C: imperative top strip + Selected Agent details — initTopMenuStrip() in setup -->
+    <div ref="topMenuStripHost" />
 
     <details class="menu-section" id="agent-types-section">
       <summary class="menu-section-heading">Agent Types</summary>
@@ -208,6 +161,7 @@ import { createSimRuntime } from '@/sim/simRuntime.js'
 import { createWorld } from '@/sim/world.js'
 import { simPointer } from '@/sim/simPointer.js'
 import { initLiveHud } from '@/hud/imperativeHud.js'
+import { initTopMenuStrip } from '@/hud/imperativeTopMenuStrip.js'
 import AgentTypeCreate from '@/components/simUiForms/AgentTypeCreate.vue'
 import AgentTypeEdit from '@/components/simUiForms/AgentTypeEdit.vue'
 import SetPropertyForm from '@/components/simUiForms/SetPropertyForm.vue'
@@ -266,6 +220,7 @@ export default {
 
     const canvasRef = ref(null)
     const liveHudHost = ref(null)
+    const topMenuStripHost = ref(null)
     const sceneName = ref('')
 
     const showFrameRateDiagnostics = ref(false)
@@ -382,9 +337,28 @@ export default {
     onMounted(async () => {
       sim.attachCanvas(canvasRef.value)
       sim.attachDocumentListeners()
+      const topMenu = initTopMenuStrip(topMenuStripHost.value, {
+        store,
+        defaultInterval,
+        isEditingDefaultInterval,
+        showFrameRateDiagnostics,
+        cumulativeAverageFps,
+        currentFps,
+        onFpsDiagnosticsChange: onFrameRateDiagnosticsChange
+      })
       const hud = initLiveHud(liveHudHost.value, getLiveHudSnapshot)
-      sim.attachLiveHud(hud)
+      sim.attachLiveHud({
+        update () {
+          hud.update()
+          topMenu.update()
+        },
+        destroy () {
+          hud.destroy()
+          topMenu.destroy()
+        }
+      })
       hud.update()
+      topMenu.update()
       await syncRouteScene()
     })
 
@@ -409,6 +383,7 @@ export default {
       store,
       canvasRef,
       liveHudHost,
+      topMenuStripHost,
       loadAgentsAndFixtures,
       goToSimulations,
       cloneAction: sim.cloneAction,
@@ -418,13 +393,7 @@ export default {
       unPauseScene: sim.unPauseScene,
       sceneName,
       loadAgentTypesModal,
-      agentTypeList,
-      isEditingDefaultInterval,
-      defaultInterval,
-      showFrameRateDiagnostics,
-      cumulativeAverageFps,
-      currentFps,
-      onFrameRateDiagnosticsChange
+      agentTypeList
     }
   },
 
