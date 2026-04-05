@@ -1,5 +1,18 @@
 import { Agent } from './Agent.js'
 
+/**
+ * Agent type `thumbnail` strings are inconsistent in data: `/img/...`, `img/...`,
+ * or a bare upload filename. Canvas code must match how `<img src>` resolves them.
+ */
+function resolveAgentThumbnailSrc (thumbnail) {
+  if (thumbnail == null || String(thumbnail).trim() === '') return ''
+  const t = String(thumbnail).trim()
+  if (/^https?:\/\//i.test(t) || t.startsWith('//')) return t
+  if (t.startsWith('/')) return t
+  if (t.includes('/')) return `/${t}`
+  return `/media/${t}`
+}
+
 const menuWidth = 200
 const menuHeight = 50
 const menuBorder = 5
@@ -110,15 +123,22 @@ export class AgentMenuIcon extends AgentMenuButton {
     this.name = name
     this.agent = Agent
     this.thumbnail = new Image()
-    this.thumbnail.src = '/media/' + agentType.thumbnail
+    this._thumbnailLogicalSrc = resolveAgentThumbnailSrc(agentType.thumbnail)
+    if (this._thumbnailLogicalSrc) {
+      this.thumbnail.src = this._thumbnailLogicalSrc
+    }
     this.agentType = agentType
   }
 
-  draw(c) {
+  draw (c) {
     super.draw(c)
 
+    const img = this.thumbnail
+    if (!this._thumbnailLogicalSrc || !img.complete || img.naturalWidth === 0) {
+      return
+    }
     c.drawImage(
-      this.thumbnail,
+      img,
       this.position.x,
       this.position.y,
       this.width,
@@ -126,9 +146,15 @@ export class AgentMenuIcon extends AgentMenuButton {
     )
   }
 
-  update(c, i) {
-    if (this.thumbnail.src !== this.agentType.thumbnail) {
-      this.thumbnail.src = this.agentType.thumbnail
+  update (c, i) {
+    const nextSrc = resolveAgentThumbnailSrc(this.agentType.thumbnail)
+    if (nextSrc !== this._thumbnailLogicalSrc) {
+      this._thumbnailLogicalSrc = nextSrc
+      if (nextSrc) {
+        this.thumbnail.src = nextSrc
+      } else {
+        this.thumbnail.removeAttribute('src')
+      }
     }
     this.draw(c)
     super.update(i)

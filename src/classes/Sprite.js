@@ -98,18 +98,26 @@ export class SpriteHandler {
     }
   }
 
-  useSpriteSheet(spriteSheetName, item) {
-    if (item.animationSet !== null) {
-      const spriteSheet = item.animationSet.sheets[spriteSheetName]
-      item.image.src = '/media/' + spriteSheet.src
+  useSpriteSheet (spriteSheetName, item) {
+    if (item.animationSet == null) return
+    const spriteSheet = item.animationSet.sheets[spriteSheetName]
+    if (spriteSheet == null) return
 
-      item.frames = {
-        ...item.frames,
-        max: spriteSheet.numImages,
-        columns: spriteSheet.columns,
-        rows: spriteSheet.rows,
-        refreshInterval: spriteSheet.refreshInterval
-      }
+    const nextSrc = '/media/' + spriteSheet.src
+    // Avoid reassigning image.src every frame (e.g. idle() runs each rAF for idle agents).
+    // draw() already animates via crop rect on one decoded bitmap.
+    if (item._activeSpriteSheetName === spriteSheetName) {
+      return
+    }
+    item._activeSpriteSheetName = spriteSheetName
+    item.image.src = nextSrc
+
+    item.frames = {
+      ...item.frames,
+      max: spriteSheet.numImages,
+      columns: spriteSheet.columns,
+      rows: spriteSheet.rows,
+      refreshInterval: spriteSheet.refreshInterval
     }
   }
 
