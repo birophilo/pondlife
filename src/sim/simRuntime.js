@@ -43,6 +43,8 @@ export function createSimRuntime ({ store, fpsRefs }) {
 
   let currentCursor = 'auto'
   let currentAnimationFrameId = 0
+  /** Monotonic tick index per play session (used for modulo scheduling; not the browser rAF handle). */
+  let simFrameIndex = 0
 
   let lastRafId = null
   let destroyed = false
@@ -210,23 +212,23 @@ export function createSimRuntime ({ store, fpsRefs }) {
   }
 
   const animate = () => {
-    if (destroyed) return
-
-    let frameId
-
-    if (store.sceneIsPaused === true) {
-      frameId = requestAnimationFrame(() => console.log('PAUSED'))
-    } else {
-      lastRafId = requestAnimationFrame(animate)
-      frameId = lastRafId
+    if (destroyed) {
+      lastRafId = null
+      return
     }
+    if (!store.sceneIsPlaying) {
+      lastRafId = null
+      return
+    }
+
+    simFrameIndex += 1
+    const frameId = simFrameIndex
+    currentAnimationFrameId = frameId
 
     let hover = false
 
     c.fillStyle = backgroundColor
     c.fillRect(0, 0, canvas.width, canvas.height)
-
-    currentAnimationFrameId = frameId
 
     for (let agentTypeName of Object.keys(store.agentItems)) {
       for (let agent of store.agentItems[agentTypeName]) {
@@ -366,6 +368,12 @@ export function createSimRuntime ({ store, fpsRefs }) {
     if (frameId % dayLength === 0) endDay()
 
     tickLiveHud()
+
+    if (!destroyed && store.sceneIsPlaying) {
+      lastRafId = requestAnimationFrame(animate)
+    } else {
+      lastRafId = null
+    }
   }
 
   const startAnimationLoop = () => {
@@ -527,6 +535,7 @@ export function createSimRuntime ({ store, fpsRefs }) {
 
     store.sceneIsPlaying = true
     store.sceneIsPaused = false
+    simFrameIndex = 0
 
     for (let atName of Object.keys(store.agentTypes)) {
       const firstActionId = store.firstActions[atName]
@@ -548,6 +557,7 @@ export function createSimRuntime ({ store, fpsRefs }) {
   const pauseScene = () => {
     store.sceneIsPlaying = false
     store.sceneIsPaused = true
+    cancelAnimationLoop()
     tickLiveHud()
   }
 
