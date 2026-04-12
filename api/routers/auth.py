@@ -1,3 +1,4 @@
+import uuid
 from datetime import datetime, timedelta, timezone
 from typing import Annotated
 
@@ -5,15 +6,13 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from jose import jwt
 from passlib.context import CryptContext
-from pymongo import MongoClient
+from sqlalchemy.orm import Session
 
 from config import ACCESS_TOKEN_EXPIRE_MINUTES, ALGORITHM, get_jwt_secret
-from database import get_database
-from mongo_client import get_user_by_email, get_user_by_username
+from db import get_db
+from models.user import User
 from schemas import ResetPasswordBody, UserSignup
 
-
-users_collection_name = "users"
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -36,43 +35,52 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None):
 
 
 @router.post("/signup")
-def signup(details: UserSignup, db: MongoClient = Depends(get_database)):
+def signup(details: UserSignup, db: Session = Depends(get_db)):
 
-    if get_user_by_username(db, details.username):
+    if User.get_by_username(db, details.username):
         raise HTTPException(status_code=400, detail="Username already registered")
-    if get_user_by_email(db, details.email):
+    if User.get_by_email(db, details.email):
         raise HTTPException(status_code=400, detail="Email already registered")
 
     hashed_password = get_password_hash(details.password)
-    new_user = {
-        "username": details.username,
-        "email": details.email,
-        "hashed_password": hashed_password
-    }
-    db[users_collection_name].insert_one(new_user)
+    user = User(
+        username=details.username,
+        email=details.email,
+        hashed_password=hashed_password,
+        sim_user_id=str(uuid.uuid4()),
+    )
+    db.add(user)
+    db.commit()
+    db.refresh(user)
 
     return {"message": "User created successfully"}
 
 
 @router.post("/login")
-async def login(
+def login(
     form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
-    db: MongoClient = Depends(get_database)
+    db: Session = Depends(get_db),
 ):
     username, password = form_data.username, form_data.password
-    user = get_user_by_username(db, username)
+    user = User.get_by_username(db, username)
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid credentials",
         )
-    if not verify_password(password, user["hashed_password"]):
+    if not verify_password(password, user.hashed_password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid credentials",
         )
-    access_token = create_access_token(data={"sub": user["username"]})
-    return {"user": username, "accessToken": access_token, "tokenType": "bearer"}
+    access_token = create_access_token(data={"sub": user.username})
+    return {
+        "user": user.username,
+        "accessToken": access_token,
+        "tokenType": "bearer",
+        "simUserId": user.sim_user_id,
+        "userId": str(user.id),
+    }
 
 
 @router.post("/logout")
@@ -84,14 +92,13 @@ def logout():
 @router.post("/reset-password")
 def reset_password(
     body: ResetPasswordBody,
-    db: MongoClient = Depends(get_database),
+    db: Session = Depends(get_db),
 ):
-    user = get_user_by_email(db, body.email)
+    user = User.get_by_email(db, body.email)
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     hashed = get_password_hash(body.new_password)
-    db[users_collection_name].update_one(
-        {"email": body.email},
-        {"$set": {"hashed_password": hashed}},
-    )
+    user.hashed_password = hashed
+    db.add(user)
+    db.commit()
     return {"message": "Password reset successful"}
