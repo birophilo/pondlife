@@ -3,12 +3,13 @@ from __future__ import annotations
 import json
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Callable, FrozenSet, Generator, List, Optional, Type
+from typing import Annotated, Any, Callable, FrozenSet, Generator, List, Optional, Type
 
 from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
 from fastapi.encoders import jsonable_encoder
 from pydantic import BaseModel
 
+from deps import get_current_user
 from mongo_client import MongoCRUDClient
 
 
@@ -71,7 +72,9 @@ def register_mongo_crud(router: APIRouter, config: MongoCrudConfig) -> None:
     if "create" in config.endpoints:
 
         async def create_item(
-            request: Request, mongo: MongoCRUDClient = Depends(get_mongo_crud)
+            request: Request,
+            _user: Annotated[dict[str, Any], Depends(get_current_user)],
+            mongo: MongoCRUDClient = Depends(get_mongo_crud),
         ) -> object:
             raw = json.loads(await request.body())
             payload = jsonable_encoder(raw)
@@ -87,7 +90,10 @@ def register_mongo_crud(router: APIRouter, config: MongoCrudConfig) -> None:
 
     if "list" in config.endpoints:
 
-        def list_items(mongo: MongoCRUDClient = Depends(get_mongo_crud)) -> object:
+        def list_items(
+            _user: Annotated[dict[str, Any], Depends(get_current_user)],
+            mongo: MongoCRUDClient = Depends(get_mongo_crud),
+        ) -> object:
             return mongo.list_documents(c)
 
         list_kwargs = {}
@@ -98,7 +104,11 @@ def register_mongo_crud(router: APIRouter, config: MongoCrudConfig) -> None:
 
     if "get" in config.endpoints:
 
-        def get_item(id: str, mongo: MongoCRUDClient = Depends(get_mongo_crud)) -> object:
+        def get_item(
+            id: str,
+            _user: Annotated[dict[str, Any], Depends(get_current_user)],
+            mongo: MongoCRUDClient = Depends(get_mongo_crud),
+        ) -> object:
             item = mongo.get_document(c, id)
             if item is not None:
                 return item
@@ -118,6 +128,7 @@ def register_mongo_crud(router: APIRouter, config: MongoCrudConfig) -> None:
         async def update_item(
             id: str,
             request: Request,
+            _user: Annotated[dict[str, Any], Depends(get_current_user)],
             mongo: MongoCRUDClient = Depends(get_mongo_crud),
         ) -> object:
             body = json.loads(await request.body())
@@ -166,6 +177,7 @@ def register_mongo_crud(router: APIRouter, config: MongoCrudConfig) -> None:
         def delete_item(
             id: str,
             response: Response,
+            _user: Annotated[dict[str, Any], Depends(get_current_user)],
             mongo: MongoCRUDClient = Depends(get_mongo_crud),
         ) -> Response:
             if config.before_delete is not None:

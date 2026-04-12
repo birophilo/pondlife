@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+from typing import Annotated, Any
 
 from bson import ObjectId
 from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
@@ -8,6 +9,7 @@ from fastapi.encoders import jsonable_encoder
 from pymongo.errors import PyMongoError
 
 from crud_factory import MongoCrudConfig, get_mongo_crud, register_mongo_crud
+from deps import get_current_user
 from mongo_client import MongoCRUDClient
 from schemas import PropertyChange
 
@@ -32,7 +34,9 @@ register_mongo_crud(
     response_model=PropertyChange,
 )
 async def create_property_change(
-    request: Request, mongo: MongoCRUDClient = Depends(get_mongo_crud)
+    request: Request,
+    _user: Annotated[dict[str, Any], Depends(get_current_user)],
+    mongo: MongoCRUDClient = Depends(get_mongo_crud),
 ) -> PropertyChange:
     request_body = json.loads(await request.body())
     action_id = request_body["actionId"]
@@ -55,6 +59,7 @@ async def create_property_change(
 def delete_property_change(
     id: str,
     response: Response,
+    _user: Annotated[dict[str, Any], Depends(get_current_user)],
     mongo: MongoCRUDClient = Depends(get_mongo_crud),
 ) -> Response:
     property_change = mongo.get_document("property_changes", id)

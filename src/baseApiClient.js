@@ -1,8 +1,7 @@
 import axios from 'axios'
-
+import authService from '@/services/authService'
 
 const BASE_URL = 'http://localhost:8000'
-
 
 const apiClient = axios.create({
   baseURL: BASE_URL,
@@ -19,6 +18,18 @@ const apiFormClient = axios.create({
   }
 })
 
+function attachAuthInterceptor (client) {
+  client.interceptors.request.use((config) => {
+    const t = authService.getToken()
+    if (t) {
+      config.headers.Authorization = `Bearer ${t}`
+    }
+    return config
+  })
+}
+
+attachAuthInterceptor(apiClient)
+attachAuthInterceptor(apiFormClient)
 
 export default {
   getItem: async function (resource, id) {
@@ -49,7 +60,7 @@ export default {
         `${BASE_URL}/${resourcePlural}/`,
         JSON.stringify(data)
       )
-      console.log("CREATED")
+      console.log('CREATED')
       console.log(response.data)
       return response.data
     } catch (error) {
@@ -85,7 +96,7 @@ export default {
         `${BASE_URL}/${resource}/${data.id}`,
         JSON.stringify(data)
       )
-      console.log("UPDATED")
+      console.log('UPDATED')
       console.log(response.data)
       return response.data
     } catch (error) {

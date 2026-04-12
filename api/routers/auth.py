@@ -2,27 +2,20 @@ from datetime import datetime, timedelta, timezone
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from fastapi.security import OAuth2PasswordRequestForm
 from jose import jwt
 from passlib.context import CryptContext
 from pymongo import MongoClient
 
+from config import ACCESS_TOKEN_EXPIRE_MINUTES, ALGORITHM, get_jwt_secret
 from database import get_database
-from mongo_client import get_user_by_username, get_user_by_email
-from schemas import UserSignup
+from mongo_client import get_user_by_email, get_user_by_username
+from schemas import ResetPasswordBody, UserSignup
 
 
 users_collection_name = "users"
 
-# JWT config
-SECRET_KEY = "my_secret_key"
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
-
-# password hashing
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login")
 
 router = APIRouter()
 
@@ -39,7 +32,7 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None):
     now = datetime.now(timezone.utc)
     expires = now + (expires_delta or timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES))
     data["exp"] = expires
-    return jwt.encode(data, SECRET_KEY, algorithm=ALGORITHM)
+    return jwt.encode(data, get_jwt_secret(), algorithm=ALGORITHM)
 
 
 @router.post("/signup")
@@ -68,11 +61,15 @@ async def login(
 ):
     username, password = form_data.username, form_data.password
     user = get_user_by_username(db, username)
-    verified = verify_password(password, user["hashed_password"])
-    if not user or not verified:
+    if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid credentials"
+            detail="Invalid credentials",
+        )
+    if not verify_password(password, user["hashed_password"]):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid credentials",
         )
     access_token = create_access_token(data={"sub": user["username"]})
     return {"user": username, "accessToken": access_token, "tokenType": "bearer"}
@@ -80,19 +77,21 @@ async def login(
 
 @router.post("/logout")
 def logout():
-    # Frontend needs to discard token
+    # Frontend discards token; no server-side session store for JWT.
     return {"message": "Logout successful"}
 
 
 @router.post("/reset-password")
 def reset_password(
-    email: str,
-    new_password: str,
-    db: MongoClient = Depends(get_database)
+    body: ResetPasswordBody,
+    db: MongoClient = Depends(get_database),
 ):
-    user = get_user_by_email(db, email)
+    user = get_user_by_email(db, body.email)
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
-    user["hashed_password"] = get_password_hash(new_password)
-
+    hashed = get_password_hash(body.new_password)
+    db[users_collection_name].update_one(
+        {"email": body.email},
+        {"$set": {"hashed_password": hashed}},
+    )
     return {"message": "Password reset successful"}

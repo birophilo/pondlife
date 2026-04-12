@@ -9,8 +9,18 @@ export const useAuthStore = defineStore('auth', () => {
 
   const login = async (credentialsFormData) => {
     const response = await authService.login(credentialsFormData)
+    if (response.error) {
+      throw new Error(response.message || 'Login failed')
+    }
     user.value = response.user
     token.value = response.accessToken
+  }
+
+  const signup = async ({ username, email, password }) => {
+    const response = await authService.signup({ username, email, password })
+    if (response.error) {
+      throw new Error(response.message || 'Sign up failed')
+    }
   }
 
   const logout = () => {
@@ -19,8 +29,8 @@ export const useAuthStore = defineStore('auth', () => {
     token.value = null
   }
 
-  const isAuthenticated = computed(()  => !!token.value)
+  const isAuthenticated = computed(() => !!token.value)
 
-  return { login, logout, user, isAuthenticated }
+  return { login, signup, logout, user, isAuthenticated }
 
-}) 
+})

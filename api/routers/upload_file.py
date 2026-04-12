@@ -1,8 +1,10 @@
 import time
 from pathlib import Path
-from typing import Annotated
+from typing import Annotated, Any
 
-from fastapi import APIRouter, Form, status, UploadFile
+from fastapi import APIRouter, Depends, Form, status, UploadFile
+
+from deps import get_current_user
 
 
 UPLOAD_FOLDER = Path("../public/media")
@@ -16,7 +18,8 @@ router = APIRouter()
 async def upload_file(
     resource: Annotated[str, Form()],
     imageType: Annotated[str, Form()],
-    file: UploadFile
+    file: UploadFile,
+    _user: Annotated[dict[str, Any], Depends(get_current_user)],
 ):
 
     timestamp = int(time.time() * 3)
