@@ -1,7 +1,11 @@
 fastapi==0.115.6
 pydantic==2.10.4
+python-dotenv>=1.0.0
 pytest
-python-jose
+python-jose>=3.3.0
+# rsa / pyasn1-modules need pyasn1>=0.6.1; older pyasn1 0.4.x conflicts with pyasn1-modules 0.4.x
+pyasn1>=0.6.1,<0.7
+pyasn1-modules>=0.4.1
 passlib
 sqlalchemy>=2.0.0
 psycopg2-binary>=2.9.9

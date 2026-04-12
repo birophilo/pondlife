@@ -23,13 +23,14 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
-  const logout = () => {
-    authService.logout()
+  const logout = async () => {
+    await authService.logout()
     user.value = null
     token.value = null
   }
 
-  const isAuthenticated = computed(() => !!token.value)
+  /** Token may be renewed via refresh interceptor without touching this ref. */
+  const isAuthenticated = computed(() => !!authService.getToken())
 
   return { login, signup, logout, user, isAuthenticated }
 

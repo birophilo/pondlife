@@ -28,8 +28,35 @@ function attachAuthInterceptor (client) {
   })
 }
 
+function attach401RefreshInterceptor (client) {
+  client.interceptors.response.use(
+    (response) => response,
+    async (error) => {
+      const original = error.config
+      const status = error.response?.status
+      if (status !== 401 || !original || original._retry) {
+        return Promise.reject(error)
+      }
+      const url = String(original.url || '')
+      if (url.includes('/refresh') || url.includes('/login')) {
+        return Promise.reject(error)
+      }
+      original._retry = true
+      const ok = await authService.refreshTokenIfNeeded()
+      if (!ok) {
+        return Promise.reject(error)
+      }
+      const t = authService.getToken()
+      original.headers.Authorization = t ? `Bearer ${t}` : undefined
+      return client(original)
+    }
+  )
+}
+
 attachAuthInterceptor(apiClient)
 attachAuthInterceptor(apiFormClient)
+attach401RefreshInterceptor(apiClient)
+attach401RefreshInterceptor(apiFormClient)
 
 export default {
   getItem: async function (resource, id) {

@@ -214,3 +214,15 @@ class ResetPasswordBody(BaseModel):
     new_password: str
 
     model_config = ConfigDict(alias_generator=to_camel)
+
+
+class RefreshTokenBody(BaseModel):
+    refresh_token: str
+
+    model_config = ConfigDict(alias_generator=to_camel)
+
+
+class LogoutBody(BaseModel):
+    refresh_token: str | None = None
+
+    model_config = ConfigDict(alias_generator=to_camel)

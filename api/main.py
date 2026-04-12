@@ -28,6 +28,7 @@ from routers import (
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Import models so Base.metadata knows all tables; create on startup (dev / tests).
+    import models.refresh_token  # noqa: F401
     import models.user  # noqa: F401
 
     from db import Base, engine
