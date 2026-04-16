@@ -13,6 +13,27 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: password
     command: ["--bind_ip_all"]  # Ensure MongoDB binds to all network interfaces
 
+  pondlife-postgres:
+    image: postgres:16-alpine
+    container_name: postgres_container
+    ports:
+      - "5432:5432"
+    volumes:
+      # Survives docker compose down / container rm (remove volume explicitly to wipe DB)
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      # Loaded from project root .env (Compose substitutes ${VAR} at parse time)
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB:-pondlife}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB:-pondlife}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
 volumes:
   mongodb_data:
+    driver: local
+  postgres_data:
     driver: local

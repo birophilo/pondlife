@@ -207,3 +207,22 @@ class UserSignup(BaseModel):
     email: str
 
     model_config = ConfigDict(alias_generator=to_camel)
+
+
+class ResetPasswordBody(BaseModel):
+    email: str
+    new_password: str
+
+    model_config = ConfigDict(alias_generator=to_camel)
+
+
+class RefreshTokenBody(BaseModel):
+    refresh_token: str
+
+    model_config = ConfigDict(alias_generator=to_camel)
+
+
+class LogoutBody(BaseModel):
+    refresh_token: str | None = None
+
+    model_config = ConfigDict(alias_generator=to_camel)

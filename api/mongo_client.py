@@ -98,13 +98,3 @@ class MongoCRUDClient:
         item.pop("id", None)
         update_result = self.db[collection].replace_one({"_id": object_id}, item)
         return update_result
-
-
-# Miscellaneous convenience functions
-
-def get_user_by_username(db, username: str):
-    return db.users.find_one({"username": username})
-
-
-def get_user_by_email(db, email: str):
-    return db.users.find_one({"email": email})

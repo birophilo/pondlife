@@ -9,18 +9,29 @@ export const useAuthStore = defineStore('auth', () => {
 
   const login = async (credentialsFormData) => {
     const response = await authService.login(credentialsFormData)
+    if (response.error) {
+      throw new Error(response.message || 'Login failed')
+    }
     user.value = response.user
     token.value = response.accessToken
   }
 
-  const logout = () => {
-    authService.logout()
+  const signup = async ({ username, email, password }) => {
+    const response = await authService.signup({ username, email, password })
+    if (response.error) {
+      throw new Error(response.message || 'Sign up failed')
+    }
+  }
+
+  const logout = async () => {
+    await authService.logout()
     user.value = null
     token.value = null
   }
 
-  const isAuthenticated = computed(()  => !!token.value)
+  /** Token may be renewed via refresh interceptor without touching this ref. */
+  const isAuthenticated = computed(() => !!authService.getToken())
 
-  return { login, logout, user, isAuthenticated }
+  return { login, signup, logout, user, isAuthenticated }
 
-}) 
+})

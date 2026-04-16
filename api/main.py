@@ -1,3 +1,5 @@
+from contextlib import asynccontextmanager
+
 import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -23,8 +25,20 @@ from routers import (
 )
 
 
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Import models so Base.metadata knows all tables; create on startup (dev / tests).
+    import models.refresh_token  # noqa: F401
+    import models.user  # noqa: F401
+
+    from db import Base, engine
+
+    Base.metadata.create_all(bind=engine)
+    yield
+
+
 def create_app() -> FastAPI:
-    app = FastAPI()
+    app = FastAPI(lifespan=lifespan)
     app.include_router(actions.router)
     app.include_router(agents.router)
     app.include_router(agent_properties.router)
@@ -49,6 +63,7 @@ app = create_app()
 origins = [
     "http://localhost:8000",
     "http://localhost:8080",
+    "http://127.0.0.1:8080",
 ]
 
 app.add_middleware(

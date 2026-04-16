@@ -1,8 +1,7 @@
 import axios from 'axios'
-
+import authService from '@/services/authService'
 
 const BASE_URL = 'http://localhost:8000'
-
 
 const apiClient = axios.create({
   baseURL: BASE_URL,
@@ -19,6 +18,45 @@ const apiFormClient = axios.create({
   }
 })
 
+function attachAuthInterceptor (client) {
+  client.interceptors.request.use((config) => {
+    const t = authService.getToken()
+    if (t) {
+      config.headers.Authorization = `Bearer ${t}`
+    }
+    return config
+  })
+}
+
+function attach401RefreshInterceptor (client) {
+  client.interceptors.response.use(
+    (response) => response,
+    async (error) => {
+      const original = error.config
+      const status = error.response?.status
+      if (status !== 401 || !original || original._retry) {
+        return Promise.reject(error)
+      }
+      const url = String(original.url || '')
+      if (url.includes('/refresh') || url.includes('/login')) {
+        return Promise.reject(error)
+      }
+      original._retry = true
+      const ok = await authService.refreshTokenIfNeeded()
+      if (!ok) {
+        return Promise.reject(error)
+      }
+      const t = authService.getToken()
+      original.headers.Authorization = t ? `Bearer ${t}` : undefined
+      return client(original)
+    }
+  )
+}
+
+attachAuthInterceptor(apiClient)
+attachAuthInterceptor(apiFormClient)
+attach401RefreshInterceptor(apiClient)
+attach401RefreshInterceptor(apiFormClient)
 
 export default {
   getItem: async function (resource, id) {
@@ -49,7 +87,7 @@ export default {
         `${BASE_URL}/${resourcePlural}/`,
         JSON.stringify(data)
       )
-      console.log("CREATED")
+      console.log('CREATED')
       console.log(response.data)
       return response.data
     } catch (error) {
@@ -85,7 +123,7 @@ export default {
         `${BASE_URL}/${resource}/${data.id}`,
         JSON.stringify(data)
       )
-      console.log("UPDATED")
+      console.log('UPDATED')
       console.log(response.data)
       return response.data
     } catch (error) {

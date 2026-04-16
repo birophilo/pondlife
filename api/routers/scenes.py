@@ -1,9 +1,10 @@
-
 import json
 import time
+from typing import Annotated, Any
 
-from fastapi import APIRouter, Request, HTTPException, status
+from fastapi import APIRouter, Depends, Request, HTTPException, status
 
+from deps import get_current_user
 from mongo_client import MongoCRUDClient
 from schemas import Scene
 from utils import transform_doc_id
@@ -13,7 +14,10 @@ router = APIRouter()
 
 
 @router.get("/scene/{scene_id}", status_code=200)
-async def get_scene_data(scene_id):
+async def get_scene_data(
+    scene_id: str,
+    _user: Annotated[dict[str, Any], Depends(get_current_user)],
+):
 
     mongo_client = MongoCRUDClient()
 
@@ -102,13 +106,18 @@ async def get_scene_data(scene_id):
 
 
 @router.get("/simulation/{scene_id}", status_code=200)
-async def get_simulation_data(scene_id: str):
+async def get_simulation_data(
+    scene_id: str,
+    _user: Annotated[dict[str, Any], Depends(get_current_user)],
+):
     """Same response as GET /scene/{scene_id}; preferred REST path for loading a simulation by id."""
-    return await get_scene_data(scene_id)
+    return await get_scene_data(scene_id, _user)
 
 
 @router.get("/scenes", status_code=200)
-async def list_scenes():
+async def list_scenes(
+    _user: Annotated[dict[str, Any], Depends(get_current_user)],
+):
     mongo_client = MongoCRUDClient()
 
     scenes = mongo_client.list_documents("scenes")
@@ -125,7 +134,10 @@ async def list_scenes():
 
 
 @router.post("/scenes", status_code=status.HTTP_201_CREATED, response_model=Scene)
-async def create_scene(request: Request):
+async def create_scene(
+    request: Request,
+    _user: Annotated[dict[str, Any], Depends(get_current_user)],
+):
 
     data = json.loads(await request.body())
 
@@ -154,7 +166,11 @@ async def create_scene(request: Request):
 
 
 @router.put("/scene/{id}", response_model=Scene)
-async def update_scene(id: str, request: Request):
+async def update_scene(
+    id: str,
+    request: Request,
+    _user: Annotated[dict[str, Any], Depends(get_current_user)],
+):
 
     scene = json.loads(await request.body())
 
