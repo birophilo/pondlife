@@ -31,6 +31,21 @@ function setTokens (accessToken, refreshToken) {
   }
 }
 
+/** Read JWT `sub` (username) for nav label after reload; payload is unverified, display-only. */
+export function getUsernameFromAccessToken (token) {
+  if (!token || typeof token !== 'string') return null
+  const parts = token.split('.')
+  if (parts.length < 2) return null
+  try {
+    const base64 = parts[1].replace(/-/g, '+').replace(/_/g, '/')
+    const padded = base64.padEnd(base64.length + (4 - (base64.length % 4)) % 4, '=')
+    const payload = JSON.parse(atob(padded))
+    return typeof payload.sub === 'string' ? payload.sub : null
+  } catch {
+    return null
+  }
+}
+
 export default {
 
   async login (credentials) {
@@ -60,6 +75,18 @@ export default {
         username,
         email,
         password
+      })
+      return response.data
+    } catch (error) {
+      return { error: true, message: parseErrorMessage(error) }
+    }
+  },
+
+  async resetPassword ({ email, newPassword }) {
+    try {
+      const response = await axios.post(`${BASE_URL}/reset-password`, {
+        email,
+        newPassword
       })
       return response.data
     } catch (error) {

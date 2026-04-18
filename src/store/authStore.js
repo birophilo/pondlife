@@ -1,11 +1,11 @@
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
-import authService from '@/services/authService'
+import authService, { getUsernameFromAccessToken } from '@/services/authService'
 
 export const useAuthStore = defineStore('auth', () => {
 
-  const user = ref(null)
   const token = ref(authService.getToken())
+  const user = ref(getUsernameFromAccessToken(token.value))
 
   const login = async (credentialsFormData) => {
     const response = await authService.login(credentialsFormData)
@@ -29,9 +29,15 @@ export const useAuthStore = defineStore('auth', () => {
     token.value = null
   }
 
-  /** Token may be renewed via refresh interceptor without touching this ref. */
-  const isAuthenticated = computed(() => !!authService.getToken())
+  /** Keep in sync with localStorage when tokens refresh in the background (axios interceptor). */
+  function syncTokenFromStorage () {
+    token.value = authService.getToken()
+    user.value = getUsernameFromAccessToken(token.value)
+  }
 
-  return { login, signup, logout, user, isAuthenticated }
+  /** Must depend on `token` so the UI updates after login/logout (localStorage alone is not reactive). */
+  const isAuthenticated = computed(() => !!token.value)
+
+  return { login, signup, logout, user, token, isAuthenticated, syncTokenFromStorage }
 
 })

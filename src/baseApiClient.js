@@ -1,5 +1,6 @@
 import axios from 'axios'
 import authService from '@/services/authService'
+import { useAuthStore } from '@/store/authStore'
 
 const BASE_URL = 'http://localhost:8000'
 
@@ -46,6 +47,7 @@ function attach401RefreshInterceptor (client) {
       if (!ok) {
         return Promise.reject(error)
       }
+      useAuthStore().syncTokenFromStorage()
       const t = authService.getToken()
       original.headers.Authorization = t ? `Bearer ${t}` : undefined
       return client(original)

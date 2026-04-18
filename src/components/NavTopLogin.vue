@@ -1,179 +1,144 @@
 <template>
-  <nav v-if="authStore.isAuthenticated" class="top-nav-bar top-nav-bar--split">
+  <nav class="top-nav-bar top-nav-bar--split">
     <span class="top-nav-links">
       <router-link to="/">Home</router-link>
       <router-link :to="{ name: 'sim' }">Simulation</router-link>
       <router-link :to="{ name: 'simulations' }">Simulations</router-link>
     </span>
-    <span>
-      {{ authStore.user }} - logged in
-      <button type="button" @click="authStore.logout">log out</button>
+
+    <span v-if="authStore.isAuthenticated" class="nav-auth-user">
+      <span class="nav-auth-user-label">{{ authStore.user }}</span>
+      <div ref="userMenuEl" class="user-menu">
+        <button
+          type="button"
+          class="user-menu__trigger"
+          aria-haspopup="true"
+          :aria-expanded="userMenuOpen"
+          aria-label="Account menu"
+          @click.stop="userMenuOpen = !userMenuOpen"
+        >
+          <span class="user-menu__avatar" aria-hidden="true" />
+        </button>
+        <div
+          v-show="userMenuOpen"
+          class="user-menu__dropdown"
+          role="menu"
+        >
+          <button
+            type="button"
+            class="user-menu__item"
+            role="menuitem"
+            @click="handleLogout"
+          >
+            Log out
+          </button>
+        </div>
+      </div>
+    </span>
+
+    <span v-else class="nav-auth-actions">
+      <button type="button" @click="openLogin">
+        Log in
+      </button>
+      <button type="button" @click="openSignup">
+        Sign up
+      </button>
     </span>
   </nav>
-  <nav v-else-if="isLoggingIn" class="top-nav-bar top-nav-bar--split">
-    <span class="top-nav-links">
-      <router-link to="/">Home</router-link>
-      <router-link :to="{ name: 'sim' }">Simulation</router-link>
-      <router-link :to="{ name: 'simulations' }">Simulations</router-link>
-    </span>
-    <form @submit.prevent="handleLogin" class="login-form-inline">
-      <span v-if="loginHint" class="nav-auth-hint">{{ loginHint }}</span>
-      <span v-if="loginError" class="nav-auth-error">{{ loginError }}</span>
-      <input v-model="username" type="text" placeholder="username" autocomplete="username" />
-      <input v-model="password" type="password" placeholder="password" autocomplete="current-password" />
-      <button type="submit">Log in</button>
-      <button type="button" class="nav-auth-secondary" @click="switchToSignup">Create account</button>
-    </form>
-  </nav>
-  <nav v-else-if="isSigningUp" class="top-nav-bar top-nav-bar--split">
-    <span class="top-nav-links">
-      <router-link to="/">Home</router-link>
-      <router-link :to="{ name: 'sim' }">Simulation</router-link>
-      <router-link :to="{ name: 'simulations' }">Simulations</router-link>
-    </span>
-    <form @submit.prevent="handleSignup" class="login-form-inline">
-      <span v-if="signupError" class="nav-auth-error">{{ signupError }}</span>
-      <input v-model="signupEmail" type="email" placeholder="email" autocomplete="email" />
-      <input v-model="signupUsername" type="text" placeholder="username" autocomplete="username" />
-      <input v-model="signupPassword" type="password" placeholder="password" autocomplete="new-password" />
-      <button type="submit">Sign up</button>
-      <button type="button" class="nav-auth-secondary" @click="switchToLogin">Back to log in</button>
-    </form>
-  </nav>
-  <nav v-else class="top-nav-bar top-nav-bar--split">
-    <span class="top-nav-links">
-      <router-link to="/">Home</router-link>
-      <router-link :to="{ name: 'sim' }">Simulation</router-link>
-      <router-link :to="{ name: 'simulations' }">Simulations</router-link>
-    </span>
-    <span class="nav-auth-actions">
-      <button type="button" @click="openLogin">log in</button>
-      <button type="button" @click="openSignup">sign up</button>
-    </span>
-  </nav>
+
+  <AuthModal
+    :open="authModalOpen"
+    :start-view="authModalStartView"
+    @update:open="onAuthModalOpen"
+    @logged-in="onLoggedIn"
+  />
 </template>
 
 <script>
-import { ref } from 'vue'
+import { onBeforeUnmount, onMounted, ref } from 'vue'
 import { useAuthStore } from '@/store/authStore'
+import AuthModal from '@/components/AuthModal.vue'
 
 export default {
   name: 'NavTopLogin',
+  components: { AuthModal },
   setup () {
-
     const authStore = useAuthStore()
 
-    const isLoggingIn = ref(false)
-    const isSigningUp = ref(false)
+    const authModalOpen = ref(false)
+    const authModalStartView = ref('login')
 
-    const username = ref('')
-    const password = ref('')
-    const loginError = ref('')
-    const loginHint = ref('')
+    const userMenuOpen = ref(false)
+    const userMenuEl = ref(null)
 
-    const signupEmail = ref('')
-    const signupUsername = ref('')
-    const signupPassword = ref('')
-    const signupError = ref('')
-
-    const openLogin = () => {
-      isSigningUp.value = false
-      isLoggingIn.value = true
-      loginError.value = ''
-      signupError.value = ''
-    }
-
-    const openSignup = () => {
-      isLoggingIn.value = false
-      isSigningUp.value = true
-      loginError.value = ''
-      signupError.value = ''
-    }
-
-    const switchToSignup = () => {
-      loginError.value = ''
-      loginHint.value = ''
-      isLoggingIn.value = false
-      isSigningUp.value = true
-    }
-
-    const switchToLogin = () => {
-      signupError.value = ''
-      isSigningUp.value = false
-      isLoggingIn.value = true
-    }
-
-    const handleLogin = async () => {
-      loginError.value = ''
-      loginHint.value = ''
-      const formData = new FormData()
-      formData.append('username', username.value)
-      formData.append('password', password.value)
-      try {
-        await authStore.login(formData)
-        username.value = ''
-        password.value = ''
-        isLoggingIn.value = false
-      } catch (e) {
-        loginError.value = e.message || 'Login failed'
+    function onDocumentClick (e) {
+      if (!userMenuOpen.value) return
+      const el = userMenuEl.value
+      if (el && !el.contains(e.target)) {
+        userMenuOpen.value = false
       }
     }
 
-    const handleSignup = async () => {
-      signupError.value = ''
-      try {
-        await authStore.signup({
-          email: signupEmail.value,
-          username: signupUsername.value,
-          password: signupPassword.value
-        })
-        signupEmail.value = ''
-        signupUsername.value = ''
-        signupPassword.value = ''
-        isSigningUp.value = false
-        isLoggingIn.value = true
-        loginHint.value = 'Account created. Sign in below.'
-      } catch (e) {
-        signupError.value = e.message || 'Sign up failed'
-      }
+    onMounted(() => {
+      document.addEventListener('click', onDocumentClick)
+    })
+
+    onBeforeUnmount(() => {
+      document.removeEventListener('click', onDocumentClick)
+    })
+
+    function openLogin () {
+      authModalStartView.value = 'login'
+      authModalOpen.value = true
+    }
+
+    function openSignup () {
+      authModalStartView.value = 'signup'
+      authModalOpen.value = true
+    }
+
+    function onAuthModalOpen (v) {
+      authModalOpen.value = v
+    }
+
+    function onLoggedIn () {
+      userMenuOpen.value = false
+    }
+
+    async function handleLogout () {
+      userMenuOpen.value = false
+      await authStore.logout()
     }
 
     return {
       authStore,
-      isLoggingIn,
-      isSigningUp,
-      username,
-      password,
-      loginError,
-      loginHint,
-      signupEmail,
-      signupUsername,
-      signupPassword,
-      signupError,
-      handleLogin,
-      handleSignup,
+      authModalOpen,
+      authModalStartView,
+      userMenuOpen,
+      userMenuEl,
       openLogin,
       openSignup,
-      switchToLogin,
-      switchToSignup
+      onAuthModalOpen,
+      onLoggedIn,
+      handleLogout
     }
   }
 }
 </script>
 
-<style>
-
+<style scoped>
 nav {
-  height: 30px;
+  min-height: 30px;
   border-bottom: 1px solid #e8b9ad;
-  padding: 3px 20px 10px 20px;
+  padding: 8px 20px 10px 20px;
+  box-sizing: border-box;
 }
 
 .top-nav-bar {
   width: 100%;
   display: flex;
   align-items: center;
-  justify-content: right;
+  justify-content: flex-end;
 }
 
 .top-nav-bar--split {
@@ -196,33 +161,87 @@ nav {
   text-decoration: underline;
 }
 
-.login-form-inline {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px;
-}
-
 .nav-auth-actions {
   display: flex;
   align-items: center;
   gap: 12px;
 }
 
-.nav-auth-secondary {
-  font-size: 0.9rem;
+.nav-auth-actions button {
+  padding: 6px 14px;
+  border-radius: 8px;
+  border: 1px solid #c99a8e;
+  background: #fffef9;
+  cursor: pointer;
+  font-size: 0.95rem;
 }
 
-.nav-auth-error {
-  color: #b00020;
-  font-size: 0.85rem;
+.nav-auth-actions button:hover {
+  background: #faf5f0;
+}
+
+.nav-auth-user {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.nav-auth-user-label {
+  font-size: 0.95rem;
+  max-width: 160px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.user-menu {
+  position: relative;
+}
+
+.user-menu__trigger {
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  border-radius: 50%;
+  line-height: 0;
+}
+
+.user-menu__avatar {
+  display: block;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(145deg, #dfe9f2 0%, #e8b9ad 55%, #c9d6e0 100%);
+  border: 2px solid #c4a89e;
+  box-sizing: border-box;
+}
+
+.user-menu__dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  min-width: 160px;
+  padding: 6px 0;
+  background: #fffef9;
+  border: 1px solid #dcc;
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  z-index: 9000;
+}
+
+.user-menu__item {
+  display: block;
   width: 100%;
+  padding: 10px 16px;
+  border: none;
+  background: none;
+  text-align: left;
+  font-size: 0.95rem;
+  cursor: pointer;
 }
 
-.nav-auth-hint {
-  color: #2e6f40;
-  font-size: 0.85rem;
-  width: 100%;
+.user-menu__item:hover {
+  background: #f5ebe6;
 }
-
 </style>

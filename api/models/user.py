@@ -42,6 +42,19 @@ class User(Base):
     def get_by_email(cls, db: Session, email: str) -> User | None:
         return db.scalars(select(cls).where(cls.email == email)).first()
 
+    @classmethod
+    def get_by_username_or_email(cls, db: Session, ident: str) -> User | None:
+        """OAuth2 `username` field may carry either login name or email."""
+        s = ident.strip()
+        if not s:
+            return None
+        user = cls.get_by_username(db, s)
+        if user is not None:
+            return user
+        return db.scalars(
+            select(cls).where(func.lower(cls.email) == s.lower())
+        ).first()
+
     def to_public_dict(self) -> dict[str, Any]:
         """Safe payload for APIs / JWT dependency (no password hash)."""
         return {

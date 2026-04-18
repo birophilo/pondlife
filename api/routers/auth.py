@@ -100,7 +100,7 @@ def login(
     db: Session = Depends(get_db),
 ):
     username, password = form_data.username, form_data.password
-    user = User.get_by_username(db, username)
+    user = User.get_by_username_or_email(db, username)
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
