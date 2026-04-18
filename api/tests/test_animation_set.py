@@ -1,5 +1,6 @@
 import pytest
 
+from constants import EXPECTED_AUTHOR
 
 animation_set_1_post = {
   "name": "Customer",
@@ -20,6 +21,7 @@ animation_set_1_post = {
 
 
 animation_set_1_response = {
+  **EXPECTED_AUTHOR,
   "name": "Customer",
   "sheets": {
     "idle": "677b3381024c92f6b532eff8",

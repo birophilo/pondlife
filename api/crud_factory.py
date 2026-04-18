@@ -9,6 +9,7 @@ from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
 from fastapi.encoders import jsonable_encoder
 from pydantic import BaseModel
 
+from authorship import apply_author_on_create, preserve_author_on_update
 from deps import get_current_user
 from mongo_client import MongoCRUDClient
 
@@ -78,6 +79,7 @@ def register_mongo_crud(router: APIRouter, config: MongoCrudConfig) -> None:
         ) -> object:
             raw = json.loads(await request.body())
             payload = jsonable_encoder(raw)
+            apply_author_on_create(payload, _user)
             return mongo.create_document(c, payload)
 
         create_kwargs = {
@@ -132,6 +134,8 @@ def register_mongo_crud(router: APIRouter, config: MongoCrudConfig) -> None:
             mongo: MongoCRUDClient = Depends(get_mongo_crud),
         ) -> object:
             body = json.loads(await request.body())
+            existing = mongo.get_document(c, id)
+            preserve_author_on_update(body, existing)
             if "id" not in body:
                 raise HTTPException(
                     status_code=status.HTTP_400_BAD_REQUEST,

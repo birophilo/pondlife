@@ -1,5 +1,6 @@
 import pytest
 
+from constants import EXPECTED_AUTHOR
 
 property_change_1_post = {
   "agent": None,
@@ -14,6 +15,7 @@ property_change_1_post = {
 
 
 property_change_1_response = {
+  **EXPECTED_AUTHOR,
   "agent": None,
   "property": "onions",
   "change": "decrease",

@@ -1,6 +1,5 @@
 import hashlib
 import secrets
-import uuid
 from datetime import datetime, timedelta, timezone
 from typing import Annotated
 
@@ -21,6 +20,7 @@ from db import get_db
 from models.refresh_token import RefreshToken
 from models.user import User
 from schemas import LogoutBody, RefreshTokenBody, ResetPasswordBody, UserSignup
+from sim_user_id import allocate_sim_user_id
 
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -85,7 +85,7 @@ def signup(details: UserSignup, db: Session = Depends(get_db)):
         username=details.username,
         email=details.email,
         hashed_password=hashed_password,
-        sim_user_id=str(uuid.uuid4()),
+        sim_user_id=allocate_sim_user_id(db),
     )
     db.add(user)
     db.commit()

@@ -1,6 +1,6 @@
 from typing import Any, List
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 from pydantic.alias_generators import to_camel
 
 
@@ -15,7 +15,19 @@ class XY(BaseModel):
     y: float
 
 
-class Condition(BaseModel):
+class SimAuthorshipMixin(BaseModel):
+    """Maps Postgres User.sim_user_id / username onto Mongo docs (camelCase in JSON)."""
+
+    author_id: str = Field(default="pondlife", description="Portable user id (sim_user_id)")
+    author_username: str | None = Field(
+        default=None,
+        description="Username for display; omit or null if unknown",
+    )
+
+    model_config = ConfigDict(alias_generator=to_camel)
+
+
+class Condition(SimAuthorshipMixin):
     id: str
     name: str
     condition_type: str
@@ -32,7 +44,7 @@ class Condition(BaseModel):
     model_config = ConfigDict(alias_generator=to_camel)
 
 
-class Spritesheet(BaseModel):
+class Spritesheet(SimAuthorshipMixin):
     id: str
     name: str
     src: str
@@ -44,15 +56,17 @@ class Spritesheet(BaseModel):
     model_config = ConfigDict(alias_generator=to_camel)
 
 
-class AnimationSet(BaseModel):
+class AnimationSet(SimAuthorshipMixin):
     id: str
     name: str
     sheets: dict
     offset: XY
     scale: float
 
+    model_config = ConfigDict(alias_generator=to_camel)
 
-class AgentType(BaseModel):
+
+class AgentType(SimAuthorshipMixin):
     id: str
     name: str
     width: float
@@ -67,7 +81,7 @@ class AgentType(BaseModel):
     model_config = ConfigDict(alias_generator=to_camel)
 
 
-class AgentConstructor(BaseModel):
+class AgentConstructor(SimAuthorshipMixin):
     # note: this contains the bare minimum to construct an Agent instance
     # i.e. carries no simulation state (to add later)
     id: str
@@ -78,7 +92,7 @@ class AgentConstructor(BaseModel):
     model_config = ConfigDict(alias_generator=to_camel)
 
 
-class AgentProperty(BaseModel):
+class AgentProperty(SimAuthorshipMixin):
     id: str
     name: str
     value_type: str
@@ -90,7 +104,7 @@ class AgentProperty(BaseModel):
     model_config = ConfigDict(alias_generator=to_camel)
 
 
-class UtilityFunction(BaseModel):
+class UtilityFunction(SimAuthorshipMixin):
     id: str
     agent_type: str
     property: str
@@ -100,7 +114,7 @@ class UtilityFunction(BaseModel):
     model_config = ConfigDict(alias_generator=to_camel)
 
 
-class RecurringChange(BaseModel):
+class RecurringChange(SimAuthorshipMixin):
     id: str
     agent_type: str
     property: str
@@ -113,7 +127,7 @@ class RecurringChange(BaseModel):
 # ACTIONS
 
 
-class BaseAction(BaseModel):
+class BaseAction(SimAuthorshipMixin):
     id: str
     agent: str | None = None  # Agent instance ID
     args: dict
@@ -126,7 +140,7 @@ class BaseAction(BaseModel):
     sprite_sheet: Spritesheet
     property_changes: List[Any]
 
-    model_config = ConfigDict(alias_generator=to_camel)
+    model_config = ConfigDict(alias_generator=to_camel, extra="allow")
 
 
 class ActionGoTo(BaseAction):
@@ -142,19 +156,21 @@ class ActionInterval(BaseAction):
     interval_type: str
 
 
-class ActionSpawnAgent(BaseModel):
+class ActionSpawnAgent(SimAuthorshipMixin):
     spawn_agent_placement: str
 
-
-class ActionRemoveAgent(BaseModel):
-    pass
+    model_config = ConfigDict(alias_generator=to_camel)
 
 
-class ActionTransition(BaseModel):
-    pass
+class ActionRemoveAgent(SimAuthorshipMixin):
+    model_config = ConfigDict(alias_generator=to_camel)
 
 
-class ActionSequence(BaseModel):
+class ActionTransition(SimAuthorshipMixin):
+    model_config = ConfigDict(alias_generator=to_camel)
+
+
+class ActionSequence(SimAuthorshipMixin):
     id: str
     name: str
     object_type: str
@@ -164,7 +180,7 @@ class ActionSequence(BaseModel):
     model_config = ConfigDict(alias_generator=to_camel)
 
 
-class PropertyChange(BaseModel):
+class PropertyChange(SimAuthorshipMixin):
     # NOTE: these are items that comprise the ActionPropertyChangeSet
     id: str
     agent: str | None = None
@@ -179,7 +195,7 @@ class PropertyChange(BaseModel):
     model_config = ConfigDict(alias_generator=to_camel)
 
 
-class Scene(BaseModel):
+class Scene(SimAuthorshipMixin):
     id: str
     resource: str = "scene"
     name: str
@@ -191,7 +207,7 @@ class Scene(BaseModel):
     model_config = ConfigDict(alias_generator=to_camel)
 
 
-class Sensor(BaseModel):
+class Sensor(SimAuthorshipMixin):
     name: str | None = None
     type: str  # e.g. "spatial"
     range_type: str  # e.g. "circle"

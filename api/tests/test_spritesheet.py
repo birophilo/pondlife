@@ -1,5 +1,6 @@
 import pytest
 
+from constants import EXPECTED_AUTHOR
 
 spritesheet_1_post = {
     "name": "SomeCustomerWalkUp",
@@ -12,6 +13,7 @@ spritesheet_1_post = {
 
 
 spritesheet_1_response = {
+    **EXPECTED_AUTHOR,
     "name": "SomeCustomerWalkUp",
     "src": "/img/sprites/GirlSample_Walk_Up.png",
     "columns": 4,

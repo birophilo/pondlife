@@ -1,5 +1,6 @@
 import pytest
 
+from constants import EXPECTED_AUTHOR
 
 condition_1_post = {
     "conditionType": "preset",
@@ -11,12 +12,13 @@ condition_1_post = {
 
 
 condition_1_response = {
+    **EXPECTED_AUTHOR,
     "name": "is complete",
     "conditionType": "preset",
     "comparison": "isIdentical",
     "property": None,
     "classMethod": "actionIsComplete",
-    "conditionValue": True
+    "conditionValue": True,
 }
 
 

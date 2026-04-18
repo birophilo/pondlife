@@ -4,6 +4,7 @@ from typing import Annotated, Any
 
 from fastapi import APIRouter, Depends, Request, HTTPException, status
 
+from authorship import apply_author_on_create, preserve_author_on_update
 from deps import get_current_user
 from mongo_client import MongoCRUDClient
 from schemas import Scene
@@ -36,6 +37,8 @@ async def get_scene_data(
     payload = {
         "id": scene["id"],
         "name": scene["name"],
+        "authorId": scene.get("authorId", "pondlife"),
+        "authorUsername": scene.get("authorUsername"),
         "data": {
             "conditions": [],
             "agentTypes": [],
@@ -126,8 +129,11 @@ async def list_scenes(
         {
             "id": scene["id"],
             "name": scene["name"],
-            "lastModified": scene["lastModified"]
-        } for scene in scenes
+            "lastModified": scene["lastModified"],
+            "authorId": scene.get("authorId", "pondlife"),
+            "authorUsername": scene.get("authorUsername"),
+        }
+        for scene in scenes
     ]
 
     return sceneIds
@@ -160,6 +166,7 @@ async def create_scene(
         },
         "resource": "scene"
     }
+    apply_author_on_create(blank_scene, _user)
     mongo_client = MongoCRUDClient()
     created_scene = mongo_client.create_document("scenes", blank_scene)
     return created_scene
@@ -178,6 +185,8 @@ async def update_scene(
 
     if len(scene) >= 1:
         mongo_client = MongoCRUDClient()
+        existing = mongo_client.get_document("scenes", id)
+        preserve_author_on_update(scene, existing)
         try:
             now = int(time.time() * 1000)
             scene["lastModified"] = now

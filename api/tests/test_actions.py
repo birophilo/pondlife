@@ -1,5 +1,6 @@
 import pytest
 
+from constants import EXPECTED_AUTHOR
 
 action_1_go_to_post = {
   "agent": None,
@@ -72,6 +73,7 @@ action_1_property_changes_post = {
 
 
 action_1_property_changes_response = {
+  **EXPECTED_AUTHOR,
   "agent": None,
   "actionName": "pay",
   "actionType": "change",
@@ -97,6 +99,7 @@ action_1_interval_post = {
 
 
 action_1_interval_response = {
+  **EXPECTED_AUTHOR,
   "agent": None,
   "actionName": "pause a bit",
   "actionType": "interval",

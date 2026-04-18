@@ -1,5 +1,6 @@
 import pytest
 
+from constants import EXPECTED_AUTHOR
 
 agent_type_1_post = {
   "name": "someAgent",
@@ -15,6 +16,7 @@ agent_type_1_post = {
 
 
 agent_type_1_response = {
+  **EXPECTED_AUTHOR,
   "name": "someAgent",
   "width": 30,
   "height": 40,

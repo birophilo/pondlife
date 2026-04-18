@@ -1,5 +1,6 @@
 import pytest
 
+from constants import EXPECTED_AUTHOR
 
 agent_property_1_post = {
   "name": "money",
@@ -12,6 +13,7 @@ agent_property_1_post = {
 
 
 agent_property_1_response = {
+  **EXPECTED_AUTHOR,
   "name": "money",
   "valueType": "int",
   "initialValue": 100,

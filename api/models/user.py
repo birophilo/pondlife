@@ -21,7 +21,7 @@ class User(Base):
     email: Mapped[str] = mapped_column(String(255), unique=True, index=True)
     username: Mapped[str] = mapped_column(String(64), unique=True, index=True)
     hashed_password: Mapped[str] = mapped_column(String(255))
-    # Portable id for sim payloads / exports — not the DB primary key.
+    # Portable id for sim payloads / exports — not the DB primary key (8-char a-zA-Z).
     sim_user_id: Mapped[str] = mapped_column(String(64), unique=True, index=True)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
     is_verified: Mapped[bool] = mapped_column(Boolean, default=False)

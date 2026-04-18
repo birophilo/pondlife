@@ -20,6 +20,7 @@ register_mongo_crud(
         resource_name="Action",
         path_collection="/actions",
         path_item="/action",
+        # Actions are heterogeneous (goTo vs change vs interval); no single response model.
         response_item_model=None,
         update_strategy=UpdateStrategy.NOOP_IS_404,
         before_delete=_before_delete_actions,
