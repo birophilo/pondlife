@@ -1,8 +1,21 @@
 import { defineStore } from 'pinia'
 import apiCrud from '../apiCrud'
+import { apiClient } from '@/baseApiClient'
 import { groupRecurringChangesOnWorld } from '@/sim/world.js'
 
-const BASE_URL = 'http://localhost:8000'
+function messageFromAxiosError (error) {
+  const detail = error.response?.data?.detail
+  if (detail == null) {
+    return error.message || 'Request failed'
+  }
+  if (typeof detail === 'string') {
+    return detail
+  }
+  if (Array.isArray(detail)) {
+    return detail.map((d) => d.msg || JSON.stringify(d)).join('; ')
+  }
+  return String(detail)
+}
 
 /**
  * Plan 3 — Pinia boundaries (Phases A + E)
@@ -150,34 +163,25 @@ export const useStore = defineStore({
       this.firstActions = {}
       this.actionSequences = []
     },
-    async fetchSceneList() {
+    async fetchSceneList () {
       this.loading = true
       this.error = null
       try {
-        const response = await fetch(`${BASE_URL}/scenes`)
-        const data = await response.json()
+        const { data } = await apiClient.get('/scenes')
         this.sceneList = data
       } catch (error) {
-        this.error = error.message
+        this.error = messageFromAxiosError(error)
+      } finally {
+        this.loading = false
       }
     },
     async fetchSceneData (sceneId) {
       this.loading = true
       this.error = null
       try {
-        const response = await fetch(`${BASE_URL}/simulation/${encodeURIComponent(sceneId)}`)
-        const data = await response.json()
-        if (!response.ok) {
-          const detail = data?.detail
-          this.error =
-            typeof detail === 'string'
-              ? detail
-              : Array.isArray(detail)
-                ? detail.map((d) => d.msg || d).join('; ')
-                : `HTTP ${response.status}`
-          this.sceneData = {}
-          return
-        }
+        const { data } = await apiClient.get(
+          `/simulation/${encodeURIComponent(sceneId)}`
+        )
         if (!data || typeof data !== 'object' || data.data == null || typeof data.data !== 'object') {
           this.error = 'Invalid simulation payload (missing data)'
           this.sceneData = {}
@@ -189,8 +193,10 @@ export const useStore = defineStore({
         this.createdAt = data.createdAt
         this.lastModified = data.lastModified
       } catch (error) {
-        this.error = error.message
+        this.error = messageFromAxiosError(error)
         this.sceneData = {}
+      } finally {
+        this.loading = false
       }
     },
     clearAllData () {
@@ -244,20 +250,10 @@ export const useStore = defineStore({
       }
 
       try {
-        await fetch(
-          `${BASE_URL}/scene/${this.sceneId}`, {
-            method: 'PUT',
-            headers: {
-              Accept: "application/json",
-              "Content-Type": "application/json;charset=UTF-8",
-            },
-            body: JSON.stringify(payload)
-          }
-        )
-        // const resp = await response.json()
+        await apiClient.put(`/scene/${this.sceneId}`, payload)
         console.log('Saved scene')
       } catch (error) {
-        this.error = error.message
+        this.error = messageFromAxiosError(error)
       }
     },
 

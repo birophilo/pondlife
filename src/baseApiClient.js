@@ -60,6 +60,9 @@ attachAuthInterceptor(apiFormClient)
 attach401RefreshInterceptor(apiClient)
 attach401RefreshInterceptor(apiFormClient)
 
+/** Use for requests that must send JWT + participate in 401 refresh (same as listItems/createItem, etc.). */
+export { apiClient, apiFormClient }
+
 export default {
   getItem: async function (resource, id) {
     this.loading = true

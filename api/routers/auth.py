@@ -99,17 +99,18 @@ def login(
     form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
     db: Session = Depends(get_db),
 ):
+    print("logging in")
     username, password = form_data.username, form_data.password
     user = User.get_by_username_or_email(db, username)
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid credentials",
+            detail="No user found",
         )
     if not verify_password(password, user.hashed_password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid credentials",
+            detail="Invalid password",
         )
     access_token = create_access_token(data={"sub": user.username})
     refresh_raw = issue_refresh_token(db, user)

@@ -2,15 +2,17 @@
   <Teleport to="body">
     <div
       v-if="open"
+      ref="backdropRef"
       class="auth-modal-backdrop"
-      @click.self="emitClose"
+      @pointerdown.self="onBackdropPointerDownSelf"
     >
       <div
         class="auth-modal"
         role="dialog"
         aria-modal="true"
         :aria-labelledby="titleId"
-        @keydown.esc="emitClose"
+        @pointerdown.capture="onModalPointerDownCapture"
+        @keyup.esc="emitClose"
       >
         <button
           type="button"
@@ -215,7 +217,7 @@
 </template>
 
 <script>
-import { computed, ref, watch } from 'vue'
+import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import { useAuthStore } from '@/store/authStore'
 import authService from '@/services/authService'
 
@@ -255,6 +257,10 @@ export default {
     const forgotPassword = ref('')
     const forgotPasswordConfirm = ref('')
 
+    const backdropRef = ref(null)
+    /** True while the user may intend to dismiss: pointerdown began on backdrop, not panel. */
+    const dismissBackdropAfterPointerUp = ref(false)
+
     const heading = computed(() => {
       if (view.value === 'signup') return 'Create account'
       if (view.value === 'forgot') return 'Reset password'
@@ -275,15 +281,49 @@ export default {
       emit('update:open', false)
     }
 
+    function onBackdropPointerDownSelf () {
+      dismissBackdropAfterPointerUp.value = true
+    }
+
+    function onModalPointerDownCapture () {
+      dismissBackdropAfterPointerUp.value = false
+    }
+
+    function onDocumentPointerUp (event) {
+      const backdropEl = backdropRef.value
+      const shouldDismiss =
+        dismissBackdropAfterPointerUp.value &&
+        backdropEl &&
+        event.target === backdropEl
+      dismissBackdropAfterPointerUp.value = false
+      if (shouldDismiss) emitClose()
+    }
+
+    function onDocumentPointerCancel () {
+      dismissBackdropAfterPointerUp.value = false
+    }
+
     watch(
       () => props.open,
       (isOpen) => {
         if (isOpen) {
           view.value = props.startView
           clearFeedback()
+          document.addEventListener('pointerup', onDocumentPointerUp)
+          document.addEventListener('pointercancel', onDocumentPointerCancel)
+        } else {
+          document.removeEventListener('pointerup', onDocumentPointerUp)
+          document.removeEventListener('pointercancel', onDocumentPointerCancel)
+          dismissBackdropAfterPointerUp.value = false
         }
-      }
+      },
+      { immediate: true }
     )
+
+    onBeforeUnmount(() => {
+      document.removeEventListener('pointerup', onDocumentPointerUp)
+      document.removeEventListener('pointercancel', onDocumentPointerCancel)
+    })
 
     async function handleLogin () {
       clearFeedback()
@@ -360,6 +400,9 @@ export default {
       forgotEmail,
       forgotPassword,
       forgotPasswordConfirm,
+      backdropRef,
+      onBackdropPointerDownSelf,
+      onModalPointerDownCapture,
       switchView,
       emitClose,
       handleLogin,
