@@ -12,7 +12,28 @@
     <ModalLoadObject :agentTypeList="agentTypeList" />
   </div>
 
-  <div class="canvas-container">
+  <nav class="left-sim-menu" aria-label="Simulation tools">
+    <div class="left-sim-menu__grid">
+      <button
+        v-for="item in leftToolbarSections"
+        :key="item.id"
+        type="button"
+        class="left-sim-menu__item"
+        :title="item.label"
+        :aria-label="item.label"
+      >
+        <component
+          :is="item.icon"
+          class="left-sim-menu__icon"
+          :size="item.id === 'agent-types' ? 22 : 18"
+          :stroke-width="1"
+          aria-hidden="true"
+        />
+      </button>
+    </div>
+  </nav>
+
+  <div class="canvas-container" style="border: 1px solid red;">
     <!-- Always mounted (Phase C); never v-if — simRuntime holds a native element reference. -->
     <canvas ref="canvasRef" />
 
@@ -185,6 +206,46 @@ import UtilityFunctionEdit from '@/components/simUiForms/UtilityFunctionEdit.vue
 import UtilityFunctionCreate from '@/components/simUiForms/UtilityFunctionCreate.vue'
 import RecurringChangeEdit from '@/components/simUiForms/RecurringChangeEdit.vue'
 import RecurringChangeCreate from '@/components/simUiForms/RecurringChangeCreate.vue'
+import {
+  SlidersHorizontal,
+  Images,
+  Brain,
+  PersonStanding,
+  BookOpenText,
+  Timeline,
+  Clock2,
+  Ear,
+  Clapperboard,
+  Footprints
+} from '@lucide/vue'
+
+/** Left toolbar icons — one distinct Lucide icon per editor section. */
+// const LEFT_NAV_SECTIONS = [
+//   { id: 'agent-types', label: 'Agent Types', icon: Users },
+//   { id: 'agent-properties', label: 'Agent Properties', icon: ClipboardList },
+//   { id: 'actions', label: 'Actions', icon: Zap },
+//   { id: 'recurring-changes', label: 'Recurring Changes', icon: Repeat },
+//   { id: 'conditions', label: 'Conditions', icon: GitBranch },
+//   { id: 'properties', label: 'Properties', icon: SlidersHorizontal },
+//   { id: 'sprite-sheets', label: 'Sprite Sheets', icon: Images },
+//   { id: 'animation-sets', label: 'Animation Sets', icon: Film },
+//   { id: 'sensors', label: 'Sensors', icon: Radar },
+//   { id: 'utility-functions', label: 'Utility Functions', icon: Brain }
+// ]
+
+const LEFT_TOOLBAR_SECTIONS = [
+  { id: 'agent-types', label: 'Agent Types', icon: PersonStanding },
+  { id: 'agent-properties', label: 'Agent Properties', icon: BookOpenText }, // or BookOpenText
+  { id: 'actions', label: 'Actions', icon: Footprints },  // or ClipboardPaste, Workflow
+  { id: 'recurring-changes', label: 'Recurring Changes', icon: Clock2 },  // or Clock2
+  { id: 'conditions', label: 'Conditions', icon: Timeline },  // or Timeline
+  { id: 'properties', label: 'Properties', icon: SlidersHorizontal },  // PencilRuler
+  { id: 'sprite-sheets', label: 'Sprite Sheets', icon: Images },
+  { id: 'animation-sets', label: 'Animation Sets', icon: Clapperboard },  // or Clapperboard
+  { id: 'sensors', label: 'Sensors', icon: Ear }, // could also do SmartphoneNfc, Wifi, Ear
+  { id: 'utility-functions', label: 'Utility Functions', icon: Brain }
+]
+
 
 export default {
   name: 'SimView',
@@ -381,6 +442,7 @@ export default {
 
     return {
       store,
+      leftToolbarSections: LEFT_TOOLBAR_SECTIONS,
       canvasRef,
       liveHudHost,
       topMenuStripHost,
@@ -429,6 +491,52 @@ body {
   display: flex;
   width: 100%;
   justify-content: left;
+}
+
+.left-sim-menu {
+  flex-shrink: 0;
+  width: 90px;
+  box-sizing: border-box;
+  padding: 2px;
+  border-right: 1px solid #e8b9ad;
+  background: #f5f3ee;
+}
+
+.left-sim-menu__grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1px;
+  width: 100%;
+}
+
+.left-sim-menu__item {
+  aspect-ratio: 1;
+  width: 100%;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  margin: 0;
+  border: 1px solid #dcc8c0;
+  background: #fffef9;
+  cursor: pointer;
+  color: #a03622;
+}
+
+.left-sim-menu__item:hover {
+  background: #f0e8e4;
+  border-color: #e43d12;
+}
+
+.left-sim-menu__item:focus-visible {
+  outline: 2px solid #e43d12;
+  outline-offset: 1px;
+}
+
+.left-sim-menu__icon {
+  flex-shrink: 0;
+  pointer-events: none;
 }
 
 .load-object-modal {
@@ -510,7 +618,7 @@ details[open] summary {
 }
 
 .info-container {
-  width: 100%;
+  width: 350px;
   padding: 5px 5px 5px 10px;
 }
 
