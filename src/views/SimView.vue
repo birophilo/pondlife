@@ -6,7 +6,7 @@
 
 <NavTopLogin />
 
-<div id="container">
+<div class="container">
 
   <div v-show="store.displayLoadObjectModal" class="load-object-modal">
     <ModalLoadObject :agentTypeList="agentTypeList" />
@@ -19,8 +19,12 @@
         :key="item.id"
         type="button"
         class="left-sim-menu__item"
+        :class="{ 'is-active': activeToolbarPanel === item.id }"
         :title="item.label"
         :aria-label="item.label"
+        :aria-expanded="activeToolbarPanel === item.id"
+        aria-controls="toolbar-detail-panel"
+        @click="onToolbarSectionClick(item.id)"
       >
         <component
           :is="item.icon"
@@ -31,9 +35,182 @@
         />
       </button>
     </div>
+
+    <div class="left-sim-menu__overlay-control">
+      <label class="left-sim-menu__overlay-switch" title="Overlay detail panel on canvas">
+        <input
+          v-model="toolbarDetailOverlay"
+          type="checkbox"
+          class="left-sim-menu__overlay-input"
+        />
+        <span class="left-sim-menu__overlay-track" aria-hidden="true" />
+      </label>
+      <span class="left-sim-menu__overlay-caption">overlay</span>
+    </div>
   </nav>
 
-  <div class="canvas-container" style="border: 1px solid red;">
+  <aside
+    id="toolbar-detail-panel"
+    class="toolbar-detail-menu"
+    :class="{
+      'is-open': activeToolbarPanel !== null,
+      'toolbar-detail-menu--overlay': toolbarDetailOverlay
+    }"
+    aria-label="Editor detail panel"
+    :aria-hidden="activeToolbarPanel === null"
+  >
+    <div class="toolbar-detail-menu__inner">
+      <div
+        v-show="activeToolbarPanel === 'agent-types'"
+        class="toolbar-panel"
+        role="region"
+        aria-labelledby="toolbar-panel-agent-types"
+      >
+        <h2 id="toolbar-panel-agent-types" class="toolbar-panel__heading">Agent Types</h2>
+        <div v-for="(agentType, index) in store.agentTypes" :key="index" class="agent-type-menu-container">
+          <AgentTypeEdit :agentType="agentType" />
+          <AgentTypeFirstActionEdit :agentType="agentType" />
+        </div>
+        <AgentTypeCreate />
+        <button @click="loadAgentTypesModal">load agent type</button>
+      </div>
+
+      <div
+        v-show="activeToolbarPanel === 'sprite-sheets'"
+        class="toolbar-panel"
+        role="region"
+        aria-labelledby="toolbar-panel-sprite-sheets"
+      >
+        <h2 id="toolbar-panel-sprite-sheets" class="toolbar-panel__heading">Sprite Sheets</h2>
+        <div v-for="(spriteSheet, index) in store.spriteSheets" :key="index">
+          <SpriteSheetEdit :spriteSheet="spriteSheet" :i="index" />
+        </div>
+        <SpriteSheetCreate />
+      </div>
+
+      <div
+        v-show="activeToolbarPanel === 'animation-sets'"
+        class="toolbar-panel"
+        role="region"
+        aria-labelledby="toolbar-panel-animation-sets"
+      >
+        <h2 id="toolbar-panel-animation-sets" class="toolbar-panel__heading">Animation Sets</h2>
+        <div v-for="(animationSet, index) in store.animationSets" :key="index">
+          <AnimationSetEdit :animationSet="animationSet" :i="index" />
+        </div>
+        <AnimationSetCreate />
+      </div>
+
+      <div
+        v-show="activeToolbarPanel === 'properties'"
+        class="toolbar-panel"
+        role="region"
+        aria-labelledby="toolbar-panel-properties"
+      >
+        <h2 id="toolbar-panel-properties" class="toolbar-panel__heading">Properties</h2>
+        <div v-if="store.selectedAgent !== null" class="item-list">
+          <PropertyEdit :agentProperties="store.selectedAgent.stateData"/>
+          <SetPropertyForm />
+        </div>
+        <p v-else class="toolbar-panel__hint">Select an agent on the canvas to edit properties.</p>
+      </div>
+
+      <div
+        v-show="activeToolbarPanel === 'recurring-changes'"
+        class="toolbar-panel"
+        role="region"
+        aria-labelledby="toolbar-panel-recurring-changes"
+      >
+        <h2 id="toolbar-panel-recurring-changes" class="toolbar-panel__heading">Recurring Changes</h2>
+        <div v-for="(recurringChange, index) in store.ungroupedRecurringChanges" :key="index">
+          <RecurringChangeEdit :recurringChange="recurringChange" :index="index" />
+        </div>
+        <RecurringChangeCreate />
+      </div>
+
+      <div
+        v-show="activeToolbarPanel === 'agent-properties'"
+        class="toolbar-panel"
+        role="region"
+        aria-labelledby="toolbar-panel-agent-properties"
+      >
+        <h2 id="toolbar-panel-agent-properties" class="toolbar-panel__heading">Agent Properties</h2>
+        <div v-for="(agentProperty, i) in store.agentProperties" :key="i" class="item-list">
+          <AgentInitialPropertyEdit :agentProperty="agentProperty" :index="i" />
+        </div>
+        <AgentPropertyCreate />
+      </div>
+
+      <div
+        v-show="activeToolbarPanel === 'actions'"
+        class="toolbar-panel"
+        role="region"
+        aria-labelledby="toolbar-panel-actions"
+      >
+        <h2 id="toolbar-panel-actions" class="toolbar-panel__heading">Actions</h2>
+        <div class="item-list">
+          <div v-for="action in store.actions" :key="action.id" class="created-item">
+            <ActionEdit :action="action"/>
+          </div>
+          <ActionCreate />
+        </div>
+        <h3 class="toolbar-panel__subheading">Start action</h3>
+        <div v-if="store.actions.length > 0">
+          <div v-for="action in store.actions" :key="'start-' + action.id">
+            <button @click="cloneAction(action, store.selectedAgent)">{{ action.actionName }}</button>
+          </div>
+        </div>
+        <p v-else class="toolbar-panel__hint">no actions yet</p>
+      </div>
+
+      <div
+        v-show="activeToolbarPanel === 'conditions'"
+        class="toolbar-panel"
+        role="region"
+        aria-labelledby="toolbar-panel-conditions"
+      >
+        <h2 id="toolbar-panel-conditions" class="toolbar-panel__heading">Conditions</h2>
+        <div class="item-list">
+          <div v-for="(item, index) in store.conditions" :key="index" class="created-item">
+            <ConditionEdit :item="item" :index="index" />
+          </div>
+        </div>
+        <ConditionCreate />
+      </div>
+
+      <div
+        v-show="activeToolbarPanel === 'sensors'"
+        class="toolbar-panel"
+        role="region"
+        aria-labelledby="toolbar-panel-sensors"
+      >
+        <h2 id="toolbar-panel-sensors" class="toolbar-panel__heading">Sensors</h2>
+        <div class="item-list">
+          <div v-for="(sensor, index) in store.sensors" :key="index" class="created-item">
+            <SensorEdit :sensor="sensor" :i="index" />
+          </div>
+        </div>
+        <SensorCreate />
+      </div>
+
+      <div
+        v-show="activeToolbarPanel === 'utility-functions'"
+        class="toolbar-panel"
+        role="region"
+        aria-labelledby="toolbar-panel-utility-functions"
+      >
+        <h2 id="toolbar-panel-utility-functions" class="toolbar-panel__heading">Utility Functions</h2>
+        <div class="item-list">
+          <div v-for="(utilityFunction, index) in store.agentUtilityFunctions" :key="index" class="created-item">
+            <UtilityFunctionEdit :utilityFunction="utilityFunction" :index="index" />
+          </div>
+        </div>
+        <UtilityFunctionCreate />
+      </div>
+    </div>
+  </aside>
+
+    <div class="canvas-container" style="border: 1px solid red;">
     <!-- Always mounted (Phase C); never v-if — simRuntime holds a native element reference. -->
     <canvas ref="canvasRef" />
 
@@ -46,128 +223,36 @@
 
     <div class="scene-button-container">
       <span v-if="store.sceneIsPlaying">
-        <button @click="pauseScene">pause scene</button>
+        <button type="button" class="scene-button" aria-label="Pause scene" @click="pauseScene">
+          <Pause :size="20" :stroke-width="1.25" aria-hidden="true" />
+        </button>
       </span>
       <span v-else-if="store.sceneIsPaused">
-        <button @click="unPauseScene">unpause scene</button>
+        <button type="button" class="scene-button" aria-label="Resume scene" @click="unPauseScene">
+          <Play :size="20" :stroke-width="1.25" aria-hidden="true" />
+        </button>
       </span>
       <span v-else>
-        <button @click="playScene">play scene</button>
+        <button type="button" class="scene-button" aria-label="Play scene" @click="playScene">
+          <Play :size="20" :stroke-width="1.25" aria-hidden="true" />
+        </button>
       </span>
-      <button @click="saveScene">save scene</button>
-      <button type="button" @click="goToSimulations">Simulations</button>
+      <button type="button" class="scene-button" aria-label="Save scene" @click="saveScene">
+        <Save :size="20" :stroke-width="1.25" aria-hidden="true" />
+      </button>
+      <!-- <button type="button" class="scene-button" aria-label="Simulations" @click="goToSimulations">
+        Simulations
+      </button> -->
     </div>
   </div>
 
-  <div class="info-container">
+  <div class="live-controls-menu">
 
     <!-- Phase C: imperative top strip + Selected Agent details — initTopMenuStrip() in setup -->
     <div ref="topMenuStripHost" />
 
-    <details class="menu-section" id="agent-types-section">
-      <summary class="menu-section-heading">Agent Types</summary>
-      <div v-for="(agentType, index) in store.agentTypes" :key="index" class="agent-type-menu-container">
-        <AgentTypeEdit :agentType="agentType" />
-        <AgentTypeFirstActionEdit :agentType="agentType" />
-      </div>
-      <AgentTypeCreate />
-      <button @click="loadAgentTypesModal">load agent type</button>
-    </details>
-
-    <details class="menu-section" id="sprite-sheets-section">
-      <summary>Sprites</summary>
-      <h3 class="menu-section-heading">Sprite Sheets</h3>
-      <div v-for="(spriteSheet, index) in store.spriteSheets" :key="index">
-        <SpriteSheetEdit :spriteSheet="spriteSheet" :i="index" />
-      </div>
-      <SpriteSheetCreate />
-
-      <div class="agent-type-menu-container"></div>
-      <h3 class="menu-section-heading">Animation Sets</h3>
-      <div v-for="(animationSet, index) in store.animationSets" :key="index">
-        <AnimationSetEdit :animationSet="animationSet" :i="index" />
-      </div>
-      <AnimationSetCreate />
-    </details>
-
-    <details class="menu-section" id="properties-section">
-      <summary class="menu-section-heading">Properties</summary>
-      <div v-if="store.selectedAgent !== null" class="item-list">
-        <PropertyEdit :agentProperties="store.selectedAgent.stateData"/>
-        <SetPropertyForm />
-      </div>
-    </details>
-
-    <details class="menu-section" id="recurring-changes-section">
-      <summary class="menu-section-heading">Recurring Changes</summary>
-      <div v-for="(recurringChange, index) in store.ungroupedRecurringChanges" :key="index">
-        <RecurringChangeEdit :recurringChange="recurringChange" :index="index" />
-      </div>
-      <RecurringChangeCreate />
-    </details>
-
-    <details class="menu-section" id="agent-properties-section">
-      <summary class="menu-section-heading">Agent Properties</summary>
-      <div v-for="(agentProperty, i) in store.agentProperties" :key="i" class="item-list">
-        <AgentInitialPropertyEdit :agentProperty="agentProperty" :index="i" />
-      </div>
-      <AgentPropertyCreate />
-    </details>
-
-    <details class="menu-section" id="actions-section">
-      <summary class="menu-section-heading">Actions</summary>
-      <div class="item-list">
-        <div v-for="action in store.actions" :key="action.id" class="created-item">
-          {{ action.id }}
-          <ActionEdit :action="action"/>
-        </div>
-        <ActionCreate />
-      </div>
-    </details>
-
-    <details class="menu-section" id="start-actions-section" :open="store.actions.length > 0">
-      <summary class="menu-section-heading">Start action</summary>
-      <div v-if="store.actions.length > 0">
-        <div v-for="action in store.actions" :key="action.id">
-          <button @click="cloneAction(action, store.selectedAgent)">{{ action.actionName }}</button>
-        </div>
-      </div>
-      <div v-else>
-        no actions yet
-      </div>
-    </details>
-
-    <details class="menu-section" id="conditions-section">
-      <summary class="menu-section-heading">Conditions</summary>
-      <div class="item-list">
-        <div v-for="(item, index) in store.conditions" :key="index" class="created-item">
-          <ConditionEdit :item="item" :index="index" />
-        </div>
-      </div>
-      <ConditionCreate />
-    </details>
-
-    <details class="menu-section" id="sensors-section">
-      <summary class="menu-section-heading">Sensors</summary>
-      <div class="item-list">
-        <div v-for="(sensor, index) in store.sensors" :key="index" class="created-item">
-          <SensorEdit :sensor="sensor" :i="index" />
-        </div>
-      </div>
-      <SensorCreate />
-    </details>
-
-    <details class="menu-section" id="utility-functions-section">
-      <summary class="menu-section-heading">Utility Functions</summary>
-      <div class="item-list">
-        <div v-for="(utilityFunction, index) in store.agentUtilityFunctions" :key="index" class="created-item">
-          <UtilityFunctionEdit :utilityFunction="utilityFunction" :index="index" />
-        </div>
-      </div>
-      <UtilityFunctionCreate />
-    </details>
-
   </div>
+
 </div>
 
 </template>
@@ -216,7 +301,11 @@ import {
   Clock2,
   Ear,
   Clapperboard,
-  Footprints
+  Footprints,
+  Pause,
+  Play,
+  Save,
+  List
 } from '@lucide/vue'
 
 /** Left toolbar icons — one distinct Lucide icon per editor section. */
@@ -272,7 +361,11 @@ export default {
     UtilityFunctionEdit,
     UtilityFunctionCreate,
     RecurringChangeEdit,
-    RecurringChangeCreate
+    RecurringChangeCreate,
+    Play,
+    Pause,
+    Save,
+    List
   },
   setup () {
     const store = useStore()
@@ -287,6 +380,22 @@ export default {
     const showFrameRateDiagnostics = ref(false)
     const cumulativeAverageFps = ref(0)
     const currentFps = ref(0)
+
+    /** null = detail drawer collapsed; otherwise id from LEFT_TOOLBAR_SECTIONS */
+    const activeToolbarPanel = ref(null)
+    /** When true, expanded detail panel overlaps canvas instead of pushing layout. */
+    const toolbarDetailOverlay = ref(false)
+
+    function onToolbarSectionClick (id) {
+      activeToolbarPanel.value =
+        activeToolbarPanel.value === id ? null : id
+    }
+
+    function onToolbarDetailKeydown (event) {
+      if (event.key === 'Escape' && activeToolbarPanel.value !== null) {
+        activeToolbarPanel.value = null
+      }
+    }
 
     const world = createWorld()
 
@@ -366,13 +475,10 @@ export default {
       }
       return {
         simMode,
-        dayNumber: store.dayNumber,
         selectedName: a ? a.name : null,
         currentStateName: a ? a.currentStateName : null,
         currentActionName: a?.currentAction?.actionName ?? null,
-        currentActionSequenceName: a?.currentActionSequence?.name ?? null,
-        mouseX: simPointer.x,
-        mouseY: simPointer.y
+        currentActionSequenceName: a?.currentActionSequence?.name ?? null
       }
     }
 
@@ -396,6 +502,7 @@ export default {
     const isFirstActivation = ref(true)
 
     onMounted(async () => {
+      document.addEventListener('keydown', onToolbarDetailKeydown)
       sim.attachCanvas(canvasRef.value)
       sim.attachDocumentListeners()
       const topMenu = initTopMenuStrip(topMenuStripHost.value, {
@@ -424,6 +531,7 @@ export default {
     })
 
     onDeactivated(() => {
+      activeToolbarPanel.value = null
       sim.suspendForRouteLeave()
     })
 
@@ -437,12 +545,16 @@ export default {
     })
 
     onBeforeUnmount(() => {
+      document.removeEventListener('keydown', onToolbarDetailKeydown)
       sim.stopSimRuntime()
     })
 
     return {
       store,
       leftToolbarSections: LEFT_TOOLBAR_SECTIONS,
+      activeToolbarPanel,
+      toolbarDetailOverlay,
+      onToolbarSectionClick,
       canvasRef,
       liveHudHost,
       topMenuStripHost,
@@ -486,20 +598,97 @@ body {
   color: #e43d12;
 }
 
-#container {
+.container {
   position: relative;
   display: flex;
-  width: 100%;
-  justify-content: left;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  /* Block-level divs still span the viewport; when columns exceed that width, scroll instead of shrinking. */
+  overflow-x: auto;
 }
 
 .left-sim-menu {
-  flex-shrink: 0;
+  flex: 0 0 90px;
   width: 90px;
   box-sizing: border-box;
   padding: 2px;
   border-right: 1px solid #e8b9ad;
   background: #f5f3ee;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.left-sim-menu__overlay-control {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.left-sim-menu__overlay-switch {
+  position: relative;
+  display: inline-flex;
+  cursor: pointer;
+}
+
+.left-sim-menu__overlay-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.left-sim-menu__overlay-track {
+  display: block;
+  width: 28px;
+  height: 16px;
+  border-radius: 8px;
+  background: #dcc8c0;
+  border: 1px solid #c8b4ac;
+  box-sizing: border-box;
+  transition: background 0.1s ease;
+}
+
+.left-sim-menu__overlay-track::after {
+  content: '';
+  position: absolute;
+  left: 3px;
+  top: 3px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #fffef9;
+  transition: transform 0.1s ease;
+}
+
+.left-sim-menu__overlay-input:checked + .left-sim-menu__overlay-track {
+  background: #e8b9ad;
+  border-color: #e43d12;
+}
+
+.left-sim-menu__overlay-input:checked + .left-sim-menu__overlay-track::after {
+  transform: translateX(12px);
+}
+
+.left-sim-menu__overlay-input:focus-visible + .left-sim-menu__overlay-track {
+  outline: 2px solid #e43d12;
+  outline-offset: 2px;
+}
+
+.left-sim-menu__overlay-caption {
+  margin-top: 4px;
+  font-size: 0.65rem;
+  line-height: 1.2;
+  text-align: center;
+  color: #a03622;
+  user-select: none;
 }
 
 .left-sim-menu__grid {
@@ -507,6 +696,7 @@ body {
   grid-template-columns: repeat(2, 1fr);
   gap: 1px;
   width: 100%;
+  align-self: stretch;
 }
 
 .left-sim-menu__item {
@@ -526,6 +716,11 @@ body {
 
 .left-sim-menu__item:hover {
   background: #f0e8e4;
+  border-color: #e43d12;
+}
+
+.left-sim-menu__item.is-active {
+  background: #e8b9ad;
   border-color: #e43d12;
 }
 
@@ -558,6 +753,8 @@ canvas {
 
 .canvas-container {
   position: relative;
+  flex: 0 0 auto;
+  min-width: 1000px;
 }
 
 /* Phase D: imperative nodes under .sim-live-hud-host use these classes only (global — not scoped). */
@@ -604,22 +801,69 @@ canvas {
   word-break: break-word;
 }
 
-details {
-  margin-top: 24px;
+.toolbar-detail-menu {
+  flex: 0 0 auto;
+  width: 0;
+  min-width: 0;
+  overflow: hidden;
+  box-sizing: border-box;
+  transition: width 0.1s ease, min-width 0.1s ease;
 }
 
-summary {
-  font-size: 1.1rem;
-  user-select: none;
-}
-
-details[open] summary {
-  margin-bottom: 20px;
-}
-
-.info-container {
+.toolbar-detail-menu.is-open {
   width: 350px;
+  min-width: 350px;
+}
+
+.toolbar-detail-menu--overlay {
+  position: absolute;
+  left: 90px;
+  top: 0;
+  z-index: 10;
+  height: 100%;
+  min-height: 100%;
+  background: #efeee8;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.08);
+}
+
+.toolbar-detail-menu--overlay .toolbar-detail-menu__inner {
+  font-size: 14px;
+  border-right: 1px solid #e8b9ad;
+}
+
+.toolbar-detail-menu__inner {
+  width: 350px;
+  padding: 8px 10px 16px;
+  box-sizing: border-box;
+  max-height: 100vh;
+  overflow-y: auto;
+}
+
+.toolbar-panel__heading {
+  margin: 0 0 16px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #a03622;
+}
+
+.toolbar-panel__subheading {
+  margin: 20px 0 12px;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.toolbar-panel__hint {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.live-controls-menu {
+  flex: 0 0 200px;
+  width: 200px;
+  min-width: 200px;
   padding: 5px 5px 5px 10px;
+  box-sizing: border-box;
 }
 
 .speed-slide-container {
@@ -638,13 +882,8 @@ details[open] summary {
   margin: 16px 0 16px 0;
 }
 
-.menu-section {
-  padding-bottom: 20px;
-  border-bottom: 1px solid #ccc;
-}
-
 .menu-action-name {
-  font-size: 20px;
+  font-size: 18px;
   padding-right: 10px;
   font-weight: 500;
 }
@@ -655,6 +894,15 @@ input,select,button {
   font-family: "Rubik", sans-serif;
   border-radius: 3px;
   border-width: 1px;
+}
+
+.scene-button-container button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 6px 10px;
+  color:#a03622
 }
 
 .created-item-header {

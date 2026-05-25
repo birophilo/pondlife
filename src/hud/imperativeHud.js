@@ -7,13 +7,10 @@
  * @param {HTMLElement|null} hostEl
  * @param {() => {
  *   simMode: string,
- *   dayNumber: number,
  *   selectedName: string|null,
  *   currentStateName: string|null,
  *   currentActionName: string|null,
- *   currentActionSequenceName: string|null,
- *   mouseX: number,
- *   mouseY: number
+ *   currentActionSequenceName: string|null
  * }} getSnapshot Readonly snapshot; safe to call every frame from sim rAF.
  * @returns {{ update: () => void, destroy: () => void }}
  */
@@ -46,21 +43,17 @@ export function initLiveHud (hostEl, getSnapshot) {
   }
 
   const modeRow = makeRow('sim')
-  const dayRow = makeRow('day')
   const agentRow = makeRow('agent')
   const stateRow = makeRow('state')
   const actionRow = makeRow('action')
   const sequenceRow = makeRow('seq')
-  const mouseRow = makeRow('mouse')
 
   panel.append(
     modeRow.wrap,
-    dayRow.wrap,
     agentRow.wrap,
     stateRow.wrap,
     actionRow.wrap,
-    sequenceRow.wrap,
-    mouseRow.wrap
+    sequenceRow.wrap
   )
   hostEl.appendChild(panel)
 
@@ -78,12 +71,10 @@ export function initLiveHud (hostEl, getSnapshot) {
   const update = () => {
     const s = getSnapshot()
     display('simMode', modeRow.value, s.simMode)
-    display('day', dayRow.value, s.dayNumber)
     display('agent', agentRow.value, s.selectedName)
     display('state', stateRow.value, s.currentStateName)
     display('action', actionRow.value, s.currentActionName)
     display('sequence', sequenceRow.value, s.currentActionSequenceName)
-    display('mouse', mouseRow.value, `${s.mouseX}, ${s.mouseY}`)
   }
 
   const destroy = () => {
