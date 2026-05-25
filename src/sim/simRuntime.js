@@ -1,6 +1,6 @@
 /**
- * Plan 3 Phase B/D/F — imperative sim + canvas + rAF; live HUD tick; pointer via simPointer (Phase F).
- * Vue calls createSimRuntime({ store, world, fpsRefs }); attachCanvas / attachLiveHud; rAF reads `world`.
+ * Plan 3 Phase B/D/F — imperative sim + canvas + rAF; pointer via simPointer (Phase F).
+ * Vue calls createSimRuntime({ store, world, fpsRefs }); attachCanvas / attachSidePanel; rAF reads `world`.
  * stopSimRuntime on true unmount.
  */
 
@@ -57,7 +57,7 @@ export function createSimRuntime ({ store, world, fpsRefs }) {
   let documentListenerAttached = false
 
   /** @type {{ update: () => void, destroy: () => void } | null} */
-  let liveHud = null
+  let sidePanel = null
 
   const agentHandler = new AgentHandler()
   const actionHandler = new ActionHandler()
@@ -70,12 +70,12 @@ export function createSimRuntime ({ store, world, fpsRefs }) {
   }
   const conditionHandler = new ConditionHandler()
 
-  const tickLiveHud = () => {
-    liveHud?.update()
+  const tickSidePanel = () => {
+    sidePanel?.update()
   }
 
-  const attachLiveHud = (api) => {
-    liveHud = api
+  const attachSidePanel = (api) => {
+    sidePanel = api
   }
 
   const getGlobals = () => ({
@@ -368,7 +368,7 @@ export function createSimRuntime ({ store, world, fpsRefs }) {
 
     if (frameId % dayLength === 0) endDay()
 
-    tickLiveHud()
+    tickSidePanel()
 
     if (!destroyed && store.sceneIsPlaying) {
       lastRafId = requestAnimationFrame(animate)
@@ -398,7 +398,7 @@ export function createSimRuntime ({ store, world, fpsRefs }) {
         store.mouse.x = event.offsetX
         store.mouse.y = event.offsetY
       }
-      tickLiveHud()
+      tickSidePanel()
     }
 
     onCanvasClick = (event) => {
@@ -448,7 +448,7 @@ export function createSimRuntime ({ store, world, fpsRefs }) {
         }
       }
 
-      tickLiveHud()
+      tickSidePanel()
     }
   }
 
@@ -507,7 +507,7 @@ export function createSimRuntime ({ store, world, fpsRefs }) {
   const stopPlaybackForSceneChange = () => {
     if (destroyed) return
     cancelAnimationLoop()
-    tickLiveHud()
+    tickSidePanel()
   }
 
   /** Leave /sim (keep-alive): stop rAF, detach input, pause if mid-play — scene + agents stay in memory. */
@@ -520,7 +520,7 @@ export function createSimRuntime ({ store, world, fpsRefs }) {
       store.sceneIsPlaying = false
       store.sceneIsPaused = true
     }
-    tickLiveHud()
+    tickSidePanel()
   }
 
   /** Return to /sim after keep-alive cache: reattach listeners only (canvas + context unchanged). */
@@ -528,7 +528,7 @@ export function createSimRuntime ({ store, world, fpsRefs }) {
     if (destroyed || !canvas) return
     attachCanvasPointerListeners()
     attachDocumentListeners()
-    tickLiveHud()
+    tickSidePanel()
   }
 
   const playScene = () => {
@@ -552,14 +552,14 @@ export function createSimRuntime ({ store, world, fpsRefs }) {
     }
 
     startAnimationLoop()
-    tickLiveHud()
+    tickSidePanel()
   }
 
   const pauseScene = () => {
     store.sceneIsPlaying = false
     store.sceneIsPaused = true
     cancelAnimationLoop()
-    tickLiveHud()
+    tickSidePanel()
   }
 
   const unPauseScene = () => {
@@ -568,7 +568,7 @@ export function createSimRuntime ({ store, world, fpsRefs }) {
     store.sceneIsPlaying = true
     store.sceneIsPaused = false
     startAnimationLoop()
-    tickLiveHud()
+    tickSidePanel()
   }
 
   const resetFpsDiagnostics = () => {
@@ -585,9 +585,9 @@ export function createSimRuntime ({ store, world, fpsRefs }) {
     if (destroyed) return
     destroyed = true
     cancelAnimationLoop()
-    if (liveHud) {
-      liveHud.destroy()
-      liveHud = null
+    if (sidePanel) {
+      sidePanel.destroy()
+      sidePanel = null
     }
     detachCanvasPointerListeners()
     detachDocumentListeners()
@@ -604,8 +604,8 @@ export function createSimRuntime ({ store, world, fpsRefs }) {
   return {
     attachCanvas,
     attachDocumentListeners,
-    attachLiveHud,
-    refreshLiveHud: tickLiveHud,
+    attachSidePanel,
+    refreshSidePanel: tickSidePanel,
     suspendForRouteLeave,
     stopPlaybackForSceneChange,
     resumeAfterRouteEnter,

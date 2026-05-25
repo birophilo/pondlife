@@ -214,9 +214,6 @@
     <!-- Always mounted (Phase C); never v-if — simRuntime holds a native element reference. -->
     <canvas ref="canvasRef" />
 
-    <!-- Phase D: empty host; initLiveHud() appends panel; scoped styles do not apply to those nodes — see global block below. -->
-    <div ref="liveHudHost" class="sim-live-hud-host" />
-
     <div class="scene-heading">
       {{ sceneName }}
     </div>
@@ -266,7 +263,6 @@ import api from '@/apiCrud.js'
 import { createSimRuntime } from '@/sim/simRuntime.js'
 import { createWorld } from '@/sim/world.js'
 import { simPointer } from '@/sim/simPointer.js'
-import { initLiveHud } from '@/hud/imperativeHud.js'
 import { initTopMenuStrip } from '@/hud/imperativeTopMenuStrip.js'
 import AgentTypeCreate from '@/components/simUiForms/AgentTypeCreate.vue'
 import AgentTypeEdit from '@/components/simUiForms/AgentTypeEdit.vue'
@@ -373,7 +369,6 @@ export default {
     const route = useRoute()
 
     const canvasRef = ref(null)
-    const liveHudHost = ref(null)
     const topMenuStripHost = ref(null)
     const sceneName = ref('')
 
@@ -384,7 +379,7 @@ export default {
     /** null = detail drawer collapsed; otherwise id from LEFT_TOOLBAR_SECTIONS */
     const activeToolbarPanel = ref(null)
     /** When true, expanded detail panel overlaps canvas instead of pushing layout. */
-    const toolbarDetailOverlay = ref(false)
+    const toolbarDetailOverlay = ref(true)
 
     function onToolbarSectionClick (id) {
       activeToolbarPanel.value =
@@ -438,7 +433,7 @@ export default {
       sceneName.value = store.sceneName
       sim.loadAgentsAndFixtures()
       sim.renderAgents('draw')
-      sim.refreshLiveHud()
+      sim.refreshSidePanel()
       store.needsSimHydration = false
     }
 
@@ -463,23 +458,6 @@ export default {
     const loadAgentTypesModal = async () => {
       store.displayLoadObjectModal = true
       agentTypeList.value = await api.listAgentTypes()
-    }
-
-    const getLiveHudSnapshot = () => {
-      const a = store.selectedAgent
-      let simMode = 'edit'
-      if (store.sceneIsPlaying) {
-        simMode = store.sceneIsPaused ? 'paused' : 'playing'
-      } else if (store.sceneIsPaused) {
-        simMode = 'paused'
-      }
-      return {
-        simMode,
-        selectedName: a ? a.name : null,
-        currentStateName: a ? a.currentStateName : null,
-        currentActionName: a?.currentAction?.actionName ?? null,
-        currentActionSequenceName: a?.currentActionSequence?.name ?? null
-      }
     }
 
     watch(
@@ -514,18 +492,14 @@ export default {
         currentFps,
         onFpsDiagnosticsChange: onFrameRateDiagnosticsChange
       })
-      const hud = initLiveHud(liveHudHost.value, getLiveHudSnapshot)
-      sim.attachLiveHud({
+      sim.attachSidePanel({
         update () {
-          hud.update()
           topMenu.update()
         },
         destroy () {
-          hud.destroy()
           topMenu.destroy()
         }
       })
-      hud.update()
       topMenu.update()
       await syncRouteScene()
     })
@@ -556,7 +530,6 @@ export default {
       toolbarDetailOverlay,
       onToolbarSectionClick,
       canvasRef,
-      liveHudHost,
       topMenuStripHost,
       loadAgentsAndFixtures,
       goToSimulations,
@@ -755,50 +728,6 @@ canvas {
   position: relative;
   flex: 0 0 auto;
   min-width: 1000px;
-}
-
-/* Phase D: imperative nodes under .sim-live-hud-host use these classes only (global — not scoped). */
-.sim-live-hud-host {
-  position: absolute;
-  left: 8px;
-  top: 8px;
-  z-index: 2;
-  pointer-events: none;
-  font-size: 12px;
-  color: #1a1a1a;
-  text-shadow: 0 0 3px #efeee8, 0 0 6px #efeee8;
-}
-
-.sim-live-hud__panel {
-  background: rgba(239, 238, 232, 0.9);
-  border: 1px solid #c8c4bc;
-  border-radius: 4px;
-  padding: 8px 10px;
-  min-width: 210px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-}
-
-.sim-live-hud__row {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 4px;
-  line-height: 1.35;
-}
-
-.sim-live-hud__row:last-child {
-  margin-bottom: 0;
-}
-
-.sim-live-hud__label {
-  flex: 0 0 56px;
-  font-weight: 500;
-  color: #a03622;
-}
-
-.sim-live-hud__value {
-  flex: 1;
-  font-variant-numeric: tabular-nums;
-  word-break: break-word;
 }
 
 .toolbar-detail-menu {

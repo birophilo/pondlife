@@ -1,6 +1,6 @@
 /**
  * Imperative DOM for the top sidebar block: day / speed / FPS strip plus
- * Selected Agent `<details>` (same fields as the canvas HUD; refreshed in `update()`).
+ * Selected Agent `<details>` (refreshed in `update()`).
  */
 
 /**
