@@ -108,6 +108,10 @@ export const useStore = defineStore({
     // summary list data for scene menu selection
     sceneList: [],
 
+    /** Set when a simulation is loaded into the session; null when none. */
+    sceneId: null,
+    sceneName: '',
+
     // scene detail
     sceneData: {},
 
@@ -162,6 +166,21 @@ export const useStore = defineStore({
       this.groupedRecurringChanges = {}
       this.firstActions = {}
       this.actionSequences = []
+    },
+
+    /**
+     * Leave the loaded simulation (e.g. from Simulations list "exit scene").
+     * Clears Pinia fixture state; SimView clears world + canvas via sceneId watch.
+     */
+    unloadCurrentScene () {
+      this.clearSceneFixtureState()
+      this.resetSimulationSessionState()
+      this.sceneData = {}
+      this.sceneId = null
+      this.sceneName = ''
+      this.needsSimHydration = false
+      this.placingAgent = false
+      this.agentPreview = null
     },
     async fetchSceneList () {
       this.loading = true

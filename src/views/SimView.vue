@@ -256,7 +256,7 @@
 
 
 <script>
-import { onMounted, onBeforeUnmount, onActivated, onDeactivated, ref, watch } from 'vue'
+import { onMounted, onBeforeUnmount, onActivated, onDeactivated, ref, watch, nextTick } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useStore } from '@/store/mainStore.js'
 import api from '@/apiCrud.js'
@@ -428,29 +428,58 @@ export default {
       sim.loadAgentsAndFixtures()
     }
 
-    const hydrateSimIfNeeded = () => {
-      if (!store.needsSimHydration) return
+    const worldNeedsSceneHydration = () => {
+      return Object.keys(world.agentTypes).length === 0
+    }
+
+    const hasScenePayload = () => {
+      const data = store.sceneData
+      return data != null && typeof data === 'object' && Object.keys(data).length > 0
+    }
+
+    const applySceneToWorld = () => {
       sceneName.value = store.sceneName
       sim.loadAgentsAndFixtures()
-      sim.renderAgents('draw')
+      sim.paintInitialScene()
       sim.refreshSidePanel()
       store.needsSimHydration = false
     }
 
     /** Load scene from `/simulation/:sceneId` (or refresh with that URL). */
+    let syncRouteSceneInFlight = null
     const syncRouteScene = async () => {
-      const rawId = route.params.sceneId
-      if (rawId === undefined || rawId === null || String(rawId).length === 0) {
-        hydrateSimIfNeeded()
+      if (syncRouteSceneInFlight) {
+        await syncRouteSceneInFlight
         return
       }
-      const id = String(rawId)
-      if (id !== String(store.sceneId ?? '')) {
-        sim.stopPlaybackForSceneChange()
-        sim.resetFpsDiagnostics()
-        await store.loadSceneForSimulation({ id })
+      syncRouteSceneInFlight = (async () => {
+        const rawId = route.params.sceneId
+        if (rawId === undefined || rawId === null || String(rawId).length === 0) {
+          if (store.needsSimHydration && hasScenePayload()) {
+            applySceneToWorld()
+          }
+          return
+        }
+        const id = String(rawId)
+        if (id !== String(store.sceneId ?? '')) {
+          sim.stopPlaybackForSceneChange()
+          sim.resetFpsDiagnostics()
+          await store.loadSceneForSimulation({ id })
+        }
+        const routeMatchesStore =
+          !store.error && String(store.sceneId) === id && hasScenePayload()
+        const shouldApply =
+          routeMatchesStore &&
+          (store.needsSimHydration || worldNeedsSceneHydration())
+        if (shouldApply) {
+          applySceneToWorld()
+        }
+      })()
+      try {
+        await syncRouteSceneInFlight
+      } finally {
+        syncRouteSceneInFlight = null
       }
-      hydrateSimIfNeeded()
     }
 
     const agentTypeList = ref([])
@@ -477,10 +506,20 @@ export default {
       }
     )
 
-    const isFirstActivation = ref(true)
+    watch(
+      () => store.sceneId,
+      (id) => {
+        if (id == null || id === '') {
+          sceneName.value = ''
+          sim.unloadSimWorld()
+          sim.refreshSidePanel()
+        }
+      }
+    )
 
     onMounted(async () => {
       document.addEventListener('keydown', onToolbarDetailKeydown)
+      await nextTick()
       sim.attachCanvas(canvasRef.value)
       sim.attachDocumentListeners()
       const topMenu = initTopMenuStrip(topMenuStripHost.value, {
@@ -510,10 +549,6 @@ export default {
     })
 
     onActivated(async () => {
-      if (isFirstActivation.value) {
-        isFirstActivation.value = false
-        return
-      }
       sim.resumeAfterRouteEnter()
       await syncRouteScene()
     })

@@ -19,6 +19,7 @@ import {
 } from '@/classes/Action.js'
 import api from '@/apiCrud.js'
 import { loadAgentsAndFixtures as loadAgentsAndFixturesFromScene } from '@/sim/sceneLoader.js'
+import { resetWorld } from '@/sim/world.js'
 import { setDynamicActionTargetAgents, setNextAction, chooseNextActionByUtility } from '@/sim/agentActions.js'
 import { applyTickEffects } from '@/sim/tickEffects.js'
 import { simPointer } from '@/sim/simPointer.js'
@@ -571,6 +572,68 @@ export function createSimRuntime ({ store, world, fpsRefs }) {
     tickSidePanel()
   }
 
+  const clearCanvas = () => {
+    if (!c || !canvas) return
+    c.fillStyle = backgroundColor
+    c.fillRect(0, 0, canvas.width, canvas.height)
+  }
+
+  const repaintInitialSceneFrame = () => {
+    if (destroyed || !c || !canvas) return
+    clearCanvas()
+    for (const agentTypeName of Object.keys(world.agentItems)) {
+      for (const agent of world.agentItems[agentTypeName]) {
+        agentHandler.idle(agent)
+      }
+    }
+    renderAgents('draw')
+  }
+
+  const scheduleRepaintWhenAgentImagesReady = () => {
+    const images = []
+    for (const agentTypeName of Object.keys(world.agentItems)) {
+      for (const agent of world.agentItems[agentTypeName]) {
+        if (agent.image) images.push(agent.image)
+      }
+    }
+    for (const img of images) {
+      if (img.complete && img.naturalWidth > 0) continue
+      const onReady = () => {
+        if (!destroyed && store.sceneIsPlaying !== true) {
+          repaintInitialSceneFrame()
+        }
+      }
+      img.addEventListener('load', onReady, { once: true })
+      img.addEventListener('error', onReady, { once: true })
+    }
+  }
+
+  /**
+   * Static layout paint before play: idle sprites only, no sim tick / actions / utility.
+   * Safe to call after loadAgentsAndFixtures while sceneIsPlaying is false.
+   */
+  const paintInitialScene = () => {
+    if (destroyed || !c || !canvas) return
+    clearCanvas()
+    for (const agentTypeName of Object.keys(world.agentItems)) {
+      for (const agent of world.agentItems[agentTypeName]) {
+        agent.currentAction = null
+        agent.currentActionSequence = null
+        agent.currentActionName = ''
+        agentHandler.idle(agent)
+      }
+    }
+    renderAgents('draw')
+    scheduleRepaintWhenAgentImagesReady()
+  }
+
+  /** Drop world agents/fixtures and clear canvas (session unload; not full destroy). */
+  const unloadSimWorld = () => {
+    cancelAnimationLoop()
+    resetWorld(world, store)
+    clearCanvas()
+  }
+
   const resetFpsDiagnostics = () => {
     fpsStartTime = 0
     fpsLastSecondStart = 0
@@ -614,6 +677,8 @@ export function createSimRuntime ({ store, world, fpsRefs }) {
     destroy,
     loadAgentsAndFixtures,
     renderAgents,
+    paintInitialScene,
+    unloadSimWorld,
     getGlobals,
     agentHandler,
     get currentAnimationFrameId () {

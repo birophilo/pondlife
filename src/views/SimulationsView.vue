@@ -2,7 +2,11 @@
   <div class="simulations-view">
     <NavTopLogin />
     <div class="simulations-body">
-      <SceneMenu @load-scene="onLoadScene" @create-new-scene="onCreateScene" />
+      <SceneMenu
+        @load-scene="onLoadScene"
+        @exit-scene="onExitScene"
+        @create-new-scene="onCreateScene"
+      />
     </div>
   </div>
 </template>
@@ -12,22 +16,32 @@ import { useRouter } from 'vue-router'
 import NavTopLogin from '@/components/NavTopLogin.vue'
 import SceneMenu from '@/components/SceneMenu.vue'
 import api from '@/apiCrud.js'
+import { useStore } from '@/store/mainStore.js'
 
 export default {
   name: 'SimulationsView',
   components: { NavTopLogin, SceneMenu },
   setup () {
     const router = useRouter()
+    const store = useStore()
 
     const onLoadScene = async (scene) => {
+      await store.loadSceneForSimulation(scene)
+      if (store.error) return
       await router.push({
         name: 'simulationDetail',
         params: { sceneId: scene.id }
       })
     }
 
+    const onExitScene = () => {
+      store.unloadCurrentScene()
+    }
+
     const onCreateScene = async (sceneNameParam) => {
       const newScene = await api.createScene({ name: sceneNameParam })
+      await store.loadSceneForSimulation(newScene)
+      if (store.error) return
       await router.push({
         name: 'simulationDetail',
         params: { sceneId: newScene.id }
@@ -36,6 +50,7 @@ export default {
 
     return {
       onLoadScene,
+      onExitScene,
       onCreateScene
     }
   }
