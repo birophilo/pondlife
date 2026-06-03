@@ -54,6 +54,6 @@ $ python dev_db_commands.py populate
 $ python dev_db_commands.py populate <custom_dir>
 
 # export: dump dev db into json files
-$ python dev_db dump
+$ python dev_db_commands.py dump
 $ python dev_db_commands.py dump <custom_dir>
 ```

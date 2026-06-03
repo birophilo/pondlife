@@ -98,11 +98,12 @@
         "name": "Rabbit and Carrots",
         "data": {
             "agentTypes": [
-                "67a252bb0370e42b011a2bbb",
-                "67a252bb0370e42b011a2bbc",
                 "67a8197ef6d7fc93893f35c2",
                 "67ace7ba036d42b4a0494360",
-                "67b8d38895db79bed5777911"
+                "67a2525d0370e42b011a2bb9",
+                "67b8d38895db79bed5777911",
+                "67ace7a0036d42b4a049435d",
+                "67a80db26dae6de3690c5f43"
             ],
             "agentInstances": [
                 "67b92b688b51703c50f56087",
@@ -133,20 +134,14 @@
                 "67ae57e481ec1100c68d650b",
                 "67af8eb793185d9278f7e13d"
             ],
+            "actionSequences": [
+                "683c6cf2d35e5e92e09efa8b"
+            ],
             "agentProperties": [
                 "67ad22df8ed4af6b4da8689f",
                 "67b8e57a95db79bed57779f4"
             ],
             "spritesheets": [
-                "67a251fa0370e42b011a2bae",
-                "67a251fa0370e42b011a2baf",
-                "67a251fa0370e42b011a2bb0",
-                "67a251fa0370e42b011a2bb1",
-                "67a251fa0370e42b011a2bb2",
-                "67a251fa0370e42b011a2bb3",
-                "67a251fa0370e42b011a2bb4",
-                "67a251fa0370e42b011a2bb5",
-                "67a251fa0370e42b011a2bb6",
                 "67a80c9c6dae6de3690c5f27",
                 "67a80cc26dae6de3690c5f2b",
                 "67a80cf46dae6de3690c5f2e",
@@ -156,42 +151,21 @@
                 "67a80d766dae6de3690c5f40",
                 "67ace794036d42b4a049435a",
                 "67ae4e7981ec1100c68d63db",
-                "67b121e99d33fa0fab203b30",
-                "67b129c59d33fa0fab203ccd",
-                "67b8d41395db79bed577791c",
-                "67b8dae795db79bed577795a",
-                "67b8db0695db79bed577795d",
-                "67b8db1595db79bed5777960",
-                "67b8db3695db79bed5777963",
-                "67b8db4895db79bed5777966",
-                "67b8db6495db79bed577796a",
-                "67b8db7e95db79bed577796d",
-                "67b8df5e95db79bed57779c5",
-                "67d5ea643037477e16938685",
-                "67d5ea803037477e16938688",
-                "67d5f3d63037477e169386da",
-                "67d5f7993037477e169386fb"
+                "67b129c59d33fa0fab203ccd"
             ],
             "animationSets": [
-                "67a2525d0370e42b011a2bb9",
                 "67a80db26dae6de3690c5f43",
-                "67ace7a0036d42b4a049435d",
-                "67b122019d33fa0fab203b33",
-                "67b8d4ad95db79bed5777923",
-                "67d5eaae3037477e1693868b",
-                "67d5eadc3037477e1693868e",
-                "67d5f4003037477e169386dd",
-                "67d5f7c13037477e169386fe"
+                "67ace7a0036d42b4a049435d"
             ],
             "propertyChanges": [
                 "67ad230f8ed4af6b4da868a7",
                 "67ad258d8ed4af6b4da868df"
             ],
             "sensors": [
-                "67c8b73c4cddd06e53b258ee",
-                "67d896fe9a9eb09732f7e48a",
-                "67d897089a9eb09732f7e48d"
+                "67c8b73c4cddd06e53b258ee"
             ],
+            "utilityFunctions": [],
+            "recurringChanges": [],
             "firstActions": {
                 "lemonadeStall": null,
                 "dog": "67ad1d21036d42b4a04943be",
@@ -203,15 +177,16 @@
             }
         },
         "createdAt": 1738690074561,
-        "lastModified": 1748030259705,
-        "resource": "scene"
+        "lastModified": 1779662316103,
+        "resource": "scene",
+        "authorId": "pondlife",
+        "authorUsername": "pondlife"
     },
     {
         "_id": "67c90f77ba0b7e567b15269b",
         "name": "Schelling",
         "data": {
             "agentTypes": [
-                "67a252bb0370e42b011a2bbb",
                 "67d5ebc73037477e169386a2",
                 "67d5ef8a3037477e169386c6",
                 "67d5f4ce3037477e169386e0",
@@ -448,46 +423,12 @@
             ],
             "agentProperties": [],
             "spritesheets": [
-                "67a251fa0370e42b011a2bae",
-                "67a251fa0370e42b011a2baf",
-                "67a251fa0370e42b011a2bb0",
-                "67a251fa0370e42b011a2bb1",
-                "67a251fa0370e42b011a2bb2",
-                "67a251fa0370e42b011a2bb3",
-                "67a251fa0370e42b011a2bb4",
-                "67a251fa0370e42b011a2bb5",
-                "67a251fa0370e42b011a2bb6",
-                "67a80c9c6dae6de3690c5f27",
-                "67a80cc26dae6de3690c5f2b",
-                "67a80cf46dae6de3690c5f2e",
-                "67a80d0a6dae6de3690c5f31",
-                "67a80d546dae6de3690c5f3a",
-                "67a80d696dae6de3690c5f3d",
-                "67a80d766dae6de3690c5f40",
-                "67ace794036d42b4a049435a",
-                "67ae4e7981ec1100c68d63db",
-                "67b121e99d33fa0fab203b30",
-                "67b129c59d33fa0fab203ccd",
-                "67b8d41395db79bed577791c",
-                "67b8dae795db79bed577795a",
-                "67b8db0695db79bed577795d",
-                "67b8db1595db79bed5777960",
-                "67b8db3695db79bed5777963",
-                "67b8db4895db79bed5777966",
-                "67b8db6495db79bed577796a",
-                "67b8db7e95db79bed577796d",
-                "67b8df5e95db79bed57779c5",
                 "67d5ea643037477e16938685",
                 "67d5ea803037477e16938688",
                 "67d5f3d63037477e169386da",
                 "67d5f7993037477e169386fb"
             ],
             "animationSets": [
-                "67a2525d0370e42b011a2bb9",
-                "67a80db26dae6de3690c5f43",
-                "67ace7a0036d42b4a049435d",
-                "67b122019d33fa0fab203b33",
-                "67b8d4ad95db79bed5777923",
                 "67d5eaae3037477e1693868b",
                 "67d5eadc3037477e1693868e",
                 "67d5f4003037477e169386dd",
@@ -495,7 +436,6 @@
             ],
             "propertyChanges": [],
             "sensors": [
-                "67c8b73c4cddd06e53b258ee",
                 "67d896fe9a9eb09732f7e48a",
                 "67d897089a9eb09732f7e48d"
             ],
