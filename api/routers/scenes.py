@@ -76,12 +76,10 @@ async def get_scene_data(
     agent_types = mongo_client.get_documents_from_ids("agent_types", scene_data["agentTypes"])
     payload["data"]["agentTypes"] = agent_types
 
-    # spritesheets = mongo_client.get_documents_from_ids("spritesheets", scene_data["spritesheets"])
-    spritesheets = mongo_client.list_documents("spritesheets")
+    spritesheets = mongo_client.get_documents_from_ids("spritesheets", scene_data["spritesheets"])
     payload["data"]["spritesheets"] = spritesheets
 
-    # animation_sets = mongo_client.get_documents_from_ids("animation_sets", scene_data["animationSets"])
-    animation_sets = mongo_client.list_documents("animation_sets")
+    animation_sets = mongo_client.get_documents_from_ids("animation_sets", scene_data["animationSets"])
     payload["data"]["animationSets"] = animation_sets
 
     actions = mongo_client.get_documents_from_ids("actions", scene_data["actions"])
@@ -93,16 +91,28 @@ async def get_scene_data(
     agent_properties = mongo_client.get_documents_from_ids("agent_properties", scene_data["agentProperties"])
     payload["data"]["agentProperties"] = agent_properties
 
-    sensors = mongo_client.list_documents("sensors")
+    sensors = mongo_client.get_documents_from_ids("sensors", scene_data["sensors"])
     payload["data"]["sensors"] = sensors
 
-    utility_functions = mongo_client.list_documents("utility_functions")
+    utility_function_ids = scene_data.get("utilityFunctions", [])
+    if utility_function_ids:
+        utility_functions = mongo_client.get_documents_from_ids(
+            "utility_functions", utility_function_ids
+        )
+    else:
+        utility_functions = []
     payload["data"]["utilityFunctions"] = utility_functions
 
-    recurring_changes = mongo_client.list_documents("recurring_changes")
+    recurring_changes = mongo_client.get_documents_from_ids("recurring_changes", scene_data["recurringChanges"])
     payload["data"]["recurringChanges"] = recurring_changes
 
-    action_sequences = mongo_client.list_documents("action_sequences")
+    action_sequence_ids = scene_data.get("actionSequences", [])
+    if action_sequence_ids:
+        action_sequences = mongo_client.get_documents_from_ids(
+            "action_sequences", action_sequence_ids
+        )
+    else:
+        action_sequences = []
     payload["data"]["actionSequences"] = action_sequences
 
     return payload

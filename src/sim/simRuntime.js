@@ -185,6 +185,10 @@ export function createSimRuntime ({ store, world, fpsRefs }) {
   }
 
   const cloneAction = (action, agent) => {
+    if (!action) {
+      agentHandler.idle(agent)
+      return
+    }
     const ok = setDynamicActionTargetAgents({
       world,
       action,
@@ -253,16 +257,21 @@ export function createSimRuntime ({ store, world, fpsRefs }) {
         if (agent.agentType.name === 'customer') {
           if (agent.currentStateName === 'idle' || agent.currentAction === null) {
             const [nextActionId, actionObjectType] = chooseNextActionByUtility({ world, agent })
-            if (nextActionId !== null) {
-              let matchingAction
+            if (nextActionId != null) {
               if (actionObjectType === 'actionSequence') {
-                matchingAction = world.actionSequences.find((actSeq) => actSeq.id === nextActionId)
-                const nextActionName = matchingAction.actions[0]
-                const nextAction = world.actions.find((a) => a.actionName === nextActionName)
-                agent.currentActionSequence = matchingAction
-                cloneAction(nextAction, agent)
+                const matchingSequence = world.actionSequences.find((actSeq) => actSeq.id === nextActionId)
+                const nextActionName = matchingSequence?.actions?.[0]
+                const nextAction = nextActionName
+                  ? world.actions.find((a) => a.actionName === nextActionName)
+                  : undefined
+                if (matchingSequence && nextAction) {
+                  agent.currentActionSequence = matchingSequence
+                  cloneAction(nextAction, agent)
+                } else {
+                  agentHandler.idle(agent)
+                }
               } else {
-                matchingAction = world.actions.find((action) => action.id === nextActionId)
+                const matchingAction = world.actions.find((action) => action.id === nextActionId)
                 cloneAction(matchingAction, agent)
               }
             } else {

@@ -1,50 +1,59 @@
 <template>
-  <div>
-    <button @click="store.displayLoadObjectModal = false">X</button>
-    {{ objectType }}
-    <p>
-    Select {{ objectType }} to add to scene
-    </p>
-
-    <div v-for="agentType in agentTypeList">
-      <div class="load-object-modal-item">
-        <img
-          :src="agentType.thumbnail"
-          width="50"
-          height="50"
-          @click="addAgentTypeToScene(agentType)"
-        >
-        <span
-          class="modal-item-name"
-          @click="addAgentTypeToScene(agentType)"
-        >{{ agentType.name }}</span>
-      </div>
-      
-    </div>
-  </div>
+  <SimObjectLoadModal
+    :open="store.loadSimObjectModal.open"
+    :title="preset.title"
+    :description="preset.description"
+    :empty-text="preset.emptyText"
+    :loading="listLoading"
+    :columns="preset.columns"
+    :items="agentTypeList"
+    @close="onClose"
+    @select="addAgentTypeToScene"
+  />
 </template>
 
 <script>
-import { ref, markRaw } from 'vue'
+import { computed, markRaw } from 'vue'
 import { useStore } from '@/store/mainStore.js'
 import { AgentMenuIcon } from '@/classes/SelectionMenu.js'
+import SimObjectLoadModal from '@/components/simLoadModal/SimObjectLoadModal.vue'
+import {
+  SIM_LOAD_MODAL_KINDS,
+  getSimLoadModalPreset
+} from '@/components/simLoadModal/simLoadModalColumns.js'
 
 export default {
   name: 'ModalLoadObject',
+
+  components: { SimObjectLoadModal },
+
   props: {
-    agentTypeList: Array
+    agentTypeList: {
+      type: Array,
+      default: () => []
+    },
+    listLoading: {
+      type: Boolean,
+      default: false
+    }
   },
-  setup() {
+
+  setup () {
     const store = useStore()
 
-    const objectType = ref('Agent Type')
+    const preset = computed(() =>
+      getSimLoadModalPreset(SIM_LOAD_MODAL_KINDS.agentType)
+    )
+
+    const onClose = () => {
+      store.closeLoadSimObjectModal()
+    }
 
     const addAgentTypeToScene = async (agentType) => {
-
       const atName = agentType.name
       store.agentTypes[atName] = agentType
       store.agentItems[atName] = []
-      store.displayLoadObjectModal = false
+      store.closeLoadSimObjectModal()
 
       store.agentMenuButtons.push(
         markRaw(
@@ -62,26 +71,10 @@ export default {
 
     return {
       store,
-      objectType,
+      preset,
+      onClose,
       addAgentTypeToScene
     }
-
   }
 }
-
 </script>
-
-<style scoped>
-
-.load-object-modal-item {
-  display: flex;
-  align-items: center;
-  margin: 10px 0 10px 0;
-  cursor: pointer;
-}
-
-.modal-item-name {
-  margin-left: 16px;
-}
-
-</style>

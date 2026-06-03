@@ -11,6 +11,10 @@ export function setDynamicActionTargetAgents ({ world, action, agent, agentHandl
   Note: this may not be generalisable enough - to re-organise?
   */
 
+  if (!action) {
+    return false
+  }
+
   if (action.agentChoiceMethod === 'nearest' && action.destinationType === 'agent') {
 
     const agentTypeName = action.agentType.name
@@ -111,6 +115,11 @@ export function setNextAction ({
 
     if (result === true) {
       const nextAction = world.actions.find(action => action.id === transition.nextAction)
+      if (!nextAction) {
+        agent.currentAction = null
+        agent.currentActionName = null
+        return
+      }
       const ok = setDynamicActionTargetAgents({
         world,
         action: nextAction,
@@ -141,6 +150,16 @@ export function setNextAction ({
 }
 
 
+function utilityOptionIsRunnable (world, option) {
+  if (option.actionObjectType === 'actionSequence') {
+    const seq = world.actionSequences.find((s) => s.id === option.actionId)
+    if (!seq?.actions?.length) return false
+    const firstName = seq.actions[0]
+    return world.actions.some((a) => a.actionName === firstName)
+  }
+  return world.actions.some((a) => a.id === option.actionId)
+}
+
 export function chooseNextActionByUtility ({ world, agent }) {
   /* Returns the ID of the Action or ActionSequence with the highest utility */
 
@@ -152,7 +171,13 @@ export function chooseNextActionByUtility ({ world, agent }) {
   var selected = null
 
   for (let option of utilityFunctionsForAgent) {
-    var score = calculateActionUtility(agent, option.property, UTILITY_FUNCS[option.func])
+    if (!utilityOptionIsRunnable(world, option)) continue
+
+    const utilFunc = UTILITY_FUNCS[option.func]
+    if (typeof utilFunc !== 'function') continue
+
+    var score = calculateActionUtility(agent, option.property, utilFunc)
+    if (!Number.isFinite(score)) continue
 
     if (score > highestScore) {
       highestScore = score
@@ -161,6 +186,7 @@ export function chooseNextActionByUtility ({ world, agent }) {
     }
   }
 
+  if (!selected) return [null, null]
   return [selected.actionId, selected.actionObjectType]
 }
 

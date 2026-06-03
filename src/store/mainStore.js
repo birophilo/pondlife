@@ -21,7 +21,7 @@ function messageFromAxiosError (error) {
  * Plan 3 — Pinia boundaries (Phases A + E)
  *
  * Reactive shell (forms, menus, routing): sceneList, sceneData, sceneId / sceneName,
- * needsSimHydration (load scene on Sim route after fetch), displayLoadObjectModal, defs (agentTypes, actions, conditions,
+ * needsSimHydration (load scene on Sim route after fetch), loadSimObjectModal, defs (agentTypes, actions, conditions,
  * spriteSheets, animationSets, …), UI flags (sceneIsPlaying, sceneIsPaused, placingAgent,
  * deleteMode, selectionMode), GlobalSettings.globalSpeed, dayNumber, selectedAgent /
  * selectedTargetAgent, api reference.
@@ -120,10 +120,21 @@ export const useStore = defineStore({
     /** Set true after fetchSceneData from Simulations page; SimView runs sim hydration once. */
     needsSimHydration: false,
 
-    displayLoadObjectModal: false
+    /** Centre-page load picker: { open, kind } — kind from simLoadModalColumns.js */
+    loadSimObjectModal: {
+      open: false,
+      kind: null
+    }
 
   }),
   actions: {
+    openLoadSimObjectModal (kind) {
+      this.loadSimObjectModal = { open: true, kind }
+    },
+
+    closeLoadSimObjectModal () {
+      this.loadSimObjectModal = { open: false, kind: null }
+    },
     /**
      * Load a scene's data into the store for the canvas (used from Simulations route).
      * Navigate to `sim` after; SimView will call loadAgentsAndFixtures when needsSimHydration is set.

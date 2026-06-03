@@ -92,3 +92,18 @@ export function generateFakeIdString () {
     )
   return randomCharArray.join("")
 }
+
+/** Millisecond epoch (or ISO string) → locale datetime for lists/modals. */
+export function formatTimestamp (value) {
+  if (value == null || value === '') return ''
+  const n = Number(value)
+  const date = Number.isFinite(n) ? new Date(n) : new Date(value)
+  if (Number.isNaN(date.getTime())) return ''
+  return date.toLocaleString('en-GB', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  })
+}

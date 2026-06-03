@@ -8,9 +8,11 @@
 
 <div class="container">
 
-  <div v-show="store.displayLoadObjectModal" class="load-object-modal">
-    <ModalLoadObject :agentTypeList="agentTypeList" />
-  </div>
+  <ModalLoadObject
+    v-if="store.loadSimObjectModal.kind === 'agentType'"
+    :agent-type-list="agentTypeList"
+    :list-loading="loadSimObjectListLoading"
+  />
 
   <nav class="left-sim-menu" aria-label="Simulation tools">
     <div class="left-sim-menu__grid">
@@ -256,7 +258,7 @@
 
 
 <script>
-import { onMounted, onBeforeUnmount, onActivated, onDeactivated, ref, watch, nextTick } from 'vue'
+import { onMounted, onBeforeUnmount, onActivated, onDeactivated, ref, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useStore } from '@/store/mainStore.js'
 import api from '@/apiCrud.js'
@@ -483,10 +485,16 @@ export default {
     }
 
     const agentTypeList = ref([])
+    const loadSimObjectListLoading = ref(false)
 
     const loadAgentTypesModal = async () => {
-      store.displayLoadObjectModal = true
-      agentTypeList.value = await api.listAgentTypes()
+      store.openLoadSimObjectModal('agentType')
+      loadSimObjectListLoading.value = true
+      try {
+        agentTypeList.value = await api.listAgentTypes()
+      } finally {
+        loadSimObjectListLoading.value = false
+      }
     }
 
     watch(
@@ -519,7 +527,8 @@ export default {
 
     onMounted(async () => {
       document.addEventListener('keydown', onToolbarDetailKeydown)
-      await nextTick()
+      // Attach canvas synchronously before any await so onActivated cannot
+      // hydrate/paint while c/canvas are still unset (cold start from Simulations).
       sim.attachCanvas(canvasRef.value)
       sim.attachDocumentListeners()
       const topMenu = initTopMenuStrip(topMenuStripHost.value, {
@@ -575,7 +584,8 @@ export default {
       unPauseScene: sim.unPauseScene,
       sceneName,
       loadAgentTypesModal,
-      agentTypeList
+      agentTypeList,
+      loadSimObjectListLoading
     }
   },
 
@@ -740,17 +750,6 @@ body {
 .left-sim-menu__icon {
   flex-shrink: 0;
   pointer-events: none;
-}
-
-.load-object-modal {
-  position: absolute;
-  z-index: 2;
-  height: 70%;
-  width: 70%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: #efeee8;;
 }
 
 canvas {
