@@ -47,11 +47,12 @@ class MongoCRUDClient:
 
     def create_document(self, collection: str, item, session=None):
 
-        # timestamps only for scenes for now until update other object schemas
+        current_time = int(time.time() * 1000)
         if item.get("resource") and item.get("resource") == "scene":
-            current_time = int(time.time()*1000)
             item["createdAt"] = current_time
             item["lastModified"] = current_time
+        elif item.get("createdAt") is None:
+            item["createdAt"] = current_time
 
         new_item = self.db[collection].insert_one(item)
         created_item = self.db[collection].find_one(

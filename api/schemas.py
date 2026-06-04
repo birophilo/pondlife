@@ -23,6 +23,10 @@ class SimAuthorshipMixin(BaseModel):
         default=None,
         description="Username for display; omit or null if unknown",
     )
+    created_at: int | None = Field(
+        default=None,
+        description="Creation time (epoch ms); backfilled from ObjectId or set on create",
+    )
 
     model_config = ConfigDict(alias_generator=to_camel)
 

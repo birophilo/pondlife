@@ -29,28 +29,31 @@
           {{ description }}
         </p>
 
-        <p v-if="loading" class="sim-load-modal__status">
-          Loading…
-        </p>
-
-        <template v-else>
-          <div
-            v-if="columns.length && items.length"
-            class="sim-load-modal__list-header"
-            aria-hidden="true"
+        <div
+          v-if="columns.length"
+          class="sim-load-modal__list-header"
+          aria-hidden="true"
+        >
+          <span
+            v-for="column in columns"
+            :key="column.key"
+            class="sim-load-modal__list-header-cell"
+            :style="headerCellStyle(column)"
           >
-            <span
-              v-for="column in columns"
-              :key="column.key"
-              class="sim-load-modal__list-header-cell"
-              :style="headerCellStyle(column)"
-            >
-              {{ column.label }}
-            </span>
-          </div>
+            {{ column.label }}
+          </span>
+        </div>
+
+        <div class="sim-load-modal__list-body">
+          <p
+            v-if="loading"
+            class="sim-load-modal__status sim-load-modal__status--placeholder"
+          >
+            Loading…
+          </p>
 
           <div
-            v-if="items.length"
+            v-else-if="items.length"
             class="sim-load-modal__list"
             role="listbox"
             :aria-label="title"
@@ -84,10 +87,13 @@
             </button>
           </div>
 
-          <p v-else class="sim-load-modal__status">
+          <p
+            v-else
+            class="sim-load-modal__status sim-load-modal__status--placeholder"
+          >
             {{ emptyText }}
           </p>
-        </template>
+        </div>
 
         <footer class="sim-load-modal__footer">
           <button
@@ -104,7 +110,7 @@
 </template>
 
 <script>
-import { formatTimestamp } from '@/utils.js'
+import { formatTimestamp, timestampMsFromObjectId } from '@/utils.js'
 
 const EMPTY_CELL = '—'
 
@@ -176,7 +182,11 @@ export default {
     const cellDisplay = (item, column) => {
       if (!item || !column) return EMPTY_CELL
       if (column.type === 'datetime') {
-        const formatted = formatTimestamp(item[column.key])
+        let ms = item[column.key]
+        if ((ms == null || ms === '') && column.fallbackFromObjectId && item.id) {
+          ms = timestampMsFromObjectId(item.id)
+        }
+        const formatted = formatTimestamp(ms)
         return formatted || EMPTY_CELL
       }
       const val = rawField(item, column)
@@ -195,7 +205,8 @@ export default {
       if (raw.startsWith('http://') || raw.startsWith('https://') || raw.startsWith('/')) {
         return raw
       }
-      return `/${raw}`
+      const prefix = column.imagePrefix ?? '/'
+      return `${prefix}${raw}`
     }
 
     const headerCellStyle = (column) => {
@@ -239,7 +250,7 @@ export default {
 .sim-load-modal {
   position: relative;
   width: 100%;
-  max-width: 720px;
+  max-width: 820px;
   max-height: min(85vh, 640px);
   display: flex;
   flex-direction: column;
@@ -285,9 +296,25 @@ export default {
 }
 
 .sim-load-modal__status {
-  margin: 0 0 16px;
+  margin: 0;
   color: #666;
   font-size: 0.95rem;
+}
+
+/** Fixed list pane — loading, empty, and populated share the same height (~5 rows). */
+.sim-load-modal__list-body {
+  height: 360px;
+  min-height: 360px;
+  margin: 0 0 16px;
+  box-sizing: border-box;
+}
+
+.sim-load-modal__status--placeholder {
+  display: flex;
+  align-items: flex-start;
+  height: 100%;
+  padding: 12px 8px;
+  box-sizing: border-box;
 }
 
 .sim-load-modal__list-header {
@@ -308,11 +335,11 @@ export default {
 }
 
 .sim-load-modal__list {
-  flex: 1;
-  min-height: 0;
+  height: 100%;
   overflow-y: auto;
-  margin: 0 -8px 16px;
+  margin: 0 -8px;
   padding: 4px 8px;
+  box-sizing: border-box;
 }
 
 .sim-load-modal__row {

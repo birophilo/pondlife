@@ -107,3 +107,11 @@ export function formatTimestamp (value) {
     minute: '2-digit'
   })
 }
+
+/** Approximate creation time from a Mongo ObjectId hex string (epoch ms). */
+export function timestampMsFromObjectId (id) {
+  if (id == null || String(id).length !== 24) return null
+  const ts = parseInt(String(id).slice(0, 8), 16)
+  if (!Number.isFinite(ts)) return null
+  return ts * 1000
+}

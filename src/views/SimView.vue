@@ -8,10 +8,12 @@
 
 <div class="container">
 
-  <ModalLoadObject
-    v-if="store.loadSimObjectModal.kind === 'agentType'"
-    :agent-type-list="agentTypeList"
-    :list-loading="loadSimObjectListLoading"
+  <ModalLoadSimObject
+    v-if="store.loadSimObjectModal.open"
+    :kind="store.loadSimObjectModal.kind"
+    :items="loadModalItems"
+    :context="loadModalContext"
+    :loading="loadSimObjectListFetching"
   />
 
   <nav class="left-sim-menu" aria-label="Simulation tools">
@@ -74,7 +76,13 @@
           <AgentTypeFirstActionEdit :agentType="agentType" />
         </div>
         <AgentTypeCreate />
-        <button @click="loadAgentTypesModal">load agent type</button>
+        <button
+          type="button"
+          :disabled="loadSimObjectListFetching"
+          @click="loadAgentTypesModal"
+        >
+          load agent type
+        </button>
       </div>
 
       <div
@@ -88,6 +96,13 @@
           <SpriteSheetEdit :spriteSheet="spriteSheet" :i="index" />
         </div>
         <SpriteSheetCreate />
+        <button
+          type="button"
+          :disabled="loadSimObjectListFetching"
+          @click="loadSpriteSheetsModal"
+        >
+          load sprite sheet
+        </button>
       </div>
 
       <div
@@ -101,6 +116,13 @@
           <AnimationSetEdit :animationSet="animationSet" :i="index" />
         </div>
         <AnimationSetCreate />
+        <button
+          type="button"
+          :disabled="loadSimObjectListFetching"
+          @click="loadAnimationSetsModal"
+        >
+          load animation set
+        </button>
       </div>
 
       <div
@@ -115,6 +137,13 @@
           <SetPropertyForm />
         </div>
         <p v-else class="toolbar-panel__hint">Select an agent on the canvas to edit properties.</p>
+        <button
+          type="button"
+          :disabled="loadSimObjectListFetching"
+          @click="loadPropertyChangesModal"
+        >
+          load property change
+        </button>
       </div>
 
       <div
@@ -128,6 +157,13 @@
           <RecurringChangeEdit :recurringChange="recurringChange" :index="index" />
         </div>
         <RecurringChangeCreate />
+        <button
+          type="button"
+          :disabled="loadSimObjectListFetching"
+          @click="loadRecurringChangesModal"
+        >
+          load recurring change
+        </button>
       </div>
 
       <div
@@ -141,6 +177,13 @@
           <AgentInitialPropertyEdit :agentProperty="agentProperty" :index="i" />
         </div>
         <AgentPropertyCreate />
+        <button
+          type="button"
+          :disabled="loadSimObjectListFetching"
+          @click="loadAgentPropertiesModal"
+        >
+          load agent property
+        </button>
       </div>
 
       <div
@@ -156,6 +199,13 @@
           </div>
           <ActionCreate />
         </div>
+        <button
+          type="button"
+          :disabled="loadSimObjectListFetching"
+          @click="loadActionsModal"
+        >
+          load action
+        </button>
         <h3 class="toolbar-panel__subheading">Start action</h3>
         <div v-if="store.actions.length > 0">
           <div v-for="action in store.actions" :key="'start-' + action.id">
@@ -178,6 +228,13 @@
           </div>
         </div>
         <ConditionCreate />
+        <button
+          type="button"
+          :disabled="loadSimObjectListFetching"
+          @click="loadConditionsModal"
+        >
+          load condition
+        </button>
       </div>
 
       <div
@@ -193,6 +250,13 @@
           </div>
         </div>
         <SensorCreate />
+        <button
+          type="button"
+          :disabled="loadSimObjectListFetching"
+          @click="loadSensorsModal"
+        >
+          load sensor
+        </button>
       </div>
 
       <div
@@ -208,6 +272,13 @@
           </div>
         </div>
         <UtilityFunctionCreate />
+        <button
+          type="button"
+          :disabled="loadSimObjectListFetching"
+          @click="loadUtilityFunctionsModal"
+        >
+          load utility function
+        </button>
       </div>
     </div>
   </aside>
@@ -280,7 +351,9 @@ import AnimationSetCreate from '@/components/simUiForms/AnimationSetCreate.vue'
 import AnimationSetEdit from '@/components/simUiForms/AnimationSetEdit.vue'
 import AgentPropertyCreate from '@/components/simUiForms/AgentPropertyCreate.vue'
 import AgentInitialPropertyEdit from '@/components/simUiForms/AgentInitialPropertyEdit.vue'
-import ModalLoadObject from '@/components/ModalLoadObject.vue'
+import ModalLoadSimObject from '@/components/ModalLoadSimObject.vue'
+import { previewSrcForAnimationSet } from '@/components/simLoadModal/animationSetLoadHelpers.js'
+import { actionLabelForUtilityFunction, resolveUtilityFunctionActionObjectType } from '@/components/simLoadModal/utilityFunctionLoadHelpers.js'
 import AgentTypeFirstActionEdit from '@/components/simUiForms/AgentTypeFirstActionEdit.vue'
 import NavTopLogin from '@/components/NavTopLogin.vue'
 import SensorCreate from '@/components/simUiForms/SensorCreate.vue'
@@ -351,7 +424,7 @@ export default {
     AnimationSetCreate,
     AgentPropertyCreate,
     AgentInitialPropertyEdit,
-    ModalLoadObject,
+    ModalLoadSimObject,
     AgentTypeFirstActionEdit,
     NavTopLogin,
     SensorCreate,
@@ -484,16 +557,210 @@ export default {
       }
     }
 
-    const agentTypeList = ref([])
-    const loadSimObjectListLoading = ref(false)
+    const loadModalItems = ref([])
+    const loadModalContext = ref({})
+    const loadSimObjectListFetching = ref(false)
+
+    const openLoadModal = (kind) => {
+      loadModalItems.value = []
+      loadModalContext.value = {}
+      store.openLoadSimObjectModal(kind)
+    }
 
     const loadAgentTypesModal = async () => {
-      store.openLoadSimObjectModal('agentType')
-      loadSimObjectListLoading.value = true
+      if (loadSimObjectListFetching.value) return
+      openLoadModal('agentType')
+      loadSimObjectListFetching.value = true
       try {
-        agentTypeList.value = await api.listAgentTypes()
+        const data = await api.listAgentTypes()
+        if (data?.error || !Array.isArray(data)) {
+          store.closeLoadSimObjectModal()
+          return
+        }
+        loadModalItems.value = data
       } finally {
-        loadSimObjectListLoading.value = false
+        loadSimObjectListFetching.value = false
+      }
+    }
+
+    const loadSpriteSheetsModal = async () => {
+      if (loadSimObjectListFetching.value) return
+      openLoadModal('spriteSheet')
+      loadSimObjectListFetching.value = true
+      try {
+        const data = await api.listSpriteSheets()
+        if (data?.error || !Array.isArray(data)) {
+          store.closeLoadSimObjectModal()
+          return
+        }
+        loadModalItems.value = data
+      } finally {
+        loadSimObjectListFetching.value = false
+      }
+    }
+
+    const loadAnimationSetsModal = async () => {
+      if (loadSimObjectListFetching.value) return
+      openLoadModal('animationSet')
+      loadSimObjectListFetching.value = true
+      try {
+        const [sets, sheets] = await Promise.all([
+          api.listAnimationSets(),
+          api.listSpriteSheets()
+        ])
+        if (sets?.error || sheets?.error || !Array.isArray(sets) || !Array.isArray(sheets)) {
+          store.closeLoadSimObjectModal()
+          return
+        }
+        loadModalContext.value = { allSpriteSheets: sheets }
+        loadModalItems.value = sets.map((set) => ({
+          ...set,
+          previewSrc: previewSrcForAnimationSet(set, sheets)
+        }))
+      } finally {
+        loadSimObjectListFetching.value = false
+      }
+    }
+
+    const loadSensorsModal = async () => {
+      if (loadSimObjectListFetching.value) return
+      openLoadModal('sensor')
+      loadSimObjectListFetching.value = true
+      try {
+        const data = await api.listSensors()
+        if (data?.error || !Array.isArray(data)) {
+          store.closeLoadSimObjectModal()
+          return
+        }
+        loadModalItems.value = data
+      } finally {
+        loadSimObjectListFetching.value = false
+      }
+    }
+
+    const loadUtilityFunctionsModal = async () => {
+      if (loadSimObjectListFetching.value) return
+      openLoadModal('utilityFunction')
+      loadSimObjectListFetching.value = true
+      try {
+        const [utilities, actions, actionSequences] = await Promise.all([
+          api.listUtilityFunctions(),
+          api.listActions(),
+          api.listActionSequences()
+        ])
+        if (
+          utilities?.error ||
+          actions?.error ||
+          actionSequences?.error ||
+          !Array.isArray(utilities) ||
+          !Array.isArray(actions) ||
+          !Array.isArray(actionSequences)
+        ) {
+          store.closeLoadSimObjectModal()
+          return
+        }
+        loadModalItems.value = utilities.map((uf) => {
+          const actionObjectType = resolveUtilityFunctionActionObjectType(uf, actionSequences)
+          const enriched = { ...uf, actionObjectType }
+          return {
+            ...enriched,
+            actionLabel: actionLabelForUtilityFunction(enriched, actions, actionSequences)
+          }
+        })
+      } finally {
+        loadSimObjectListFetching.value = false
+      }
+    }
+
+    const loadActionsModal = async () => {
+      if (loadSimObjectListFetching.value) return
+      openLoadModal('action')
+      loadSimObjectListFetching.value = true
+      try {
+        const data = await api.listActions()
+        if (data?.error || !Array.isArray(data)) {
+          store.closeLoadSimObjectModal()
+          return
+        }
+        loadModalItems.value = data
+      } finally {
+        loadSimObjectListFetching.value = false
+      }
+    }
+
+    const loadConditionsModal = async () => {
+      if (loadSimObjectListFetching.value) return
+      openLoadModal('condition')
+      loadSimObjectListFetching.value = true
+      try {
+        const data = await api.listConditions()
+        if (data?.error || !Array.isArray(data)) {
+          store.closeLoadSimObjectModal()
+          return
+        }
+        loadModalItems.value = data
+      } finally {
+        loadSimObjectListFetching.value = false
+      }
+    }
+
+    const loadPropertyChangesModal = async () => {
+      if (loadSimObjectListFetching.value) return
+      openLoadModal('propertyChange')
+      loadSimObjectListFetching.value = true
+      try {
+        const [propertyChanges, actions] = await Promise.all([
+          api.listPropertyChanges(),
+          api.listActions()
+        ])
+        if (
+          propertyChanges?.error ||
+          actions?.error ||
+          !Array.isArray(propertyChanges) ||
+          !Array.isArray(actions)
+        ) {
+          store.closeLoadSimObjectModal()
+          return
+        }
+        loadModalItems.value = propertyChanges.map((pc) => ({
+          ...pc,
+          actionLabel:
+            actions.find((a) => a.id === pc.actionId)?.actionName ?? pc.actionId ?? '—'
+        }))
+      } finally {
+        loadSimObjectListFetching.value = false
+      }
+    }
+
+    const loadRecurringChangesModal = async () => {
+      if (loadSimObjectListFetching.value) return
+      openLoadModal('recurringChange')
+      loadSimObjectListFetching.value = true
+      try {
+        const data = await api.listRecurringChanges()
+        if (data?.error || !Array.isArray(data)) {
+          store.closeLoadSimObjectModal()
+          return
+        }
+        loadModalItems.value = data
+      } finally {
+        loadSimObjectListFetching.value = false
+      }
+    }
+
+    const loadAgentPropertiesModal = async () => {
+      if (loadSimObjectListFetching.value) return
+      openLoadModal('agentProperty')
+      loadSimObjectListFetching.value = true
+      try {
+        const data = await api.listAgentProperties()
+        if (data?.error || !Array.isArray(data)) {
+          store.closeLoadSimObjectModal()
+          return
+        }
+        loadModalItems.value = data
+      } finally {
+        loadSimObjectListFetching.value = false
       }
     }
 
@@ -584,8 +851,18 @@ export default {
       unPauseScene: sim.unPauseScene,
       sceneName,
       loadAgentTypesModal,
-      agentTypeList,
-      loadSimObjectListLoading
+      loadSpriteSheetsModal,
+      loadAnimationSetsModal,
+      loadSensorsModal,
+      loadUtilityFunctionsModal,
+      loadActionsModal,
+      loadConditionsModal,
+      loadPropertyChangesModal,
+      loadRecurringChangesModal,
+      loadAgentPropertiesModal,
+      loadModalItems,
+      loadModalContext,
+      loadSimObjectListFetching
     }
   },
 

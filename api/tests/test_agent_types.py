@@ -43,8 +43,10 @@ def test_agent_type_id(test_app):
 
     created_item = resp.json()
     item_id = created_item.pop("id")
+    created_at = created_item.pop("createdAt", None)
     assert type(item_id) == str
     assert len(item_id) == 24
+    assert isinstance(created_at, int)
     assert resp.status_code == 201
     assert created_item == agent_type_1_response
 
@@ -59,6 +61,7 @@ def test_get_agent_type(test_app, test_agent_type_id):
     resp = test_app.get(f"/agentType/{test_agent_type_id}")
     item = resp.json()
     item.pop("id")
+    item.pop("createdAt", None)
     assert item == agent_type_1_response
 
 

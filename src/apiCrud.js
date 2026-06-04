@@ -49,6 +49,36 @@ export default {
   listAgentTypes () {
     return baseApiClient.listItems('agentTypes')
   },
+  listSpriteSheets () {
+    return baseApiClient.listItems('spritesheets')
+  },
+  listAnimationSets () {
+    return baseApiClient.listItems('animationSets')
+  },
+  listSensors () {
+    return baseApiClient.listItems('sensors')
+  },
+  listUtilityFunctions () {
+    return baseApiClient.listItems('utilityFunctions')
+  },
+  listActions () {
+    return baseApiClient.listItems('actions')
+  },
+  listActionSequences () {
+    return baseApiClient.listItems('actionSequences')
+  },
+  listConditions () {
+    return baseApiClient.listItems('conditions')
+  },
+  listPropertyChanges () {
+    return baseApiClient.listItems('propertyChanges')
+  },
+  listRecurringChanges () {
+    return baseApiClient.listItems('recurringChanges')
+  },
+  listAgentProperties () {
+    return baseApiClient.listItems('agentProperties')
+  },
   updateAgentType (data) {
     return baseApiClient.updateItem('agentType', data)
   },
