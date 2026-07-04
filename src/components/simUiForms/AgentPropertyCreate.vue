@@ -73,7 +73,13 @@
     </div>
 
     <div v-else>
-      <button @click="isAdding = true">new initial property</button>
+      <button
+        class="new-btn"
+        @click="isAdding = true"
+      >
+        <span>new</span>
+        <Plus :size="16" class="icon-btn--small" aria-hidden="true" />
+      </button>
     </div>
   </div>
 </template>
@@ -82,10 +88,13 @@
 import { ref } from 'vue'
 import { useStore } from '@/store/mainStore.js'
 import api from '@/apiCrud.js'
-
+import { Plus } from '@lucide/vue'
 
 export default {
   name: 'AgentPropertyCreate',
+
+  components: { Plus },
+
   setup: function () {
     const store = useStore()
 
@@ -148,3 +157,15 @@ export default {
 }
 
 </script>
+
+<style scoped>
+.new-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 12px;
+  border-radius: 4px;
+  color: #444;
+  cursor: pointer;
+}
+</style>

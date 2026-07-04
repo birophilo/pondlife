@@ -166,25 +166,11 @@
         </button>
       </div>
 
-      <div
-        v-show="activeToolbarPanel === 'agent-properties'"
-        class="toolbar-panel"
-        role="region"
-        aria-labelledby="toolbar-panel-agent-properties"
-      >
-        <h2 id="toolbar-panel-agent-properties" class="toolbar-panel__heading">Agent Properties</h2>
-        <div v-for="(agentProperty, i) in store.agentProperties" :key="i" class="item-list">
-          <AgentInitialPropertyEdit :agentProperty="agentProperty" :index="i" />
-        </div>
-        <AgentPropertyCreate />
-        <button
-          type="button"
-          :disabled="loadSimObjectListFetching"
-          @click="loadAgentPropertiesModal"
-        >
-          load agent property
-        </button>
-      </div>
+      <AgentPropertySection
+        :active-toolbar-panel="activeToolbarPanel"
+        :load-sim-object-list-fetching="loadSimObjectListFetching"
+        :load-agent-properties-modal="loadAgentPropertiesModal"
+      />
 
       <div
         v-show="activeToolbarPanel === 'actions'"
@@ -337,6 +323,7 @@ import { createSimRuntime } from '@/sim/simRuntime.js'
 import { createWorld } from '@/sim/world.js'
 import { simPointer } from '@/sim/simPointer.js'
 import { initTopMenuStrip } from '@/hud/imperativeTopMenuStrip.js'
+import AgentPropertySection from '@/components/simUiForms/AgentPropertySection.vue'
 import AgentTypeCreate from '@/components/simUiForms/AgentTypeCreate.vue'
 import AgentTypeEdit from '@/components/simUiForms/AgentTypeEdit.vue'
 import SetPropertyForm from '@/components/simUiForms/SetPropertyForm.vue'
@@ -349,8 +336,6 @@ import SpriteSheetCreate from '@/components/simUiForms/SpriteSheetCreate.vue'
 import SpriteSheetEdit from '@/components/simUiForms/SpriteSheetEdit.vue'
 import AnimationSetCreate from '@/components/simUiForms/AnimationSetCreate.vue'
 import AnimationSetEdit from '@/components/simUiForms/AnimationSetEdit.vue'
-import AgentPropertyCreate from '@/components/simUiForms/AgentPropertyCreate.vue'
-import AgentInitialPropertyEdit from '@/components/simUiForms/AgentInitialPropertyEdit.vue'
 import ModalLoadSimObject from '@/components/ModalLoadSimObject.vue'
 import { previewSrcForAnimationSet } from '@/components/simLoadModal/animationSetLoadHelpers.js'
 import { actionLabelForUtilityFunction, resolveUtilityFunctionActionObjectType } from '@/components/simLoadModal/utilityFunctionLoadHelpers.js'
@@ -410,6 +395,7 @@ const LEFT_TOOLBAR_SECTIONS = [
 export default {
   name: 'SimView',
   components: {
+    AgentPropertySection,
     AgentTypeCreate,
     AgentTypeEdit,
     SetPropertyForm,
@@ -422,8 +408,6 @@ export default {
     SpriteSheetCreate,
     AnimationSetEdit,
     AnimationSetCreate,
-    AgentPropertyCreate,
-    AgentInitialPropertyEdit,
     ModalLoadSimObject,
     AgentTypeFirstActionEdit,
     NavTopLogin,

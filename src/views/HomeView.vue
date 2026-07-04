@@ -3,7 +3,6 @@
     <NavTopLogin />
     <div class="home-body">
       <h1>Pondlife</h1>
-      <p>Canvas simulation runs on its own route so leaving tears down rAF and listeners (Plan 3 Phase G).</p>
       <router-link class="home-sim-link" :to="{ name: 'sim' }">Open simulation</router-link>
     </div>
   </div>

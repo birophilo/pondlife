@@ -71,28 +71,66 @@
       <button @click="cancelEdit">cancel</button>
     </div>
 
-    <div v-else>
-      <div>property: {{ agentProperty.name }}</div>
-      <div>description: {{ agentProperty.description }}</div>
-      <div>value type: {{ agentProperty.valueType }}</div>
-      <div>initial value: {{ agentProperty.initialValue }}</div>
-      <div>applies to: {{ agentProperty.applyTo }}</div>
-      <div v-if="agentProperty.applyTo === 'agentType'">
-        <div>agent types: {{ agentProperty.agentType }}</div>
+    <div v-else class="agent-property-view">
+      <div class="agent-property-actions">
+        <button
+          type="button"
+          class="icon-btn"
+          aria-label="Edit"
+          @click="editItem"
+        >
+          <Pencil :size="16" aria-hidden="true" />
+        </button>
+        <button
+          type="button"
+          class="icon-btn icon-btn--danger"
+          aria-label="Delete"
+          @click="deleteItem"
+        >
+          <X :size="16" aria-hidden="true" />
+        </button>
       </div>
-      <br />
-      <button @click="editItem">edit</button>
-      <button @click="deleteItem(index)">delete</button>
+      <table class="agent-property-table">
+        <tr>
+          <td class="agent-property-name-cell">property</td>
+          <td class="agent-property-value-cell">{{ agentProperty.name }}</td>
+        </tr>
+        <tr>
+
+        </tr>
+        <tr>
+          <td class="agent-property-name-cell">description</td>
+          <td class="agent-property-value-cell">{{ agentProperty.description }}</td>
+        </tr>
+        <tr>
+          <td class="agent-property-name-cell">value type</td>
+          <td class="agent-property-value-cell">{{ agentProperty.valueType }}</td>
+        </tr>
+        <tr>
+          <td class="agent-property-name-cell">initial value</td>
+          <td class="agent-property-value-cell">{{ agentProperty.initialValue }}</td>
+        </tr>
+        <tr>
+          <td class="agent-property-name-cell">applies to</td>
+          <td class="agent-property-value-cell">{{ agentProperty.applyTo }}</td>
+        </tr>
+        <tr v-if="agentProperty.applyTo === 'agentType'">
+          <td class="agent-property-name-cell">agent types</td>
+          <td class="agent-property-value-cell">{{ agentProperty.agentType }}</td>
+        </tr>
+      </table>
     </div>
   </div>
 </template>
 
 <script>
 import { ref } from 'vue'
+import { Pencil, X } from '@lucide/vue'
 import { useStore } from '@/store/mainStore.js'
 import api from '@/apiCrud.js'
 
 export default {
+  components: { Pencil, X },
   props: {
     agentProperty: Object,
     index: Number
@@ -163,3 +201,62 @@ export default {
 }
 
 </script>
+
+<style scoped>
+.agent-property-view {
+  position: relative;
+}
+
+.agent-property-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 1px solid #eee;
+  background: transparent;
+  border-radius: 2px;
+  color: #777;
+  cursor: pointer;
+}
+
+.icon-btn:hover {
+  color: #222;
+}
+
+.icon-btn--danger:hover {
+  color: #b00020;
+}
+
+.agent-property-table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid #bbb;
+  margin-bottom: 10px;
+}
+
+.agent-property-table td {
+  border: 1px solid #bbb;
+  padding: 7px;
+}
+
+.agent-property-name-cell {
+  width: 120px;
+  font-size: 0.8em;
+  font-family: 'Lucida Console', monospace;
+  color: #333;
+}
+
+.agent-property-value-cell {
+  font-size: 0.8em;
+  font-family: 'Lucida Console', monospace;
+  font-weight: bold;
+  color: #333;
+}
+</style>
