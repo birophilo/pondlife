@@ -79,6 +79,8 @@ export default {
 .sim-category-icon-menu {
   flex: 0 0 90px;
   width: 90px;
+  align-self: stretch;
+  min-height: 100%;
   box-sizing: border-box;
   padding: 2px;
   border-right: 1px solid #e8b9ad;

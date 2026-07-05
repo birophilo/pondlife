@@ -554,6 +554,9 @@ body {
   display: flex;
   flex-wrap: nowrap;
   justify-content: flex-start;
+  align-items: stretch;
+  /* Fill viewport below top nav (~42px) so side chrome runs full height. */
+  min-height: calc(100vh - 42px);
   /* Block-level divs still span the viewport; when columns exceed that width, scroll instead of shrinking. */
   overflow-x: auto;
 }

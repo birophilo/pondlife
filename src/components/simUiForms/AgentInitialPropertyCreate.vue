@@ -8,7 +8,7 @@
             <input
               v-model="itemForm.name"
               type="text"
-              class="agent-property-input"
+              class="agent-property-input agent-property-input--white"
             />
           </td>
         </tr>
@@ -18,7 +18,7 @@
             <input
               v-model="itemForm.description"
               type="text"
-              class="agent-property-input"
+              class="agent-property-input agent-property-input--white"
             />
           </td>
         </tr>
@@ -27,7 +27,7 @@
           <td class="agent-property-value-cell">
             <select
               v-model="itemForm.valueType"
-              class="agent-property-input"
+              class="agent-property-input agent-property-input--white"
               @change="$forceUpdate()"
             >
               <option value="">-- value type --</option>
@@ -87,7 +87,7 @@
         <tr>
           <td class="agent-property-name-cell">applies to</td>
           <td class="agent-property-value-cell">
-            <select v-model="itemForm.applyTo" class="agent-property-input">
+            <select v-model="itemForm.applyTo" class="agent-property-input agent-property-input--white">
               <option
                 v-for="choice in applyToChoices"
                 :key="choice.value"
@@ -264,6 +264,13 @@ export default {
   border: none;
   background: transparent;
   padding: 0;
+}
+
+.agent-property-input--white {
+  background: #fff;
+  padding: 2px 4px;
+  border: 1px solid #ddd;
+  border-radius: 2px;
 }
 
 .agent-property-input:focus {

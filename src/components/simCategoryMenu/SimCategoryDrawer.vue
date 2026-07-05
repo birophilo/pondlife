@@ -4,8 +4,10 @@
     class="sim-category-drawer"
     :class="{
       'is-open': modelValue !== null,
+      'is-resizing': isResizing,
       'sim-category-drawer--overlay': overlay
     }"
+    :style="drawerStyle"
     aria-label="Simulation category editor"
     :aria-hidden="modelValue === null"
   >
@@ -213,11 +215,31 @@
         </button>
       </div>
     </div>
+
+    <button
+      v-show="modelValue !== null && !isDefaultDrawerWidth"
+      type="button"
+      class="sim-category-drawer__reset-width"
+      aria-label="Reset drawer width"
+      title="Reset drawer width"
+      @click="resetDrawerWidth"
+    >
+      <MoveHorizontal :size="14" aria-hidden="true" />
+    </button>
+
+    <div
+      v-show="modelValue !== null"
+      class="sim-category-drawer__resize-handle"
+      title="Drag to resize"
+      aria-hidden="true"
+      @pointerdown="onResizePointerDown"
+    />
   </aside>
 </template>
 
 <script>
-import { onMounted, onBeforeUnmount } from 'vue'
+import { computed, onMounted, onBeforeUnmount, ref } from 'vue'
+import { MoveHorizontal } from '@lucide/vue'
 import { useStore } from '@/store/mainStore.js'
 import AgentPropertySection from '@/components/simUiForms/AgentPropertySection.vue'
 import AgentTypeCreate from '@/components/simUiForms/AgentTypeCreate.vue'
@@ -240,10 +262,24 @@ import UtilityFunctionCreate from '@/components/simUiForms/UtilityFunctionCreate
 import RecurringChangeEdit from '@/components/simUiForms/RecurringChangeEdit.vue'
 import RecurringChangeCreate from '@/components/simUiForms/RecurringChangeCreate.vue'
 
+const DRAWER_WIDTH_STORAGE_KEY = 'simCategoryDrawerWidth'
+const DEFAULT_DRAWER_WIDTH = 350
+const MIN_DRAWER_WIDTH = 280
+const MAX_DRAWER_WIDTH = 600
+
+function readStoredDrawerWidth () {
+  const stored = Number(localStorage.getItem(DRAWER_WIDTH_STORAGE_KEY))
+  if (Number.isFinite(stored) && stored >= MIN_DRAWER_WIDTH && stored <= MAX_DRAWER_WIDTH) {
+    return stored
+  }
+  return DEFAULT_DRAWER_WIDTH
+}
+
 export default {
   name: 'SimCategoryDrawer',
 
   components: {
+    MoveHorizontal,
     AgentPropertySection,
     AgentTypeCreate,
     AgentTypeEdit,
@@ -294,6 +330,57 @@ export default {
 
   setup (props, { emit }) {
     const store = useStore()
+    const drawerWidth = ref(readStoredDrawerWidth())
+    const isResizing = ref(false)
+
+    const drawerStyle = computed(() => {
+      if (props.modelValue === null) return undefined
+      const width = `${drawerWidth.value}px`
+      return { width, minWidth: width }
+    })
+
+    const isDefaultDrawerWidth = computed(
+      () => drawerWidth.value === DEFAULT_DRAWER_WIDTH
+    )
+
+    const resetDrawerWidth = () => {
+      drawerWidth.value = DEFAULT_DRAWER_WIDTH
+      localStorage.setItem(DRAWER_WIDTH_STORAGE_KEY, String(DEFAULT_DRAWER_WIDTH))
+    }
+
+    const onResizePointerDown = (event) => {
+      if (props.modelValue === null) return
+      event.preventDefault()
+
+      const handle = event.currentTarget
+      const startX = event.clientX
+      const startWidth = drawerWidth.value
+      isResizing.value = true
+      handle.setPointerCapture(event.pointerId)
+
+      const onPointerMove = (moveEvent) => {
+        if (moveEvent.pointerId !== event.pointerId) return
+        const nextWidth = startWidth + (moveEvent.clientX - startX)
+        drawerWidth.value = Math.min(
+          MAX_DRAWER_WIDTH,
+          Math.max(MIN_DRAWER_WIDTH, nextWidth)
+        )
+      }
+
+      const endResize = (endEvent) => {
+        if (endEvent.pointerId !== event.pointerId) return
+        isResizing.value = false
+        handle.releasePointerCapture(event.pointerId)
+        handle.removeEventListener('pointermove', onPointerMove)
+        handle.removeEventListener('pointerup', endResize)
+        handle.removeEventListener('pointercancel', endResize)
+        localStorage.setItem(DRAWER_WIDTH_STORAGE_KEY, String(drawerWidth.value))
+      }
+
+      handle.addEventListener('pointermove', onPointerMove)
+      handle.addEventListener('pointerup', endResize)
+      handle.addEventListener('pointercancel', endResize)
+    }
 
     const onEscapeKeydown = (event) => {
       if (event.key === 'Escape' && props.modelValue !== null) {
@@ -309,7 +396,14 @@ export default {
       document.removeEventListener('keydown', onEscapeKeydown)
     })
 
-    return { store }
+    return {
+      store,
+      drawerStyle,
+      isResizing,
+      isDefaultDrawerWidth,
+      resetDrawerWidth,
+      onResizePointerDown
+    }
   }
 }
 </script>
@@ -325,19 +419,83 @@ export default {
 }
 
 .sim-category-drawer.is-open {
-  width: 350px;
-  min-width: 350px;
+  align-self: stretch;
+  min-height: 100%;
+  max-height: calc(100vh - 42px);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Positioning context for resize handle — only when in normal flex layout (not overlay). */
+.sim-category-drawer.is-open:not(.sim-category-drawer--overlay) {
+  position: relative;
+}
+
+.sim-category-drawer.is-resizing {
+  transition: none;
+}
+
+.sim-category-drawer__resize-handle {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 8px;
+  height: 100%;
+  cursor: col-resize;
+  z-index: 2;
+  touch-action: none;
+  background: transparent;
+}
+
+.sim-category-drawer__resize-handle:hover,
+.sim-category-drawer.is-resizing .sim-category-drawer__resize-handle {
+  background: rgba(228, 61, 18, 0.14);
+}
+
+.sim-category-drawer__reset-width {
+  position: absolute;
+  top: 8px;
+  right: 12px;
+  z-index: 3;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  margin: 0;
+  padding: 0;
+  border: 1px solid #dcc8c0;
+  border-radius: 3px;
+  background: #fffef9;
+  color: #a03622;
+  cursor: pointer;
+}
+
+.sim-category-drawer__reset-width:hover {
+  background: #f0e8e4;
+  border-color: #e43d12;
 }
 
 .sim-category-drawer--overlay {
   position: absolute;
   left: 90px;
   top: 0;
+  bottom: 0;
   z-index: 10;
-  height: 100%;
-  min-height: 100%;
+  height: auto;
+  max-height: 100%;
   background: #efeee8;
   box-shadow: 2px 0 10px rgba(0, 0, 0, 0.08);
+}
+
+.sim-category-drawer.is-open.sim-category-drawer--overlay {
+  position: absolute;
+}
+
+.sim-category-drawer--overlay.is-open {
+  min-height: 100%;
+  max-height: calc(100vh - 42px);
 }
 
 .sim-category-drawer--overlay .sim-category-drawer__inner {
@@ -346,11 +504,15 @@ export default {
 }
 
 .sim-category-drawer__inner {
-  width: 350px;
-  padding: 8px 10px 16px;
+  width: 100%;
+  flex: 1;
+  min-height: 0;
+  padding: 8px 10px 4rem;
+  padding-right: 2.75rem;
   box-sizing: border-box;
-  max-height: 100vh;
+  overflow-x: hidden;
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 </style>
 
