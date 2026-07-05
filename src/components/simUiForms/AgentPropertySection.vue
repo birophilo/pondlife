@@ -1,6 +1,6 @@
 <template>
   <div
-    v-show="activeToolbarPanel === 'agent-properties'"
+    v-show="simCategoryDrawer === 'agent-properties'"
     class="toolbar-panel"
     role="region"
     aria-labelledby="toolbar-panel-agent-properties"
@@ -18,22 +18,22 @@
     <div v-for="(agentProperty, i) in store.agentProperties" :key="i" class="item-list">
       <AgentInitialPropertyEdit :agentProperty="agentProperty" :index="i" />
     </div>
-    <AgentPropertyCreate />
+    <AgentInitialPropertyCreate />
   </div>
 </template>
 
 <script>
 import { useStore } from '@/store/mainStore.js'
 import AgentInitialPropertyEdit from '@/components/simUiForms/AgentInitialPropertyEdit.vue'
-import AgentPropertyCreate from '@/components/simUiForms/AgentPropertyCreate.vue'
+import AgentInitialPropertyCreate from '@/components/simUiForms/AgentInitialPropertyCreate.vue'
 import { FolderUp } from '@lucide/vue'
 export default {
   name: 'AgentPropertySection',
 
-  components: { AgentInitialPropertyEdit, AgentPropertyCreate, FolderUp },
+  components: { AgentInitialPropertyEdit, AgentInitialPropertyCreate, FolderUp },
 
   props: {
-    activeToolbarPanel: {
+    simCategoryDrawer: {
       type: [String, null],
       default: null
     },

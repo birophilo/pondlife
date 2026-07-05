@@ -104,7 +104,7 @@
         </tr>
         <tr>
           <td class="agent-property-name-cell">value type</td>
-          <td class="agent-property-value-cell">{{ agentProperty.valueType }}</td>
+          <td class="agent-property-value-cell">{{ valueTypeLabel(agentProperty.valueType) }}</td>
         </tr>
         <tr>
           <td class="agent-property-name-cell">initial value</td>
@@ -116,7 +116,7 @@
         </tr>
         <tr v-if="agentProperty.applyTo === 'agentType'">
           <td class="agent-property-name-cell">agent types</td>
-          <td class="agent-property-value-cell">{{ agentProperty.agentType }}</td>
+          <td class="agent-property-value-cell">{{ formatAgentTypes(agentProperty.agentTypes) }}</td>
         </tr>
       </table>
     </div>
@@ -180,6 +180,16 @@ export default {
       {value: "boolean", description: "true or false"}
     ]
 
+    const valueTypeLabel = (value) => {
+      const choice = valueTypeChoices.find((c) => c.value === value)
+      return choice?.description ?? value ?? '—'
+    }
+
+    const formatAgentTypes = (agentTypes) => {
+      if (!Array.isArray(agentTypes) || agentTypes.length === 0) return '—'
+      return agentTypes.join(', ')
+    }
+
     const handleAgentTypesCheckbox = () => {
       const selectedAgentTypes = [...document.querySelectorAll('.agent-type-checkbox:checked')].map(e => e.value);
       itemForm.value.agentTypes = selectedAgentTypes
@@ -195,6 +205,8 @@ export default {
       deleteItem,
       applyToChoices,
       valueTypeChoices,
+      valueTypeLabel,
+      formatAgentTypes,
       handleAgentTypesCheckbox
     }
   }
