@@ -131,24 +131,15 @@
       </div>
     </div>
 
-    <div v-else>
-      <button
-        type="button"
-        class="new-btn"
-        @click="isAdding = true"
-      >
-        <span>new</span>
-        <Plus :size="16" class="icon-btn--small" aria-hidden="true" />
-      </button>
-    </div>
+    <MenuNewBtn v-else @click="isAdding = true" />
   </div>
 </template>
 
 <script>
 import { ref } from 'vue'
-import { Plus } from '@lucide/vue'
 import { useStore } from '@/store/mainStore.js'
 import api from '@/apiCrud.js'
+import MenuNewBtn from '@/components/simUi/MenuNewBtn.vue'
 
 const DEFAULT_FORM = {
   name: '',
@@ -162,7 +153,7 @@ const DEFAULT_FORM = {
 export default {
   name: 'AgentInitialPropertyCreate',
 
-  components: { Plus },
+  components: { MenuNewBtn },
 
   setup () {
     const store = useStore()

@@ -14,52 +14,48 @@
     <div class="sim-category-drawer__inner">
       <div
         v-show="modelValue === 'agent-types'"
-        class="toolbar-panel"
+        class="menu-panel"
         role="region"
-        aria-labelledby="toolbar-panel-agent-types"
+        aria-labelledby="menu-panel-agent-types"
       >
-        <h2 id="toolbar-panel-agent-types" class="toolbar-panel__heading">Agent Types</h2>
+        <h2 id="menu-panel-agent-types" class="menu-panel__heading">Agent Types</h2>
+        <MenuBrowseBtn
+          :disabled="loadSimObjectListFetching"
+          @click="loadModals.agentTypes"
+        />
         <div v-for="(agentType, index) in store.agentTypes" :key="index" class="agent-type-menu-container">
           <AgentTypeEdit :agentType="agentType" />
           <AgentTypeFirstActionEdit :agentType="agentType" />
         </div>
         <AgentTypeCreate />
-        <button
-          type="button"
-          :disabled="loadSimObjectListFetching"
-          @click="loadModals.agentTypes"
-        >
-          load agent type
-        </button>
       </div>
 
       <div
         v-show="modelValue === 'sprite-sheets'"
-        class="toolbar-panel"
+        class="menu-panel"
         role="region"
-        aria-labelledby="toolbar-panel-sprite-sheets"
+        aria-labelledby="menu-panel-sprite-sheets"
       >
-        <h2 id="toolbar-panel-sprite-sheets" class="toolbar-panel__heading">Sprite Sheets</h2>
-        <div v-for="(spriteSheet, index) in store.spriteSheets" :key="index">
-          <SpriteSheetEdit :spriteSheet="spriteSheet" :i="index" />
-        </div>
-        <SpriteSheetCreate />
-        <button
-          type="button"
+        <h2 id="menu-panel-sprite-sheets" class="menu-panel__heading">Sprite Sheets</h2>
+        <MenuBrowseBtn
           :disabled="loadSimObjectListFetching"
           @click="loadModals.spriteSheets"
-        >
-          load sprite sheet
-        </button>
+        />
+        <div class="item-list">
+          <div v-for="(spriteSheet, index) in store.spriteSheets" :key="index" class="created-item">
+            <SpriteSheetEdit :spriteSheet="spriteSheet" :i="index" />
+          </div>
+        </div>
+        <SpriteSheetCreate />
       </div>
 
       <div
         v-show="modelValue === 'animation-sets'"
-        class="toolbar-panel"
+        class="menu-panel"
         role="region"
-        aria-labelledby="toolbar-panel-animation-sets"
+        aria-labelledby="menu-panel-animation-sets"
       >
-        <h2 id="toolbar-panel-animation-sets" class="toolbar-panel__heading">Animation Sets</h2>
+        <h2 id="menu-panel-animation-sets" class="menu-panel__heading">Animation Sets</h2>
         <div v-for="(animationSet, index) in store.animationSets" :key="index">
           <AnimationSetEdit :animationSet="animationSet" :i="index" />
         </div>
@@ -75,16 +71,16 @@
 
       <div
         v-show="modelValue === 'properties'"
-        class="toolbar-panel"
+        class="menu-panel"
         role="region"
-        aria-labelledby="toolbar-panel-properties"
+        aria-labelledby="menu-panel-properties"
       >
-        <h2 id="toolbar-panel-properties" class="toolbar-panel__heading">Properties</h2>
+        <h2 id="menu-panel-properties" class="menu-panel__heading">Properties</h2>
         <div v-if="store.selectedAgent !== null" class="item-list">
           <PropertyEdit :agentProperties="store.selectedAgent.stateData" />
           <SetPropertyForm />
         </div>
-        <p v-else class="toolbar-panel__hint">Select an agent on the canvas to edit properties.</p>
+        <p v-else class="menu-panel__hint">Select an agent on the canvas to edit properties.</p>
         <button
           type="button"
           :disabled="loadSimObjectListFetching"
@@ -96,22 +92,21 @@
 
       <div
         v-show="modelValue === 'recurring-changes'"
-        class="toolbar-panel"
+        class="menu-panel"
         role="region"
-        aria-labelledby="toolbar-panel-recurring-changes"
+        aria-labelledby="menu-panel-recurring-changes"
       >
-        <h2 id="toolbar-panel-recurring-changes" class="toolbar-panel__heading">Recurring Changes</h2>
-        <div v-for="(recurringChange, index) in store.ungroupedRecurringChanges" :key="index">
-          <RecurringChangeEdit :recurringChange="recurringChange" :index="index" />
-        </div>
-        <RecurringChangeCreate />
-        <button
-          type="button"
+        <h2 id="menu-panel-recurring-changes" class="menu-panel__heading">Recurring Changes</h2>
+        <MenuBrowseBtn
           :disabled="loadSimObjectListFetching"
           @click="loadModals.recurringChanges"
-        >
-          load recurring change
-        </button>
+        />
+        <div class="item-list">
+          <div v-for="(recurringChange, index) in store.ungroupedRecurringChanges" :key="index" class="created-item">
+            <RecurringChangeEdit :recurringChange="recurringChange" :index="index" />
+          </div>
+        </div>
+        <RecurringChangeCreate />
       </div>
 
       <AgentPropertySection
@@ -122,11 +117,11 @@
 
       <div
         v-show="modelValue === 'actions'"
-        class="toolbar-panel"
+        class="menu-panel"
         role="region"
-        aria-labelledby="toolbar-panel-actions"
+        aria-labelledby="menu-panel-actions"
       >
-        <h2 id="toolbar-panel-actions" class="toolbar-panel__heading">Actions</h2>
+        <h2 id="menu-panel-actions" class="menu-panel__heading">Actions</h2>
         <div class="item-list">
           <div v-for="action in store.actions" :key="action.id" class="created-item">
             <ActionEdit :action="action" />
@@ -140,22 +135,22 @@
         >
           load action
         </button>
-        <h3 class="toolbar-panel__subheading">Start action</h3>
+        <h3 class="menu-panel__subheading">Start action</h3>
         <div v-if="store.actions.length > 0">
           <div v-for="action in store.actions" :key="'start-' + action.id">
             <button @click="cloneAction(action, store.selectedAgent)">{{ action.actionName }}</button>
           </div>
         </div>
-        <p v-else class="toolbar-panel__hint">no actions yet</p>
+        <p v-else class="menu-panel__hint">no actions yet</p>
       </div>
 
       <div
         v-show="modelValue === 'conditions'"
-        class="toolbar-panel"
+        class="menu-panel"
         role="region"
-        aria-labelledby="toolbar-panel-conditions"
+        aria-labelledby="menu-panel-conditions"
       >
-        <h2 id="toolbar-panel-conditions" class="toolbar-panel__heading">Conditions</h2>
+        <h2 id="menu-panel-conditions" class="menu-panel__heading">Conditions</h2>
         <div class="item-list">
           <div v-for="(item, index) in store.conditions" :key="index" class="created-item">
             <ConditionEdit :item="item" :index="index" />
@@ -173,46 +168,40 @@
 
       <div
         v-show="modelValue === 'sensors'"
-        class="toolbar-panel"
+        class="menu-panel"
         role="region"
-        aria-labelledby="toolbar-panel-sensors"
+        aria-labelledby="menu-panel-sensors"
       >
-        <h2 id="toolbar-panel-sensors" class="toolbar-panel__heading">Sensors</h2>
+        <h2 id="menu-panel-sensors" class="menu-panel__heading">Sensors</h2>
+        <MenuBrowseBtn
+          :disabled="loadSimObjectListFetching"
+          @click="loadModals.sensors"
+        />
         <div class="item-list">
           <div v-for="(sensor, index) in store.sensors" :key="index" class="created-item">
             <SensorEdit :sensor="sensor" :i="index" />
           </div>
         </div>
         <SensorCreate />
-        <button
-          type="button"
-          :disabled="loadSimObjectListFetching"
-          @click="loadModals.sensors"
-        >
-          load sensor
-        </button>
       </div>
 
       <div
         v-show="modelValue === 'utility-functions'"
-        class="toolbar-panel"
+        class="menu-panel"
         role="region"
-        aria-labelledby="toolbar-panel-utility-functions"
+        aria-labelledby="menu-panel-utility-functions"
       >
-        <h2 id="toolbar-panel-utility-functions" class="toolbar-panel__heading">Utility Functions</h2>
+        <h2 id="menu-panel-utility-functions" class="menu-panel__heading">Utility Functions</h2>
+        <MenuBrowseBtn
+          :disabled="loadSimObjectListFetching"
+          @click="loadModals.utilityFunctions"
+        />
         <div class="item-list">
           <div v-for="(utilityFunction, index) in store.agentUtilityFunctions" :key="index" class="created-item">
             <UtilityFunctionEdit :utilityFunction="utilityFunction" :index="index" />
           </div>
         </div>
         <UtilityFunctionCreate />
-        <button
-          type="button"
-          :disabled="loadSimObjectListFetching"
-          @click="loadModals.utilityFunctions"
-        >
-          load utility function
-        </button>
       </div>
     </div>
 
@@ -261,6 +250,7 @@ import UtilityFunctionEdit from '@/components/simUiForms/UtilityFunctionEdit.vue
 import UtilityFunctionCreate from '@/components/simUiForms/UtilityFunctionCreate.vue'
 import RecurringChangeEdit from '@/components/simUiForms/RecurringChangeEdit.vue'
 import RecurringChangeCreate from '@/components/simUiForms/RecurringChangeCreate.vue'
+import MenuBrowseBtn from '@/components/simUi/MenuBrowseBtn.vue'
 
 const DRAWER_WIDTH_STORAGE_KEY = 'simCategoryDrawerWidth'
 const DEFAULT_DRAWER_WIDTH = 350
@@ -299,7 +289,8 @@ export default {
     UtilityFunctionEdit,
     UtilityFunctionCreate,
     RecurringChangeEdit,
-    RecurringChangeCreate
+    RecurringChangeCreate,
+    MenuBrowseBtn
   },
 
   props: {

@@ -6,7 +6,7 @@
       offset X: <input v-model="itemForm.offset.x" type="number" placeholder="offset X" /><br />
       offset Y: <input v-model="itemForm.offset.y" type="number" placeholder="offset Y" /><br />
 
-      <table class="sprite-map-direction-table">
+      <table class="menu-table">
         <tr v-for="row in store.directionList">
           <td v-for="directionName in row">
             <select v-model="itemForm.sheets[directionName]">

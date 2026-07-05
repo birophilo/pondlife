@@ -1,16 +1,76 @@
 <template>
-  <div v-if="isAdding === true" class="spritesheet-form">
-    name: <input v-model="itemForm.name" type="text" placeholder="name" /><br />
-    src: <input type="file" placeholder="src" @change="uploadFile" /><br />
-    rows: <input v-model="itemForm.rows" type="number" placeholder="rows" /><br />
-    columns: <input v-model="itemForm.columns" type="number" placeholder="columns" /><br />
-    numImages: <input v-model="itemForm.numImages" type="number" placeholder="number of images" /><br />
-    refreshInterval: <input v-model="itemForm.refreshInterval" type="number" placeholder="refresh interval" /><br />
-    <button @click="createSpriteSheet">create sprite sheet</button>
-    <button @click="isAdding = false">cancel</button>
-  </div>
-  <div v-else class="spritesheet-form">
-    <button @click="isAdding = true">new sprite sheet</button>
+  <div>
+    <div v-if="isAdding">
+      <table class="menu-form-table">
+        <tr>
+          <td class="menu-form-label-cell menu-body-small">name</td>
+          <td class="menu-form-value-cell menu-body-small-strong">
+            <input
+              v-model="itemForm.name"
+              type="text"
+              class="menu-input menu-input--field"
+            />
+          </td>
+        </tr>
+        <tr>
+          <td class="menu-form-label-cell menu-body-small">src</td>
+          <td class="menu-form-value-cell menu-body-small-strong">
+            <input type="file" @change="uploadFile" />
+          </td>
+        </tr>
+        <tr>
+          <td class="menu-form-label-cell menu-body-small">rows</td>
+          <td class="menu-form-value-cell menu-body-small-strong">
+            <input
+              v-model="itemForm.rows"
+              type="number"
+              class="menu-input menu-input--field"
+            />
+          </td>
+        </tr>
+        <tr>
+          <td class="menu-form-label-cell menu-body-small">columns</td>
+          <td class="menu-form-value-cell menu-body-small-strong">
+            <input
+              v-model="itemForm.columns"
+              type="number"
+              class="menu-input menu-input--field"
+            />
+          </td>
+        </tr>
+        <tr>
+          <td class="menu-form-label-cell menu-body-small">num images</td>
+          <td class="menu-form-value-cell menu-body-small-strong">
+            <input
+              v-model="itemForm.numImages"
+              type="number"
+              class="menu-input menu-input--field"
+            />
+          </td>
+        </tr>
+        <tr>
+          <td class="menu-form-label-cell menu-body-small">refresh interval</td>
+          <td class="menu-form-value-cell menu-body-small-strong">
+            <input
+              v-model="itemForm.refreshInterval"
+              type="number"
+              class="menu-input menu-input--field"
+            />
+          </td>
+        </tr>
+      </table>
+
+      <div class="menu-form-actions">
+        <button type="button" class="menu-btn" @click="createSpriteSheet">
+          create
+        </button>
+        <button type="button" class="menu-btn" @click="cancelCreate">
+          cancel
+        </button>
+      </div>
+    </div>
+
+    <MenuNewBtn v-else @click="isAdding = true" />
   </div>
 </template>
 
@@ -18,22 +78,26 @@
 import { ref } from 'vue'
 import { useStore } from '@/store/mainStore.js'
 import api from '@/apiCrud.js'
+import MenuNewBtn from '@/components/simUi/MenuNewBtn.vue'
+
+const DEFAULT_FORM = {
+  name: '',
+  src: '',
+  columns: 1,
+  rows: 1,
+  numImages: 1,
+  refreshInterval: 1
+}
 
 export default {
   name: 'SpriteSheetCreate',
-  setup: function () {
+
+  components: { MenuNewBtn },
+
+  setup () {
     const store = useStore()
-
     const isAdding = ref(false)
-
-    const itemForm = ref({
-        name: '',
-        src: '',
-        columns: 1,
-        rows: 1,
-        numImages: 1,
-        refreshInterval: 1
-      })
+    const itemForm = ref({ ...DEFAULT_FORM })
 
     const createSpriteSheet = async () => {
       const newSpriteSheet = {
@@ -52,26 +116,23 @@ export default {
       await store.saveScene()
 
       isAdding.value = false
-
-      itemForm.value = {
-        name: '',
-        src: '',
-        columns: 1,
-        rows: 1,
-        numImages: 1,
-        refreshInterval: 1
-      }
+      itemForm.value = { ...DEFAULT_FORM }
     }
 
     const uploadFile = async (event) => {
       const imageFile = event.target.files[0]
-      let formData = new FormData()
-      formData.append("resource", "spritesheet")
-      formData.append("imageType", "spritesheet")
-      formData.append("file", imageFile)
+      const formData = new FormData()
+      formData.append('resource', 'spritesheet')
+      formData.append('imageType', 'spritesheet')
+      formData.append('file', imageFile)
 
       const createdResponse = await api.uploadFile(formData)
       itemForm.value.src = createdResponse.filename
+    }
+
+    const cancelCreate = () => {
+      isAdding.value = false
+      itemForm.value = { ...DEFAULT_FORM }
     }
 
     return {
@@ -79,15 +140,9 @@ export default {
       isAdding,
       itemForm,
       createSpriteSheet,
-      uploadFile
+      uploadFile,
+      cancelCreate
     }
   }
 }
 </script>
-
-<style>
-.spritesheet-form {
-  border-top: 1px solid #e8b9ad;
-}
-</style>
-

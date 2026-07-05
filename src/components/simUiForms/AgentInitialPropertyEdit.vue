@@ -131,8 +131,8 @@
       </div>
     </div>
 
-    <div v-else class="agent-property-view">
-      <div class="agent-property-actions">
+    <div v-else class="menu-form-item-view">
+      <div class="menu-form-item-actions">
         <button
           type="button"
           class="menu-icon-btn"
@@ -147,7 +147,7 @@
           aria-label="Delete"
           @click="deleteItem"
         >
-          <X :size="16" aria-hidden="true" />
+          <Trash2 :size="16" aria-hidden="true" />
         </button>
       </div>
       <table class="menu-form-table">
@@ -191,13 +191,13 @@
 
 <script>
 import { ref } from 'vue'
-import { Pencil, X } from '@lucide/vue'
+import { Pencil, Trash2 } from '@lucide/vue'
 import { useStore } from '@/store/mainStore.js'
 import api from '@/apiCrud.js'
 import ConfirmSimDeleteModal from '@/components/ConfirmSimDeleteModal.vue'
 
 export default {
-  components: { Pencil, X, ConfirmSimDeleteModal },
+  components: { Pencil, Trash2, ConfirmSimDeleteModal },
   props: {
     agentProperty: Object,
     index: Number
@@ -305,14 +305,3 @@ export default {
 }
 
 </script>
-
-<style scoped>
-.agent-property-view {
-  position: relative;
-}
-
-.agent-property-actions {
-  display: flex;
-  justify-content: flex-end;
-}
-</style>

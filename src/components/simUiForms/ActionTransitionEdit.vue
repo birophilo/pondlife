@@ -1,6 +1,6 @@
 <template>
   <div>
-    <table>
+    <table class="menu-table">
       <tbody>
         <tr>
           <th>if condition met</th>

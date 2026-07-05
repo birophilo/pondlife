@@ -1,20 +1,15 @@
 <template>
   <div
     v-show="simCategoryDrawer === 'agent-properties'"
-    class="toolbar-panel"
+    class="menu-panel"
     role="region"
-    aria-labelledby="toolbar-panel-agent-properties"
+    aria-labelledby="menu-panel-agent-properties"
   >
-    <h2 id="toolbar-panel-agent-properties" class="toolbar-panel__heading">Initial Agent Properties</h2>
-    <button
-      type="button"
+    <h2 id="menu-panel-agent-properties" class="menu-panel__heading">Initial Agent Properties</h2>
+    <MenuBrowseBtn
       :disabled="loadSimObjectListFetching"
       @click="loadAgentPropertiesModal"
-      class="browse-btn"
-    >
-      <span>browse</span>
-      <FolderUp :size="16" class="icon-btn--small" aria-hidden="true" />
-    </button>
+    />
     <div v-for="(agentProperty, i) in store.agentProperties" :key="i" class="item-list">
       <AgentInitialPropertyEdit :agentProperty="agentProperty" :index="i" />
     </div>
@@ -26,11 +21,11 @@
 import { useStore } from '@/store/mainStore.js'
 import AgentInitialPropertyEdit from '@/components/simUiForms/AgentInitialPropertyEdit.vue'
 import AgentInitialPropertyCreate from '@/components/simUiForms/AgentInitialPropertyCreate.vue'
-import { FolderUp } from '@lucide/vue'
+import MenuBrowseBtn from '@/components/simUi/MenuBrowseBtn.vue'
 export default {
   name: 'AgentPropertySection',
 
-  components: { AgentInitialPropertyEdit, AgentInitialPropertyCreate, FolderUp },
+  components: { AgentInitialPropertyEdit, AgentInitialPropertyCreate, MenuBrowseBtn },
 
   props: {
     simCategoryDrawer: {

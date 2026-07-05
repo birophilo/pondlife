@@ -73,14 +73,6 @@ button {
   border: 1px solid var(--app-btn-border);
 }
 
-table,
-th,
-td {
-  border: 1px solid var(--app-table-border);
-  border-collapse: collapse;
-  padding: 5px;
-}
-
 .scene-button-container button {
   display: inline-flex;
   align-items: center;

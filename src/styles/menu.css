@@ -13,6 +13,7 @@
   color: var(--menu-text);
 }
 
+.menu-table,
 .menu-form-table {
   width: 100%;
   border-collapse: collapse;
@@ -20,6 +21,8 @@
   margin-bottom: 10px;
 }
 
+.menu-table th,
+.menu-table td,
 .menu-form-table td {
   border: 1px solid var(--menu-border);
   padding: var(--menu-form-cell-padding);
@@ -117,21 +120,30 @@
   color: var(--menu-danger);
 }
 
+.menu-form-item-view {
+  position: relative;
+}
+
+.menu-form-item-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
 /* Drawer panel chrome */
-.toolbar-panel__heading {
+.menu-panel__heading {
   margin: 0 0 16px;
   font-size: 1.1rem;
   font-weight: 600;
   color: var(--menu-accent);
 }
 
-.toolbar-panel__subheading {
+.menu-panel__subheading {
   margin: 20px 0 12px;
   font-size: 1rem;
   font-weight: 500;
 }
 
-.toolbar-panel__hint {
+.menu-panel__hint {
   margin: 0;
   font-size: 0.9rem;
   color: var(--menu-text-hint);
