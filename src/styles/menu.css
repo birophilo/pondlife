@@ -1,0 +1,194 @@
+/* Sim menu / drawer form typography and layout utilities. */
+
+.menu-body-small {
+  font-size: var(--menu-body-small-size);
+  font-family: var(--menu-font-mono);
+  color: var(--menu-text);
+}
+
+.menu-body-small-strong {
+  font-size: var(--menu-body-small-size);
+  font-family: var(--menu-font-mono);
+  font-weight: bold;
+  color: var(--menu-text);
+}
+
+.menu-form-table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid var(--menu-border);
+  margin-bottom: 10px;
+}
+
+.menu-form-table td {
+  border: 1px solid var(--menu-border);
+  padding: var(--menu-form-cell-padding);
+}
+
+.menu-form-label-cell {
+  width: var(--menu-form-label-width);
+}
+
+.menu-form-value-cell {
+  /* Typography applied via menu-body-small-strong on cell or child input. */
+}
+
+.menu-input {
+  width: 100%;
+  box-sizing: border-box;
+  font: inherit;
+  font-weight: bold;
+  color: inherit;
+  border: none;
+  background: transparent;
+  padding: 0;
+}
+
+.menu-input--field {
+  background: var(--menu-surface);
+  padding: var(--menu-input-field-padding);
+  border: 1px solid var(--menu-border-light);
+  border-radius: var(--menu-input-field-radius);
+}
+
+.menu-input:focus {
+  outline: 1px solid var(--menu-border-focus);
+  outline-offset: 1px;
+}
+
+.menu-checkbox-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 4px;
+  font-weight: normal;
+}
+
+.menu-checkbox-row:last-child {
+  margin-bottom: 0;
+}
+
+.menu-radio-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-right: 12px;
+  font-weight: normal;
+}
+
+.menu-form-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.menu-btn {
+  padding: 6px 12px;
+  border: 1px solid var(--menu-border-btn);
+  border-radius: 4px;
+  background: var(--menu-surface);
+  font-size: var(--menu-btn-size);
+  color: var(--menu-text-muted);
+  cursor: pointer;
+}
+
+.menu-btn:hover {
+  background: var(--menu-surface-hover);
+}
+
+.menu-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 1px solid var(--menu-border-subtle);
+  background: transparent;
+  border-radius: 2px;
+  color: var(--menu-text-subtle);
+  cursor: pointer;
+}
+
+.menu-icon-btn:hover {
+  color: var(--menu-text-hover);
+}
+
+.menu-icon-btn--danger:hover {
+  color: var(--menu-danger);
+}
+
+/* Drawer panel chrome */
+.toolbar-panel__heading {
+  margin: 0 0 16px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--menu-accent);
+}
+
+.toolbar-panel__subheading {
+  margin: 20px 0 12px;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.toolbar-panel__hint {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--menu-text-hint);
+}
+
+.menu-subheading,
+h3 {
+  font-weight: 500;
+  font-size: 20px;
+  margin: 16px 0;
+}
+
+.menu-action-name {
+  font-size: 18px;
+  padding-right: 10px;
+  font-weight: 500;
+}
+
+.created-item-header {
+  display: flex;
+  align-items: center;
+}
+
+.created-item {
+  border: 1px solid var(--menu-item-list-border);
+  border-radius: 5px;
+  padding: 5px;
+  margin-bottom: 10px;
+}
+
+.selection-mode-button {
+  cursor: pointer;
+}
+
+.agent-type-menu-container {
+  padding-bottom: 12px;
+  margin-bottom: 12px;
+  border-bottom: 1px solid var(--menu-divider);
+}
+
+.browse-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 12px;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--menu-text-muted);
+  cursor: pointer;
+}
+
+.new-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 12px;
+  border-radius: 4px;
+  color: var(--menu-text-muted);
+  cursor: pointer;
+}

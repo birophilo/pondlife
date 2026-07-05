@@ -53,16 +53,3 @@ export default {
   }
 }
 </script>
-
-<style scoped>
-.browse-btn {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  padding: 8px 12px;
-  border-radius: 4px;
-  background: transparent;
-  color: #444;
-  cursor: pointer;
-}
-</style>

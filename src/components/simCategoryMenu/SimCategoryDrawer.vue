@@ -515,25 +515,3 @@ export default {
   -webkit-overflow-scrolling: touch;
 }
 </style>
-
-<!-- Shared panel typography for nested section components (e.g. AgentPropertySection). -->
-<style>
-.toolbar-panel__heading {
-  margin: 0 0 16px;
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: #a03622;
-}
-
-.toolbar-panel__subheading {
-  margin: 20px 0 12px;
-  font-size: 1rem;
-  font-weight: 500;
-}
-
-.toolbar-panel__hint {
-  margin: 0;
-  font-size: 0.9rem;
-  color: #666;
-}
-</style>

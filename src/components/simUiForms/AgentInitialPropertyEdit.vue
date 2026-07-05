@@ -1,81 +1,141 @@
 <template>
   <div>
-    <div v-if="isEditing">
-      <div>property: <input v-model="itemForm.name" type="text" /></div>
-      <div>description: <input v-model="itemForm.description" type="text" /></div>
+    <div v-if="isEditing" ref="editFormRef">
+      <table class="menu-form-table">
+        <tr>
+          <td class="menu-form-label-cell menu-body-small">property</td>
+          <td class="menu-form-value-cell menu-body-small-strong">
+            <input
+              v-model="itemForm.name"
+              type="text"
+              class="menu-input menu-input--field"
+            />
+          </td>
+        </tr>
+        <tr>
+          <td class="menu-form-label-cell menu-body-small">description</td>
+          <td class="menu-form-value-cell menu-body-small-strong">
+            <input
+              v-model="itemForm.description"
+              type="text"
+              class="menu-input menu-input--field"
+            />
+          </td>
+        </tr>
+        <tr>
+          <td class="menu-form-label-cell menu-body-small">value type</td>
+          <td class="menu-form-value-cell menu-body-small-strong">
+            <select
+              v-model="itemForm.valueType"
+              class="menu-input menu-input--field"
+              @change="$forceUpdate()"
+            >
+              <option value="">-- value type --</option>
+              <option
+                v-for="choice in valueTypeChoices"
+                :key="choice.value"
+                :value="choice.value"
+              >
+                {{ choice.description }}
+              </option>
+            </select>
+          </td>
+        </tr>
+        <tr v-if="itemForm.valueType === 'boolean'">
+          <td class="menu-form-label-cell menu-body-small">initial value</td>
+          <td class="menu-form-value-cell menu-body-small-strong">
+            <label class="menu-radio-label">
+              <input
+                v-model="itemForm.initialValue"
+                name="itemBooleanValue"
+                :value="true"
+                type="radio"
+              />
+              true
+            </label>
+            <label class="menu-radio-label">
+              <input
+                v-model="itemForm.initialValue"
+                name="itemBooleanValue"
+                :value="false"
+                type="radio"
+              />
+              false
+            </label>
+          </td>
+        </tr>
+        <tr v-else-if="itemForm.valueType === 'int' || itemForm.valueType === 'float'">
+          <td class="menu-form-label-cell menu-body-small">initial value</td>
+          <td class="menu-form-value-cell menu-body-small-strong">
+            <input
+              v-model="itemForm.initialValue"
+              type="number"
+              class="menu-input menu-input--field"
+            />
+          </td>
+        </tr>
+        <tr v-else-if="itemForm.valueType === 'string'">
+          <td class="menu-form-label-cell menu-body-small">initial value</td>
+          <td class="menu-form-value-cell menu-body-small-strong">
+            <input
+              v-model="itemForm.initialValue"
+              type="text"
+              class="menu-input menu-input--field"
+            />
+          </td>
+        </tr>
+        <tr>
+          <td class="menu-form-label-cell menu-body-small">applies to</td>
+          <td class="menu-form-value-cell menu-body-small-strong">
+            <select v-model="itemForm.applyTo" class="menu-input menu-input--field">
+              <option
+                v-for="choice in applyToChoices"
+                :key="choice.value"
+                :value="choice.value"
+              >
+                {{ choice.description }}
+              </option>
+            </select>
+          </td>
+        </tr>
+        <tr v-if="itemForm.applyTo === 'agentType'">
+          <td class="menu-form-label-cell menu-body-small">agent types</td>
+          <td class="menu-form-value-cell menu-body-small-strong">
+            <div
+              v-for="agentType in Object.keys(store.agentTypes)"
+              :key="agentType"
+              class="menu-checkbox-row"
+            >
+              <input
+                class="menu-form-checkbox"
+                type="checkbox"
+                :id="`edit-${index}-${agentType}`"
+                name="agentTypeForm"
+                :value="agentType"
+                :checked="itemForm.agentTypes.includes(agentType)"
+                @change="handleAgentTypesCheckbox"
+              />
+              <label :for="`edit-${index}-${agentType}`">{{ agentType }}</label>
+            </div>
+          </td>
+        </tr>
+      </table>
 
-      <div>value type:
-        <select v-model="itemForm.valueType" @change="$forceUpdate()">
-            <option :value="{}">-- value type --</option>
-            <option
-              v-for="choice in valueTypeChoices"
-              :value="choice.value">{{ choice.description }}
-            </option>
-        </select>
+      <div class="menu-form-actions">
+        <button type="button" class="menu-btn" @click="saveItem">
+          save
+        </button>
+        <button type="button" class="menu-btn" @click="cancelEdit">
+          cancel
+        </button>
       </div>
-
-      <div v-if="itemForm.valueType === 'boolean'">
-        <div>initial value:
-          <input
-            v-model="itemForm.initialValue"
-            name="itemBooleanValue"
-            :value="true"
-            type="radio"
-          />
-          <label :for="true">true</label>
-          <input
-            v-model="itemForm.initialValue"
-            name="itemBooleanValue"
-            :value="false"
-            type="radio"
-          />
-          <label :for="false">false</label>
-        </div>
-      </div>
-      <div v-else-if="itemForm.valueType === 'int'">
-        <div>initial value: <input v-model="itemForm.initialValue" type="number" /></div>
-      </div>
-      <div v-else-if="itemForm.valueType === 'float'">
-        <div>initial value: <input v-model="itemForm.initialValue" type="number" /></div>
-      </div>
-      <div v-else-if="itemForm.valueType === 'string'">
-        <div>initial value: <input v-model="itemForm.initialValue" type="text" /></div>
-      </div>
-
-      <div>applies to:
-        <select v-model="itemForm.applyTo">
-          <option
-            v-for="choice in applyToChoices"
-            :value="choice.value">{{ choice.description }}
-          </option>
-        </select>
-      </div>
-
-      <div v-if="itemForm.applyTo === 'agentType'">
-        <div>agent types:</div>
-        <div v-for="agentType in Object.keys(store.agentTypes)">
-          <input
-            class="agent-type-checkbox"
-            type="checkbox"
-            :id="agentType"
-            name="agentTypeForm"
-            :value="agentType"
-            :checked="itemForm.agentTypes.includes(agentType)"
-            @change="handleAgentTypesCheckbox"
-          >
-          <label :for="agentType" >{{ agentType }}</label><br>
-        </div>
-      </div>
-
-      <button @click="saveItem">save</button>
-      <button @click="cancelEdit">cancel</button>
     </div>
 
     <div v-else class="agent-property-view">
       <div class="agent-property-actions">
         <button
           type="button"
-          class="icon-btn"
+          class="menu-icon-btn"
           aria-label="Edit"
           @click="editItem"
         >
@@ -83,43 +143,49 @@
         </button>
         <button
           type="button"
-          class="icon-btn icon-btn--danger"
+          class="menu-icon-btn menu-icon-btn--danger"
           aria-label="Delete"
           @click="deleteItem"
         >
           <X :size="16" aria-hidden="true" />
         </button>
       </div>
-      <table class="agent-property-table">
+      <table class="menu-form-table">
         <tr>
-          <td class="agent-property-name-cell">property</td>
-          <td class="agent-property-value-cell">{{ agentProperty.name }}</td>
+          <td class="menu-form-label-cell menu-body-small">property</td>
+          <td class="menu-form-value-cell menu-body-small-strong">{{ agentProperty.name }}</td>
         </tr>
         <tr>
-
+          <td class="menu-form-label-cell menu-body-small">description</td>
+          <td class="menu-form-value-cell menu-body-small-strong">{{ agentProperty.description }}</td>
         </tr>
         <tr>
-          <td class="agent-property-name-cell">description</td>
-          <td class="agent-property-value-cell">{{ agentProperty.description }}</td>
+          <td class="menu-form-label-cell menu-body-small">value type</td>
+          <td class="menu-form-value-cell menu-body-small-strong">{{ valueTypeLabel(agentProperty.valueType) }}</td>
         </tr>
         <tr>
-          <td class="agent-property-name-cell">value type</td>
-          <td class="agent-property-value-cell">{{ valueTypeLabel(agentProperty.valueType) }}</td>
+          <td class="menu-form-label-cell menu-body-small">initial value</td>
+          <td class="menu-form-value-cell menu-body-small-strong">{{ agentProperty.initialValue }}</td>
         </tr>
         <tr>
-          <td class="agent-property-name-cell">initial value</td>
-          <td class="agent-property-value-cell">{{ agentProperty.initialValue }}</td>
-        </tr>
-        <tr>
-          <td class="agent-property-name-cell">applies to</td>
-          <td class="agent-property-value-cell">{{ agentProperty.applyTo }}</td>
+          <td class="menu-form-label-cell menu-body-small">applies to</td>
+          <td class="menu-form-value-cell menu-body-small-strong">{{ agentProperty.applyTo }}</td>
         </tr>
         <tr v-if="agentProperty.applyTo === 'agentType'">
-          <td class="agent-property-name-cell">agent types</td>
-          <td class="agent-property-value-cell">{{ formatAgentTypes(agentProperty.agentTypes) }}</td>
+          <td class="menu-form-label-cell menu-body-small">agent types</td>
+          <td class="menu-form-value-cell menu-body-small-strong">{{ formatAgentTypes(agentProperty.agentTypes) }}</td>
         </tr>
       </table>
     </div>
+
+    <ConfirmSimDeleteModal
+      :open="deleteConfirmOpen"
+      entity-type-label="agent initial property"
+      :entity-name="agentProperty.name || '—'"
+      :deleting="deleteInProgress"
+      @close="closeDeleteConfirm"
+      @confirm="confirmDelete"
+    />
   </div>
 </template>
 
@@ -128,9 +194,10 @@ import { ref } from 'vue'
 import { Pencil, X } from '@lucide/vue'
 import { useStore } from '@/store/mainStore.js'
 import api from '@/apiCrud.js'
+import ConfirmSimDeleteModal from '@/components/ConfirmSimDeleteModal.vue'
 
 export default {
-  components: { Pencil, X },
+  components: { Pencil, X, ConfirmSimDeleteModal },
   props: {
     agentProperty: Object,
     index: Number
@@ -140,6 +207,9 @@ export default {
 
     const itemForm = ref({})
     const isEditing = ref(false)
+    const editFormRef = ref(null)
+    const deleteConfirmOpen = ref(false)
+    const deleteInProgress = ref(false)
 
     const saveItem = () => {
       isEditing.value = false
@@ -159,8 +229,23 @@ export default {
     }
 
     const deleteItem = () => {
-      store.agentProperties.splice(props.index, 1)
-      api.deleteInitialAgentProperty(props.agentProperty.id)
+      deleteConfirmOpen.value = true
+    }
+
+    const closeDeleteConfirm = () => {
+      deleteConfirmOpen.value = false
+    }
+
+    const confirmDelete = async () => {
+      if (deleteInProgress.value) return
+      deleteInProgress.value = true
+      try {
+        store.agentProperties.splice(props.index, 1)
+        await api.deleteInitialAgentProperty(props.agentProperty.id)
+        deleteConfirmOpen.value = false
+      } finally {
+        deleteInProgress.value = false
+      }
     }
 
     const populateItemForm = () => {
@@ -191,18 +276,25 @@ export default {
     }
 
     const handleAgentTypesCheckbox = () => {
-      const selectedAgentTypes = [...document.querySelectorAll('.agent-type-checkbox:checked')].map(e => e.value);
-      itemForm.value.agentTypes = selectedAgentTypes
+      const root = editFormRef.value
+      if (!root) return
+      const checkboxes = root.querySelectorAll('.menu-form-checkbox:checked')
+      itemForm.value.agentTypes = [...checkboxes].map((e) => e.value)
     }
 
     return {
       store,
       itemForm,
       isEditing,
+      editFormRef,
       editItem,
       saveItem,
       cancelEdit,
       deleteItem,
+      closeDeleteConfirm,
+      confirmDelete,
+      deleteConfirmOpen,
+      deleteInProgress,
       applyToChoices,
       valueTypeChoices,
       valueTypeLabel,
@@ -222,53 +314,5 @@ export default {
 .agent-property-actions {
   display: flex;
   justify-content: flex-end;
-}
-
-.icon-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 28px;
-  height: 28px;
-  padding: 0;
-  border: 1px solid #eee;
-  background: transparent;
-  border-radius: 2px;
-  color: #777;
-  cursor: pointer;
-}
-
-.icon-btn:hover {
-  color: #222;
-}
-
-.icon-btn--danger:hover {
-  color: #b00020;
-}
-
-.agent-property-table {
-  width: 100%;
-  border-collapse: collapse;
-  border: 1px solid #bbb;
-  margin-bottom: 10px;
-}
-
-.agent-property-table td {
-  border: 1px solid #bbb;
-  padding: 7px;
-}
-
-.agent-property-name-cell {
-  width: 120px;
-  font-size: 0.8em;
-  font-family: 'Lucida Console', monospace;
-  color: #333;
-}
-
-.agent-property-value-cell {
-  font-size: 0.8em;
-  font-family: 'Lucida Console', monospace;
-  font-weight: bold;
-  color: #333;
 }
 </style>

@@ -1,0 +1,91 @@
+body {
+  margin: 0;
+  padding: 0;
+  font-family: var(--menu-font-ui);
+  font-weight: 400;
+  font-size: 16px;
+  background-color: var(--menu-bg);
+  color: var(--app-text);
+}
+
+.container {
+  position: relative;
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  align-items: stretch;
+  /* Fill viewport below top nav so side chrome runs full height. */
+  min-height: calc(100vh - var(--sim-chrome-offset));
+  /* When columns exceed viewport width, scroll instead of shrinking. */
+  overflow-x: auto;
+}
+
+canvas {
+  width: var(--sim-canvas-width);
+  height: var(--sim-canvas-height);
+  position: relative;
+}
+
+.canvas-container {
+  position: relative;
+  flex: 0 0 auto;
+  min-width: var(--sim-canvas-width);
+}
+
+.live-controls-menu {
+  flex: 0 0 200px;
+  width: 200px;
+  min-width: 200px;
+  padding: 5px 5px 5px 10px;
+  box-sizing: border-box;
+}
+
+.speed-slide-container {
+  display: flex;
+  flex-direction: column;
+  padding: 5px;
+}
+
+.day-container {
+  padding: 5px;
+}
+
+.canvas-agent-label {
+  position: absolute;
+  font-size: 11px;
+  color: black;
+  z-index: 1;
+  font-family: 'Helvetica', sans-serif;
+  font-weight: 400;
+}
+
+input,
+select,
+button {
+  padding: 5px 8px;
+  margin: 4px;
+  font-family: var(--menu-font-ui);
+  border-radius: 3px;
+  border-width: 1px;
+}
+
+button {
+  border: 1px solid var(--app-btn-border);
+}
+
+table,
+th,
+td {
+  border: 1px solid var(--app-table-border);
+  border-collapse: collapse;
+  padding: 5px;
+}
+
+.scene-button-container button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 6px 10px;
+  color: var(--menu-accent);
+}

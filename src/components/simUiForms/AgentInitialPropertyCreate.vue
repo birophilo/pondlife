@@ -1,33 +1,33 @@
 <template>
   <div>
-    <div v-if="isAdding" class="agent-property-create">
-      <table class="agent-property-table">
+    <div v-if="isAdding">
+      <table class="menu-form-table">
         <tr>
-          <td class="agent-property-name-cell">property</td>
-          <td class="agent-property-value-cell">
+          <td class="menu-form-label-cell menu-body-small">property</td>
+          <td class="menu-form-value-cell menu-body-small-strong">
             <input
               v-model="itemForm.name"
               type="text"
-              class="agent-property-input agent-property-input--white"
+              class="menu-input menu-input--field"
             />
           </td>
         </tr>
         <tr>
-          <td class="agent-property-name-cell">description</td>
-          <td class="agent-property-value-cell">
+          <td class="menu-form-label-cell menu-body-small">description</td>
+          <td class="menu-form-value-cell menu-body-small-strong">
             <input
               v-model="itemForm.description"
               type="text"
-              class="agent-property-input agent-property-input--white"
+              class="menu-input menu-input--field"
             />
           </td>
         </tr>
         <tr>
-          <td class="agent-property-name-cell">value type</td>
-          <td class="agent-property-value-cell">
+          <td class="menu-form-label-cell menu-body-small">value type</td>
+          <td class="menu-form-value-cell menu-body-small-strong">
             <select
               v-model="itemForm.valueType"
-              class="agent-property-input agent-property-input--white"
+              class="menu-input menu-input--field"
               @change="$forceUpdate()"
             >
               <option value="">-- value type --</option>
@@ -42,9 +42,9 @@
           </td>
         </tr>
         <tr v-if="itemForm.valueType === 'boolean'">
-          <td class="agent-property-name-cell">initial value</td>
-          <td class="agent-property-value-cell">
-            <label class="agent-property-radio">
+          <td class="menu-form-label-cell menu-body-small">initial value</td>
+          <td class="menu-form-value-cell menu-body-small-strong">
+            <label class="menu-radio-label">
               <input
                 v-model="itemForm.initialValue"
                 name="itemBooleanValue"
@@ -53,7 +53,7 @@
               />
               true
             </label>
-            <label class="agent-property-radio">
+            <label class="menu-radio-label">
               <input
                 v-model="itemForm.initialValue"
                 name="itemBooleanValue"
@@ -65,29 +65,29 @@
           </td>
         </tr>
         <tr v-else-if="itemForm.valueType === 'int' || itemForm.valueType === 'float'">
-          <td class="agent-property-name-cell">initial value</td>
-          <td class="agent-property-value-cell">
+          <td class="menu-form-label-cell menu-body-small">initial value</td>
+          <td class="menu-form-value-cell menu-body-small-strong">
             <input
               v-model="itemForm.initialValue"
               type="number"
-              class="agent-property-input"
+              class="menu-input menu-input--field"
             />
           </td>
         </tr>
         <tr v-else-if="itemForm.valueType === 'string'">
-          <td class="agent-property-name-cell">initial value</td>
-          <td class="agent-property-value-cell">
+          <td class="menu-form-label-cell menu-body-small">initial value</td>
+          <td class="menu-form-value-cell menu-body-small-strong">
             <input
               v-model="itemForm.initialValue"
               type="text"
-              class="agent-property-input"
+              class="menu-input menu-input--field"
             />
           </td>
         </tr>
         <tr>
-          <td class="agent-property-name-cell">applies to</td>
-          <td class="agent-property-value-cell">
-            <select v-model="itemForm.applyTo" class="agent-property-input agent-property-input--white">
+          <td class="menu-form-label-cell menu-body-small">applies to</td>
+          <td class="menu-form-value-cell menu-body-small-strong">
+            <select v-model="itemForm.applyTo" class="menu-input menu-input--field">
               <option
                 v-for="choice in applyToChoices"
                 :key="choice.value"
@@ -99,15 +99,15 @@
           </td>
         </tr>
         <tr v-if="itemForm.applyTo === 'agentType'">
-          <td class="agent-property-name-cell">agent types</td>
-          <td class="agent-property-value-cell">
+          <td class="menu-form-label-cell menu-body-small">agent types</td>
+          <td class="menu-form-value-cell menu-body-small-strong">
             <div
               v-for="agentType in Object.keys(store.agentTypes)"
               :key="agentType"
-              class="agent-property-checkbox-row"
+              class="menu-checkbox-row"
             >
               <input
-                class="agent-type-checkbox"
+                class="menu-form-checkbox"
                 type="checkbox"
                 :id="`create-${agentType}`"
                 name="agentTypeForm"
@@ -121,11 +121,11 @@
         </tr>
       </table>
 
-      <div class="agent-property-form-actions">
-        <button type="button" class="form-action-btn" @click="createInitialAgentProperty">
+      <div class="menu-form-actions">
+        <button type="button" class="menu-btn" @click="createInitialAgentProperty">
           create
         </button>
-        <button type="button" class="form-action-btn" @click="cancelCreate">
+        <button type="button" class="menu-btn" @click="cancelCreate">
           cancel
         </button>
       </div>
@@ -195,7 +195,7 @@ export default {
     ]
 
     const handleAgentTypesCheckbox = () => {
-      const checkboxes = document.querySelectorAll('.agent-type-checkbox:checked')
+      const checkboxes = document.querySelectorAll('.menu-form-checkbox:checked')
       itemForm.value.agentTypes = [...checkboxes].map((e) => e.value)
     }
 
@@ -217,103 +217,3 @@ export default {
   }
 }
 </script>
-
-<style scoped>
-.new-btn {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  padding: 8px 12px;
-  border-radius: 4px;
-  color: #444;
-  cursor: pointer;
-}
-
-.agent-property-table {
-  width: 100%;
-  border-collapse: collapse;
-  border: 1px solid #bbb;
-  margin-bottom: 10px;
-}
-
-.agent-property-table td {
-  border: 1px solid #bbb;
-  padding: 7px;
-}
-
-.agent-property-name-cell {
-  width: 120px;
-  font-size: 0.8em;
-  font-family: 'Lucida Console', monospace;
-  color: #333;
-}
-
-.agent-property-value-cell {
-  font-size: 0.8em;
-  font-family: 'Lucida Console', monospace;
-  font-weight: bold;
-  color: #333;
-}
-
-.agent-property-input {
-  width: 100%;
-  box-sizing: border-box;
-  font: inherit;
-  font-weight: bold;
-  color: inherit;
-  border: none;
-  background: transparent;
-  padding: 0;
-}
-
-.agent-property-input--white {
-  background: #fff;
-  padding: 2px 4px;
-  border: 1px solid #ddd;
-  border-radius: 2px;
-}
-
-.agent-property-input:focus {
-  outline: 1px solid #999;
-  outline-offset: 1px;
-}
-
-.agent-property-checkbox-row {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  margin-bottom: 4px;
-  font-weight: normal;
-}
-
-.agent-property-checkbox-row:last-child {
-  margin-bottom: 0;
-}
-
-.agent-property-radio {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  margin-right: 12px;
-  font-weight: normal;
-}
-
-.agent-property-form-actions {
-  display: flex;
-  gap: 8px;
-}
-
-.form-action-btn {
-  padding: 6px 12px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  background: #fff;
-  font-size: 0.85em;
-  color: #444;
-  cursor: pointer;
-}
-
-.form-action-btn:hover {
-  background: #f5f5f5;
-}
-</style>

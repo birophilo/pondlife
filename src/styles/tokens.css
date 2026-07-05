@@ -1,0 +1,40 @@
+:root {
+  --menu-font-mono: 'Lucida Console', monospace;
+  --menu-font-ui: "Rubik", sans-serif;
+
+  --menu-text: #333;
+  --menu-text-muted: #444;
+  --menu-text-subtle: #777;
+  --menu-text-hover: #222;
+  --menu-text-hint: #666;
+
+  --menu-border: #bbb;
+  --menu-border-light: #ddd;
+  --menu-border-subtle: #eee;
+  --menu-border-focus: #999;
+  --menu-border-btn: #ccc;
+  --menu-divider: #e8b9ad;
+  --menu-item-list-border: grey;
+
+  --menu-surface: #fff;
+  --menu-surface-hover: #f5f5f5;
+  --menu-bg: #efeee8;
+
+  --menu-accent: #a03622;
+  --menu-danger: #b00020;
+
+  --app-text: #e43d12;
+  --app-table-border: #e43d12;
+  --app-btn-border: #e43d12;
+
+  --menu-body-small-size: 0.8em;
+  --menu-btn-size: 0.85em;
+  --menu-form-label-width: 120px;
+  --menu-form-cell-padding: 7px;
+  --menu-input-field-padding: 2px 4px;
+  --menu-input-field-radius: 2px;
+
+  --sim-canvas-width: 1000px;
+  --sim-canvas-height: 600px;
+  --sim-chrome-offset: 42px;
+}
