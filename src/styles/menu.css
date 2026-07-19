@@ -36,6 +36,18 @@
   /* Typography applied via menu-body-small-strong on cell or child input. */
 }
 
+.menu-form-value-with-action {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.menu-form-value-with-action > .menu-input {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
 .menu-input {
   width: 100%;
   box-sizing: border-box;
@@ -124,9 +136,20 @@
   position: relative;
 }
 
+.menu-form-item-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 36px;
+}
+
 .menu-form-item-actions {
   display: flex;
   justify-content: flex-end;
+}
+
+.menu-form-table--details {
+  margin-top: 4px;
 }
 
 /* Drawer panel chrome */

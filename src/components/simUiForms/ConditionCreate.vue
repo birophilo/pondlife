@@ -1,125 +1,225 @@
 <template>
-  <div v-if="isAdding === false" class="add-container">
-    <button @click="isAdding = true">new condition</button>
-  </div>
-  <div v-else>
-    <input v-model="itemForm.name" type="text" placeholder="name" />
-    <br />
-    <select v-model="itemForm.type">
-      <option value="property">property</option>
-      <option value="preset">preset</option>
-      <option value="vicinity">vicinity</option>
-    </select>
-    <br />
+  <div>
+    <div v-if="isAdding">
+      <table class="menu-form-table">
+        <tr>
+          <td class="menu-form-label-cell menu-body-small">name</td>
+          <td class="menu-form-value-cell menu-body-small-strong">
+            <input
+              v-model="itemForm.name"
+              type="text"
+              class="menu-input menu-input--field"
+            />
+          </td>
+        </tr>
+        <tr>
+          <td class="menu-form-label-cell menu-body-small">condition type</td>
+          <td class="menu-form-value-cell menu-body-small-strong">
+            <select v-model="itemForm.type" class="menu-input menu-input--field">
+              <option value="property">property</option>
+              <option value="preset">preset</option>
+              <option value="vicinity">vicinity</option>
+            </select>
+          </td>
+        </tr>
 
-    <div v-if="itemForm.type === 'property'">
-      <select
-        v-model="itemForm.forms.property.property"
-        id="action-change-property-name"
-      >
-        <option value="">-- select property --</option>
-        <option v-for="property in store.agentProperties" :value="property.name">
-          {{ property.name }}
-        </option>
-      </select>
-      <select v-model="itemForm.forms.property.comparison" value="isGreaterThan">
-        <option value="">-- select comparison --</option>
-        <option value="isGreaterThan">is greater than</option>
-        <option value="isLessThan">is less than</option>
-      </select>
+        <template v-if="itemForm.type === 'property'">
+          <tr>
+            <td class="menu-form-label-cell menu-body-small">property</td>
+            <td class="menu-form-value-cell menu-body-small-strong">
+              <select
+                id="condition-create-property"
+                v-model="itemForm.forms.property.property"
+                class="menu-input menu-input--field"
+              >
+                <option value="">-- select property --</option>
+                <option
+                  v-for="property in store.agentProperties"
+                  :key="property.name"
+                  :value="property.name"
+                >
+                  {{ property.name }}
+                </option>
+              </select>
+            </td>
+          </tr>
+          <tr>
+            <td class="menu-form-label-cell menu-body-small">comparison</td>
+            <td class="menu-form-value-cell menu-body-small-strong">
+              <select
+                v-model="itemForm.forms.property.comparison"
+                class="menu-input menu-input--field"
+              >
+                <option value="">-- select comparison --</option>
+                <option value="isGreaterThan">is greater than</option>
+                <option value="isLessThan">is less than</option>
+              </select>
+            </td>
+          </tr>
+          <tr>
+            <td class="menu-form-label-cell menu-body-small">value</td>
+            <td class="menu-form-value-cell menu-body-small-strong">
+              <input
+                id="condition-create-property-value"
+                v-model="itemForm.forms.property.value"
+                type="number"
+                class="menu-input menu-input--field"
+              />
+            </td>
+          </tr>
+        </template>
 
-      value
-      <input
-        type="number"
-        v-model="itemForm.forms.property.value"
-        id="action-change-property-value"
-      />
-    </div>
+        <template v-else-if="itemForm.type === 'preset'">
+          <tr>
+            <td class="menu-form-label-cell menu-body-small">preset</td>
+            <td class="menu-form-value-cell menu-body-small-strong">
+              <select
+                v-model="itemForm.forms.preset.preset"
+                class="menu-input menu-input--field"
+              >
+                <option value="">-- select preset --</option>
+                <option value="atDestination">at destination</option>
+                <option value="actionIsComplete">is complete</option>
+              </select>
+            </td>
+          </tr>
+          <tr>
+            <td class="menu-form-label-cell menu-body-small">comparison</td>
+            <td class="menu-form-value-cell menu-body-small-strong">
+              <select
+                v-model="itemForm.forms.preset.comparison"
+                class="menu-input menu-input--field"
+              >
+                <option value="">-- select comparison --</option>
+                <option value="isIdentical">is</option>
+              </select>
+            </td>
+          </tr>
+          <tr>
+            <td class="menu-form-label-cell menu-body-small">value</td>
+            <td class="menu-form-value-cell menu-body-small-strong">
+              <select
+                v-model="itemForm.forms.preset.value"
+                class="menu-input menu-input--field"
+              >
+                <option :value="true">true</option>
+                <option :value="false">false</option>
+              </select>
+            </td>
+          </tr>
+        </template>
 
-    <div v-else-if="itemForm.type === 'preset'">
-      <select
-        v-model="itemForm.forms.preset.preset"
-        id="action-change-property-name"
-      >
-        <option value="">-- select preset --</option>
-        <option value="atDestination">at destination</option>
-        <option value="actionIsComplete">is complete</option>
-      </select>
+        <template v-else-if="itemForm.type === 'vicinity'">
+          <tr>
+            <td class="menu-form-label-cell menu-body-small">agent type</td>
+            <td class="menu-form-value-cell menu-body-small-strong">
+              <select
+                v-model="itemForm.forms.vicinity.agentType"
+                class="menu-input menu-input--field"
+              >
+                <option :value="null">-- select agent type --</option>
+                <option
+                  v-for="[agentTypeName, agentType] of Object.entries(store.agentTypes)"
+                  :key="agentTypeName"
+                  :value="agentType"
+                >
+                  {{ agentTypeName }}
+                </option>
+              </select>
+            </td>
+          </tr>
+          <tr>
+            <td class="menu-form-label-cell menu-body-small">comparison</td>
+            <td class="menu-form-value-cell menu-body-small-strong">
+              <select
+                v-model="itemForm.forms.vicinity.comparison"
+                class="menu-input menu-input--field"
+              >
+                <option value="">-- select comparison --</option>
+                <option value="isGreaterThan">is greater than</option>
+                <option value="isLessThan">is less than</option>
+              </select>
+            </td>
+          </tr>
+          <tr>
+            <td class="menu-form-label-cell menu-body-small">agent count</td>
+            <td class="menu-form-value-cell menu-body-small-strong">
+              <input
+                v-model="itemForm.forms.vicinity.value"
+                type="number"
+                class="menu-input menu-input--field"
+              />
+            </td>
+          </tr>
+          <tr>
+            <td class="menu-form-label-cell menu-body-small">property filter</td>
+            <td class="menu-form-value-cell menu-body-small-strong">
+              <label class="menu-checkbox-row">
+                <input v-model="usingVicinityPropertyValue" type="checkbox" />
+                use property value
+              </label>
+            </td>
+          </tr>
+          <template v-if="usingVicinityPropertyValue">
+            <tr>
+              <td class="menu-form-label-cell menu-body-small">property</td>
+              <td class="menu-form-value-cell menu-body-small-strong">
+                <select
+                  v-model="itemForm.forms.vicinity.property"
+                  class="menu-input menu-input--field"
+                  :disabled="itemForm.forms.vicinity.agentType === null"
+                >
+                  <option :value="null">-- select agent property --</option>
+                  <option
+                    v-for="property in vicinityAgentProperties"
+                    :key="property"
+                    :value="property"
+                  >
+                    {{ property }}
+                  </option>
+                </select>
+              </td>
+            </tr>
+            <tr>
+              <td class="menu-form-label-cell menu-body-small">property value</td>
+              <td class="menu-form-value-cell menu-body-small-strong">
+                <input
+                  v-model="itemForm.forms.vicinity.propertyValue"
+                  type="text"
+                  class="menu-input menu-input--field"
+                />
+              </td>
+            </tr>
+          </template>
+        </template>
+      </table>
 
-      <select v-model="itemForm.forms.preset.comparison" value="isIdentical">
-        <option value="">-- select comparison --</option>
-        <option value="isIdentical">is</option>
-      </select>
-
-      <select v-model="itemForm.forms.preset.value">
-        <option :value="true">true</option>
-        <option :value="false">false</option>
-      </select>
-
-    </div>
-
-    <div v-else-if="itemForm.type === 'vicinity'">
-      agent
-      <select
-        v-model="itemForm.forms.vicinity.agentType"
-        id="action-change-vicinity-name"
-      >
-        <option :value=null>-- select agent type --</option>
-        <option
-          v-for="[agentTypeName, agentType] of Object.entries(store.agentTypes)"
-          :value="agentType"
-        >
-          {{ agentTypeName }}
-        </option>
-      </select>
-      <br />
-
-      <select v-model="itemForm.forms.vicinity.comparison">
-        <option value="">-- select comparison --</option>
-        <option value="isGreaterThan">is greater than</option>
-        <option value="isLessThan">is less than</option>
-      </select>
-      <br />
-
-      agent count: <input v-model="itemForm.forms.vicinity.value" type="number" /><br />
-
-      <input type="checkbox" v-model="usingVicinityPropertyValue" /> use property value
-
-      <div v-if="usingVicinityPropertyValue === true">
-
-        <div v-if="itemForm.forms.vicinity.agentType !== null">
-          <select v-model="itemForm.forms.vicinity.property">
-            <option :value="null">-- select agent property --</option>
-            <option v-for="propert in itemForm.forms.vicinity.agentType.properties" :value="propert">
-              {{ propert }}
-            </option>
-          </select>
-        </div>
-        <br />
-
-        property value: <input v-model="itemForm.forms.vicinity.propertyValue" type="text" />
-
+      <div class="menu-form-actions">
+        <button type="button" class="menu-btn" @click="createCondition">
+          create
+        </button>
+        <button type="button" class="menu-btn" @click="cancelAddCondition">
+          cancel
+        </button>
       </div>
-
-
     </div>
 
-    <button @click="createCondition">add</button>
-    <button @click="cancelAddCondition">cancel</button>
+    <MenuNewBtn v-else @click="isAdding = true" />
   </div>
 </template>
 
 <script>
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { useStore } from '@/store/mainStore.js'
 import api from '@/apiCrud.js'
-
+import MenuNewBtn from '@/components/simUi/MenuNewBtn.vue'
 
 const DEFAULT_CONDITION_TYPE = 'property'
 
 
 export default {
   name: 'ConditionCreate',
+  components: { MenuNewBtn },
   setup: function () {
     const store = useStore()
 
@@ -149,6 +249,11 @@ export default {
           propertyValue: ''  // e.g. 'red' - string only for now
         }
       }
+    })
+
+    const vicinityAgentProperties = computed(() => {
+      const properties = itemForm.value.forms.vicinity.agentType?.properties
+      return Array.isArray(properties) ? properties : []
     })
 
     const createCondition = async () => {
@@ -200,6 +305,7 @@ export default {
       itemForm.value.forms.vicinity.property = ''
       itemForm.value.forms.vicinity.propertyValue = 0
       itemForm.value.forms.vicinity.count = 0
+      usingVicinityPropertyValue.value = false
     }
 
     const cancelAddCondition = () => {
@@ -210,6 +316,7 @@ export default {
       store,
       isAdding,
       usingVicinityPropertyValue,
+      vicinityAgentProperties,
       itemForm,
       createCondition,
       resetConditionForms,

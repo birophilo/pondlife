@@ -1,44 +1,132 @@
 <template>
-  <div v-if="isEditing === true">
-    name: <input v-model="itemForm.name" type="text" placeholder="name" /><br />
-    scale: <input v-model="itemForm.scale" type="number" placeholder="scale" /><br />
-    offset X: <input v-model="itemForm.offset.x" type="number" placeholder="offset X" /><br />
-    offset Y: <input v-model="itemForm.offset.y" type="number" placeholder="offset Y" /><br />
+  <div>
+    <div v-if="isEditing">
+      <table class="menu-form-table">
+        <tr>
+          <td class="menu-form-label-cell menu-body-small">name</td>
+          <td class="menu-form-value-cell menu-body-small-strong">
+            <input
+              v-model="itemForm.name"
+              type="text"
+              class="menu-input menu-input--field"
+            />
+          </td>
+        </tr>
+        <tr>
+          <td class="menu-form-label-cell menu-body-small">scale</td>
+          <td class="menu-form-value-cell menu-body-small-strong">
+            <input
+              v-model="itemForm.scale"
+              type="number"
+              class="menu-input menu-input--field"
+            />
+          </td>
+        </tr>
+        <tr>
+          <td class="menu-form-label-cell menu-body-small">offset X</td>
+          <td class="menu-form-value-cell menu-body-small-strong">
+            <input
+              v-model="itemForm.offset.x"
+              type="number"
+              class="menu-input menu-input--field"
+            />
+          </td>
+        </tr>
+        <tr>
+          <td class="menu-form-label-cell menu-body-small">offset Y</td>
+          <td class="menu-form-value-cell menu-body-small-strong">
+            <input
+              v-model="itemForm.offset.y"
+              type="number"
+              class="menu-input menu-input--field"
+            />
+          </td>
+        </tr>
+      </table>
 
-    <table class="menu-table">
-      <tr v-for="row in store.directionList">
-        <td v-for="directionName in row">
-          <select v-model="itemForm.sheets[directionName]">
-            <option value="">-- {{directionName  }} --</option>
-            <option v-for="spriteSheet in store.spriteSheets" :value="spriteSheet">{{ spriteSheet.name }}</option>
-          </select>
-          <br />
-          <img :src="itemForm.sheets[directionName]?.src" width="70" height="70"/>
-        </td>
-      </tr>
-    </table>
+      <h3 class="menu-panel__subheading">Directional sprite sheets</h3>
+      <table class="menu-table">
+        <tr v-for="(row, rowIndex) in store.directionList" :key="rowIndex">
+          <td v-for="directionName in row" :key="directionName">
+            <select
+              v-model="itemForm.sheets[directionName]"
+              class="menu-input menu-input--field menu-body-small"
+            >
+              <option value="">-- {{ directionName }} --</option>
+              <option
+                v-for="spriteSheet in store.spriteSheets"
+                :key="spriteSheet.id"
+                :value="spriteSheet"
+              >
+                {{ spriteSheet.name }}
+              </option>
+            </select>
+            <br />
+            <img
+              :src="itemForm.sheets[directionName]?.src"
+              width="70"
+              height="70"
+              alt=""
+            />
+          </td>
+        </tr>
+      </table>
 
-    <br />
-    <button @click="saveItem">save</button>
-    <button @click="cancelEdit">cancel</button>
-  </div>
-  <div v-else>
-    <div>
-      {{ animationSet.name }}
-      <button @click="editItem">edit</button>
-      <button @click="deleteItem(i)">delete</button>
+      <div class="menu-form-actions">
+        <button type="button" class="menu-btn" @click="saveItem">
+          save
+        </button>
+        <button type="button" class="menu-btn" @click="cancelEdit">
+          cancel
+        </button>
+      </div>
     </div>
+
+    <div v-else class="menu-form-item-view">
+      <div class="menu-form-item-summary">
+        <span class="menu-body-small-strong">{{ animationSet.name }}</span>
+        <div class="menu-form-item-actions">
+          <button
+            type="button"
+            class="menu-icon-btn"
+            aria-label="Edit"
+            @click="editItem"
+          >
+            <Pencil :size="16" aria-hidden="true" />
+          </button>
+          <button
+            type="button"
+            class="menu-icon-btn menu-icon-btn--danger"
+            aria-label="Delete"
+            @click="deleteItem"
+          >
+            <Trash2 :size="16" aria-hidden="true" />
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <ConfirmSimDeleteModal
+      :open="deleteConfirmOpen"
+      entity-type-label="animation set"
+      :entity-name="animationSet.name || '—'"
+      :deleting="deleteInProgress"
+      @close="closeDeleteConfirm"
+      @confirm="confirmDelete"
+    />
   </div>
 </template>
 
 <script>
 import { ref } from 'vue'
+import { Pencil, Trash2 } from '@lucide/vue'
 import { useStore } from '@/store/mainStore.js'
 import api from '@/apiCrud.js'
-
+import ConfirmSimDeleteModal from '@/components/ConfirmSimDeleteModal.vue'
 
 export default {
   name: 'AnimationSetEdit',
+  components: { Pencil, Trash2, ConfirmSimDeleteModal },
   props: {
     animationSet: Object,
     i: Number
@@ -48,6 +136,8 @@ export default {
 
     const isEditing = ref(false)
     const itemForm = ref({})
+    const deleteConfirmOpen = ref(false)
+    const deleteInProgress = ref(false)
 
     const saveItem = () => {
       isEditing.value = false
@@ -60,9 +150,24 @@ export default {
       api.updateAnimationSet(payload)
     }
 
-    const deleteItem = (index) => {
-      api.deleteAnimationSet(props.animationSet.id)
-      store.animationSets.splice(index, 1)
+    const deleteItem = () => {
+      deleteConfirmOpen.value = true
+    }
+
+    const closeDeleteConfirm = () => {
+      deleteConfirmOpen.value = false
+    }
+
+    const confirmDelete = async () => {
+      if (deleteInProgress.value) return
+      deleteInProgress.value = true
+      try {
+        await api.deleteAnimationSet(props.animationSet.id)
+        store.animationSets.splice(props.i, 1)
+        deleteConfirmOpen.value = false
+      } finally {
+        deleteInProgress.value = false
+      }
     }
 
     const editItem = () => {
@@ -85,6 +190,10 @@ export default {
       itemForm,
       saveItem,
       deleteItem,
+      closeDeleteConfirm,
+      confirmDelete,
+      deleteConfirmOpen,
+      deleteInProgress,
       editItem,
       cancelEdit,
       populateItemForm

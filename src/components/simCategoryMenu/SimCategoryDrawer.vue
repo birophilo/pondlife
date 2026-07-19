@@ -56,17 +56,16 @@
         aria-labelledby="menu-panel-animation-sets"
       >
         <h2 id="menu-panel-animation-sets" class="menu-panel__heading">Animation Sets</h2>
-        <div v-for="(animationSet, index) in store.animationSets" :key="index">
-          <AnimationSetEdit :animationSet="animationSet" :i="index" />
-        </div>
-        <AnimationSetCreate />
-        <button
-          type="button"
+        <MenuBrowseBtn
           :disabled="loadSimObjectListFetching"
           @click="loadModals.animationSets"
-        >
-          load animation set
-        </button>
+        />
+        <div class="item-list">
+          <div v-for="(animationSet, index) in store.animationSets" :key="index" class="created-item">
+            <AnimationSetEdit :animationSet="animationSet" :i="index" />
+          </div>
+        </div>
+        <AnimationSetCreate />
       </div>
 
       <div
@@ -151,19 +150,16 @@
         aria-labelledby="menu-panel-conditions"
       >
         <h2 id="menu-panel-conditions" class="menu-panel__heading">Conditions</h2>
+        <MenuBrowseBtn
+          :disabled="loadSimObjectListFetching"
+          @click="loadModals.conditions"
+        />
         <div class="item-list">
           <div v-for="(item, index) in store.conditions" :key="index" class="created-item">
             <ConditionEdit :item="item" :index="index" />
           </div>
         </div>
         <ConditionCreate />
-        <button
-          type="button"
-          :disabled="loadSimObjectListFetching"
-          @click="loadModals.conditions"
-        >
-          load condition
-        </button>
       </div>
 
       <div

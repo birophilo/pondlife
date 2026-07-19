@@ -1,29 +1,88 @@
 <template>
   <div>
-    <div v-if="isAdding === true">
-      name: <input v-model="itemForm.name" type="text" placeholder="name" /><br />
-      scale: <input v-model="itemForm.scale" type="number" placeholder="scale" /><br />
-      offset X: <input v-model="itemForm.offset.x" type="number" placeholder="offset X" /><br />
-      offset Y: <input v-model="itemForm.offset.y" type="number" placeholder="offset Y" /><br />
-
-      <table class="menu-table">
-        <tr v-for="row in store.directionList">
-          <td v-for="directionName in row">
-            <select v-model="itemForm.sheets[directionName]">
-              <option value="">-- {{directionName  }} --</option>
-              <option v-for="spriteSheet in store.spriteSheets" :value="spriteSheet">{{ spriteSheet.name }}</option>
-            </select>
-            <br />
-            <img :src="itemForm.sheets[directionName].src" width="70" height="70"/>
+    <div v-if="isAdding">
+      <table class="menu-form-table">
+        <tr>
+          <td class="menu-form-label-cell menu-body-small">name</td>
+          <td class="menu-form-value-cell menu-body-small-strong">
+            <input
+              v-model="itemForm.name"
+              type="text"
+              class="menu-input menu-input--field"
+            />
+          </td>
+        </tr>
+        <tr>
+          <td class="menu-form-label-cell menu-body-small">scale</td>
+          <td class="menu-form-value-cell menu-body-small-strong">
+            <input
+              v-model="itemForm.scale"
+              type="number"
+              class="menu-input menu-input--field"
+            />
+          </td>
+        </tr>
+        <tr>
+          <td class="menu-form-label-cell menu-body-small">offset X</td>
+          <td class="menu-form-value-cell menu-body-small-strong">
+            <input
+              v-model="itemForm.offset.x"
+              type="number"
+              class="menu-input menu-input--field"
+            />
+          </td>
+        </tr>
+        <tr>
+          <td class="menu-form-label-cell menu-body-small">offset Y</td>
+          <td class="menu-form-value-cell menu-body-small-strong">
+            <input
+              v-model="itemForm.offset.y"
+              type="number"
+              class="menu-input menu-input--field"
+            />
           </td>
         </tr>
       </table>
 
-      <button @click="createItem">create animation set</button>
+      <h3 class="menu-panel__subheading">Directional sprite sheets</h3>
+      <table class="menu-table">
+        <tr v-for="(row, rowIndex) in store.directionList" :key="rowIndex">
+          <td v-for="directionName in row" :key="directionName">
+            <select
+              v-model="itemForm.sheets[directionName]"
+              class="menu-input menu-input--field menu-body-small"
+            >
+              <option value="">-- {{ directionName }} --</option>
+              <option
+                v-for="spriteSheet in store.spriteSheets"
+                :key="spriteSheet.id"
+                :value="spriteSheet"
+              >
+                {{ spriteSheet.name }}
+              </option>
+            </select>
+            <br />
+            <img
+              :src="itemForm.sheets[directionName]?.src"
+              width="70"
+              height="70"
+              alt=""
+            />
+          </td>
+        </tr>
+      </table>
+
+      <div class="menu-form-actions">
+        <button type="button" class="menu-btn" @click="createItem">
+          create
+        </button>
+        <button type="button" class="menu-btn" @click="cancelCreate">
+          cancel
+        </button>
+      </div>
     </div>
-    <div v-else>
-      <button @click="isAdding = true">new animation set</button>
-    </div>
+
+    <MenuNewBtn v-else @click="isAdding = true" />
   </div>
 </template>
 
@@ -31,33 +90,37 @@
 import { ref } from 'vue'
 import { useStore } from '@/store/mainStore.js'
 import api from '@/apiCrud.js'
+import MenuNewBtn from '@/components/simUi/MenuNewBtn.vue'
+
+const createDefaultForm = () => ({
+  name: '',
+  scale: 1,
+  offset: {
+    x: 0,
+    y: 0
+  },
+  sheets: {
+    idle: '',
+    up: '',
+    upRight: '',
+    right: '',
+    downRight: '',
+    down: '',
+    downLeft: '',
+    left: '',
+    upLeft: ''
+  }
+})
 
 export default {
   name: 'AnimationSetCreate',
+  components: { MenuNewBtn },
   setup: function () {
     const store = useStore()
 
     const isAdding = ref(false)
 
-    const itemForm = ref({
-      name: '',
-      scale: 1,
-      offset: {
-        x: 0,
-        y: 0
-      },
-      sheets: {
-        idle: '',
-        up: '',
-        upRight: '',
-        right: '',
-        downRight: '',
-        down: '',
-        downLeft: '',
-        left: '',
-        upLeft: ''
-      }
-    })
+    const itemForm = ref(createDefaultForm())
 
     const createItem = async () => {
       const newAnimationSet = {
@@ -81,29 +144,15 @@ export default {
       await store.saveScene()
 
       isAdding.value = false
-
-      itemForm.value = {
-        name: '',
-        scale: 1,
-        offset: {
-          x: 0,
-          y: 0
-        },
-        sheets: {
-          idle: '',
-          up: '',
-          upRight: '',
-          right: '',
-          downRight: '',
-          down: '',
-          downLeft: '',
-          left: '',
-          upLeft: ''
-        }
-      }
+      itemForm.value = createDefaultForm()
     }
 
-    return { store, isAdding, itemForm, createItem }
+    const cancelCreate = () => {
+      isAdding.value = false
+      itemForm.value = createDefaultForm()
+    }
+
+    return { store, isAdding, itemForm, createItem, cancelCreate }
   }
 }
 </script>

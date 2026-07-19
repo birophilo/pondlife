@@ -10,7 +10,13 @@
         animation set:
         <select v-model="itemForm.animationSet">
           <option :value="null">-- select animation set --</option>
-          <option v-for="animationSet in store.animationSets" :value="animationSet.id">{{ animationSet.name }}</option>
+          <option
+            v-for="animationSet in store.animationSets"
+            :key="animationSet.id"
+            :value="animationSet.id"
+          >
+            {{ animationSet.name }}
+          </option>
         </select>
         <br />
 
@@ -21,6 +27,7 @@
           <option :value="null">no sensor</option>
           <option
             v-for="sensor in store.sensors"
+            :key="sensor.id"
             :value="sensor.id"
           >{{ sensor.name }}</option>
         </select><br />
@@ -28,11 +35,37 @@
         <button @click="saveItem">save</button>
         <button @click="cancelEdit">cancel</button>
       </div>
-      <div v-else>
-        {{ agentType.name }}
-        <button @click="editItem">edit</button>
-        <button @click="removeFromMenu(agentType)">remove from menu</button>
-        <button @click="deleteItem">delete</button>
+      <div v-else class="menu-form-item-summary">
+        <span class="menu-body-small-strong">{{ agentType.name }}</span>
+        <div class="menu-form-item-actions">
+          <button
+            type="button"
+            class="menu-icon-btn"
+            aria-label="Edit"
+            title="Edit"
+            @click="editItem"
+          >
+            <Pencil :size="16" aria-hidden="true" />
+          </button>
+          <button
+            type="button"
+            class="menu-icon-btn"
+            aria-label="Remove from scene"
+            title="Remove from scene"
+            @click="removeFromMenu(agentType)"
+          >
+            <X :size="16" aria-hidden="true" />
+          </button>
+          <button
+            type="button"
+            class="menu-icon-btn menu-icon-btn--danger"
+            aria-label="Delete"
+            title="Delete"
+            @click="deleteItem"
+          >
+            <Trash2 :size="16" aria-hidden="true" />
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -40,11 +73,13 @@
 
 <script>
 import { ref } from 'vue'
+import { Pencil, Trash2, X } from '@lucide/vue'
 import { useStore } from '@/store/mainStore.js'
 import api from '@/apiCrud.js'
 
 export default {
   name: 'AgentTypeEdit',
+  components: { Pencil, Trash2, X },
   props: {
     agentType: Object
   },
