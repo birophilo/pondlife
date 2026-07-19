@@ -273,8 +273,8 @@
 
     </div>
 
-    <button @click="createAction">save action</button> |
-    <button @click="cancelAddAction">cancel</button>
+    <MenuConfirmBtn label="Save action" @click="createAction" />
+    <MenuCancelBtn @click="cancelAddAction" />
 
   </div>
 </template>
@@ -283,6 +283,8 @@
 import { ref } from 'vue'
 import { useStore } from '@/store/mainStore.js'
 import api from '@/apiCrud.js'
+import MenuConfirmBtn from '@/components/simUi/MenuConfirmBtn.vue'
+import MenuCancelBtn from '@/components/simUi/MenuCancelBtn.vue'
 import {
   createActionGoTo,
   createActionPropertyChanges,
@@ -305,6 +307,7 @@ const CREATE_ACTION_FUNCTIONS = {
 
 export default {
   name: 'ActionCreate',
+  components: { MenuConfirmBtn, MenuCancelBtn },
   setup() {
     const store = useStore()
 

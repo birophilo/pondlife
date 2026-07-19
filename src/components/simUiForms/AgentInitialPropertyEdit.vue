@@ -122,12 +122,8 @@
       </table>
 
       <div class="menu-form-actions">
-        <button type="button" class="menu-btn" @click="saveItem">
-          save
-        </button>
-        <button type="button" class="menu-btn" @click="cancelEdit">
-          cancel
-        </button>
+        <MenuConfirmBtn @click="saveItem" />
+        <MenuCancelBtn @click="cancelEdit" />
       </div>
     </div>
 
@@ -195,9 +191,11 @@ import { Pencil, Trash2 } from '@lucide/vue'
 import { useStore } from '@/store/mainStore.js'
 import api from '@/apiCrud.js'
 import ConfirmSimDeleteModal from '@/components/ConfirmSimDeleteModal.vue'
+import MenuConfirmBtn from '@/components/simUi/MenuConfirmBtn.vue'
+import MenuCancelBtn from '@/components/simUi/MenuCancelBtn.vue'
 
 export default {
-  components: { Pencil, Trash2, ConfirmSimDeleteModal },
+  components: { Pencil, Trash2, ConfirmSimDeleteModal, MenuConfirmBtn, MenuCancelBtn },
   props: {
     agentProperty: Object,
     index: Number

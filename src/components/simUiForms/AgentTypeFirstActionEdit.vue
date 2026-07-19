@@ -17,24 +17,8 @@
                 </option>
               </select>
               <div class="menu-form-item-actions">
-                <button
-                  type="button"
-                  class="menu-icon-btn"
-                  aria-label="Save starting action"
-                  title="Save"
-                  @click="saveItem"
-                >
-                  <Check :size="16" aria-hidden="true" />
-                </button>
-                <button
-                  type="button"
-                  class="menu-icon-btn"
-                  aria-label="Cancel editing starting action"
-                  title="Cancel"
-                  @click="cancelEdit"
-                >
-                  <Undo2 :size="16" aria-hidden="true" />
-                </button>
+                <MenuConfirmBtn label="Save starting action" @click="saveItem" />
+                <MenuCancelBtn label="Cancel editing starting action" @click="cancelEdit" />
               </div>
             </div>
           </td>
@@ -68,13 +52,15 @@
 
 <script>
 import { ref } from 'vue'
-import { Check, Pencil, Undo2 } from '@lucide/vue'
+import { Pencil } from '@lucide/vue'
 import { useStore } from '@/store/mainStore.js'
+import MenuConfirmBtn from '@/components/simUi/MenuConfirmBtn.vue'
+import MenuCancelBtn from '@/components/simUi/MenuCancelBtn.vue'
 
 export default {
   name: 'AgentTypeFirstActionEdit',
 
-  components: { Check, Pencil, Undo2 },
+  components: { Pencil, MenuConfirmBtn, MenuCancelBtn },
 
   props: {
     agentType: Object

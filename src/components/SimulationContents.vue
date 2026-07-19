@@ -51,11 +51,13 @@
             </span>
           </div>
 
-          <pre
+          <div
             v-if="isExpanded(item.key)"
             :id="`${item.key}-details`"
             class="simulation-contents__details"
-          >{{ formatDetails(item.value) }}</pre>
+          >
+            <SimulationContentsValue :node="formatDetails(item.value)" />
+          </div>
         </article>
       </div>
     </section>
@@ -66,6 +68,7 @@
 import { computed, ref } from 'vue'
 import { ChevronDown, ChevronUp } from '@lucide/vue'
 import { useStore } from '@/store/mainStore.js'
+import SimulationContentsValue from '@/components/SimulationContentsValue.vue'
 
 function itemName (item, fallback) {
   if (item?.name) return item.name
@@ -82,34 +85,74 @@ function itemKey (sectionKey, value, index) {
   return `${sectionKey}-${index}-${identifier}`
 }
 
-function displayJson (value) {
-  const seen = new WeakSet()
+function readableLabel (key) {
+  const words = String(key)
+    .replace(/([a-z0-9])([A-Z])/g, '$1 $2')
+    .replace(/[_-]+/g, ' ')
+    .trim()
+    .split(/\s+/)
 
-  return JSON.stringify(value, (key, item) => {
-    if (typeof item === 'function') return `[Function ${item.name || 'anonymous'}]`
+  return words
+    .map((word, index) => {
+      if (word.toLowerCase() === 'id') return 'ID'
+      if (index === 0) return word.charAt(0).toUpperCase() + word.slice(1)
+      return word.toLowerCase()
+    })
+    .join(' ')
+}
 
-    if (
-      item &&
-      typeof item === 'object' &&
-      typeof Element !== 'undefined' &&
-      item instanceof Element
-    ) {
-      return `[${item.tagName.toLowerCase()} element]`
+function primitiveNode (value) {
+  if (value === null) return { type: 'value', value: 'None' }
+  if (value === undefined) return { type: 'value', value: 'Not set' }
+  if (typeof value === 'boolean') return { type: 'value', value: value ? 'Yes' : 'No' }
+  if (typeof value === 'function') return { type: 'value', value: 'Internal function' }
+  if (value === '') return { type: 'value', value: 'Empty' }
+  return { type: 'value', value: String(value) }
+}
+
+function displayTree (value, ancestors = []) {
+  if (
+    value &&
+    typeof value === 'object' &&
+    typeof Element !== 'undefined' &&
+    value instanceof Element
+  ) {
+    return { type: 'value', value: 'Interface element' }
+  }
+
+  if (!value || typeof value !== 'object') return primitiveNode(value)
+
+  if (ancestors.includes(value)) {
+    return { type: 'value', value: 'Referenced above' }
+  }
+
+  const nextAncestors = [...ancestors, value]
+
+  if (Array.isArray(value)) {
+    if (value.length === 0) return { type: 'empty' }
+    return {
+      type: 'array',
+      items: value.map(item => displayTree(item, nextAncestors))
     }
+  }
 
-    if (item && typeof item === 'object') {
-      if (seen.has(item)) return '[Circular reference]'
-      seen.add(item)
-    }
+  const entries = Object.entries(value)
+  if (entries.length === 0) return { type: 'empty' }
 
-    return item
-  }, 2)
+  return {
+    type: 'object',
+    entries: entries.map(([key, item], index) => ({
+      key: `${key}-${index}`,
+      label: readableLabel(key),
+      value: displayTree(item, nextAncestors)
+    }))
+  }
 }
 
 export default {
   name: 'SimulationContents',
 
-  components: { ChevronDown, ChevronUp },
+  components: { ChevronDown, ChevronUp, SimulationContentsValue },
 
   setup () {
     const store = useStore()
@@ -227,7 +270,7 @@ export default {
       sections,
       isExpanded,
       toggleExpanded,
-      formatDetails: displayJson
+      formatDetails: displayTree
     }
   }
 }
@@ -324,10 +367,8 @@ export default {
   border-top: 1px solid var(--menu-border-light);
   background: var(--menu-surface);
   color: var(--menu-text);
-  font-family: var(--menu-font-mono);
-  font-size: 0.75rem;
+  font-size: 0.8rem;
   line-height: 1.45;
-  white-space: pre-wrap;
   overflow-wrap: anywhere;
 }
 

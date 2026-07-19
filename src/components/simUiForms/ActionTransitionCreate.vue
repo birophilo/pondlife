@@ -13,8 +13,8 @@
           {{ action.actionName }}
         </option>
       </select>
-      <button @click="createTransition(action)">add</button> |
-      <button @click="cancelAddTransition(action)">cancel</button>
+      <MenuConfirmBtn label="Add transition" @click="createTransition(action)" />
+      <MenuCancelBtn @click="cancelAddTransition(action)" />
     </div>
     <button @click="isAdding = true; itemForm.action = action">add transition</button>
   </div>
@@ -25,9 +25,12 @@
 import { ref } from 'vue'
 import { useStore } from '@/store/mainStore.js'
 import api from '@/apiCrud'
+import MenuConfirmBtn from '@/components/simUi/MenuConfirmBtn.vue'
+import MenuCancelBtn from '@/components/simUi/MenuCancelBtn.vue'
 
 export default {
   name: 'ActionTransitionCreate',
+  components: { MenuConfirmBtn, MenuCancelBtn },
   props: {
     action: Object
   },

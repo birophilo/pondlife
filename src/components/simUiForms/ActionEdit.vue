@@ -10,8 +10,8 @@
         </div>
       </div>
       <div v-if="isEditing === true">
-        <button @click="saveItem">save</button>
-        <button @click="cancelEdit">cancel</button>
+        <MenuConfirmBtn @click="saveItem" />
+        <MenuCancelBtn @click="cancelEdit" />
       </div>
       <div v-else>
         <div>
@@ -286,6 +286,8 @@ import ActionPropertyChangeCreate from './ActionPropertyChangeCreate.vue'
 import ActionPropertyChangeEdit from './ActionPropertyChangeEdit.vue'
 import ActionTransitionEdit from './ActionTransitionEdit.vue'
 import ActionTransitionCreate from './ActionTransitionCreate.vue'
+import MenuConfirmBtn from '@/components/simUi/MenuConfirmBtn.vue'
+import MenuCancelBtn from '@/components/simUi/MenuCancelBtn.vue'
 
 export default {
   name: 'ActionEdit',
@@ -293,7 +295,9 @@ export default {
     ActionPropertyChangeCreate,
     ActionPropertyChangeEdit,
     ActionTransitionCreate,
-    ActionTransitionEdit
+    ActionTransitionEdit,
+    MenuConfirmBtn,
+    MenuCancelBtn
   },
   props: {
     action: Object

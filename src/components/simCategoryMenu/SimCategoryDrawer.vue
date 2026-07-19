@@ -25,7 +25,6 @@
         />
         <div v-for="(agentType, index) in store.agentTypes" :key="index" class="agent-type-menu-container">
           <AgentTypeEdit :agentType="agentType" />
-          <AgentTypeFirstActionEdit :agentType="agentType" />
         </div>
         <AgentTypeCreate />
       </div>
@@ -204,12 +203,23 @@
     <button
       v-show="modelValue !== null && !isDefaultDrawerWidth"
       type="button"
-      class="sim-category-drawer__reset-width"
+      class="sim-category-drawer__top-control sim-category-drawer__reset-width"
       aria-label="Reset drawer width"
       title="Reset drawer width"
       @click="resetDrawerWidth"
     >
       <MoveHorizontal :size="14" aria-hidden="true" />
+    </button>
+
+    <button
+      v-show="modelValue !== null"
+      type="button"
+      class="sim-category-drawer__top-control sim-category-drawer__close"
+      aria-label="Close simulation category editor"
+      title="Close"
+      @click="closeDrawer"
+    >
+      <X :size="14" aria-hidden="true" />
     </button>
 
     <div
@@ -224,12 +234,11 @@
 
 <script>
 import { computed, onMounted, onBeforeUnmount, ref } from 'vue'
-import { MoveHorizontal } from '@lucide/vue'
+import { MoveHorizontal, X } from '@lucide/vue'
 import { useStore } from '@/store/mainStore.js'
 import AgentPropertySection from '@/components/simUiForms/AgentPropertySection.vue'
 import AgentTypeCreate from '@/components/simUiForms/AgentTypeCreate.vue'
 import AgentTypeEdit from '@/components/simUiForms/AgentTypeEdit.vue'
-import AgentTypeFirstActionEdit from '@/components/simUiForms/AgentTypeFirstActionEdit.vue'
 import SetPropertyForm from '@/components/simUiForms/SetPropertyForm.vue'
 import PropertyEdit from '@/components/simUiForms/PropertyEdit.vue'
 import ActionCreate from '@/components/simUiForms/ActionCreate.vue'
@@ -266,10 +275,10 @@ export default {
 
   components: {
     MoveHorizontal,
+    X,
     AgentPropertySection,
     AgentTypeCreate,
     AgentTypeEdit,
-    AgentTypeFirstActionEdit,
     SetPropertyForm,
     PropertyEdit,
     ActionCreate,
@@ -335,6 +344,10 @@ export default {
       localStorage.setItem(DRAWER_WIDTH_STORAGE_KEY, String(DEFAULT_DRAWER_WIDTH))
     }
 
+    const closeDrawer = () => {
+      emit('update:modelValue', null)
+    }
+
     const onResizePointerDown = (event) => {
       if (props.modelValue === null) return
       event.preventDefault()
@@ -389,6 +402,7 @@ export default {
       isResizing,
       isDefaultDrawerWidth,
       resetDrawerWidth,
+      closeDrawer,
       onResizePointerDown
     }
   }
@@ -440,10 +454,9 @@ export default {
   background: rgba(228, 61, 18, 0.14);
 }
 
-.sim-category-drawer__reset-width {
+.sim-category-drawer__top-control {
   position: absolute;
   top: 8px;
-  right: 12px;
   z-index: 3;
   display: inline-flex;
   align-items: center;
@@ -454,14 +467,22 @@ export default {
   padding: 0;
   border: 1px solid #dcc8c0;
   border-radius: 3px;
-  background: #fffef9;
+  background: transparent;
   color: #a03622;
   cursor: pointer;
 }
 
-.sim-category-drawer__reset-width:hover {
-  background: #f0e8e4;
+.sim-category-drawer__top-control:hover {
+  background: transparent;
   border-color: #e43d12;
+}
+
+.sim-category-drawer__close {
+  right: 12px;
+}
+
+.sim-category-drawer__reset-width {
+  right: 42px;
 }
 
 .sim-category-drawer--overlay {
@@ -495,7 +516,7 @@ export default {
   flex: 1;
   min-height: 0;
   padding: 8px 10px 4rem;
-  padding-right: 2.75rem;
+  padding-right: 4.75rem;
   box-sizing: border-box;
   overflow-x: hidden;
   overflow-y: auto;

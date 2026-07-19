@@ -65,8 +65,8 @@
         type="number"
         placeholder="value"
       />
-      <button @click="createItem">save</button>
-      <button @click="isAdding = false">cancel</button>
+      <MenuConfirmBtn @click="createItem" />
+      <MenuCancelBtn @click="isAdding = false" />
     </div>
     <div v-else>
       <button @click="isAdding = true">new property change</button>
@@ -80,9 +80,12 @@ import { ref } from 'vue'
 import api from '@/apiCrud.js'
 // import { createPropertyChange } from '../classes/Action.js'
 import { useStore } from '@/store/mainStore.js'
+import MenuConfirmBtn from '@/components/simUi/MenuConfirmBtn.vue'
+import MenuCancelBtn from '@/components/simUi/MenuCancelBtn.vue'
 
 export default {
   name: 'ActionPropertyChangeCreate',
+  components: { MenuConfirmBtn, MenuCancelBtn },
   props: {
     action: Object
   },

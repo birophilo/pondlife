@@ -122,12 +122,8 @@
       </table>
 
       <div class="menu-form-actions">
-        <button type="button" class="menu-btn" @click="createInitialAgentProperty">
-          create
-        </button>
-        <button type="button" class="menu-btn" @click="cancelCreate">
-          cancel
-        </button>
+        <MenuConfirmBtn label="Create initial agent property" @click="createInitialAgentProperty" />
+        <MenuCancelBtn @click="cancelCreate" />
       </div>
     </div>
 
@@ -140,6 +136,8 @@ import { ref } from 'vue'
 import { useStore } from '@/store/mainStore.js'
 import api from '@/apiCrud.js'
 import MenuNewBtn from '@/components/simUi/MenuNewBtn.vue'
+import MenuConfirmBtn from '@/components/simUi/MenuConfirmBtn.vue'
+import MenuCancelBtn from '@/components/simUi/MenuCancelBtn.vue'
 
 const DEFAULT_FORM = {
   name: '',
@@ -153,7 +151,7 @@ const DEFAULT_FORM = {
 export default {
   name: 'AgentInitialPropertyCreate',
 
-  components: { MenuNewBtn },
+  components: { MenuNewBtn, MenuConfirmBtn, MenuCancelBtn },
 
   setup () {
     const store = useStore()

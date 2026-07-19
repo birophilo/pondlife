@@ -4,7 +4,7 @@ import { Agent } from './Agent.js'
  * Agent type `thumbnail` strings are inconsistent in data: `/img/...`, `img/...`,
  * or a bare upload filename. Canvas code must match how `<img src>` resolves them.
  */
-function resolveAgentThumbnailSrc (thumbnail) {
+export function resolveAgentThumbnailSrc (thumbnail) {
   if (thumbnail == null || String(thumbnail).trim() === '') return ''
   const t = String(thumbnail).trim()
   if (/^https?:\/\//i.test(t) || t.startsWith('//')) return t

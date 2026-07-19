@@ -72,12 +72,8 @@
       </table>
 
       <div class="menu-form-actions">
-        <button type="button" class="menu-btn" @click="createUtilityFunction">
-          create
-        </button>
-        <button type="button" class="menu-btn" @click="cancelCreate">
-          cancel
-        </button>
+        <MenuConfirmBtn label="Create utility function" @click="createUtilityFunction" />
+        <MenuCancelBtn @click="cancelCreate" />
       </div>
     </div>
 
@@ -91,6 +87,8 @@ import { useStore } from '@/store/mainStore.js'
 import api from '@/apiCrud.js'
 import UTILITY_FUNCS from '@/UTILITY_FUNCS.js'
 import MenuNewBtn from '@/components/simUi/MenuNewBtn.vue'
+import MenuConfirmBtn from '@/components/simUi/MenuConfirmBtn.vue'
+import MenuCancelBtn from '@/components/simUi/MenuCancelBtn.vue'
 
 const DEFAULT_FORM = {
   property: null,
@@ -102,7 +100,7 @@ const DEFAULT_FORM = {
 export default {
   name: 'UtilityFunctionCreate',
 
-  components: { MenuNewBtn },
+  components: { MenuNewBtn, MenuConfirmBtn, MenuCancelBtn },
 
   setup () {
     const store = useStore()

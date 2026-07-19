@@ -4,8 +4,8 @@
       <div v-if="editFlags[property] === true">
         <input type="text" placeholder="name" :value="property" disabled />
         <input v-model="propertiesForm[property]" type="number" />
-        <button @click="setProperty(property)">save</button>
-        <button @click="cancelSetProperty(property)">cancel</button>
+        <MenuConfirmBtn @click="setProperty(property)" />
+        <MenuCancelBtn @click="cancelSetProperty(property)" />
         <br/>
       </div>
       <div v-else>
@@ -21,8 +21,11 @@
 <script>
 import { ref } from 'vue'
 import { useStore } from '@/store/mainStore.js'
+import MenuConfirmBtn from '@/components/simUi/MenuConfirmBtn.vue'
+import MenuCancelBtn from '@/components/simUi/MenuCancelBtn.vue'
 
 export default {
+  components: { MenuConfirmBtn, MenuCancelBtn },
   props: {
     agentProperties: Object
   },

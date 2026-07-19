@@ -93,6 +93,7 @@
 
 .menu-form-actions {
   display: flex;
+  justify-content: flex-end;
   gap: 8px;
 }
 
@@ -130,6 +131,14 @@
 
 .menu-icon-btn--danger:hover {
   color: var(--menu-danger);
+}
+
+.menu-icon-btn--disabled,
+.menu-icon-btn--disabled:hover {
+  border-color: var(--menu-border-subtle);
+  color: var(--menu-text-subtle);
+  cursor: not-allowed;
+  opacity: 0.42;
 }
 
 .menu-form-item-view {

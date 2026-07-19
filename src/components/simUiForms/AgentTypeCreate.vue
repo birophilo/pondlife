@@ -67,12 +67,8 @@
       </table>
 
       <div class="menu-form-actions">
-        <button type="button" class="menu-btn" @click="createAgentType">
-          create
-        </button>
-        <button type="button" class="menu-btn" @click="cancelCreate">
-          cancel
-        </button>
+        <MenuConfirmBtn label="Create agent type" @click="createAgentType" />
+        <MenuCancelBtn @click="cancelCreate" />
       </div>
     </div>
 
@@ -86,6 +82,8 @@ import { AgentMenuIcon } from '@/classes/SelectionMenu.js'
 import { useStore } from '@/store/mainStore.js'
 import api from '@/apiCrud.js'
 import MenuNewBtn from '@/components/simUi/MenuNewBtn.vue'
+import MenuConfirmBtn from '@/components/simUi/MenuConfirmBtn.vue'
+import MenuCancelBtn from '@/components/simUi/MenuCancelBtn.vue'
 
 const DEFAULT_FORM = {
   name: '',
@@ -101,7 +99,7 @@ const DEFAULT_FORM = {
 export default {
   name: 'AgentTypeCreate',
 
-  components: { MenuNewBtn },
+  components: { MenuNewBtn, MenuConfirmBtn, MenuCancelBtn },
 
   setup () {
     const store = useStore()

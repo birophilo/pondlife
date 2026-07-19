@@ -46,8 +46,8 @@
         type="number"
         placeholder="value"
       />
-      <button @click="saveItem">save</button>
-      <button @click="cancelEdit">cancel</button>
+      <MenuConfirmBtn @click="saveItem" />
+      <MenuCancelBtn @click="cancelEdit" />
     </div>
     <div v-else>
       <div>change {{ index + 1 }}: {{ propertyChangeHandler.description(propertyChange) }}</div>
@@ -62,9 +62,12 @@ import { ref } from 'vue'
 import api from '@/apiCrud.js'
 import { PropertyChangeHandler } from '@/classes/Action.js'
 import { useStore } from '@/store/mainStore.js'
+import MenuConfirmBtn from '@/components/simUi/MenuConfirmBtn.vue'
+import MenuCancelBtn from '@/components/simUi/MenuCancelBtn.vue'
 
 export default {
   name: 'ActionPropertyChangeEdit',
+  components: { MenuConfirmBtn, MenuCancelBtn },
   props: {
     action: Object,
     propertyChangeId: String,

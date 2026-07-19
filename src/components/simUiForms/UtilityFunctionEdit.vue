@@ -36,8 +36,8 @@
 
       <!-- <input v-model="itemForm.func" type="text" placeholder="func" /><br />
       action: <input v-model="itemForm.actionId" type="text" placeholder="actionId" /><br /> -->
-      <button @click="saveItem">save</button>
-      <button @click="cancelEdit">cancel</button>
+      <MenuConfirmBtn @click="saveItem" />
+      <MenuCancelBtn @click="cancelEdit" />
     </div>
     <div v-else>
       <div>{{ utilityFunction.agentType }}: {{ utilityFunction.property }}</div>
@@ -61,6 +61,8 @@ import api from '@/apiCrud.js'
 import { useStore } from '@/store/mainStore.js'
 import UtilityChart from '@/components/UtilityChart.vue'
 import UTILITY_FUNCS from '@/UTILITY_FUNCS.js'
+import MenuConfirmBtn from '@/components/simUi/MenuConfirmBtn.vue'
+import MenuCancelBtn from '@/components/simUi/MenuCancelBtn.vue'
 
 export default {
   name: 'UtilityFunctionEdit',
@@ -70,6 +72,8 @@ export default {
   },
   components: {
     UtilityChart,
+    MenuConfirmBtn,
+    MenuCancelBtn
   },
   setup(props) {
     const store = useStore()

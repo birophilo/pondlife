@@ -32,14 +32,14 @@
           </td>
 
           <td v-if="isEditing === true && editingIndex === index">
-            <button @click="saveItem(index)">save</button>
+            <MenuConfirmBtn @click="saveItem(index)" />
           </td>
           <td v-else>
             <button @click="editItem(index)">edit</button>
           </td>
 
           <td v-if="isEditing === true && editingIndex === index">
-            <button @click="cancelEdit(index)">cancel</button>
+            <MenuCancelBtn @click="cancelEdit(index)" />
           </td>
           <td v-else>
             <button @click="deleteItem(index)">delete</button>
@@ -55,9 +55,12 @@
 import { ref } from 'vue'
 import { useStore } from '@/store/mainStore.js'
 import api from '@/apiCrud'
+import MenuConfirmBtn from '@/components/simUi/MenuConfirmBtn.vue'
+import MenuCancelBtn from '@/components/simUi/MenuCancelBtn.vue'
 
 export default {
   name: 'ActionTransitionEdit',
+  components: { MenuConfirmBtn, MenuCancelBtn },
   props: {
     action: Object
   },

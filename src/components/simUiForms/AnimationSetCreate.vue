@@ -73,12 +73,8 @@
       </table>
 
       <div class="menu-form-actions">
-        <button type="button" class="menu-btn" @click="createItem">
-          create
-        </button>
-        <button type="button" class="menu-btn" @click="cancelCreate">
-          cancel
-        </button>
+        <MenuConfirmBtn label="Create animation set" @click="createItem" />
+        <MenuCancelBtn @click="cancelCreate" />
       </div>
     </div>
 
@@ -91,6 +87,8 @@ import { ref } from 'vue'
 import { useStore } from '@/store/mainStore.js'
 import api from '@/apiCrud.js'
 import MenuNewBtn from '@/components/simUi/MenuNewBtn.vue'
+import MenuConfirmBtn from '@/components/simUi/MenuConfirmBtn.vue'
+import MenuCancelBtn from '@/components/simUi/MenuCancelBtn.vue'
 
 const createDefaultForm = () => ({
   name: '',
@@ -114,7 +112,7 @@ const createDefaultForm = () => ({
 
 export default {
   name: 'AnimationSetCreate',
-  components: { MenuNewBtn },
+  components: { MenuNewBtn, MenuConfirmBtn, MenuCancelBtn },
   setup: function () {
     const store = useStore()
 

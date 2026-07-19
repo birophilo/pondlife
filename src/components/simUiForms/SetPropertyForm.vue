@@ -6,8 +6,8 @@
     <div v-else>
       <input v-model="propertyForm.propertyName" type="text" placeholder="name" />
       <input v-model="propertyForm.propertyValue" type="number" placeholder="0" />
-      <button @click="setAgentProperty">add</button> |
-      <button @click="cancelSetAgentProperty">cancel</button>
+      <MenuConfirmBtn label="Add property" @click="setAgentProperty" />
+      <MenuCancelBtn @click="cancelSetAgentProperty" />
     </div>
   </div>
 </template>
@@ -16,9 +16,12 @@
 import { ref } from 'vue'
 import { useStore } from '@/store/mainStore.js'
 import { AgentHandler } from '@/classes/Agent'
+import MenuConfirmBtn from '@/components/simUi/MenuConfirmBtn.vue'
+import MenuCancelBtn from '@/components/simUi/MenuCancelBtn.vue'
 
 export default {
   name: 'SetPropertyForm',
+  components: { MenuConfirmBtn, MenuCancelBtn },
   setup: function () {
     const store = useStore()
 

@@ -195,12 +195,8 @@
       </table>
 
       <div class="menu-form-actions">
-        <button type="button" class="menu-btn" @click="createCondition">
-          create
-        </button>
-        <button type="button" class="menu-btn" @click="cancelAddCondition">
-          cancel
-        </button>
+        <MenuConfirmBtn label="Create condition" @click="createCondition" />
+        <MenuCancelBtn @click="cancelAddCondition" />
       </div>
     </div>
 
@@ -213,13 +209,15 @@ import { computed, ref } from 'vue'
 import { useStore } from '@/store/mainStore.js'
 import api from '@/apiCrud.js'
 import MenuNewBtn from '@/components/simUi/MenuNewBtn.vue'
+import MenuConfirmBtn from '@/components/simUi/MenuConfirmBtn.vue'
+import MenuCancelBtn from '@/components/simUi/MenuCancelBtn.vue'
 
 const DEFAULT_CONDITION_TYPE = 'property'
 
 
 export default {
   name: 'ConditionCreate',
-  components: { MenuNewBtn },
+  components: { MenuNewBtn, MenuConfirmBtn, MenuCancelBtn },
   setup: function () {
     const store = useStore()
 

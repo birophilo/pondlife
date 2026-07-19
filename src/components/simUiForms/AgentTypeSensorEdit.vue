@@ -9,8 +9,8 @@
           :value="sensor.id"
         >{{ sensor.name }}</option>
       </select>
-      <button @click="saveItem">save</button>
-      <button @click="cancelEdit">cancel</button>
+      <MenuConfirmBtn @click="saveItem" />
+      <MenuCancelBtn @click="cancelEdit" />
     </div>
     <div v-else>
       sensor: {{ agentType.sensor }}
@@ -22,9 +22,12 @@
 <script>
 import { ref } from 'vue'
 import { useStore } from '@/store/mainStore.js'
+import MenuConfirmBtn from '@/components/simUi/MenuConfirmBtn.vue'
+import MenuCancelBtn from '@/components/simUi/MenuCancelBtn.vue'
 
 export default {
   name: 'AgentTypeSensorEdit',
+  components: { MenuConfirmBtn, MenuCancelBtn },
   props: {
     agentType: Object
   },

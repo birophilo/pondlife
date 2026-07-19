@@ -14,7 +14,7 @@
         @keyup.esc="emitClose"
       >
         <h2 :id="titleId" class="confirm-sim-delete__title">
-          Confirm delete
+          {{ title }}
         </h2>
 
         <p class="confirm-sim-delete__target">
@@ -37,7 +37,7 @@
             class="confirm-sim-delete__btn confirm-sim-delete__btn--danger"
             :disabled="deleting"
           >
-            Delete
+            {{ confirmLabel }}
           </button>
         </footer>
       </form>
@@ -67,6 +67,14 @@ export default {
     entityName: {
       type: String,
       default: ''
+    },
+    title: {
+      type: String,
+      default: 'Confirm delete'
+    },
+    confirmLabel: {
+      type: String,
+      default: 'Delete'
     },
     deleting: {
       type: Boolean,
