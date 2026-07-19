@@ -179,8 +179,9 @@ export default {
       if (deleteInProgress.value) return
       deleteInProgress.value = true
       try {
-        store.spriteSheets.splice(props.i, 1)
         await api.deleteSpriteSheet(props.spriteSheet.id)
+        store.spriteSheets.splice(props.i, 1)
+        await store.saveScene()
         deleteConfirmOpen.value = false
       } finally {
         deleteInProgress.value = false

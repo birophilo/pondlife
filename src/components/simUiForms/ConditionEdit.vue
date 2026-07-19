@@ -357,6 +357,7 @@ export default {
       try {
         await api.deleteCondition(props.item.id)
         store.conditions.splice(props.index, 1)
+        await store.saveScene()
         deleteConfirmOpen.value = false
       } finally {
         deleteInProgress.value = false

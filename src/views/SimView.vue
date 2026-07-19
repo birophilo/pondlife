@@ -60,6 +60,8 @@
         Simulations
       </button> -->
     </div>
+
+    <SimulationContents />
   </div>
 
   <div class="live-controls-menu">
@@ -86,6 +88,7 @@ import { initTopMenuStrip } from '@/hud/imperativeTopMenuStrip.js'
 import SimCategoryIconMenu from '@/components/simCategoryMenu/SimCategoryIconMenu.vue'
 import SimCategoryDrawer from '@/components/simCategoryMenu/SimCategoryDrawer.vue'
 import ModalLoadSimObject from '@/components/ModalLoadSimObject.vue'
+import SimulationContents from '@/components/SimulationContents.vue'
 import { previewSrcForAnimationSet } from '@/components/simLoadModal/animationSetLoadHelpers.js'
 import { actionLabelForUtilityFunction, resolveUtilityFunctionActionObjectType } from '@/components/simLoadModal/utilityFunctionLoadHelpers.js'
 import NavTopLogin from '@/components/NavTopLogin.vue'
@@ -102,6 +105,7 @@ export default {
     SimCategoryIconMenu,
     SimCategoryDrawer,
     ModalLoadSimObject,
+    SimulationContents,
     NavTopLogin,
     Play,
     Pause,

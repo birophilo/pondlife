@@ -92,11 +92,14 @@ export default {
       })
     }
 
-    const deleteItem = () => {
+    const deleteItem = async () => {
       const action = store.actions.find(act => act.id === props.action.id)
-      api.deletePropertyChange(props.propertyChangeId)
-      // TODO: update action here with propertyChanges: [--> remove "ID123"]
+      await api.deletePropertyChange(props.propertyChangeId)
       action.propertyChanges.splice(props.index, 1)
+      store.propertyChanges = store.propertyChanges.filter(
+        item => item.id !== props.propertyChangeId
+      )
+      await store.saveScene()
     }
 
     const editItem = () => {

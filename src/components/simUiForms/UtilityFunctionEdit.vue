@@ -91,9 +91,10 @@ export default {
       api.updateUtilityFunction(payload)
     }
 
-    const deleteItem = () => {
-      api.deleteUtilityFunction(props.utilityFunction.id)
+    const deleteItem = async () => {
+      await api.deleteUtilityFunction(props.utilityFunction.id)
       store.agentUtilityFunctions.splice(props.index, 1)
+      await store.saveScene()
     }
 
     const editItem = () => {

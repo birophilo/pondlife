@@ -240,8 +240,9 @@ export default {
       if (deleteInProgress.value) return
       deleteInProgress.value = true
       try {
-        store.agentProperties.splice(props.index, 1)
         await api.deleteInitialAgentProperty(props.agentProperty.id)
+        store.agentProperties.splice(props.index, 1)
+        await store.saveScene()
         deleteConfirmOpen.value = false
       } finally {
         deleteInProgress.value = false

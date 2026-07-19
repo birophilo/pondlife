@@ -98,10 +98,17 @@ export default {
       api.updateAction(selectedAction)
     }
 
-    const deleteItem = (index) => {
+    const deleteItem = async (index) => {
       const selectedAction = store.actions.find(a => a.id === props.action.id)
-      selectedAction.transitions.splice(index, 1)
-      api.updateAction(selectedAction)
+      const transitions = selectedAction.transitions.filter((_, i) => i !== index)
+      const result = await api.updateAction({
+        ...selectedAction,
+        transitions
+      })
+      if (result?.error) {
+        throw new Error(result.error)
+      }
+      selectedAction.transitions = transitions
     }
 
     const editItem = (index) => {

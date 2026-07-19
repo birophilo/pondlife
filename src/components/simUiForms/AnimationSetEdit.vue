@@ -164,6 +164,7 @@ export default {
       try {
         await api.deleteAnimationSet(props.animationSet.id)
         store.animationSets.splice(props.i, 1)
+        await store.saveScene()
         deleteConfirmOpen.value = false
       } finally {
         deleteInProgress.value = false

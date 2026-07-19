@@ -177,6 +177,7 @@ export default {
         await api.deleteRecurringChange(props.recurringChange.id)
         store.ungroupedRecurringChanges.splice(props.index, 1)
         store.groupRecurringChanges()
+        await store.saveScene()
         deleteConfirmOpen.value = false
       } finally {
         deleteInProgress.value = false

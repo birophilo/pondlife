@@ -114,12 +114,8 @@ export default {
   },
 
   deleteItem: async function (resource, id) {
-    try {
-      const response = await apiClient.delete(`${BASE_URL}/${resource}/${id}`)
-      return response.id
-    } catch (error) {
-      return { error: error.message }
-    }
+    await apiClient.delete(`${BASE_URL}/${resource}/${id}`)
+    return true
   },
 
   updateItem: async function (resource, data) {

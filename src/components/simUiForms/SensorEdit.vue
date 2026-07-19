@@ -168,8 +168,9 @@ export default {
       if (deleteInProgress.value) return
       deleteInProgress.value = true
       try {
-        store.sensors.splice(props.i, 1)
         await api.deleteSensor(props.sensor.id)
+        store.sensors.splice(props.i, 1)
+        await store.saveScene()
         deleteConfirmOpen.value = false
       } finally {
         deleteInProgress.value = false

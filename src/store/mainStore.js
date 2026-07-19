@@ -240,7 +240,7 @@ export const useStore = defineStore({
       this.agentPreview = null
     },
 
-    async saveScene () {
+    buildSceneData () {
       const data = {
         agentTypes: [],
         agentInstances: [],
@@ -270,6 +270,15 @@ export const useStore = defineStore({
         })
       })
 
+      return data
+    },
+
+    async saveScene () {
+      return this.saveSceneData(this.buildSceneData())
+    },
+
+    async saveSceneData (data) {
+
       const payload = {
         id: this.sceneId,
         name: this.sceneName,
@@ -282,8 +291,10 @@ export const useStore = defineStore({
       try {
         await apiClient.put(`/scene/${this.sceneId}`, payload)
         console.log('Saved scene')
+        return true
       } catch (error) {
         this.error = messageFromAxiosError(error)
+        return false
       }
     },
 

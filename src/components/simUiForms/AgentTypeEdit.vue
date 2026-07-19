@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div v-if="itemForm.name !== 'world'">
+    <div v-if="agentType.name !== 'world'">
       <div v-if="isEditing === true">
         name: <input v-model="itemForm.name" type="text" placeholder="name" /><br />
         width: <input v-model="itemForm.width" type="number" placeholder="width" /><br />
@@ -67,7 +67,19 @@
           </button>
         </div>
       </div>
+      <p v-if="operationBlockedReason" class="menu-panel__hint" role="alert">
+        {{ operationBlockedReason }}
+      </p>
     </div>
+
+    <ConfirmSimDeleteModal
+      :open="deleteConfirmOpen"
+      entity-type-label="agent type"
+      :entity-name="agentType.name || '—'"
+      :deleting="deleteInProgress"
+      @close="closeDeleteConfirm"
+      @confirm="confirmDelete"
+    />
   </div>
 </template>
 
@@ -76,10 +88,11 @@ import { ref } from 'vue'
 import { Pencil, Trash2, X } from '@lucide/vue'
 import { useStore } from '@/store/mainStore.js'
 import api from '@/apiCrud.js'
+import ConfirmSimDeleteModal from '@/components/ConfirmSimDeleteModal.vue'
 
 export default {
   name: 'AgentTypeEdit',
-  components: { Pencil, Trash2, X },
+  components: { Pencil, Trash2, X, ConfirmSimDeleteModal },
   props: {
     agentType: Object
   },
@@ -87,6 +100,9 @@ export default {
     const store = useStore()
 
     const isEditing = ref(false)
+    const deleteConfirmOpen = ref(false)
+    const deleteInProgress = ref(false)
+    const operationBlockedReason = ref('')
 
     const populateItemForm = () => {
       itemForm.value = {
@@ -105,9 +121,46 @@ export default {
 
     const itemForm = ref({})
 
+    const dependentAgents = () => {
+      return store.agentItems[props.agentType.name] ?? []
+    }
+
+    const blockIfAgentInstancesExist = (operation) => {
+      const count = dependentAgents().length
+      if (count === 0) {
+        operationBlockedReason.value = ''
+        return false
+      }
+      const noun = count === 1 ? 'agent instance' : 'agent instances'
+      operationBlockedReason.value = (
+        `Cannot ${operation} "${props.agentType.name}" while it is used by ${count} ${noun}. ` +
+        'Remove those agents from the scene first.'
+      )
+      return true
+    }
+
     const deleteItem = () => {
-      api.deleteAgentType(props.agentType.id)
-      removeAgentTypeFromStore()
+      if (blockIfAgentInstancesExist('delete')) return
+      deleteConfirmOpen.value = true
+    }
+
+    const closeDeleteConfirm = () => {
+      if (deleteInProgress.value) return
+      deleteConfirmOpen.value = false
+    }
+
+    const confirmDelete = async () => {
+      if (deleteInProgress.value || blockIfAgentInstancesExist('delete')) return
+      deleteInProgress.value = true
+      try {
+        await api.deleteAgentType(props.agentType.id)
+        const sceneSaved = await store.saveSceneData(sceneDataWithoutAgentType())
+        if (!sceneSaved) return
+        removeAgentTypeFromStore()
+        deleteConfirmOpen.value = false
+      } finally {
+        deleteInProgress.value = false
+      }
     }
 
     const removeAgentTypeFromStore = () => {
@@ -118,7 +171,15 @@ export default {
       store.agentMenuButtons = store.agentMenuButtons.filter(button => button.name !== atName)
     }
 
+    const sceneDataWithoutAgentType = () => {
+      const data = store.buildSceneData()
+      data.agentTypes = data.agentTypes.filter(id => id !== props.agentType.id)
+      delete data.firstActions[props.agentType.name]
+      return data
+    }
+
     const editItem = () => {
+      operationBlockedReason.value = ''
       populateItemForm()
       isEditing.value = true
     }
@@ -162,16 +223,10 @@ export default {
     }
 
     const removeFromMenu = async () => {
-      const atName = props.agentType.name
-      store.agentItems[atName].forEach((agent, i) => deleteAgent(agent, store.agentItems[atName], i))
+      if (blockIfAgentInstancesExist('remove from the scene')) return
+      const sceneSaved = await store.saveSceneData(sceneDataWithoutAgentType())
+      if (!sceneSaved) return
       removeAgentTypeFromStore()
-      await store.saveScene()
-    }
-
-    const deleteAgent = async (agent, agentItems, i) => {
-      agent.labelElement.remove()
-      await api.deleteAgent(agent.id)
-      agentItems.splice(i, 1)
     }
 
     return {
@@ -181,6 +236,11 @@ export default {
       editItem,
       saveItem,
       deleteItem,
+      closeDeleteConfirm,
+      confirmDelete,
+      deleteConfirmOpen,
+      deleteInProgress,
+      operationBlockedReason,
       cancelEdit,
       populateItemForm,
       uploadFile,
